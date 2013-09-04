@@ -707,7 +707,7 @@ void	Cmd_ExecuteString (char *text, cmd_source_t src)
 	}
 	
 // check cvars
-	if (!Cvar_Command ())
+	if (!Cvar_Command() && host_framecount > 0)
 		Con_SafePrintf ("Unknown command \"%s\"\n", Cmd_Argv(0));
 
 }

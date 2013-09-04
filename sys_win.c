@@ -453,6 +453,33 @@ void Sys_Sleep (void)
 */
 
 /*
+================
+Sys_PageIn
+================
+*/
+volatile int					sys_checksum;
+
+void Sys_PageIn (void *ptr, int size)
+{
+	byte	*x;
+	int		m, n;
+
+// touch all the memory to make sure it's there. The 16-page skip is to
+// keep Win 95 from thinking we're trying to page ourselves in (we are
+// doing that, of course, but there's no reason we shouldn't)
+	x = (byte *)ptr;
+
+	for (n=0 ; n<4 ; n++)
+	{
+		for (m=0 ; m<(size - 16 * 0x1000) ; m += 4)
+		{
+			sys_checksum += *(int *)&x[m];
+			sys_checksum += *(int *)&x[m + 16 * 0x1000];
+		}
+	}
+}
+
+/*
 ==================
 WinMain
 ==================
@@ -565,6 +592,11 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 
 	if (!parms.membase)
 		Sys_Error ("Not enough memory free, check disk space");
+
+	if(!COM_CheckParm ("-nopagein"))
+	{
+		Sys_PageIn (parms.membase, parms.memsize);
+	}
 
 	// initialize the windows dedicated server console if needed
 	tevent = CreateEvent(NULL, FALSE, FALSE, NULL);
