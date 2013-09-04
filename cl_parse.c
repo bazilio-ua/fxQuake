@@ -1063,7 +1063,7 @@ void CL_ParseServerMessage (void)
 		case svc_disconnect:
 			Con_Printf ("Disconnect\n");
 			Host_EndGame ("Server disconnected\n");
-
+			
 		case svc_print:
 			Con_SafePrintf ("%s", MSG_ReadString (net_message));
 			break;
@@ -1112,7 +1112,7 @@ void CL_ParseServerMessage (void)
 			if (cl.viewentity >= MAX_EDICTS)
 				Host_Error ("CL_ParseServerMessage: svc_setview %d >= MAX_EDICTS (%d)", cl.viewentity, MAX_EDICTS);
 			break;
-					
+			
 		case svc_lightstyle:
 			i = MSG_ReadByte (net_message);
 			if (i >= MAX_LIGHTSTYLES)
@@ -1129,7 +1129,7 @@ void CL_ParseServerMessage (void)
 			i = MSG_ReadShort(net_message);
 			S_StopSound(i>>3, i&7);
 			break;
-		
+			
 		case svc_updatename:
 			Sbar_Changed ();
 			i = MSG_ReadByte (net_message);
@@ -1145,7 +1145,7 @@ void CL_ParseServerMessage (void)
 				Host_Error ("CL_ParseServerMessage: svc_updatefrags %d >= cl.maxclients (%d)", i, cl.maxclients);
 			cl.scores[i].frags = MSG_ReadShort (net_message);
 			break;			
-
+			
 		case svc_updatecolors:
 			Sbar_Changed ();
 			i = MSG_ReadByte (net_message);
@@ -1158,28 +1158,27 @@ void CL_ParseServerMessage (void)
 		case svc_particle:
 			R_ParseParticleEffect ();
 			break;
-
+			
 		case svc_spawnbaseline:
 			i = MSG_ReadShort (net_message);
 			// must use CL_EntityNum() to force cl.num_entities up
 			CL_ParseBaseline (CL_EntityNum(i), 1); // johnfitz -- added second parameter
 			break;
+			
 		case svc_spawnstatic:
 			CL_ParseStatic (1); //johnfitz -- added parameter
-			break;			
+			break;
+			
 		case svc_temp_entity:
 			CL_ParseTEnt ();
 			break;
-
+			
 		case svc_setpause:
-			{
-				cl.paused = MSG_ReadByte (net_message);
-
-				if (cl.paused)
-					CDAudio_Pause ();
-				else
-					CDAudio_Resume ();
-			}
+			cl.paused = MSG_ReadByte (net_message);
+			if (cl.paused)
+				CDAudio_Pause ();
+			else
+				CDAudio_Resume ();
 			break;
 			
 		case svc_signonnum:
@@ -1194,21 +1193,20 @@ void CL_ParseServerMessage (void)
 			}
 			CL_SignonReply ();
 			break;
-
+			
 		case svc_killedmonster:
 			cl.stats[STAT_MONSTERS]++;
-
 			if ((!cls.demoplayback || developer.value) &&
 			    cl.stats[STAT_TOTALMONSTERS] && cl.stats[STAT_MONSTERS] > cl.stats[STAT_TOTALMONSTERS])
 			{
 				Con_Warning ("CL_ParseServerMessage: killed monsters %d > total monsters %d\n", cl.stats[STAT_MONSTERS], cl.stats[STAT_TOTALMONSTERS]);
 			}
 			break;
-
+			
 		case svc_foundsecret:
 			cl.stats[STAT_SECRETS]++;
 			break;
-
+			
 		case svc_updatestat:
 			i = MSG_ReadByte (net_message);
 			if (i >= MAX_CL_STATS)
@@ -1219,7 +1217,7 @@ void CL_ParseServerMessage (void)
 		case svc_spawnstaticsound:
 			CL_ParseStaticSound (1); //johnfitz -- added parameter
 			break;
-
+			
 		case svc_cdtrack:
 			cl.cdtrack = MSG_ReadByte (net_message);
 			cl.looptrack = MSG_ReadByte (net_message);
@@ -1228,56 +1226,45 @@ void CL_ParseServerMessage (void)
 			else
 				CDAudio_Play ((byte)cl.cdtrack, true);
 			break;
-
+			
 		case svc_intermission:
+			cl.intermission = 1;
+			cl.completed_time = cl.time;
+			vid.recalc_refdef = true;	// go to full screen
+			if (cls.demoplayback)
 			{
-				cl.intermission = 1;
-				cl.completed_time = cl.time;
-				vid.recalc_refdef = true;	// go to full screen
-
-				if (cls.demoplayback)
-				{
-					// Fix camera view angles (better way to do it?)
-					entity_t *ent = &cl_entities[cl.viewentity];
-					VectorCopy (ent->msg_angles[0], ent->angles);
-				}
+				// Fix camera view angles (better way to do it?)
+				entity_t *ent = &cl_entities[cl.viewentity];
+				VectorCopy (ent->msg_angles[0], ent->angles);
 			}
 			break;
-
+			
 		case svc_finale:
+			cl.intermission = 2;
+			cl.completed_time = cl.time;
+			vid.recalc_refdef = true;	// go to full screen
+			if (cls.demoplayback)
 			{
-				cl.intermission = 2;
-				cl.completed_time = cl.time;
-				vid.recalc_refdef = true;	// go to full screen
-
-				if (cls.demoplayback)
-				{
-					// Fix camera view angles (better way to do it?)
-					entity_t *ent = &cl_entities[cl.viewentity];
-					VectorCopy (ent->msg_angles[0], ent->angles);
-				}
-
-				SCR_CenterPrint (MSG_ReadString (net_message));
+				// Fix camera view angles (better way to do it?)
+				entity_t *ent = &cl_entities[cl.viewentity];
+				VectorCopy (ent->msg_angles[0], ent->angles);
 			}
+			SCR_CenterPrint (MSG_ReadString (net_message));
 			break;
-
+			
 		case svc_cutscene:
+			cl.intermission = 3;
+			cl.completed_time = cl.time;
+			vid.recalc_refdef = true;	// go to full screen
+			if (cls.demoplayback)
 			{
-				cl.intermission = 3;
-				cl.completed_time = cl.time;
-				vid.recalc_refdef = true;	// go to full screen
-
-				if (cls.demoplayback)
-				{
-					// Fix camera view angles (better way to do it?)
-					entity_t *ent = &cl_entities[cl.viewentity];
-					VectorCopy (ent->msg_angles[0], ent->angles);
-				}
-
-				SCR_CenterPrint (MSG_ReadString (net_message));
+				// Fix camera view angles (better way to do it?)
+				entity_t *ent = &cl_entities[cl.viewentity];
+				VectorCopy (ent->msg_angles[0], ent->angles);
 			}
+			SCR_CenterPrint (MSG_ReadString (net_message));
 			break;
-
+			
 		case svc_sellscreen:
 			Cmd_ExecuteString ("help", src_command);
 			break;
@@ -1286,7 +1273,7 @@ void CL_ParseServerMessage (void)
 		case svc_hidelmp:
 			MSG_ReadString (net_message); // Just parse msg
 			break;
-
+			
 		case svc_showlmp:
 			// Just parse msg
 			MSG_ReadString (net_message);
@@ -1294,41 +1281,41 @@ void CL_ParseServerMessage (void)
 			MSG_ReadByte(net_message);
 			MSG_ReadByte(net_message);
 			break;
-
+			
 		case svc_skybox:
 			R_LoadSkyBox (MSG_ReadString(net_message));
 			break;
-
+			
 		case svc_skyboxsize:
 			// Just parse msg
 			MSG_ReadCoord (net_message);
 			break;
-
+			
 		case svc_bf:
 			Cmd_ExecuteString ("bf", src_command);
 			break;
-
+			
 // PROTOCOL_FITZQUAKE
 		case svc_fog:
 			R_FogParseServerMessage ();
 			break;
-
+			
 		//johnfitz
 		case svc_spawnbaseline2: //PROTOCOL_FITZQUAKE
 			i = MSG_ReadShort (net_message);
 			// must use CL_EntityNum() to force cl.num_entities up
 			CL_ParseBaseline (CL_EntityNum(i), 2);
 			break;
-
+			
 		case svc_spawnstatic2: //PROTOCOL_FITZQUAKE
 			CL_ParseStatic (2);
 			break;
-
+			
 		case svc_spawnstaticsound2: //PROTOCOL_FITZQUAKE
 			CL_ParseStaticSound (2);
 			break;
 		//johnfitz
-
+			
 // Nehahra fog
 		case svc_fogn:
 			if (MSG_ReadByte(net_message))

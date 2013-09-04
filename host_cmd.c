@@ -812,7 +812,7 @@ void Host_Name_f (void)
 
 	if (host_client->name[0] && strcmp(host_client->name, "unconnected") )
 		if (strcmp(host_client->name, newName) != 0)
-			Con_Printf ("%s renamed to %s\n", host_client->name, newName);
+			Sys_Printf ("%s renamed to %s\n", host_client->name, newName); // was Con_Printf
 	strcpy (host_client->name, newName);
 	host_client->edict->v.netname = host_client->name - pr_strings;
 	
