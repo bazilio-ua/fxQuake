@@ -378,7 +378,7 @@ void SV_DropClient (qboolean crash)
 			pr_global_struct->self = saveSelf;
 		}
 
-		Con_Printf ("Client %s removed\n",host_client->name);
+		Sys_Printf ("Client %s removed\n",host_client->name);
 	}
 
 // break the net connection

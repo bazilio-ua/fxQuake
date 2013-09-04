@@ -1168,7 +1168,7 @@ void Host_Spawn_f (void)
 		PR_ExecuteProgram (pr_global_struct->ClientConnect);
 
 		if ((Sys_DoubleTime() - host_client->netconnection->connectTime) <= sv.time)
-			Con_Printf ("%s entered the game\n", host_client->name);
+			Sys_Printf ("%s entered the game\n", host_client->name);
 
 		PR_ExecuteProgram (pr_global_struct->PutClientInServer);
 	}

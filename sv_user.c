@@ -502,7 +502,7 @@ nextmsg:
 		ret = NET_GetMessage (host_client->netconnection);
 		if (ret == -1)
 		{
-			Con_Printf ("SV_ReadClientMessage: NET_GetMessage failed\n");
+			Sys_Printf ("SV_ReadClientMessage: NET_GetMessage failed\n");
 			return false;
 		}
 		if (!ret)
@@ -517,7 +517,7 @@ nextmsg:
 
 			if (net_message->badread)
 			{
-				Con_Printf ("SV_ReadClientMessage: badread\n");
+				Sys_Printf ("SV_ReadClientMessage: badread\n");
 				return false;
 			}	
 	
@@ -529,11 +529,11 @@ nextmsg:
 				goto nextmsg;		// end of message
 				
 			default:
-				Con_Printf ("SV_ReadClientMessage: unknown command char\n");
+				Sys_Printf ("SV_ReadClientMessage: unknown command char\n");
 				return false;
 							
 			case clc_nop:
-//				Con_Printf ("SV_ReadClientMessage: clc_nop\n");
+//				Sys_Printf ("SV_ReadClientMessage: clc_nop\n");
 				break;
 				
 			case clc_stringcmd:	
@@ -608,7 +608,7 @@ nextmsg:
 				break;
 				
 			case clc_disconnect:
-//				Con_Printf ("SV_ReadClientMessage: client disconnected\n");
+//				Sys_Printf ("SV_ReadClientMessage: client disconnected\n");
 				return false;
 			
 			case clc_move:
