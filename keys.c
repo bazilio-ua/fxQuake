@@ -746,7 +746,7 @@ void History_Init (void)
 	}
 	key_linepos = 1;
 
-	if ((hf = fopen(va("%s/%s", com_basedir, HISTORY_FILE), "rt")))
+	if ((hf = fopen(va("%s/%s", com_gamedir, HISTORY_FILE), "rt")))
 	{
 		do
 		{
@@ -781,7 +781,7 @@ void History_Close (void)
 	if (!con_initialized)
 		return;
 
-	if ((hf = fopen(va("%s/%s", com_basedir, HISTORY_FILE), "wt")))
+	if ((hf = fopen(va("%s/%s", com_gamedir, HISTORY_FILE), "wt")))
 	{
 		i = edit_line;
 		do
