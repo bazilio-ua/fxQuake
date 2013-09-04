@@ -30,10 +30,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <paths.h>
 #include <unistd.h>
 
-#ifdef __FreeBSD__
-#include <sys/soundcard.h>
-#else
+#ifdef __linux__
 #include <linux/soundcard.h>
+#else
+#include <sys/soundcard.h>
 #endif
 
 #include "quakedef.h"
