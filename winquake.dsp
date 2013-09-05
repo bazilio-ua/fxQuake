@@ -52,7 +52,7 @@ BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
 LINK32=link.exe
-# ADD BASE LINK32 dxguid.lib winmm.lib wsock32.lib opengl32.lib kernel32.lib user32.lib gdi32.lib /nologo /subsystem:windows /debug /machine:I386
+# ADD BASE LINK32 dxguid.lib dinput.lib dsound.lib winmm.lib wsock32.lib opengl32.lib kernel32.lib user32.lib gdi32.lib /nologo /subsystem:windows /debug /machine:I386
 # SUBTRACT BASE LINK32 /nodefaultlib
 # ADD LINK32 dxguid.lib dinput.lib dsound.lib winmm.lib wsock32.lib opengl32.lib kernel32.lib user32.lib gdi32.lib /nologo /subsystem:windows /debug /machine:I386 /out:"C:\quake\fxquake.exe"
 # SUBTRACT LINK32 /profile /incremental:no /map /nodefaultlib
@@ -82,7 +82,7 @@ BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
 LINK32=link.exe
-# ADD BASE LINK32 dxguid.lib winmm.lib wsock32.lib opengl32.lib kernel32.lib user32.lib gdi32.lib /nologo /subsystem:windows /profile /machine:I386
+# ADD BASE LINK32 dxguid.lib dinput.lib dsound.lib winmm.lib wsock32.lib opengl32.lib kernel32.lib user32.lib gdi32.lib /nologo /subsystem:windows /profile /machine:I386
 # SUBTRACT BASE LINK32 /map /debug
 # ADD LINK32 dxguid.lib dinput.lib dsound.lib winmm.lib wsock32.lib opengl32.lib kernel32.lib user32.lib gdi32.lib /nologo /subsystem:windows /map /machine:I386 /out:"C:\quake\fxquake.exe"
 # SUBTRACT LINK32 /profile /debug
