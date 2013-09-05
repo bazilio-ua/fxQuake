@@ -302,10 +302,6 @@ SOURCE=.\wad.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\winquake.rc
-# End Source File
-# Begin Source File
-
 SOURCE=.\world.c
 # End Source File
 # Begin Source File
@@ -491,6 +487,14 @@ SOURCE=.\zone.h
 # Begin Source File
 
 SOURCE=.\quake.ico
+# End Source File
+# Begin Source File
+
+SOURCE=.\resource.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\winquake.rc
 # End Source File
 # End Group
 # Begin Source File
