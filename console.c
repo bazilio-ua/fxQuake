@@ -1131,7 +1131,7 @@ void Con_DrawConsole (int lines, qboolean drawinput)
 
 //draw version number in bottom right
 	y += 8;
-	sprintf (ver, "FXQuake %4.2f", (float)VERSION);
+	sprintf (ver, "fxQuake %4.2f", (float)VERSION);
 	len = strlen (ver);
 	for (x = 0; x < len; x++)
 		Draw_Character ((con_linewidth - len + x + 2) << 3, y, ver[x] /*+ 128*/);

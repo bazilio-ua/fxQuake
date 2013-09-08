@@ -308,8 +308,8 @@ qboolean VID_SetWindowedMode (int modenum)
 	// Create the main window
 	mainwindow = CreateWindowEx (
 		ExWindowStyle,
-		"FXQuake",
-		"FXQuake",
+		"fxQuake",
+		"fxQuake",
 		WindowStyle,
 		rect.left, rect.top,
 		width,
@@ -400,8 +400,8 @@ qboolean VID_SetFullScreenMode (int modenum)
 	// Create the main window
 	mainwindow = CreateWindowEx (
 		ExWindowStyle,
-		"FXQuake",
-		"FXQuake",
+		"fxQuake",
+		"fxQuake",
 		WindowStyle,
 		rect.left, rect.top,
 		width,
@@ -1041,7 +1041,7 @@ void VID_InitWindow (HINSTANCE hInstance)
 	wc.hCursor       = LoadCursor (NULL,IDC_ARROW);
 	wc.hbrBackground = NULL;
 	wc.lpszMenuName  = 0;
-	wc.lpszClassName = "FXQuake";
+	wc.lpszClassName = "fxQuake";
 
 	if (!RegisterClass (&wc) )
 		Sys_Error ("Couldn't register window class");

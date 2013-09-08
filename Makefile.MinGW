@@ -1,6 +1,6 @@
 
 #
-# FXQuake Makefile for MinGW with MSYS
+# fxQuake Makefile for MinGW with MSYS
 #
 
 DEBUG?=N

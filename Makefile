@@ -1,6 +1,6 @@
 
 #
-# FXQuake Makefile for GNU Make
+# fxQuake Makefile for GNU Make
 #
 
 DEBUG?=N

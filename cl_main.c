@@ -352,13 +352,13 @@ float	CL_LerpPoint (void)
 		f = 0.1;
 	}
 	frac = (cl.time - cl.mtime[1]) / f;
-//Con_Printf ("frac: %f\n",frac);
+	//Con_Printf ("frac: %f\n",frac);
 	if (frac < 0)
 	{
 		if (frac < -0.01)
 		{
 			cl.time = cl.mtime[1];
-//				Con_Printf ("low frac\n");
+			//Con_Printf ("low frac\n");
 		}
 		frac = 0;
 	}
@@ -367,7 +367,7 @@ float	CL_LerpPoint (void)
 		if (frac > 1.01)
 		{
 			cl.time = cl.mtime[0];
-//				Con_Printf ("high frac\n");
+			//Con_Printf ("high frac\n");
 		}
 		frac = 1;
 	}
@@ -392,7 +392,7 @@ void CL_RelinkEntities (void)
 	int			i, j;
 	float		frac, f, d;
 	vec3_t		delta;
-	float		bobjrotate;
+	float		objrotate;
 	vec3_t		oldorg;
 	dlight_t	*dl;
 	static float	lastmsg = 0;
@@ -426,7 +426,7 @@ void CL_RelinkEntities (void)
 	else
 		VectorCopy(cl.viewangles, cl.lerpangles);
 
-	bobjrotate = anglemod(100*cl.time);
+	objrotate = anglemod(100*cl.time);
 
 // start on the entity after the world
 	for (i=1,ent=cl_entities+1 ; i<cl.num_entities ; i++,ent++)
@@ -489,7 +489,7 @@ void CL_RelinkEntities (void)
 
 // rotate binary objects locally
 		if (ent->model->flags & EF_ROTATE)
-			ent->angles[1] = bobjrotate;
+			ent->angles[1] = objrotate;
 
 		if (ent->effects & EF_BRIGHTFIELD)
 			R_EntityParticles (ent);

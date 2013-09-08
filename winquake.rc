@@ -111,7 +111,7 @@ END
 
 STRINGTABLE DISCARDABLE 
 BEGIN
-    IDS_STRING1             "FXQuake"
+    IDS_STRING1             "fxQuake"
 END
 
 #endif    // English (U.S.) resources

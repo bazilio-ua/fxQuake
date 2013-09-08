@@ -390,8 +390,8 @@ void VID_Init (void)
 		wmhints->flags |= IconPixmapHint | IconMaskHint;
 
 	clshints = XAllocClassHint();
-	clshints->res_name = strdup("FXQuake");
-	clshints->res_class = strdup("FXQuake");
+	clshints->res_name = strdup("fxQuake");
+	clshints->res_class = strdup("fxQuake");
 
 	szhints = XAllocSizeHints();
 	if(vidmode_fullscreen)
@@ -401,7 +401,7 @@ void VID_Init (void)
 		szhints->flags |= PMinSize | PMaxSize;
 	}
 
-	XmbSetWMProperties(x_disp, x_win, "FXQuake", "FXQuake", (char **) com_argv, com_argc, szhints, wmhints, clshints);
+	XmbSetWMProperties(x_disp, x_win, "fxQuake", "fxQuake", (char **) com_argv, com_argc, szhints, wmhints, clshints);
 	// strdup() allocates using malloc(), should be freed with free()
 	free(clshints->res_name);
 	free(clshints->res_class); 

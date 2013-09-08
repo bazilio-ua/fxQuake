@@ -826,7 +826,7 @@ void Host_Name_f (void)
 
 void Host_Version_f (void)
 {
-	Con_Printf ("%sFXQuake %4.2f\n", "\x02", (float)VERSION);
+	Con_Printf ("%sfxQuake %4.2f\n", "\x02", (float)VERSION);
 	Con_Printf ("Compiled: "__TIME__" "__DATE__"\n");
 }
 

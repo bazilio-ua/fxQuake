@@ -23,10 +23,6 @@ typedef float vec_t;
 typedef vec_t vec3_t[3];
 typedef vec_t vec5_t[5];
 
-typedef	int	fixed4_t;
-typedef	int	fixed8_t;
-typedef	int	fixed16_t;
-
 #ifndef M_PI
 #define M_PI		3.14159265358979323846	// matches value in gcc v2 math.h
 #endif
@@ -37,9 +33,15 @@ typedef	int	fixed16_t;
 struct mplane_s;
 
 extern vec3_t vec3_origin;
-extern	int nanmask;
 
-#define	IS_NAN(x) (((*(int *)&x)&nanmask)==nanmask)
+#define	NANMASK		(255 << 23)	/* 7F800000 */
+
+// new func to avoid violating strict aliasing rules
+static inline int IS_NAN (float x) {
+	union { float f; int i; } num;
+	num.f = x;
+	return ((num.i & NANMASK) == NANMASK);
+}
 
 #ifndef max
 #define max(a,b) ((a)>(b)?(a):(b))
@@ -48,54 +50,219 @@ extern	int nanmask;
 #define min(a,b) ((a)<(b)?(a):(b))
 #endif
 
-#define bound(min,num,max) ((num) >= (min) ? ((num) < (max) ? (num) : (max)) : (min))
+// Will return minval also if minval > maxval
+#define CLAMP(minval, x, maxval) ((x) < (minval) || (minval) > (maxval) ? (minval) : (x) > (maxval) ? (maxval) : (x)) // johnfitz
 
-// Will return min also if min > max
-#define CLAMP(min, x, max) ((x) < (min) || (min) > (max) ? (min) : (x) > (max) ? (max) : (x))
+#define Q_rint(x) ((x) > 0 ? (int)((x) + 0.5) : (int)((x) - 0.5)) // johnfitz -- from joequake
 
-#define Q_rint(x) ((x) > 0 ? (int)((x) + 0.5) : (int)((x) - 0.5))
+/*-----------------------------------------------------------------*/
 
-#define DotProduct(x,y) (x[0]*y[0]+x[1]*y[1]+x[2]*y[2])
-#define VectorSubtract(a,b,c) {c[0]=a[0]-b[0];c[1]=a[1]-b[1];c[2]=a[2]-b[2];}
-#define VectorAdd(a,b,c) {c[0]=a[0]+b[0];c[1]=a[1]+b[1];c[2]=a[2]+b[2];}
-#define VectorCopy(a,b) {b[0]=a[0];b[1]=a[1];b[2]=a[2];}
-#define VectorNormalizeFast(v) {float ilength = (float) sqrt(DotProduct((v),(v)));if (ilength) ilength = 1.0f / ilength;(v)[0] *= ilength;(v)[1] *= ilength;(v)[2] *= ilength;}
+inline float	anglemod(float a)
+{
+	a = (360.0/65536) * ((int)(a*(65536/360.0)) & 65535);
+	return a;
+}
 
-void VectorAngles (const vec3_t forward, vec3_t angles);
+/*-----------------------------------------------------------------*/
 
-void VectorMA (vec3_t veca, float scale, vec3_t vecb, vec3_t vecc);
+static inline vec_t DotProduct (vec3_t v1, vec3_t v2)
+{
+	return v1[0]*v2[0] + v1[1]*v2[1] + v1[2]*v2[2];
+}
 
-vec_t _DotProduct (vec3_t v1, vec3_t v2);
-void _VectorSubtract (vec3_t veca, vec3_t vecb, vec3_t out);
-void _VectorAdd (vec3_t veca, vec3_t vecb, vec3_t out);
-void _VectorCopy (vec3_t in, vec3_t out);
+inline vec_t VectorLength(vec3_t v)
+{
+	return sqrt(DotProduct(v,v));
+}
 
-int VectorCompare (vec3_t v1, vec3_t v2);
-vec_t VectorLength (vec3_t v);
-void LerpVector (const vec3_t from, const vec3_t to, float frac, vec3_t out);
+inline void LerpVector (vec3_t from, vec3_t to, float frac, vec3_t out)
+{
+	out[0] = from[0] + frac * (to[0] - from[0]);
+	out[1] = from[1] + frac * (to[1] - from[1]);
+	out[2] = from[2] + frac * (to[2] - from[2]);
+}
 
-#define VectorSet(v, x, y, z) ((v)[0] = (x), (v)[1] = (y), (v)[2] = (z))
+inline void LerpAngles (vec3_t from, vec3_t to, float frac, vec3_t out)
+{
+	int i;
+	float delta;
 
-void CrossProduct (vec3_t v1, vec3_t v2, vec3_t cross);
-float VectorNormalize (vec3_t v);		// returns vector length
-float VectorNormalize3f (float *x, float *y, float *z); // (RMQ Engine)
-void VectorInverse (vec3_t v);
-void VectorScale (vec3_t in, vec_t scale, vec3_t out);
-int Q_log2(int val);
+	for (i = 0; i < 3; i++)
+	{
+		delta = to[i] - from[i];
 
-void R_ConcatRotations (float in1[3][3], float in2[3][3], float out[3][3]);
-void R_ConcatTransforms (float in1[3][4], float in2[3][4], float out[3][4]);
+		if (delta > 180)
+			delta -= 360;
+		else if (delta < -180)
+			delta += 360;
 
-void FloorDivMod (double numer, double denom, int *quotient,
-		int *rem);
+		out[i] = from[i] + frac * delta;
+	}
+}
 
-int GreatestCommonDivisor (int i1, int i2);
+//the opposite of AngleVectors.  this takes forward and generates pitch yaw roll
+//TODO: take right and up vectors to properly set yaw and roll
+inline void VectorAngles (vec3_t forward, vec3_t angles)
+{
+	vec3_t temp;
 
-void AngleVectors (vec3_t angles, vec3_t forward, vec3_t right, vec3_t up);
+	temp[0] = forward[0];
+	temp[1] = forward[1];
+	temp[2] = 0;
+
+	angles[PITCH] = -atan2(forward[2], VectorLength(temp)) / M_PI_DIV_180;
+	angles[YAW] = atan2(forward[1], forward[0]) / M_PI_DIV_180;
+	angles[ROLL] = 0;
+}
+
+inline void AngleVectors (vec3_t angles, vec3_t forward, vec3_t right, vec3_t up)
+{
+	float		angle;
+	float		sr, sp, sy, cr, cp, cy;
+	
+	angle = angles[YAW] * (M_PI * 2 / 360);
+	sy = sin(angle);
+	cy = cos(angle);
+	angle = angles[PITCH] * (M_PI * 2 / 360);
+	sp = sin(angle);
+	cp = cos(angle);
+	angle = angles[ROLL] * (M_PI * 2 / 360);
+	sr = sin(angle);
+	cr = cos(angle);
+
+	forward[0] = cp*cy;
+	forward[1] = cp*sy;
+	forward[2] = -sp;
+	right[0] = (-1*sr*sp*cy+-1*cr*-sy);
+	right[1] = (-1*sr*sp*sy+-1*cr*cy);
+	right[2] = -1*sr*cp;
+	up[0] = (cr*sp*cy+-sr*-sy);
+	up[1] = (cr*sp*sy+-sr*cy);
+	up[2] = cr*cp;
+}
+
+inline void VectorMA (vec3_t veca, float scale, vec3_t vecb, vec3_t vecc)
+{
+	vecc[0] = veca[0] + scale*vecb[0];
+	vecc[1] = veca[1] + scale*vecb[1];
+	vecc[2] = veca[2] + scale*vecb[2];
+}
+
+static inline void VectorSubtract (vec3_t veca, vec3_t vecb, vec3_t out)
+{
+	out[0] = veca[0]-vecb[0];
+	out[1] = veca[1]-vecb[1];
+	out[2] = veca[2]-vecb[2];
+}
+
+static inline void VectorAdd (vec3_t veca, vec3_t vecb, vec3_t out)
+{
+	out[0] = veca[0]+vecb[0];
+	out[1] = veca[1]+vecb[1];
+	out[2] = veca[2]+vecb[2];
+}
+
+static inline void VectorCopy (vec3_t in, vec3_t out)
+{
+	out[0] = in[0];
+	out[1] = in[1];
+	out[2] = in[2];
+}
+
+static inline void VectorSet (vec3_t v, float a, float b, float c)
+{
+	v[0] = a;
+	v[1] = b;
+	v[2] = c;
+}
+
+inline int VectorCompare (vec3_t v1, vec3_t v2)
+{
+	int		i;
+
+	for (i=0 ; i<3 ; i++)
+		if (v1[i] != v2[i])
+			return 0;
+
+	return 1;
+}
+
+inline void CrossProduct (vec3_t v1, vec3_t v2, vec3_t cross)
+{
+	cross[0] = v1[1]*v2[2] - v1[2]*v2[1];
+	cross[1] = v1[2]*v2[0] - v1[0]*v2[2];
+	cross[2] = v1[0]*v2[1] - v1[1]*v2[0];
+}
+
+inline float VectorNormalize (vec3_t v)
+{
+	float	length, ilength;
+
+	length = sqrt(DotProduct(v,v));
+
+	if (length)
+	{
+		ilength = 1/length;
+		v[0] *= ilength;
+		v[1] *= ilength;
+		v[2] *= ilength;
+	}
+		
+	return length;
+}
+
+// (RMQ Engine)
+inline float VectorNormalize3f (float *x, float *y, float *z)
+{
+	float	length, ilength;
+
+	length = x[0] * x[0] + y[0] * y[0] + z[0] * z[0];
+	length = sqrt(length);
+
+	if (length)
+	{
+		ilength = 1/length;
+		x[0] *= ilength;
+		y[0] *= ilength;
+		z[0] *= ilength;
+	}
+
+	return length;
+}
+
+inline void VectorInverse (vec3_t v)
+{
+	v[0] = -v[0];
+	v[1] = -v[1];
+	v[2] = -v[2];
+}
+
+inline void VectorScale (vec3_t in, vec_t scale, vec3_t out)
+{
+	out[0] = in[0]*scale;
+	out[1] = in[1]*scale;
+	out[2] = in[2]*scale;
+}
+
+/*-----------------------------------------------------------------*/
+
+//johnfitz -- courtesy of lordhavoc
+// QuakeSpasm: To avoid strict aliasing violations, use a float/int union instead of type punning.
+static inline void VectorNormalizeFast(vec3_t v)
+{
+	union { float f; int i; } y, num;
+	num.f = DotProduct(v, v);
+	if (num.f != 0.0)
+	{
+		y.i = 0x5f3759df - (num.i >> 1);
+		y.f = y.f * (1.5f - (num.f * 0.5f * y.f * y.f));
+		VectorScale(v, y.f, v);
+	}
+} 
+
+/*-----------------------------------------------------------------*/
+
 int BoxOnPlaneSide (vec3_t emins, vec3_t emaxs, struct mplane_s *plane);
-float	anglemod(float a);
-
-
 
 #define BOX_ON_PLANE_SIDE(emins, emaxs, p)	\
 	(((p)->type < 3)?						\
@@ -112,3 +279,4 @@ float	anglemod(float a);
 	)										\
 	:										\
 		BoxOnPlaneSide( (emins), (emaxs), (p)))
+

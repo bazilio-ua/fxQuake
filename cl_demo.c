@@ -194,7 +194,7 @@ int CL_GetMessage (void)
 			r = fread (&f, 4, 1, cls.demofile);
 			cl.mviewangles[0][i] = LittleFloat (f);
 		}
-		
+
 		net_message->message->cursize = LittleLong (net_message->message->cursize);
 		if (net_message->message->cursize > MAX_MSGLEN)
 			Host_Error ("Demo message %d > MAX_MSGLEN (%d)", net_message->message->cursize, MAX_MSGLEN);
@@ -236,7 +236,7 @@ int CL_GetMessage (void)
 			char *ch = (char *) (demo_head[0] + demo_head_size[0]);
 
 			*ch++ = svc_print;
-			ch += 1 + sprintf (ch, "\nRecorded on FXQuake %4.2f\n\n", (float)VERSION);
+			ch += 1 + sprintf (ch, "\nRecorded on fxQuake %4.2f\n\n", (float)VERSION);
 			demo_head_size[0] = ch - (char *) demo_head[0];
 		}
 	}

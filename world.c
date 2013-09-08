@@ -402,21 +402,21 @@ void SV_LinkEdict (edict_t *ent, qboolean touch_triggers)
 	// expand for rotation
 	if (ent->v.solid == SOLID_BSP && (ent->v.angles[0] || ent->v.angles[1] || ent->v.angles[2]) && ent != sv.edicts)
 	{ 
-		float max, v;
+		float maxvec, v;
 		int i;
 
-		max = DotProduct(ent->v.mins, ent->v.mins);
+		maxvec = DotProduct(ent->v.mins, ent->v.mins);
 		v = DotProduct(ent->v.maxs, ent->v.maxs);
 
-		if (max < v)
-			max = v;
+		if (maxvec < v)
+			maxvec = v;
 
-		max = sqrt(max);
+		maxvec = sqrt(maxvec);
 
 		for (i=0 ; i<3 ; i++)
 		{
-			ent->v.absmin[i] = ent->v.origin[i] - max;
-			ent->v.absmax[i] = ent->v.origin[i] + max;
+			ent->v.absmin[i] = ent->v.origin[i] - maxvec;
+			ent->v.absmax[i] = ent->v.origin[i] + maxvec;
 		}
 	}
 	else
