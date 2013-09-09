@@ -479,6 +479,10 @@ void CL_PlayDemo_f (void)
 	}
 	demofile_start = ftell (cls.demofile);
 
+// Viewing a demo. No reason to have console up.
+	if (key_dest != key_game)
+		key_dest = key_game;
+
 	cls.demoplayback = true;
 	cls.state = ca_connected;
 	cls.forcetrack = 0;
@@ -535,10 +539,6 @@ void CL_TimeDemo_f (void)
 		Con_Printf ("timedemo <demoname> : gets demo speeds\n");
 		return;
 	}
-
-// Baker: This is a performance benchmark.  No reason to have console up.
-	if (key_dest != key_game)
-		key_dest = key_game;
 
 	CL_PlayDemo_f ();
 	
