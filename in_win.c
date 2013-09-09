@@ -262,7 +262,7 @@ IN_InitDInput
 */
 qboolean IN_InitDInput (void)
 {
-    HRESULT		hr;
+	HRESULT		hr;
 	DIPROPDWORD	dipdw = {
 		{
 			sizeof(DIPROPDWORD),        // diph.dwSize

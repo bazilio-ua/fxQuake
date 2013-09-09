@@ -593,10 +593,10 @@ qboolean SNDDMA_Init(void)
 		if (snd_firsttime)
 			Con_SafePrintf ("No sound device initialized\n");
 
-		return 0;
+		return false;
 	}
 
-	return 1;
+	return true;
 }
 
 /*
@@ -707,7 +707,7 @@ void SNDDMA_Submit(void)
 	// unlock the dsound buffer
 	if (pDSBuf)
 		pDSBuf->lpVtbl->Unlock (pDSBuf, shm->buffer, dwLockSize, NULL, 0);
-	
+
 	if (!wav_init)
 		return;
 

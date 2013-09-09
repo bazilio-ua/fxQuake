@@ -66,6 +66,7 @@ void S_TransferStereo16 (int endtime)
 	{
 	// handle recirculating buffer issues
 		lpos = lpaintedtime & ((shm->samples>>1)-1);
+
 		snd_out = (short *) shm->buffer + (lpos<<1);
 
 		snd_linear_count = (shm->samples>>1) - lpos;

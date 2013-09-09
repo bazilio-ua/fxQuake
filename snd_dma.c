@@ -224,7 +224,6 @@ void S_Init (void)
 
 void S_Shutdown(void)
 {
-
 	if (!sound_started)
 		return;
 
@@ -566,7 +565,7 @@ void S_StaticSound (sfx_t *sfx, vec3_t origin, float vol, float attenuation)
 	if (total_channels == MAX_CHANNELS)
 	{
 		if (IsTimeout (&lastmsg, 2))
-			Con_Printf ("total_channels == MAX_CHANNELS (%d)\n", MAX_CHANNELS);
+			Con_Printf ("total_channels == MAX_CHANNELS (%d), failed at (%.2f, %.2f, %.2f)\n", MAX_CHANNELS, origin[0], origin[1], origin[2]);
 
 		return;
 	}
