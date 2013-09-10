@@ -838,8 +838,8 @@ void IN_StartupJoystick (void)
 	JOYCAPS		jc;
 	MMRESULT	mmr;
 
-    // FIXME - Compiler complains "mmr" might be used unitialised
-    mmr = ~JOYERR_NOERROR; 
+	// FIXME - Compiler complains "mmr" might be used unitialised
+	mmr = ~JOYERR_NOERROR; 
 
  	// assume no joystick
 	joy_avail = false; 
