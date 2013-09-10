@@ -227,7 +227,6 @@ extern	int con_vislines;
 extern	char key_tabpartial[MAX_CMDLINE];
 
 extern int con_current, con_linewidth;
-extern char *con_text;
 extern float scr_con_current;
 
 /*
@@ -904,7 +903,10 @@ void Key_Event (int key, qboolean down)
 	char	cmd[1024];
 
 	keydown[key] = down;
-
+/*
+	if (keydown[K_CTRL] && keydown[K_ALT] && keydown[K_DEL])
+		Sys_Error ("ctrl-alt-del pressed");
+*/
 	if (!down)
 		key_repeats[key] = 0;
 

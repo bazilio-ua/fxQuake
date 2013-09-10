@@ -909,17 +909,6 @@ LONG WINAPI MainWndProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 /*
 =================
-VID_NumModes
-=================
-*/
-int VID_NumModes (void)
-{
-	return nummodes;
-}
-
-
-/*
-=================
 VID_GetModePtr
 =================
 */
@@ -999,7 +988,7 @@ void VID_DescribeModes_f (void)
 	char		*pinfo;
 	int			count = 0;
 
-	lnummodes = VID_NumModes ();
+	lnummodes = nummodes;
 
 	t = leavecurrentmode;
 	leavecurrentmode = 0;
