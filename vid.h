@@ -37,11 +37,6 @@ typedef struct
 
 extern viddef_t vid; // global video state
 
-extern unsigned int d_8to24table[256]; // for GL renderer
-extern unsigned int d_8to24table_fbright[256];
-extern unsigned int d_8to24table_nobright[256];
-extern unsigned int d_8to24table_conchars[256];
-
 extern void (*vid_menudrawfn)(void);
 extern void (*vid_menukeyfn)(int key);
 extern void (*vid_menucmdfn)(void); //johnfitz
