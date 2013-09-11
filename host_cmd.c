@@ -1569,7 +1569,7 @@ void Host_Give_f (void)
 				sv_player->v.items = sv_player->v.items - ((int)(sv_player->v.items) & (int)(IT_ARMOR1 | IT_ARMOR2 | IT_ARMOR3)) + IT_ARMOR3;
 			}
 			break;
-    }
+	}
 
 	//johnfitz -- update currentammo to match new ammo (so statusbar updates correctly)
 	switch ((int)(sv_player->v.weapon))
