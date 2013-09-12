@@ -62,7 +62,7 @@ static int		nummodes;
 static vmode_t	badmode;
 
 static DEVMODE	gdevmode;
-static qboolean	vid_initialized = false;
+qboolean	vid_initialized = false;
 static qboolean	windowed, leavecurrentmode;
 static qboolean vid_canalttab = false;
 static qboolean vid_wassuspended = false;

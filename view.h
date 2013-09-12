@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // view.h
 
 extern	cvar_t		vid_gamma;
+extern	cvar_t crosshair, cl_crossx, cl_crossy;
 
 extern float v_blend[4];
 

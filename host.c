@@ -32,6 +32,8 @@ Memory is cleared / released when a server or client begins, not when they end.
 
 */
 
+void Host_WriteConfiguration (char *configname);
+
 quakeparms_t host_parms;
 
 qboolean	host_initialized;		// true if into command execution
@@ -67,7 +69,7 @@ cvar_t	teamplay = {"teamplay","0",false,true};
 cvar_t	samelevel = {"samelevel","0"};
 cvar_t	noexit = {"noexit","0",false,true};
 
-cvar_t	developer = {"developer","0"};	// should be 0 for release!
+cvar_t	developer = {"developer","0", true};	// should be 0 for release!
 
 cvar_t	skill = {"skill","1"};						// 0 - 3
 cvar_t	deathmatch = {"deathmatch","0"};			// 0, 1, or 2
@@ -200,6 +202,32 @@ void	Host_FindMaxClients (void)
 		Cvar_SetValue ("deathmatch", 0.0);
 }
 
+/*
+===============
+Host_SaveConfig_f
+===============
+*/
+void Host_SaveConfig_f (void)
+{
+
+	if (cmd_source != src_command)
+		return;
+
+	if (Cmd_Argc() != 2)
+	{
+		Con_Printf ("saveConfig <savename> : save a config file\n");
+		return;
+	}
+
+	if (strstr(Cmd_Argv(1), ".."))
+	{
+		Con_Printf ("Relative pathnames are not allowed.\n");
+		return;
+	}
+
+	Host_WriteConfiguration (Cmd_Argv(1));
+}
+
 
 /*
 =======================
@@ -209,6 +237,8 @@ Host_InitLocal
 void Host_InitLocal (void)
 {
 	Host_InitCommands ();
+
+	Cmd_AddCommand ("saveconfig", Host_SaveConfig_f);
 
 	Cvar_RegisterVariable (&host_framerate, NULL);
 	Cvar_RegisterVariable (&host_timescale, NULL);
@@ -250,7 +280,7 @@ Host_WriteConfiguration
 Writes key bindings and archived cvars to config.cfg
 ===============
 */
-void Host_WriteConfiguration (void)
+void Host_WriteConfiguration (char *configname)
 {
 	FILE	*f;
 
@@ -258,15 +288,18 @@ void Host_WriteConfiguration (void)
 // config.cfg cvars
 	if (host_initialized && cls.state != ca_dedicated)
 	{
-		f = fopen (va("%s/config.cfg",com_gamedir), "w");
+		f = fopen (va("%s/%s",com_gamedir, configname), "w");
 		if (!f)
 		{
-			Con_Printf ("Couldn't write config.cfg.\n");
+			Con_Printf ("Couldn't write %s.\n", configname);
 			return;
 		}
 
 		Key_WriteBindings (f);
 		Cvar_WriteVariables (f);
+
+		if (in_mlook.state & 1)		//if mlook was down, keep it that way
+			fprintf (f, "+mlook\n");
 
 		fclose (f);
 	}
@@ -880,16 +913,16 @@ void Host_Shutdown(void)
 // keep Con_Printf from trying to update the screen
 	scr_disabled_for_loading = true;
 
-	Host_WriteConfiguration (); 
+	Host_WriteConfiguration ("config.cfg"); 
 	History_Close ();
 	NET_Shutdown ();
 
 	if (cls.state != ca_dedicated)
 	{
 		CDAudio_Shutdown ();
-		S_Shutdown();
+		S_Shutdown ();
 		IN_Shutdown ();
-		VID_Shutdown();
+		VID_Shutdown ();
 	}
 
 	LOG_Close ();

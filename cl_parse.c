@@ -1221,10 +1221,15 @@ void CL_ParseServerMessage (void)
 		case svc_cdtrack:
 			cl.cdtrack = MSG_ReadByte (net_message);
 			cl.looptrack = MSG_ReadByte (net_message);
-			if ( (cls.demoplayback || cls.demorecording) && (cls.forcetrack != -1) )
-				CDAudio_Play ((byte)cls.forcetrack, true);
+			if (strcmpi (bgmtype.string, "cd") == 0)
+			{
+				if ( (cls.demoplayback || cls.demorecording) && (cls.forcetrack != -1) )
+					CDAudio_Play ((byte)cls.forcetrack, true);
+				else
+					CDAudio_Play ((byte)cl.cdtrack, true);
+			}
 			else
-				CDAudio_Play ((byte)cl.cdtrack, true);
+				CDAudio_Stop ();
 			break;
 			
 		case svc_intermission:

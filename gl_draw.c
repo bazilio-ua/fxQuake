@@ -28,7 +28,6 @@ cvar_t		gl_swapinterval = {"gl_swapinterval", "0", true};
 cvar_t		gl_warp_image_size = {"gl_warp_image_size", "256", true}; // was 512, for water warp
 
 extern vrect_t		scr_vrect;
-extern cvar_t crosshair, cl_crossx, cl_crossy;
 
 byte		*draw_chars;				// 8*8 graphic characters
 qpic_t		*draw_disc;

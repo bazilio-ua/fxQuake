@@ -848,14 +848,16 @@ enum
 	OPT_SCRSIZE,	//3
 	OPT_GAMMA,		//4
 	OPT_MOUSESPEED,	//5
-	OPT_MUSICVOL,	//6
-	OPT_SNDVOL,		//7
-	OPT_ALWAYRUN,	//8
-	OPT_INVMOUSE,	//9
-	OPT_LOOKSPRING,	//10
-	OPT_LOOKSTRAFE,	//11
-	OPT_VIDEO,		//12
-//	OPT_USEMOUSE,	//13
+	OPT_MUSICTYPE,	//6
+	OPT_MUSICVOL,	//7
+	OPT_SNDVOL,		//8
+	OPT_ALWAYRUN,	//9
+	OPT_INVMOUSE,	//10
+	OPT_LOOKSPRING,	//11
+	OPT_LOOKSTRAFE,	//12
+	OPT_CROSSHAIR,	//13
+	OPT_ALWAYSMLOOK,//14
+	OPT_VIDEO,		//15
 	OPTIONS_ITEMS
 };
 
@@ -867,7 +869,6 @@ void M_Menu_Options_f (void)
 	m_state = m_options;
 	m_entersound = true;
 }
-
 
 void M_AdjustSliders (int dir)
 {
@@ -899,7 +900,23 @@ void M_AdjustSliders (int dir)
 			sensitivity.value = 11;
 		Cvar_SetValue("sensitivity", sensitivity.value);
 		break;
-	case OPT_MUSICVOL: //case 6 // music volume
+	case OPT_MUSICTYPE: //case 6 // bgm type
+		if (strcmpi(bgmtype.string,"cd") == 0)
+		{
+			if (dir < 0)
+				Cvar_Set("bgmtype","none");
+			else
+				Cvar_Set("bgmtype","none");
+		}
+		else
+		{
+			if (dir < 0)
+				Cvar_Set("bgmtype","cd");
+			else
+				Cvar_Set("bgmtype","cd");
+		}
+		break;
+	case OPT_MUSICVOL: //case 7 // music volume
 		bgmvolume.value += dir * 0.1;
 
 		if (bgmvolume.value < 0)
@@ -908,7 +925,7 @@ void M_AdjustSliders (int dir)
 			bgmvolume.value = 1;
 		Cvar_SetValue("bgmvolume", bgmvolume.value);
 		break;
-	case OPT_SNDVOL: //case 7 // sfx volume
+	case OPT_SNDVOL: //case 8 // sfx volume
 		volume.value += dir * 0.1;
 		if (volume.value < 0)
 			volume.value = 0;
@@ -916,8 +933,7 @@ void M_AdjustSliders (int dir)
 			volume.value = 1;
 		Cvar_SetValue("volume", volume.value);
 		break;
-
-	case OPT_ALWAYRUN: //case 8 // always run
+	case OPT_ALWAYRUN: //case 9 // always run
 		if (cl_forwardspeed.value > 200)
 		{
 			Cvar_SetValue ("cl_forwardspeed", 200);
@@ -929,17 +945,23 @@ void M_AdjustSliders (int dir)
 			Cvar_SetValue ("cl_backspeed", 400);
 		}
 		break;
-
-	case OPT_INVMOUSE: //case 9 // invert mouse
+	case OPT_INVMOUSE: //case 10 // invert mouse
 		Cvar_SetValue ("m_pitch", -m_pitch.value);
 		break;
-
-	case OPT_LOOKSPRING: //case 10 // lookspring
+	case OPT_LOOKSPRING: //case 11 // lookspring
 		Cvar_SetValue ("lookspring", !lookspring.value);
 		break;
-
-	case OPT_LOOKSTRAFE: //case 11 // lookstrafe
+	case OPT_LOOKSTRAFE: //case 12 // lookstrafe
 		Cvar_SetValue ("lookstrafe", !lookstrafe.value);
+		break;
+	case OPT_CROSSHAIR: //case 13 // crosshair
+		Cvar_SetValue ("crosshair", !crosshair.value);
+		break;
+	case OPT_ALWAYSMLOOK: //case 14 // +mlook
+		if (in_mlook.state & 1)
+			Cbuf_AddText("-mlook");
+		else
+			Cbuf_AddText("+mlook");
 		break;
 
 	default:
@@ -980,44 +1002,56 @@ void M_Options_Draw (void)
 	p = Draw_CachePic ("gfx/p_option.lmp");
 	M_DrawPic ((320 - p->width) / 2, 4, p);
 
-	M_Print (16, 32, "    Customize Controls");
-	M_Print (16, 40, "         Go to console");
-	M_Print (16, 48, "     Reset to defaults");
+	M_Print (16, 32+(OPT_CUSTOMIZE*8), "    Customize Controls");
+	M_Print (16, 32+(OPT_CONSOLE*8), "         Go to console");
+	M_Print (16, 32+(OPT_DEFAULTS*8), "     Reset to defaults");
 
-	M_Print (16, 56, "           Screen size");
+	M_Print (16, 32+(OPT_SCRSIZE*8), "           Screen size");
 	r = (scr_viewsize.value - 30) / (120 - 30);
-	M_DrawSlider (220, 56, r);
+	M_DrawSlider (220, 32+(OPT_SCRSIZE*8), r);
 
-	M_Print (16, 64, "            Brightness");
+	M_Print (16, 32+(OPT_GAMMA*8), "            Brightness");
 	r = (1.0 - vid_gamma.value) / 0.5;
-	M_DrawSlider (220, 64, r);
+	M_DrawSlider (220, 32+(OPT_GAMMA*8), r);
 
-	M_Print (16, 72, "           Mouse Speed");
+	M_Print (16, 32+(OPT_MOUSESPEED*8), "           Mouse Speed");
 	r = (sensitivity.value - 1) / 10;
-	M_DrawSlider (220, 72, r);
+	M_DrawSlider (220, 32+(OPT_MOUSESPEED*8), r);
 
-	M_Print (16, 80, "       CD Music Volume");
+	M_Print (16, 32+(OPT_MUSICTYPE*8), "            Music Type");
+	if (strcmpi(bgmtype.string,"cd") == 0)
+		M_Print (220, 32+(OPT_MUSICTYPE*8), "CD");
+	else
+		M_Print (220, 32+(OPT_MUSICTYPE*8), "None");
+
+	M_Print (16, 32+(OPT_MUSICVOL*8), "       Music Volume");
 	r = bgmvolume.value;
-	M_DrawSlider (220, 80, r);
+	M_DrawSlider (220, 32+(OPT_MUSICVOL*8), r);
 
-	M_Print (16, 88, "          Sound Volume");
+	M_Print (16, 32+(OPT_SNDVOL*8), "          Sound Volume");
 	r = volume.value;
-	M_DrawSlider (220, 88, r);
+	M_DrawSlider (220, 32+(OPT_SNDVOL*8), r);
 
-	M_Print (16, 96,  "            Always Run");
-	M_DrawCheckbox (220, 96, cl_forwardspeed.value > 200);
+	M_Print (16, 32+(OPT_ALWAYRUN*8),  "            Always Run");
+	M_DrawCheckbox (220, 32+(OPT_ALWAYRUN*8), cl_forwardspeed.value > 200);
 
-	M_Print (16, 104, "          Invert Mouse");
-	M_DrawCheckbox (220, 104, m_pitch.value < 0);
+	M_Print (16, 32+(OPT_INVMOUSE*8), "          Invert Mouse");
+	M_DrawCheckbox (220, 32+(OPT_INVMOUSE*8), m_pitch.value < 0);
 
-	M_Print (16, 112, "            Lookspring");
-	M_DrawCheckbox (220, 112, lookspring.value);
+	M_Print (16, 32+(OPT_LOOKSPRING*8), "            Lookspring");
+	M_DrawCheckbox (220, 32+(OPT_LOOKSPRING*8), lookspring.value);
 
-	M_Print (16, 120, "            Lookstrafe");
-	M_DrawCheckbox (220, 120, lookstrafe.value);
+	M_Print (16, 32+(OPT_LOOKSTRAFE*8), "            Lookstrafe");
+	M_DrawCheckbox (220, 32+(OPT_LOOKSTRAFE*8), lookstrafe.value);
+
+	M_Print (16, 32+(OPT_CROSSHAIR*8), "        Show Crosshair");
+	M_DrawCheckbox (220, 32+(OPT_CROSSHAIR*8), crosshair.value);
+
+	M_Print (16, 32+(OPT_ALWAYSMLOOK*8), "            Mouse Look");
+	M_DrawCheckbox (220, 32+(OPT_ALWAYSMLOOK*8), in_mlook.state & 1);
 
 	if (vid_menudrawfn)
-		M_Print (16, 128, "       Customize Video");
+		M_Print (16, 32+(OPT_VIDEO*8), "       Customize Video");
 
 	// cursor
 	// doesn't get drawn properly with XFree4.3/MGA200 S.A.
@@ -1037,18 +1071,17 @@ void M_Options_Key (int k)
 		m_entersound = true;
 		switch (options_cursor)
 		{
-		case OPT_CUSTOMIZE: //case 0
+		case OPT_CUSTOMIZE:
 			M_Menu_Keys_f ();
 			break;
-		case OPT_CONSOLE: //case 1
+		case OPT_CONSOLE:
 			m_state = m_none;
 			Con_ToggleConsole_f ();
 			break;
-		case OPT_DEFAULTS: //case 2
+		case OPT_DEFAULTS:
 			Cbuf_AddText ("exec default.cfg\n");
 			break;
-
-		case OPT_VIDEO: //case 12
+		case OPT_VIDEO:
 			M_Menu_Video_f ();
 			break;
 		default:
@@ -1060,7 +1093,7 @@ void M_Options_Key (int k)
 	case K_UPARROW:
 		S_LocalSound ("misc/menu1.wav");
 		options_cursor--;
-		if (options_cursor < OPT_CUSTOMIZE) // was 0
+		if (options_cursor < OPT_CUSTOMIZE)
 			options_cursor = OPTIONS_ITEMS - 1;
 		break;
 
@@ -1068,7 +1101,7 @@ void M_Options_Key (int k)
 		S_LocalSound ("misc/menu1.wav");
 		options_cursor++;
 		if (options_cursor >= OPTIONS_ITEMS)
-			options_cursor = OPT_CUSTOMIZE; // was 0
+			options_cursor = OPT_CUSTOMIZE;
 		break;
 
 	case K_LEFTARROW:
@@ -1080,13 +1113,12 @@ void M_Options_Key (int k)
 		break;
 	}
 
-	if (options_cursor == OPT_VIDEO && !vid_menudrawfn) // was 12
+	if (options_cursor == OPT_VIDEO && !vid_menudrawfn)
 	{
 		if (k == K_UPARROW)
-			options_cursor = OPT_VIDEO - 1; // was 11
+			options_cursor = OPT_VIDEO - 1;
 		else
-//			options_cursor = OPT_USEMOUSE; // was 13
-			options_cursor = OPT_CUSTOMIZE; // was 0
+			options_cursor = OPT_CUSTOMIZE;
 	}
 }
 

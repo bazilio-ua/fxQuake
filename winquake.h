@@ -26,7 +26,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <windows.h>
 #include <dsound.h>
 #include <dinput.h>
-//#include <mmsystem.h>
 
 // FIXME - mousewheel redefined? What is this magic number?
 #ifndef WM_MOUSEWHEEL

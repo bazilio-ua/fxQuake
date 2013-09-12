@@ -118,7 +118,7 @@ static HINSTANCE hInstDI;
 void IN_StartupJoystick (void);
 void Joy_AdvancedUpdate_f (void);
 void IN_JoyMove (usercmd_t *cmd);
-
+qboolean IN_ReadJoystick (void);
 
 /*
 ===========
@@ -764,7 +764,6 @@ void IN_Move (usercmd_t *cmd)
 	}
 }
 
-
 /*
 ===================
 IN_ClearStates
@@ -786,7 +785,6 @@ IN_ProcessEvents
 */
 void IN_ProcessEvents (void)
 {
-
 	// handle the mouse state when windowed if that's changed
 	if (modestate == MS_WINDOWED)
 	{
@@ -1011,6 +1009,17 @@ void IN_Commands (void)
 	if (!joy_avail)
 	{
 		return;
+	}
+
+	if (cls.state != ca_connected || cls.signon != SIGNONS)
+	{
+		if( joy_advancedinit != true )
+		{
+			Joy_AdvancedUpdate_f();
+			joy_advancedinit = true;
+		}
+
+		IN_ReadJoystick ();
 	}
 
 	// loop through the joystick buttons
@@ -1279,3 +1288,4 @@ void IN_JoyMove (usercmd_t *cmd)
 	if (cl.viewangles[PITCH] < cl_minpitch.value)
 		cl.viewangles[PITCH] = cl_minpitch.value;
 }
+

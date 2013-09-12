@@ -61,6 +61,7 @@ sfx_t		*ambient_sfx[NUM_AMBIENTS];
 int sound_started=0;
 
 cvar_t bgmvolume = {"bgmvolume", "1", true};
+cvar_t bgmtype = {"bgmtype", "cd", true};   // cd or none
 cvar_t volume = {"volume", "0.7", true};
 
 cvar_t nosound = {"nosound", "0"};
@@ -164,6 +165,7 @@ void S_Init (void)
 	Cvar_RegisterVariable(&precache, NULL);
 	Cvar_RegisterVariable(&loadas8bit, NULL);
 	Cvar_RegisterVariable(&bgmvolume, NULL);
+	Cvar_RegisterVariable(&bgmtype, NULL);
 	Cvar_RegisterVariable(&bgmbuffer, NULL);
 	Cvar_RegisterVariable(&ambient_level, NULL);
 	Cvar_RegisterVariable(&ambient_fade, NULL);
