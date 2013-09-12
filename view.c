@@ -713,7 +713,7 @@ void V_CalcRefdef (void)
 // transform the view offset by the model's matrix to get the offset from
 // model origin for the view
 	ent->angles[YAW] = cl.lerpangles[YAW];	// the model should face the view dir
-	ent->angles[PITCH] = -cl.lerpangles[PITCH];	// the model should face
+	ent->angles[PITCH] = -cl.lerpangles[PITCH];	// the model should face the view dir
 
 	bob = V_CalcBob ();
 
