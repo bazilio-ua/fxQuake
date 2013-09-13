@@ -33,15 +33,9 @@ byte		*draw_chars;				// 8*8 graphic characters
 qpic_t		*draw_disc;
 qpic_t		*draw_backtile;
 
-gltexture_t *notexture;
-gltexture_t *nulltexture;
+gltexture_t	*notexture;
+gltexture_t	*nulltexture;
 gltexture_t	*char_texture; 
-
-typedef struct
-{
-	gltexture_t	*gltexture;
-	float	sl, tl, sh, th;
-} glpic_t;
 
 int		indexed_bytes = 1;
 int		rgba_bytes = 4;
