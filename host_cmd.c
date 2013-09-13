@@ -448,6 +448,7 @@ void Host_Restart_f (void)
 
 	if (cmd_source != src_command)
 		return;
+
 	strcpy (mapname, sv.name);	// must copy out, because it gets cleared
 								// in sv_spawnserver
 
@@ -609,7 +610,7 @@ void Host_Savegame_f (void)
 		fprintf (f, "%f\n", svs.clients->spawn_parms[i]);
 	fprintf (f, "%d\n", current_skill);
 	fprintf (f, "%s\n", sv.name);
-	fprintf (f, "%f\n",sv.time);
+	fprintf (f, "%f\n", sv.time);
 
 // write the light styles
 
