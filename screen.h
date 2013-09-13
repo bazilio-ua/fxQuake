@@ -23,7 +23,6 @@ void SCR_Init (void);
 
 void SCR_UpdateScreen (void);
 
-
 void SCR_SizeUp (void);
 void SCR_SizeDown (void);
 void SCR_CenterPrint (char *str);
@@ -33,6 +32,8 @@ void SCR_BeginLoadingPlaque (void);
 void SCR_EndLoadingPlaque (void);
 
 int SCR_ModalMessage (char *text, float timeout); //johnfitz -- added timeout
+
+extern vrect_t		scr_vrect;
 
 extern	float		scr_con_current;
 extern	float		scr_conlines;		// lines of console to display
