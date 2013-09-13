@@ -641,12 +641,12 @@ void R_RocketTrail (vec3_t start, vec3_t end, int type)
 
 /*
 ===============
-R_RunParticles
+R_UpdateParticles
 
 all the particle behavior, separated from R_DrawParticles
 ===============
 */
-void R_RunParticles (void)
+void R_UpdateParticles (void)
 {
 	particle_t		*p, *kill;
 	float			time1, time2, time3;
@@ -752,7 +752,7 @@ void R_RunParticles (void)
 ===============
 R_DrawParticles
 
-moved all non-drawing code to R_RunParticles
+moved all non-drawing code to R_UpdateParticles
 ===============
 */
 void R_DrawParticles (void)

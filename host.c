@@ -704,7 +704,7 @@ void _Host_Frame (double time)
 
 // run particle logic seperated from rendering
 	if (!sv.frozen)
-		R_RunParticles ();
+		R_UpdateParticles ();
 
 // update video
 	if (host_speeds.value)
