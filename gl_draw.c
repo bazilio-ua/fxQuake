@@ -1632,7 +1632,7 @@ void GL_Upload32 (gltexture_t *glt, unsigned *data)
 
 	// allocate dynamic memory
 //	scaled = malloc (scaled_width * scaled_height * sizeof(unsigned)); // 4
-	scaled = Hunk_Alloc (scaled_width * scaled_height * sizeof(unsigned));
+	scaled = Hunk_Alloc (scaled_width * scaled_height * sizeof(unsigned)); // 4
 
 	// Resample up
 	if (glt->width && glt->height) // Don't resample 0-sized images
@@ -1751,8 +1751,8 @@ void GL_Upload8 (gltexture_t *glt, byte *data)
 		Con_Warning ("GL_Upload8: size %d is not a multiple of 4 in '%s'\n", size, glt->name);
 
 	// allocate dynamic memory
-//	trans = malloc (size * 4); // was sizeof(unsigned)
-	trans = Hunk_Alloc (size * 4);
+//	trans = malloc (size * sizeof(unsigned)); // 4
+	trans = Hunk_Alloc (size * sizeof(unsigned)); // 4
 
 	// detect false alpha cases
 	if (glt->flags & TEXPREF_ALPHA && !(glt->flags & TEXPREF_CONCHARS))
