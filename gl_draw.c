@@ -1612,7 +1612,7 @@ void GL_Upload32 (gltexture_t *glt, unsigned *data)
 	scaled_width = GL_ScaleSize (glt->width, false);
 	scaled_height = GL_ScaleSize (glt->height, false);
 
-	if (glt->width && glt->height)
+	if (glt->width && glt->height) // Don't process 0-sized images
 	{
 		// Preserve proportions
 		while (glt->width > glt->height && scaled_width < scaled_height)
@@ -1760,11 +1760,12 @@ void GL_Upload8 (gltexture_t *glt, byte *data)
 		for (i=0 ; i<size ; i++)
 		{
 			p = data[i];
-			if (p == 255) //transparent index
+			if (p == 255) // transparent index
 				break;
 		}
 		if (i == size)
-			glt->flags -= TEXPREF_ALPHA;
+//			glt->flags -= TEXPREF_ALPHA;
+			glt->flags &= ~TEXPREF_ALPHA;
 	}
 
 	// choose palette and convert to 32bit
