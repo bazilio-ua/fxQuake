@@ -841,43 +841,6 @@ void R_PolyBlend (void)
 }
 
 
-int SignbitsForPlane (mplane_t *out)
-{
-	int	bits, j;
-
-	// for fast box on planeside test
-
-	bits = 0;
-	for (j=0 ; j<3 ; j++)
-	{
-		if (out->normal[j] < 0)
-			bits |= 1<<j;
-	}
-	return bits;
-}
-
-/*
-===============
-TurnVector
-
-turn forward towards side on the plane defined by forward and side
-if angle = 90, the result will be equal to side
-assumes side and forward are perpendicular, and normalized
-to turn away from side, use a negative angle
-===============
-*/
-void TurnVector (vec3_t out, vec3_t forward, vec3_t side, float angle)
-{
-	float scale_forward, scale_side;
-
-	scale_forward = cos (DEG2RAD(angle));
-	scale_side = sin (DEG2RAD(angle));
-
-	out[0] = scale_forward*forward[0] + scale_side*side[0];
-	out[1] = scale_forward*forward[1] + scale_side*side[1];
-	out[2] = scale_forward*forward[2] + scale_side*side[2];
-}
-
 /*
 ===============
 R_SetFrustum

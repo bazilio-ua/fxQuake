@@ -98,3 +98,23 @@ int BoxOnPlaneSide (vec3_t emins, vec3_t emaxs, mplane_t *p)
 	return sides;
 }
 
+/*
+===============
+SignbitsForPlane
+===============
+*/
+int SignbitsForPlane (mplane_t *out)
+{
+	int	bits, j;
+
+	// for fast box on planeside test
+
+	bits = 0;
+	for (j=0 ; j<3 ; j++)
+	{
+		if (out->normal[j] < 0)
+			bits |= 1<<j;
+	}
+	return bits;
+}
+

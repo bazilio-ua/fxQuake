@@ -244,6 +244,28 @@ inline void VectorScale (vec3_t in, vec_t scale, vec3_t out)
 	out[2] = in[2]*scale;
 }
 
+/*
+===============
+TurnVector
+
+turn forward towards side on the plane defined by forward and side
+if angle = 90, the result will be equal to side
+assumes side and forward are perpendicular, and normalized
+to turn away from side, use a negative angle
+===============
+*/
+inline void TurnVector (vec3_t out, vec3_t forward, vec3_t side, float angle)
+{
+	float scale_forward, scale_side;
+
+	scale_forward = cos (DEG2RAD(angle));
+	scale_side = sin (DEG2RAD(angle));
+
+	out[0] = scale_forward*forward[0] + scale_side*side[0];
+	out[1] = scale_forward*forward[1] + scale_side*side[1];
+	out[2] = scale_forward*forward[2] + scale_side*side[2];
+}
+
 /*-----------------------------------------------------------------*/
 
 //johnfitz -- courtesy of lordhavoc
@@ -262,7 +284,9 @@ static inline void VectorNormalizeFast(vec3_t v)
 
 /*-----------------------------------------------------------------*/
 
-int BoxOnPlaneSide (vec3_t emins, vec3_t emaxs, struct mplane_s *plane);
+int SignbitsForPlane (struct mplane_s *out);
+
+int BoxOnPlaneSide (vec3_t emins, vec3_t emaxs, struct mplane_s *p);
 
 #define BOX_ON_PLANE_SIDE(emins, emaxs, p)	\
 	(((p)->type < 3)?						\
