@@ -46,7 +46,7 @@ int		gl_alpha_format = GL_RGBA; // was 4
 
 typedef struct
 {
-	int	magfilter;
+	int magfilter;
 	int minfilter;
 	char *name;
 } glmode_t;
