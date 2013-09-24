@@ -1,0 +1,2 @@
+To compile fxQuake under MinGW we need dxsdk:
+http://www.libsdl.org/extras/win32/cygwin/directx-devel.tar.gz
