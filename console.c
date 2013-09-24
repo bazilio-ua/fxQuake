@@ -627,7 +627,7 @@ void Con_Warning (char *fmt, ...)
 ================
 Con_DWarning
 
-prints a warning to the console (special debug case)
+prints a warning to the console (special "developer" case)
 ================
 */
 void Con_DWarning (char *fmt, ...)
@@ -642,7 +642,7 @@ void Con_DWarning (char *fmt, ...)
 	vsnprintf (msg, sizeof(msg), fmt, argptr);
 	va_end (argptr);
 
-	Con_SafePrintf ("\x02WarnDebug: ");
+	Con_SafePrintf ("%sDWarning: ", "\x02");
 	Con_SafePrintf ("%s", msg);
 }
 
