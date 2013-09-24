@@ -1634,7 +1634,7 @@ void SV_SpawnServer (char *server)
 	// the latter limit being lower and occurring in Host_PreSpawn_f
 	if (sv.signon.cursize > 8000 - 2)
 	{	// warn if signon buffer larger than standard server can handle 
-		Con_Warning ("SV_SpawnServer: excessive signon buffer size (%d, normal max = %d)\n", sv.signon.cursize , 8000 - 2);
+		Con_DWarning ("SV_SpawnServer: excessive signon buffer size (%d, normal max = %d)\n", sv.signon.cursize , 8000 - 2);
 	}
 
 // send serverinfo to all connected clients

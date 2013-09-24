@@ -1862,36 +1862,36 @@ gltexture_t *GL_NewTexture (void)
 GL_FreeTexture
 ================
 */
-void GL_FreeTexture (gltexture_t *free)
+void GL_FreeTexture (gltexture_t *purge)
 {
 	gltexture_t *glt;
 
-	if (free == NULL)
+	if (purge == NULL)
 	{
 		Con_SafePrintf ("GL_FreeTexture: NULL texture\n");
 		return;
 	}
 
-	if (active_gltextures == free)
+	if (active_gltextures == purge)
 	{
-		active_gltextures = free->next;
-		free->next = free_gltextures;
-		free_gltextures = free;
+		active_gltextures = purge->next;
+		purge->next = free_gltextures;
+		free_gltextures = purge;
 
-		glDeleteTextures(1, &free->texnum);
+		glDeleteTextures(1, &purge->texnum);
 		numgltextures--;
 		return;
 	}
 
 	for (glt = active_gltextures; glt; glt = glt->next)
 	{
-		if (glt->next == free)
+		if (glt->next == purge)
 		{
-			glt->next = free->next;
-			free->next = free_gltextures;
-			free_gltextures = free;
+			glt->next = purge->next;
+			purge->next = free_gltextures;
+			free_gltextures = purge;
 
-			glDeleteTextures(1, &free->texnum);
+			glDeleteTextures(1, &purge->texnum);
 			numgltextures--;
 			return;
 		}

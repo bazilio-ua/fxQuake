@@ -210,7 +210,7 @@ void GL_Upload8 (gltexture_t *glt, byte *data);
 void GL_Upload32 (gltexture_t *glt, unsigned *data);
 void GL_UploadBloom (gltexture_t *glt, unsigned *data);
 void GL_UploadLightmap (gltexture_t *glt, byte *data);
-void GL_FreeTexture (gltexture_t *free);
+void GL_FreeTexture (gltexture_t *purge);
 void GL_FreeTextures (model_t *owner);
 void GL_ReloadTexture (gltexture_t *glt);
 void GL_ReloadTextures_f (void);
