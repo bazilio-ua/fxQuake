@@ -594,7 +594,6 @@ void Host_GetConsoleCommands (void)
 /*
 ==================
 Host_ServerFrame
-
 ==================
 */
 void Host_ServerFrame (void)

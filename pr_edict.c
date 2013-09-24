@@ -622,7 +622,6 @@ void ED_Count (void)
 	Con_SafePrintf ("view      :%3i\n", models);
 	Con_SafePrintf ("touch     :%3i\n", solid);
 	Con_SafePrintf ("step      :%3i\n", step);
-
 }
 
 /*

@@ -1092,7 +1092,8 @@ qboolean SV_SendClientDatagram (client_t *client)
 {
 	byte		buf[MAX_DATAGRAM];
 	sizebuf_t	msg;
-	
+	static float lastmsg = 0;
+
 	msg.data = buf;
 	msg.maxsize = client->netconnection->mtu;
 	msg.cursize = 0;
@@ -1103,6 +1104,12 @@ qboolean SV_SendClientDatagram (client_t *client)
 // add the client specific data to the datagram
 	SV_WriteClientdataToMessage (client->edict, &msg);
 	SV_WriteEntitiesToClient (client->edict, &msg);
+
+	if (msg.cursize > 1024) // old limit warning
+	{
+		if (IsTimeout (&lastmsg, 10))
+			Con_DWarning ("SV_SendClientDatagram: byte packet exceeds standard limit (%d, normal max = %d)\n", msg.cursize, 1024);
+	}
 
 // copy the server datagram if there is space
 	if (msg.cursize + sv.datagram.cursize < msg.maxsize)
