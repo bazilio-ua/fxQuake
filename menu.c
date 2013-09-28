@@ -824,7 +824,7 @@ forward:
 			}
 		}
 	}
-
+/*
 	if (setup_top > 13)
 		setup_top = 0;
 	if (setup_top < 0)
@@ -833,6 +833,10 @@ forward:
 		setup_bottom = 0;
 	if (setup_bottom < 0)
 		setup_bottom = 13;
+*/
+	//use CLAMP
+	setup_top = CLAMP(0, setup_top, 13);
+	setup_bottom = CLAMP(0, setup_bottom, 13);
 }
 
 //=============================================================================
