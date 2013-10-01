@@ -654,6 +654,9 @@ void R_UpdateParticles (void)
 	float			frametime;
 	int				i;
 
+	if (cls.state == ca_disconnected)
+		return;
+
 	frametime = cl.time - cl.oldtime;
 	time3 = frametime * 15;
 	time2 = frametime * 10; // 15;
