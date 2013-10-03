@@ -2175,7 +2175,6 @@ void Mod_LoadAliasModel (model_t *mod, void *buffer)
 		pheader->eyeposition[i] = LittleFloat (pinmodel->eyeposition[i]);
 	}
 
-
 //
 // load the skins
 //

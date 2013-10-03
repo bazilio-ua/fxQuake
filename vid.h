@@ -46,6 +46,7 @@ extern qboolean vid_activewindow;
 extern qboolean vid_notifywindow;
 
 // gamma stuff
+extern	cvar_t		vid_gamma;
 void VID_Gamma_Set (void);
 void VID_Gamma_Restore (void);
 
