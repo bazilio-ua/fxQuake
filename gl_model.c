@@ -1918,13 +1918,15 @@ void *Mod_LoadAllSkins (int numskins, daliasskintype_t *pskintype)
 		if (pskintype->type == ALIAS_SKIN_SINGLE) 
 		{
 			Mod_FloodFillSkin( skin, pheader->skinwidth, pheader->skinheight );
-
 			// save 8 bit texels for the player model to remap
-			texels = Hunk_AllocName(size, loadname);
-			pheader->texels[i] = texels - (byte *)pheader;
-			memcpy (texels, (byte *)(pskintype + 1), size);
-			offset = (unsigned)(pskintype+1) - (unsigned)mod_base;
+			//if (!strcmp(loadmodel->name,"progs/player.mdl"))
+			{
+				texels = Hunk_AllocName(size, loadname);
+				pheader->texels[i] = texels - (byte *)pheader;
+				memcpy (texels, (byte *)(pskintype + 1), size);
+			}
 
+			offset = (unsigned)(pskintype+1) - (unsigned)mod_base;
 			if (IsFullbright ((byte *)(pskintype+1), size))
 			{
 				sprintf (skinname, "%s:frame%i", loadmodel->name, i);
