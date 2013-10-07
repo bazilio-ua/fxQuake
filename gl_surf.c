@@ -675,7 +675,7 @@ R_DrawBrushModel
 */
 void R_DrawBrushModel (entity_t *e, qboolean water)
 {
-	int			/* k, */ i;
+	int			i;
 	msurface_t	*psurf;
 	float		dot;
 	mplane_t	*pplane;
