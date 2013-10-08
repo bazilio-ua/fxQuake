@@ -777,6 +777,7 @@ gltexture_t		*skyboxtextures[6];
 
 qboolean	oldsky;
 char	skybox_name[MAX_QPATH] = ""; // name of current skybox, or "" if no skybox
+// 3dstudio environment map names
 char	*suf[6] = {"rt", "bk", "lf", "ft", "up", "dn"}; // for skybox
 
 /*
