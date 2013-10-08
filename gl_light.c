@@ -263,8 +263,10 @@ void R_MarkLights (dlight_t *light, int num, mnode_t *node)
 			surf->dlightbits[num >> 5] |= 1 << (num & 31);
 		}
 	}
-	if (node->children[0]->contents >= 0) R_MarkLights (light, num, node->children[0]);
-	if (node->children[1]->contents >= 0) R_MarkLights (light, num, node->children[1]);
+	if (node->children[0]->contents >= 0)
+		R_MarkLights (light, num, node->children[0]);
+	if (node->children[1]->contents >= 0)
+		R_MarkLights (light, num, node->children[1]);
 }
 
 /*

@@ -353,7 +353,7 @@ qboolean IsFullbright (byte *pixels, int size)
 	int	i;
 
 	for (i=0 ; i<size ; i++)
-		if (pixels[i] >= 224)
+		if (pixels[i] > 223)
 			return true;
 
 	return false;
