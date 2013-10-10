@@ -2061,21 +2061,6 @@ void Mod_CalcAliasBounds (aliashdr_t *a)
 	loadmodel->ymaxs[2] = loadmodel->maxs[2];
 }
 
-/*
-=================
-Mod_SetExtraFlags -- johnfitz -- set up extra flags that aren't in the mdl
-=================
-*/
-void Mod_SetExtraFlags (model_t *mod)
-{
-	if (!mod || !mod->name || mod->type != mod_alias)
-		return;
-
-	mod->flags &= 0xFF; //only preserve first byte
-
-// condition to set nolerp flag here
-//	mod->flags |= MOD_NOLERP; // nolerp flag
-}
 
 /*
 =================
@@ -2231,8 +2216,6 @@ void Mod_LoadAliasModel (model_t *mod, void *buffer)
 	pheader->numposes = posenum;
 
 	mod->type = mod_alias;
-
-	Mod_SetExtraFlags (mod); // set up extra flags
 	
 	Mod_CalcAliasBounds (pheader); // calc correct bounds
 

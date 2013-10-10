@@ -196,7 +196,7 @@ qboolean R_CullModelForEntity (entity_t *e)
 R_GetSpriteFrame
 ================
 */
-mspriteframe_t *R_GetSpriteFrame (entity_t *currentent)
+mspriteframe_t *R_GetSpriteFrame (entity_t *e)
 {
 	msprite_t		*psprite;
 	mspritegroup_t	*pspritegroup;
@@ -205,14 +205,14 @@ mspriteframe_t *R_GetSpriteFrame (entity_t *currentent)
 	float			*pintervals, fullinterval, targettime, time;
 	static float	lastmsg = 0;
 
-	psprite = currentent->model->cache.data;
-	frame = currentent->frame;
+	psprite = e->model->cache.data;
+	frame = e->frame;
 
 	if ((frame >= psprite->numframes) || (frame < 0))
 	{
 		if (IsTimeout (&lastmsg, 2))
 		{
-			Con_DPrintf ("R_GetSpriteFrame: no such frame %d (%d frames) in %s\n", frame, psprite->numframes, currentent->model->name);
+			Con_DPrintf ("R_GetSpriteFrame: no such frame %d (%d frames) in %s\n", frame, psprite->numframes, e->model->name);
 		}
 		frame = 0;
 	}
@@ -228,7 +228,7 @@ mspriteframe_t *R_GetSpriteFrame (entity_t *currentent)
 		numframes = pspritegroup->numframes;
 		fullinterval = pintervals[numframes-1];
 
-		time = cl.time + currentent->syncbase;
+		time = cl.time + e->syncbase;
 
 	// when loading in Mod_LoadSpriteGroup, we guaranteed all interval values
 	// are positive, so we don't have to worry about division by 0
@@ -264,7 +264,7 @@ void R_DrawSpriteModel (entity_t *e)
 
 	//TODO: frustum cull it?
 	frame = R_GetSpriteFrame (e);
-	psprite = currententity->model->cache.data;
+	psprite = e->model->cache.data;
 
 	switch(psprite->type)
 	{
@@ -276,7 +276,7 @@ void R_DrawSpriteModel (entity_t *e)
 		s_right = vright;
 		break;
 	case SPR_FACING_UPRIGHT: //faces camera origin, up is towards the heavens
-		VectorSubtract(currententity->origin, r_origin, v_forward);
+		VectorSubtract(e->origin, r_origin, v_forward);
 		v_forward[2] = 0;
 		VectorNormalizeFast(v_forward);
 		v_right[0] = v_forward[1];
@@ -293,12 +293,12 @@ void R_DrawSpriteModel (entity_t *e)
 		s_right = vright;
 		break;
 	case SPR_ORIENTED: //pitch yaw roll are independent of camera
-		AngleVectors (currententity->angles, v_forward, v_right, v_up);
+		AngleVectors (e->angles, v_forward, v_right, v_up);
 		s_up = v_up;
 		s_right = v_right;
 		break;
 	case SPR_VP_PARALLEL_ORIENTED: //faces view plane, but obeys roll value
-		angle = currententity->angles[ROLL] * M_PI_DIV_180;
+		angle = e->angles[ROLL] * M_PI_DIV_180;
 		sr = sin(angle);
 		cr = cos(angle);
 		v_right[0] = vright[0] * cr + vup[0] * sr;
@@ -1276,7 +1276,7 @@ void R_SetupAliasFrame (entity_t *e, aliashdr_t *paliashdr, lerpdata_t *lerpdata
 	}
 
 	// set up values
-	if ( e->model->flags ^ MOD_NOLERP ) // FX
+	// always lerp
 	{
 		if (e->lerpflags & LERP_FINISH && numposes == 1)
 			lerpdata->blend = CLAMP (0, (cl.time - e->lerpstart) / (e->lerpfinish - e->lerpstart), 1);
@@ -1285,12 +1285,12 @@ void R_SetupAliasFrame (entity_t *e, aliashdr_t *paliashdr, lerpdata_t *lerpdata
 		lerpdata->pose1 = e->previouspose;
 		lerpdata->pose2 = e->currentpose;
 	}
-	else // don't lerp
-	{
+	// don't lerp
+/*	{
 		lerpdata->blend = 1;
 		lerpdata->pose1 = posenum;
 		lerpdata->pose2 = posenum;
-	}
+	}	*/
 }
 
 /*

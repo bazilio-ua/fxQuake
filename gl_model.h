@@ -367,12 +367,6 @@ typedef enum {mod_brush, mod_sprite, mod_alias} modtype_t;
 #define	EF_TRACER2	64			// orange split trail + rotate
 #define	EF_TRACER3	128			// purple trail
 
-//johnfitz -- extra flags for rendering
-#define	MOD_NOLERP		256		// don't lerp when animating
-#define	MOD_NOSHADOW	512		// don't cast a shadow (UNUSED)
-#define	MOD_FBRIGHTHACK	1024	// when fullbrights are disabled, use a hack to render this model brighter (UNUSED)
-//johnfitz
-
 typedef struct model_s
 {
 	char		name[MAX_QPATH];
