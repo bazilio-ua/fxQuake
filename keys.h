@@ -200,7 +200,7 @@ typedef enum {
 	K_AUX31,
 	K_AUX32
 
-};
+} keynum_t;
 
 #define	MAX_CMDLINE		256
 #define		CMDLINES	64

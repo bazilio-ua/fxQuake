@@ -453,14 +453,14 @@ extern	cvar_t	r_bloom_fast_sample;
 ============================================================================================================
 */
 // (RMQ Engine)
-inline glmatrix_t *GL_LoadMatrix (glmatrix_t *dst, glmatrix_t *src)
+static inline glmatrix_t *GL_LoadMatrix (glmatrix_t *dst, glmatrix_t *src)
 {
 	memcpy (dst, src, sizeof (glmatrix_t));
 
 	return dst;
 }
 
-inline glmatrix_t *GL_IdentityMatrix (glmatrix_t *m)
+static inline glmatrix_t *GL_IdentityMatrix (glmatrix_t *m)
 {
 	m->m16[0] = m->m16[5] = m->m16[10] = m->m16[15] = 1;
 	m->m16[1] = m->m16[2] = m->m16[3] = m->m16[4] = m->m16[6] = m->m16[7] = m->m16[8] = m->m16[9] = m->m16[11] = m->m16[12] = m->m16[13] = m->m16[14] = 0;
@@ -468,7 +468,7 @@ inline glmatrix_t *GL_IdentityMatrix (glmatrix_t *m)
 	return m;
 }
 
-inline glmatrix_t *GL_MultiplyMatrix (glmatrix_t *out, glmatrix_t *m1, glmatrix_t *m2)
+static inline glmatrix_t *GL_MultiplyMatrix (glmatrix_t *out, glmatrix_t *m1, glmatrix_t *m2)
 {
 	int i, j;
 	glmatrix_t tmp;
@@ -490,7 +490,7 @@ inline glmatrix_t *GL_MultiplyMatrix (glmatrix_t *out, glmatrix_t *m1, glmatrix_
 	return out;
 }
 
-inline glmatrix_t *GL_TranslateMatrix (glmatrix_t *m, float x, float y, float z)
+static inline glmatrix_t *GL_TranslateMatrix (glmatrix_t *m, float x, float y, float z)
 {
 	glmatrix_t tmp;
 	GL_IdentityMatrix (&tmp);
@@ -504,7 +504,7 @@ inline glmatrix_t *GL_TranslateMatrix (glmatrix_t *m, float x, float y, float z)
 	return m;
 }
 
-inline glmatrix_t *GL_ScaleMatrix (glmatrix_t *m, float x, float y, float z)
+static inline glmatrix_t *GL_ScaleMatrix (glmatrix_t *m, float x, float y, float z)
 {
 	glmatrix_t tmp;
 	GL_IdentityMatrix (&tmp);
@@ -518,7 +518,7 @@ inline glmatrix_t *GL_ScaleMatrix (glmatrix_t *m, float x, float y, float z)
 	return m;
 }
 
-inline glmatrix_t *GL_RotateMatrix (glmatrix_t *m, float a, float x, float y, float z)
+static inline glmatrix_t *GL_RotateMatrix (glmatrix_t *m, float a, float x, float y, float z)
 {
 	// i prefer spaces around my operators because it makes stuff like a = b * -c clearer and easier on the eye. ;)
 	glmatrix_t tmp;

@@ -69,7 +69,7 @@ cvar_t	teamplay = {"teamplay","0",false,true};
 cvar_t	samelevel = {"samelevel","0"};
 cvar_t	noexit = {"noexit","0",false,true};
 
-cvar_t	developer = {"developer","0", true};	// should be 0 for release!
+cvar_t	developer = {"developer","0"};	// should be 0 for release!
 
 cvar_t	skill = {"skill","1"};						// 0 - 3
 cvar_t	deathmatch = {"deathmatch","0"};			// 0, 1, or 2
@@ -236,6 +236,8 @@ Host_InitLocal
 */
 void Host_InitLocal (void)
 {
+	int		i;
+
 	Host_InitCommands ();
 
 	Cmd_AddCommand ("saveconfig", Host_SaveConfig_f);
@@ -260,8 +262,14 @@ void Host_InitLocal (void)
 	Cvar_RegisterVariable (&pausable, NULL);
 
 	Cvar_RegisterVariable (&developer, NULL);
-	if (COM_CheckParm("-developer"))
-		Cvar_SetValue ("developer", 1);
+	i = COM_CheckParm ("-developer");
+	if (i)
+	{
+		if (i != (com_argc - 1))
+			Cvar_SetValue ("developer", atoi(com_argv[i+1]));
+		else
+			Cvar_SetValue ("developer", 1);
+	}
 
 	Cvar_RegisterVariable (&temp1, NULL);
 

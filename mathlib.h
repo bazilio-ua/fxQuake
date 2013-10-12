@@ -57,7 +57,7 @@ static inline int IS_NAN (float x) {
 
 /*-----------------------------------------------------------------*/
 
-inline float	anglemod(float a)
+static inline float	anglemod(float a)
 {
 	a = (360.0/65536) * ((int)(a*(65536/360.0)) & 65535);
 	return a;
@@ -70,19 +70,19 @@ static inline vec_t DotProduct (vec3_t v1, vec3_t v2)
 	return v1[0]*v2[0] + v1[1]*v2[1] + v1[2]*v2[2];
 }
 
-inline vec_t VectorLength(vec3_t v)
+static inline vec_t VectorLength(vec3_t v)
 {
 	return sqrt(DotProduct(v,v));
 }
 
-inline void LerpVector (vec3_t from, vec3_t to, float frac, vec3_t out)
+static inline void LerpVector (vec3_t from, vec3_t to, float frac, vec3_t out)
 {
 	out[0] = from[0] + frac * (to[0] - from[0]);
 	out[1] = from[1] + frac * (to[1] - from[1]);
 	out[2] = from[2] + frac * (to[2] - from[2]);
 }
 
-inline void LerpAngles (vec3_t from, vec3_t to, float frac, vec3_t out)
+static inline void LerpAngles (vec3_t from, vec3_t to, float frac, vec3_t out)
 {
 	int i;
 	float delta;
@@ -102,7 +102,7 @@ inline void LerpAngles (vec3_t from, vec3_t to, float frac, vec3_t out)
 
 //the opposite of AngleVectors.  this takes forward and generates pitch yaw roll
 //TODO: take right and up vectors to properly set yaw and roll
-inline void VectorAngles (vec3_t forward, vec3_t angles)
+static inline void VectorAngles (vec3_t forward, vec3_t angles)
 {
 	vec3_t temp;
 
@@ -115,7 +115,7 @@ inline void VectorAngles (vec3_t forward, vec3_t angles)
 	angles[ROLL] = 0;
 }
 
-inline void AngleVectors (vec3_t angles, vec3_t forward, vec3_t right, vec3_t up)
+static inline void AngleVectors (vec3_t angles, vec3_t forward, vec3_t right, vec3_t up)
 {
 	float		angle;
 	float		sr, sp, sy, cr, cp, cy;
@@ -141,7 +141,7 @@ inline void AngleVectors (vec3_t angles, vec3_t forward, vec3_t right, vec3_t up
 	up[2] = cr*cp;
 }
 
-inline void VectorMA (vec3_t veca, float scale, vec3_t vecb, vec3_t vecc)
+static inline void VectorMA (vec3_t veca, float scale, vec3_t vecb, vec3_t vecc)
 {
 	vecc[0] = veca[0] + scale*vecb[0];
 	vecc[1] = veca[1] + scale*vecb[1];
@@ -176,7 +176,7 @@ static inline void VectorSet (vec3_t v, float a, float b, float c)
 	v[2] = c;
 }
 
-inline int VectorCompare (vec3_t v1, vec3_t v2)
+static inline int VectorCompare (vec3_t v1, vec3_t v2)
 {
 	int		i;
 
@@ -187,14 +187,14 @@ inline int VectorCompare (vec3_t v1, vec3_t v2)
 	return 1;
 }
 
-inline void CrossProduct (vec3_t v1, vec3_t v2, vec3_t cross)
+static inline void CrossProduct (vec3_t v1, vec3_t v2, vec3_t cross)
 {
 	cross[0] = v1[1]*v2[2] - v1[2]*v2[1];
 	cross[1] = v1[2]*v2[0] - v1[0]*v2[2];
 	cross[2] = v1[0]*v2[1] - v1[1]*v2[0];
 }
 
-inline float VectorNormalize (vec3_t v)
+static inline float VectorNormalize (vec3_t v)
 {
 	float	length, ilength;
 
@@ -212,7 +212,7 @@ inline float VectorNormalize (vec3_t v)
 }
 
 // (RMQ Engine)
-inline float VectorNormalize3f (float *x, float *y, float *z)
+static inline float VectorNormalize3f (float *x, float *y, float *z)
 {
 	float	length, ilength;
 
@@ -230,14 +230,14 @@ inline float VectorNormalize3f (float *x, float *y, float *z)
 	return length;
 }
 
-inline void VectorInverse (vec3_t v)
+static inline void VectorInverse (vec3_t v)
 {
 	v[0] = -v[0];
 	v[1] = -v[1];
 	v[2] = -v[2];
 }
 
-inline void VectorScale (vec3_t in, vec_t scale, vec3_t out)
+static inline void VectorScale (vec3_t in, vec_t scale, vec3_t out)
 {
 	out[0] = in[0]*scale;
 	out[1] = in[1]*scale;
@@ -254,7 +254,7 @@ assumes side and forward are perpendicular, and normalized
 to turn away from side, use a negative angle
 ===============
 */
-inline void TurnVector (vec3_t out, vec3_t forward, vec3_t side, float angle)
+static inline void TurnVector (vec3_t out, vec3_t forward, vec3_t side, float angle)
 {
 	float scale_forward, scale_side;
 
