@@ -53,7 +53,7 @@ typedef struct {
 } lerpdata_t;
 //johnfitz
 
-// Baker change (RMQ Engine)
+// (RMQ Engine)
 typedef struct glmatrix_s
 {
 	union
