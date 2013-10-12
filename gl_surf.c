@@ -70,13 +70,11 @@ void R_AddDynamicLights (msurface_t *surf)
 
 	for (lnum=0 ; lnum<MAX_DLIGHTS ; lnum++)
 	{
-		if ( !(surf->dlightbits[lnum >> 5] & (1 << (lnum & 31))))		//MH
+		if ( !(surf->dlightbits[lnum >> 5] & (1U << (lnum & 31))) )
 			continue;		// not lit by this light
 
 		rad = cl_dlights[lnum].radius;
-
-		dist = DotProduct (cl_dlights[lnum].transformed, surf->plane->normal) -
-				surf->plane->dist;
+		dist = DotProduct (cl_dlights[lnum].origin, surf->plane->normal) - surf->plane->dist;
 		rad -= fabs(dist);
 		minlight = cl_dlights[lnum].minlight;
 
@@ -87,8 +85,7 @@ void R_AddDynamicLights (msurface_t *surf)
 
 		for (i=0 ; i<3 ; i++)
 		{
-			impact[i] = cl_dlights[lnum].transformed[i] -
-					surf->plane->normal[i]*dist;
+			impact[i] = cl_dlights[lnum].origin[i] - surf->plane->normal[i]*dist;
 		}
 
 		local[0] = DotProduct (impact, tex->vecs[0]) + tex->vecs[0][3];
@@ -196,13 +193,12 @@ void R_BuildLightMap (msurface_t *surf, byte *dest, int stride)
 	bl = blocklights;
 	for (i=0 ; i<tmax ; i++, dest += stride)
 	{
-		for (j=0 ; j<smax ; j++, dest += 4)
+		for (j=0 ; j<smax ; j++)
 		{
-			t = *bl++ >> 8;if (t > 255) t = 255;dest[2] = t;
-			t = *bl++ >> 8;if (t > 255) t = 255;dest[1] = t;
-			t = *bl++ >> 8;if (t > 255) t = 255;dest[0] = t;
-
-			dest[3] = 255;
+			t = *bl++ >> 8;if (t > 255) t = 255;*dest++ = t;
+			t = *bl++ >> 8;if (t > 255) t = 255;*dest++ = t;
+			t = *bl++ >> 8;if (t > 255) t = 255;*dest++ = t;
+			*dest++ = 255;
 		}
 	}
 }
@@ -675,7 +671,7 @@ R_DrawBrushModel
 */
 void R_DrawBrushModel (entity_t *e, qboolean water)
 {
-	int			i;
+	int			k, i;
 	msurface_t	*psurf;
 	float		dot;
 	mplane_t	*pplane;
@@ -705,16 +701,15 @@ void R_DrawBrushModel (entity_t *e, qboolean water)
 	// calculate dynamic lighting for bmodel if it's not an instanced model
 	if (clmodel->firstmodelsurface != 0 /* && !gl_flashblend.value */) //FX -- commented out
 	{
-		// calculate entity local space for dlight transforms
-		GL_IdentityMatrix (&e->gl_matrix);
+		for (k=0 ; k<MAX_DLIGHTS ; k++)
+		{
+			if ((cl_dlights[k].die < cl.time) ||
+				(!cl_dlights[k].radius))
+				continue;
 
-		// don't need to negate angles[0] as it's not going through the extra negation in R_RotateForEntity
-		if (e->angles[2]) GL_RotateMatrix (&e->gl_matrix, -e->angles[2], 1, 0, 0);
-		if (e->angles[0]) GL_RotateMatrix (&e->gl_matrix, -e->angles[0], 0, 1, 0);
-		if (e->angles[1]) GL_RotateMatrix (&e->gl_matrix, -e->angles[1], 0, 0, 1);
-
-		GL_TranslateMatrix (&e->gl_matrix, -e->origin[0], -e->origin[1], -e->origin[2]);
-		R_PushDlights (e);
+			R_MarkLights (&cl_dlights[k], k,
+				clmodel->nodes + clmodel->hulls[0].firstclipnode);
+		}
 	}
 
 	/* MH: z-fighting is really a mapping problem, 

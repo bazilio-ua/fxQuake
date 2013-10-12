@@ -211,25 +211,6 @@ static inline float VectorNormalize (vec3_t v)
 	return length;
 }
 
-// (RMQ Engine)
-static inline float VectorNormalize3f (float *x, float *y, float *z)
-{
-	float	length, ilength;
-
-	length = x[0] * x[0] + y[0] * y[0] + z[0] * z[0];
-	length = sqrt(length);
-
-	if (length)
-	{
-		ilength = 1/length;
-		x[0] *= ilength;
-		y[0] *= ilength;
-		z[0] *= ilength;
-	}
-
-	return length;
-}
-
 static inline void VectorInverse (vec3_t v)
 {
 	v[0] = -v[0];

@@ -201,31 +201,28 @@ void R_MarkLights (dlight_t *light, int num, mnode_t *node)
 	float		dist, l, maxdist;
 	int			i, j, s, t;
 
-	while (1)
+start:
+
+	if (node->contents < 0)
+		return;
+
+	splitplane = node->plane;
+
+	if (splitplane->type < 3)
+		dist = light->origin[splitplane->type] - splitplane->dist;
+	else
+		dist = DotProduct (light->origin, splitplane->normal) - splitplane->dist;
+
+	if (dist > light->radius)
 	{
-		if (node->contents < 0)
-			return;
+		node = node->children[0];
+		goto start;
+	}
 
-		splitplane = node->plane;
-
-		if (splitplane->type < 3)
-			dist = light->transformed[splitplane->type] - splitplane->dist;
-		else
-			dist = DotProduct (light->transformed, splitplane->normal) - splitplane->dist;
-
-		if (dist > light->radius)
-		{
-			node = node->children[0];
-				continue;
-		}
-
-		if (dist < -light->radius)
-		{
-			node = node->children[1];
-				continue;
-		}
-
-		break;
+	if (dist < -light->radius)
+	{
+		node = node->children[1];
+		goto start;
 	}
 
 	maxdist = light->radius*light->radius;
@@ -237,14 +234,14 @@ void R_MarkLights (dlight_t *light, int num, mnode_t *node)
 			continue;
 
 		for (j=0 ; j<3 ; j++)
-			impact[j] = light->transformed[j] - surf->plane->normal[j]*dist;
+			impact[j] = light->origin[j] - surf->plane->normal[j]*dist;
 
 		// clamp center of light to corner and check brightness
 		l = DotProduct (impact, surf->texinfo->vecs[0]) + surf->texinfo->vecs[0][3] - surf->texturemins[0];
-
 		s = l + 0.5;
 		s = CLAMP (0, s, surf->extents[0]);
 		s = l - s;
+
 		l = DotProduct (impact, surf->texinfo->vecs[1]) + surf->texinfo->vecs[1][3] - surf->texturemins[1];
 		t = l + 0.5;
 		t = CLAMP (0, t, surf->extents[1]);
@@ -255,14 +252,14 @@ void R_MarkLights (dlight_t *light, int num, mnode_t *node)
 		{
 			if (surf->dlightframe != r_dlightframecount) // not dynamic until now
 			{
-				memset (surf->dlightbits, 0, sizeof (surf->dlightbits));
+				surf->dlightbits[num >> 5] = 1U << (num & 31);
 				surf->dlightframe = r_dlightframecount;
 			}
-
-			// mark the surf and ent for this dlight
-			surf->dlightbits[num >> 5] |= 1 << (num & 31);
+			else // already dynamic
+				surf->dlightbits[num >> 5] |= 1U << (num & 31);
 		}
 	}
+
 	if (node->children[0]->contents >= 0)
 		R_MarkLights (light, num, node->children[0]);
 	if (node->children[1]->contents >= 0)
@@ -274,54 +271,24 @@ void R_MarkLights (dlight_t *light, int num, mnode_t *node)
 R_PushDlights
 =============
 */
-void R_TransformDLight (glmatrix_t *m, float *transformed, float *origin)
-{
-	if (m)
-	{
-		// transformed
-		transformed[0] = origin[0] * m->m16[0] + origin[1] * m->m16[4] + origin[2] * m->m16[8] + m->m16[12];
-		transformed[1] = origin[0] * m->m16[1] + origin[1] * m->m16[5] + origin[2] * m->m16[9] + m->m16[13];
-		transformed[2] = origin[0] * m->m16[2] + origin[1] * m->m16[6] + origin[2] * m->m16[10] + m->m16[14];
-	}
-	else
-	{
-		// untransformed
-		transformed[0] = origin[0];
-		transformed[1] = origin[1];
-		transformed[2] = origin[2];
-	}
-}
-
-void R_PushDlights (entity_t *ent)
+void R_PushDlights (void)
 {
 	int		i;
-	dlight_t	*l = cl_dlights;
-	glmatrix_t 	*m = ent ? &ent->gl_matrix : NULL;
-	mnode_t		*headnode;
+	dlight_t	*l;
 
-	if (ent)
-		headnode = ent->model->nodes + ent->model->hulls[0].firstclipnode;
-	else
-		headnode = cl.worldmodel->nodes;
+//	if (gl_flashblend.value) //FX -- commented out
+//		return;
+
+	r_dlightframecount = r_framecount + 1;	// because the count hasn't
+											//  advanced yet for this frame
+	l = cl_dlights;
 
 	for (i=0 ; i<MAX_DLIGHTS ; i++, l++)
 	{
-		if (l->die < cl.time || (l->radius<=0) )
+		if (l->die < cl.time || !l->radius)
 			continue;
-
-		// move the light back to the same space as the model
-		R_TransformDLight (m, l->transformed, l->origin);
-		R_MarkLights ( l, i, headnode );
+		R_MarkLights (l, i, cl.worldmodel->nodes);
 	}
-}
-
-void R_PushDlightsWorld (void)
-{
-//	if (gl_flashblend.value) //FX -- commented out (EER1 what is a strange limitation? enable flashblend will disable dlight)
-//		return;
-
-	r_dlightframecount = r_framecount + 1;	// because the count hasn't advanced yet for this frame
-	R_PushDlights (NULL);
 }
 
 

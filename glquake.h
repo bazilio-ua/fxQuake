@@ -247,7 +247,7 @@ void R_StoreEfrags (efrag_t **ppefrag);
 void R_AnimateLight (void);
 int R_LightPoint (vec3_t p);
 void R_RenderDlights (void);
-void R_MarkLights (dlight_t *light, int bit, mnode_t *node);
+void R_MarkLights (dlight_t *light, int num, mnode_t *node);
 void R_InitFlashBlendBubble (void);
 
 // gl_surf.c
@@ -438,119 +438,4 @@ extern	cvar_t	r_bloom_intensity;
 extern	cvar_t	r_bloom_diamond_size;
 extern	cvar_t	r_bloom_sample_size;
 extern	cvar_t	r_bloom_fast_sample;
-
-
-/*
-============================================================================================================
-
-		MATRIX OPS by MH
-
-	These happen in pace on the matrix and update it's current values
-
-	These are D3D style matrix functions; sorry OpenGL-lovers but they're more sensible, usable
-	and intuitive this way...
-
-============================================================================================================
-*/
-// (RMQ Engine)
-static inline glmatrix_t *GL_LoadMatrix (glmatrix_t *dst, glmatrix_t *src)
-{
-	memcpy (dst, src, sizeof (glmatrix_t));
-
-	return dst;
-}
-
-static inline glmatrix_t *GL_IdentityMatrix (glmatrix_t *m)
-{
-	m->m16[0] = m->m16[5] = m->m16[10] = m->m16[15] = 1;
-	m->m16[1] = m->m16[2] = m->m16[3] = m->m16[4] = m->m16[6] = m->m16[7] = m->m16[8] = m->m16[9] = m->m16[11] = m->m16[12] = m->m16[13] = m->m16[14] = 0;
-
-	return m;
-}
-
-static inline glmatrix_t *GL_MultiplyMatrix (glmatrix_t *out, glmatrix_t *m1, glmatrix_t *m2)
-{
-	int i, j;
-	glmatrix_t tmp;
-
-	// do it this way because either of m1 or m2 might be the same as out...
-	for (i = 0; i < 4; i++)
-	{
-		for (j = 0; j < 4; j++)
-		{
-			tmp.m4x4[i][j] = m1->m4x4[i][0] * m2->m4x4[0][j] +
-							 m1->m4x4[i][1] * m2->m4x4[1][j] +
-							 m1->m4x4[i][2] * m2->m4x4[2][j] +
-							 m1->m4x4[i][3] * m2->m4x4[3][j];
-		}
-	}
-
-	memcpy (out, &tmp, sizeof (glmatrix_t));
-
-	return out;
-}
-
-static inline glmatrix_t *GL_TranslateMatrix (glmatrix_t *m, float x, float y, float z)
-{
-	glmatrix_t tmp;
-	GL_IdentityMatrix (&tmp);
-
-	tmp.m16[12] = x;
-	tmp.m16[13] = y;
-	tmp.m16[14] = z;
-
-	GL_MultiplyMatrix (m, &tmp, m);
-
-	return m;
-}
-
-static inline glmatrix_t *GL_ScaleMatrix (glmatrix_t *m, float x, float y, float z)
-{
-	glmatrix_t tmp;
-	GL_IdentityMatrix (&tmp);
-
-	tmp.m16[0] = x;
-	tmp.m16[5] = y;
-	tmp.m16[10] = z;
-
-	GL_MultiplyMatrix (m, &tmp, m);
-
-	return m;
-}
-
-static inline glmatrix_t *GL_RotateMatrix (glmatrix_t *m, float a, float x, float y, float z)
-{
-	// i prefer spaces around my operators because it makes stuff like a = b * -c clearer and easier on the eye. ;)
-	glmatrix_t tmp;
-	float c = cos (a * M_PI / 180.0);
-	float s = sin (a * M_PI / 180.0);
-
-	// http://www.opengl.org/sdk/docs/man/xhtml/glRotate.xml
-	// this should normalize the vector before rotating
-	VectorNormalize3f (&x, &y, &z);
-
-	tmp.m16[0] = x * x * (1 - c) + c;
-	tmp.m16[4] = x * y * (1 - c) - z * s;
-	tmp.m16[8] = x * z * (1 - c) + y * s;
-	tmp.m16[12] = 0;
-
-	tmp.m16[1] = y * x * (1 - c) + z * s;
-	tmp.m16[5] = y * y * (1 - c) + c;
-	tmp.m16[9] = y * z * (1 - c) - x * s;
-	tmp.m16[13] = 0;
-
-	tmp.m16[2] = x * z * (1 - c) - y * s;
-	tmp.m16[6] = y * z * (1 - c) + x * s;
-	tmp.m16[10] = z * z * (1 - c) + c;
-	tmp.m16[14] = 0;
-
-	tmp.m16[3] = 0;
-	tmp.m16[7] = 0;
-	tmp.m16[11] = 0;
-	tmp.m16[15] = 1;
-
-	GL_MultiplyMatrix (m, &tmp, m);
-
-	return m;
-}
 

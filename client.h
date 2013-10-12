@@ -65,12 +65,10 @@ typedef struct
 
 #define	SIGNONS		4			// signon messages to receive before connected
 
-#define	MAX_DLIGHTS		128 //johnfitz -- was 32
-//#define	MAX_DLIGHTS		64 //johnfitz -- was 32
+#define	MAX_DLIGHTS		128 //was 64 //johnfitz -- was 32
 typedef struct
 {
 	vec3_t	origin;
-	vec3_t	transformed;
 	float	radius;
 	float	die;				// stop lighting after this time
 	float	decay;				// drop this each second
@@ -80,7 +78,7 @@ typedef struct
 } dlight_t;
 
 
-#define	MAX_BEAMS	256 //24
+#define	MAX_BEAMS	256 //was 32 //johnfitz -- was 24
 typedef struct
 {
 	int		entity;

@@ -894,7 +894,7 @@ void R_SetupFrame (void)
 		Cvar_Set ("r_fullbright", "0");
 	}
 
-	R_PushDlightsWorld ();
+	R_PushDlights ();
 	R_AnimateLight ();
 
 	r_framecount++;

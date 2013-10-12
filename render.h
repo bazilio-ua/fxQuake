@@ -53,31 +53,10 @@ typedef struct {
 } lerpdata_t;
 //johnfitz
 
-// (RMQ Engine)
-typedef struct glmatrix_s
-{
-	union
-	{
-		// put first because gcc barfs a little
-		float m16[16];
-		float m4x4[4][4];
-
-		struct
-		{
-			float _11, _12, _13, _14;
-			float _21, _22, _23, _24;
-			float _31, _32, _33, _34;
-			float _41, _42, _43, _44;
-		};
-	};
-} glmatrix_t;
-
 typedef struct entity_s
 {
 	qboolean				forcelink;		// model changed
 
-	glmatrix_t				gl_matrix;
-//	vec3_t					modelorg;
 	int						update_type;
 
 	entity_state_t			baseline;		// to fill in defaults in updates
@@ -96,10 +75,7 @@ typedef struct entity_s
 	int						skinnum;		// for Alias models
 	int						visframe;		// last frame this entity was
 											//  found in an active leaf
-											
-	int						dlightframe;	// dynamic lighting
-	int						dlightbits;
-	
+
 // FIXME: could turn these into a union
 	int						trivial_accept;
 	struct mnode_s			*topnode;		// for bmodels, first world node
@@ -173,6 +149,5 @@ void R_ParticleExplosion2 (vec3_t org, int colorStart, int colorLength);
 void R_LavaSplash (vec3_t org);
 void R_TeleportSplash (vec3_t org);
 
-void R_PushDlightsWorld (void);
-void R_PushDlights (entity_t *ent);
+void R_PushDlights (void);
 
