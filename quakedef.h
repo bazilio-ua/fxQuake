@@ -40,11 +40,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <setjmp.h>
 #include <ctype.h>
 #include <limits.h>
+#include <time.h>
 #include <errno.h>
 
 #ifdef _WIN32
 #include <windows.h>
-//#include <float.h>
 #endif 
 
 // MSVC++ has a different name for several standard functions

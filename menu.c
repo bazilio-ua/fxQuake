@@ -905,7 +905,7 @@ void M_AdjustSliders (int dir)
 		Cvar_SetValue("sensitivity", sensitivity.value);
 		break;
 	case OPT_MUSICTYPE: //case 6 // bgm type
-		if (strcmpi(bgmtype.string,"cd") == 0)
+		if (strcasecmp(bgmtype.string,"cd") == 0)
 		{
 			if (dir < 0)
 				Cvar_Set("bgmtype","none");
@@ -1023,7 +1023,7 @@ void M_Options_Draw (void)
 	M_DrawSlider (220, 32+(OPT_MOUSESPEED*8), r);
 
 	M_Print (16, 32+(OPT_MUSICTYPE*8), "            Music Type");
-	if (strcmpi(bgmtype.string,"cd") == 0)
+	if (strcasecmp(bgmtype.string,"cd") == 0)
 		M_Print (220, 32+(OPT_MUSICTYPE*8), "CD");
 	else
 		M_Print (220, 32+(OPT_MUSICTYPE*8), "None");

@@ -17,11 +17,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-#include "quakedef.h"
+// net_win.c
 
+#include "quakedef.h"
+#include "net_wins.h"
 #include "net_loop.h"
 #include "net_dgrm.h"
-#include "net_wins.h"
 
 net_driver_t net_drivers[MAX_NET_DRIVERS] =
 {

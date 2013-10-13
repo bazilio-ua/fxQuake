@@ -20,8 +20,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // net_wins.c
 
 #include "quakedef.h"
-#include "net_wins.h"
 #include "winquake.h"
+#include "net_wins.h"
 
 // socket for fielding new connections
 static sys_socket_t net_acceptsocket = INVALID_SOCKET;

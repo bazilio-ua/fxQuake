@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-// xquake.h -- X Window System specific Quake header file
+// xquake.h -- Unix and X Window System specific Quake header file
 
 #include <ctype.h>
 #include <dlfcn.h>
@@ -37,6 +37,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifdef __linux__
 #include <sys/vt.h>
 #endif
+
+//network
+#include <sys/types.h>
+#include <arpa/inet.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
+//network
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
