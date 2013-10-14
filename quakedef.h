@@ -232,7 +232,7 @@ typedef struct
 #include "progs.h"
 #include "server.h"
 
-#include "gl_model.h"
+#include "model.h"
 
 #include "input.h"
 #include "world.h"
