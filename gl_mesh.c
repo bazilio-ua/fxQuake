@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-// gl_mesh.c: triangle model functions
+// gl_mesh.c -- triangle model functions
 
 #include "quakedef.h"
 
@@ -268,6 +268,8 @@ void BuildTris (void)
 
 		for (j=0 ; j<bestlen+2 ; j++)
 		{
+			int		tmp;
+
 			// emit a vertex into the reorder buffer
 			k = bestverts[j];
 			vertexorder[numorder++] = k;
@@ -283,8 +285,14 @@ void BuildTris (void)
 			if (numcommands >= MAX_CMDS)
 				Host_Error ("BuildTris: too many commands (max = %d) in %s", MAX_CMDS, aliasmodel->name);
 
-			*(float *)&commands[numcommands++] = s;
-			*(float *)&commands[numcommands++] = t;
+		//	*(float *)&commands[numcommands++] = s;
+		//	*(float *)&commands[numcommands++] = t;
+			// NOTE: 4 == sizeof(int)
+			//	   == sizeof(float)
+			memcpy (&tmp, &s, 4);
+			commands[numcommands++] = tmp;
+			memcpy (&tmp, &t, 4);
+			commands[numcommands++] = tmp;
 		}
 	}
 

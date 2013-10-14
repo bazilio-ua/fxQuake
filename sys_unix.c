@@ -19,25 +19,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // sys_unix.c
 
-#include <unistd.h>
-#include <signal.h>
-#include <stdlib.h>
-#include <limits.h>
-#include <sys/time.h>
-#include <sys/types.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <stdarg.h>
-#include <stdio.h>
-#include <sys/ipc.h>
-#include <sys/shm.h>
-#include <sys/stat.h>
-#include <string.h>
-#include <ctype.h>
-#include <sys/wait.h>
-#include <sys/mman.h>
-#include <errno.h>
-
 #include "quakedef.h"
 #include "xquake.h"
 
@@ -79,7 +60,6 @@ Sys_EditFile
 currently unused func
 ================
 */
-/*
 void Sys_EditFile(char *filename)
 {
 	char cmd[256];
@@ -100,7 +80,6 @@ void Sys_EditFile(char *filename)
 		system(cmd);
 	}
 }
-*/
 
 /*
 ===============================================================================

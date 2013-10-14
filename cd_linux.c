@@ -17,23 +17,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-// Quake is a trademark of Id Software, Inc., (c) 1996 Id Software, Inc. All
-// rights reserved.
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <linux/cdrom.h>
-#include <sys/types.h>
-#include <sys/ioctl.h>
-#include <sys/file.h>
-#include <errno.h>
-#include <fcntl.h>
-#include <paths.h>
-#include <unistd.h>
-#include <time.h>
+// cd_linux.c
 
 #include "quakedef.h"
+#include "xquake.h"
 
 static qboolean cdValid = false;
 static qboolean	playing = false;

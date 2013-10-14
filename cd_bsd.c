@@ -17,27 +17,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-// Quake is a trademark of Id Software, Inc., (c) 1996 Id Software, Inc. All
-// rights reserved.
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/cdio.h>
-#include <sys/types.h>
-#include <sys/ioctl.h>
-#include <sys/file.h>
-#include <errno.h>
-#include <fcntl.h>
-#include <paths.h>
-#include <unistd.h>
-#include <time.h>
-
-#ifndef __FreeBSD__
-#include <util.h>
-#endif
+// cd_bsd.c
 
 #include "quakedef.h"
+#include "xquake.h"
 
 static qboolean cdValid = false;
 static qboolean	playing = false;
@@ -470,7 +453,7 @@ int CDAudio_Init(void)
 	if ((i = COM_CheckParm("-cddev")) != 0 && i < com_argc - 1) 
 		cd_dev = com_argv[i + 1];
 
-#ifndef __FreeBSD__
+#ifdef __OpenBSD__
 	char buff [80];
 
 	if ((cdfile = opendisk(cd_dev, O_RDONLY | O_NONBLOCK, buff, sizeof(buff), 0)) == -1)

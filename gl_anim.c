@@ -1536,7 +1536,7 @@ void R_SkyProcessEntities (void)
 	int			i,j,k,mark;
 	float		dot;
 	qboolean	rotated;
-	vec3_t		temp, forward = {0,0,0}, right = {0,0,0}, up = {0,0,0}; // avoid bogus gcc compiler warning
+	vec3_t		temp, forward, right, up;
 
 	if (!r_drawentities.value)
 		return;

@@ -17,6 +17,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
+// keys.c
+
 #include "quakedef.h"
 
 /*
@@ -24,7 +26,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 key up events are sent even if in console mode
 
 */
-
 
 #define		HISTORY_FILE	"qhistory.log"
 

@@ -19,31 +19,37 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // xquake.h -- Unix and X Window System specific Quake header file
 
-#include <ctype.h>
-#include <dlfcn.h>
-#include <stdarg.h>
-#include <signal.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <termios.h>
 #include <unistd.h>
+#include <fcntl.h>
+#include <paths.h>
+
 #include <sys/ioctl.h>
-#include <sys/ipc.h>
-#include <sys/shm.h>
 #include <sys/stat.h>
-#include <sys/time.h>
-#include <sys/types.h>
+#include <sys/mman.h>
+#include <sys/file.h>
+#include <sys/param.h>
+#include <sys/socket.h>
+
 #ifdef __linux__
 #include <sys/vt.h>
 #endif
 
-//network
-#include <sys/types.h>
+#ifdef __linux__
+#include <linux/cdrom.h>
+#include <linux/soundcard.h>
+#else
+#include <sys/cdio.h>
+#include <sys/soundcard.h>
+#endif
+
+#ifdef __OpenBSD__
+#include <util.h>
+#endif
+
 #include <arpa/inet.h>
 #include <netinet/in.h>
-#include <sys/socket.h>
-//network
+#include <net/if.h>
+#include <netdb.h>
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>

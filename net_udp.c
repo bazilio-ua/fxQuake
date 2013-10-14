@@ -19,18 +19,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // net_udp.c
 
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <netdb.h>
-#include <sys/param.h>
-#include <sys/ioctl.h>
-#include <errno.h>
-#include <unistd.h>
-#include <net/if.h>
-
 #include "quakedef.h"
+#include "xquake.h"
 #include "net_udp.h"
 
 // socket for fielding new connections

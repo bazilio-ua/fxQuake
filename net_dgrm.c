@@ -19,18 +19,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // net_dgrm.c
 
-/*
-#ifdef _WIN32
-#include <windows.h>
-//#include <winsock.h>
-#else
-#include <sys/types.h>
-#include <arpa/inet.h>
-#include <netinet/in.h>
-#include <sys/socket.h>
-#endif
-*/
-
 #include "quakedef.h"
 
 #ifdef _WIN32

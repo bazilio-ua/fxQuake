@@ -19,9 +19,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // cd_win.c
 
-// Quake is a trademark of Id Software, Inc., (c) 1996 Id Software, Inc. All
-// rights reserved.
-
 #include "quakedef.h"
 #include "winquake.h"
 
@@ -32,7 +29,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #undef	USE_AUX_API
 //#define	USE_AUX_API
-
 
 static qboolean cdValid = false;
 static qboolean	playing = false;

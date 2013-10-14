@@ -17,8 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-
-// this file is shared by quake and qcc
+// pr_comp.h -- this file is shared by quake and qcc
 
 typedef int	func_t;
 typedef int	string_t;

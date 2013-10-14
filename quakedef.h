@@ -19,6 +19,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // quakedef.h -- primary header for client and server
 
+
+// Quake is a trademark of Id Software, Inc., (c) 1996 Id Software, Inc. All
+// rights reserved.
+
+
 // disable data conversion warnings for MSVC++ 
 #ifdef _MSC_VER
 #pragma warning(disable : 4244)	// double|int to float truncation
@@ -43,9 +48,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <time.h>
 #include <errno.h>
 
-#ifdef _WIN32
-#include <windows.h>
-#endif 
 
 // MSVC++ has a different name for several standard functions
 #ifdef _MSC_VER
