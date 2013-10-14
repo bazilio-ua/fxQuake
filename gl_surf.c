@@ -45,6 +45,8 @@ int			allocated[MAX_LIGHTMAPS][BLOCK_WIDTH];
 // main memory so texsubimage can update properly
 byte		lightmaps[4*MAX_LIGHTMAPS*BLOCK_WIDTH*BLOCK_HEIGHT]; // (4)bgra_bytes*MAX_LIGHTMAPS*BLOCK_WIDTH*BLOCK_HEIGHT
 
+int			overbright = 1;
+
 /*
 ===============
 R_AddDynamicLights
@@ -146,6 +148,7 @@ void R_BuildLightMap (msurface_t *surf, byte *dest, int stride)
 	unsigned	scale;
 	int			maps;
 	unsigned	*bl;
+	int			shift;
 
 	surf->cached_dlight = (surf->dlightframe == r_framecount);
 
@@ -190,14 +193,15 @@ void R_BuildLightMap (msurface_t *surf, byte *dest, int stride)
 
 	// bound, invert, and shift
 	stride -= smax * 4;
+	shift = 7 + overbright;
 	bl = blocklights;
 	for (i=0 ; i<tmax ; i++, dest += stride)
 	{
 		for (j=0 ; j<smax ; j++)
 		{
-			t = *bl++ >> 8;if (t > 255) t = 255;*dest++ = t;
-			t = *bl++ >> 8;if (t > 255) t = 255;*dest++ = t;
-			t = *bl++ >> 8;if (t > 255) t = 255;*dest++ = t;
+			t = *bl++ >> shift;if (t > 255) t = 255;*dest++ = t;
+			t = *bl++ >> shift;if (t > 255) t = 255;*dest++ = t;
+			t = *bl++ >> shift;if (t > 255) t = 255;*dest++ = t;
 			*dest++ = 255;
 		}
 	}
@@ -437,7 +441,7 @@ void R_DrawSequentialPoly (msurface_t *s)
 			glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_RGB_EXT, GL_MODULATE);
 			glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE0_RGB_EXT, GL_PREVIOUS_EXT);
 			glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE1_RGB_EXT, GL_TEXTURE);
-			glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, 2.0f);
+			glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, 2.0f * overbright);
 
 			glBegin(GL_POLYGON);
 			v = p->verts[0];
@@ -1090,7 +1094,7 @@ void R_DrawWorld (void)
 		glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB_EXT, GL_MODULATE);
 		glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB_EXT, GL_PREVIOUS_EXT);
 		glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB_EXT, GL_TEXTURE);
-		glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, 2.0f);
+		glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, 2.0f * overbright);
 		GL_DisableMultitexture ();
 		R_DrawTextureChainsMultitexture ();
 		GL_EnableMultitexture ();

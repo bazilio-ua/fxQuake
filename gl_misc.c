@@ -134,6 +134,19 @@ void R_ClearColor (void)
 }
 
 /*
+====================
+GL_Overbright
+====================
+*/
+void GL_Overbright (void)
+{
+	overbright = CLAMP(1.0, gl_overbright.value, 2.0);
+
+	// Refresh lightmaps
+	R_BuildLightmaps ();
+}
+
+/*
 ===============
 R_Init
 ===============
@@ -180,6 +193,7 @@ void R_Init (void)
 	Cvar_RegisterVariable (&gl_affinemodels, NULL);
 	Cvar_RegisterVariable (&gl_polyblend, NULL);
 	Cvar_RegisterVariable (&gl_flashblend, NULL);
+	Cvar_RegisterVariable (&gl_overbright, GL_Overbright);
 	Cvar_RegisterVariable (&gl_zfix, NULL); // z-fighting fix
 
 	// Nehahra
