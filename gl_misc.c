@@ -70,10 +70,16 @@ void R_LoadPalette (void)
 	src = pal;
 	for (i=0; i<256; i++)
 	{
-		*dst++ = *src++;
+/*		*dst++ = *src++;
 		*dst++ = *src++;
 		*dst++ = *src++;
 		*dst++ = 255;
+*/
+		dst[2] = *src++;
+		dst[1] = *src++;
+		dst[0] = *src++;
+		dst[3] = 255;
+		dst += 4;
 	}
 	d_8to24table[255] &= *mask; // fix gcc warnings
 
@@ -82,10 +88,16 @@ void R_LoadPalette (void)
 	dst = (byte *)(d_8to24table_fbright) + 224*4;
 	for (i=224; i<256; i++)
 	{
-		*dst++ = *src++;
+/*		*dst++ = *src++;
 		*dst++ = *src++;
 		*dst++ = *src++;
 		*dst++ = 255;
+*/
+		dst[2] = *src++;
+		dst[1] = *src++;
+		dst[0] = *src++;
+		dst[3] = 255;
+		dst += 4;
 	}
 	for (i=0; i<224; i++)
 		d_8to24table_fbright[i] = *black; // fix gcc warnings
@@ -95,10 +107,16 @@ void R_LoadPalette (void)
 	src = pal;
 	for (i=0; i<256; i++)
 	{
-		*dst++ = *src++;
+/*		*dst++ = *src++;
 		*dst++ = *src++;
 		*dst++ = *src++;
 		*dst++ = 255;
+*/
+		dst[2] = *src++;
+		dst[1] = *src++;
+		dst[0] = *src++;
+		dst[3] = 255;
+		dst += 4;
 	}
 	for (i=224; i<256; i++)
 		d_8to24table_nobright[i] = *black; // fix gcc warnings
@@ -131,6 +149,7 @@ void R_ClearColor (void)
 	// Refresh clearcolor
 	rgb = (byte *)(d_8to24table + ((int)r_clearcolor.value & 0xFF));
 	glClearColor (rgb[0] / 255.0, rgb[1] / 255.0, rgb[2] / 255.0, 0);
+//	glClearColor (rgb[2] / 255.0, rgb[1] / 255.0, rgb[0] / 255.0, 0);
 }
 
 /*

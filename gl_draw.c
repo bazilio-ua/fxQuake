@@ -38,8 +38,8 @@ int		indexed_bytes = 1;
 int		rgba_bytes = 4;
 int		bgra_bytes = 4;
 
-int		gl_solid_format = GL_RGB; // was 3
-int		gl_alpha_format = GL_RGBA; // was 4
+//int		gl_solid_format = GL_RGB; // was 3
+//int		gl_alpha_format = GL_RGBA; // was 4
 
 #define MAXGLMODES 6
 
@@ -172,7 +172,8 @@ void GL_UploadWarpImage (void)
 		if (glt->flags & TEXPREF_WARPIMAGE)
 		{
 			GL_Bind (glt);
-			glTexImage2D (GL_TEXTURE_2D, 0, gl_solid_format, gl_warpimage_size, gl_warpimage_size, 0, GL_RGBA, GL_UNSIGNED_BYTE, dummy);
+//			glTexImage2D (GL_TEXTURE_2D, 0, gl_solid_format, gl_warpimage_size, gl_warpimage_size, 0, GL_RGBA, GL_UNSIGNED_BYTE, dummy);
+			glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, gl_warpimage_size, gl_warpimage_size, 0, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, dummy);
 			glt->width = glt->height = gl_warpimage_size;
 		}
 	}
@@ -1314,7 +1315,8 @@ void Draw_Fill (int x, int y, int w, int h, int c)
 	glDisable (GL_TEXTURE_2D);
 	glEnable (GL_BLEND); // for alpha
 	glDisable (GL_ALPHA_TEST); // for alpha
-	glColor4f (pal[c*4]/255.0, pal[c*4+1]/255.0, pal[c*4+2]/255.0, alpha); // added alpha
+//	glColor4f (pal[c*4]/255.0, pal[c*4+1]/255.0, pal[c*4+2]/255.0, alpha); // added alpha
+	glColor4f (pal[c*4+2]/255.0, pal[c*4+1]/255.0, pal[c*4]/255.0, alpha); // added alpha
 
 	glBegin (GL_QUADS);
 	glVertex2f (x, y);
@@ -1603,7 +1605,7 @@ handles 32bit source data
 */
 void GL_Upload32 (gltexture_t *glt, unsigned *data)
 {
-	int			internalformat;
+//	int			internalformat;
 	int			scaled_width, scaled_height;
 	int			picmip;
 	unsigned	*scaled = NULL;
@@ -1661,8 +1663,9 @@ void GL_Upload32 (gltexture_t *glt, unsigned *data)
 
 	// upload
 	GL_Bind (glt);
-	internalformat = (glt->flags & TEXPREF_ALPHA) ? gl_alpha_format : gl_solid_format;
-	glTexImage2D (GL_TEXTURE_2D, 0, internalformat, scaled_width, scaled_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, scaled);
+//	internalformat = (glt->flags & TEXPREF_ALPHA) ? gl_alpha_format : gl_solid_format;
+//	glTexImage2D (GL_TEXTURE_2D, 0, internalformat, scaled_width, scaled_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, scaled);
+	glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, scaled_width, scaled_height, 0, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, scaled);
 
 	// upload mipmaps
 	if (glt->flags & TEXPREF_MIPMAP)
@@ -1678,7 +1681,8 @@ void GL_Upload32 (gltexture_t *glt, unsigned *data)
 			scaled_height = max(scaled_height, 1);
 
 			miplevel++;
-			glTexImage2D (GL_TEXTURE_2D, miplevel, internalformat, scaled_width, scaled_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, scaled);
+//			glTexImage2D (GL_TEXTURE_2D, miplevel, internalformat, scaled_width, scaled_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, scaled);
+			glTexImage2D (GL_TEXTURE_2D, miplevel, GL_RGBA, scaled_width, scaled_height, 0, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, scaled);
 		}
 	}
 
@@ -1700,7 +1704,8 @@ void GL_UploadBloom (gltexture_t *glt, unsigned *data)
 {
 	// upload it
 	GL_Bind (glt);
-	glTexImage2D (GL_TEXTURE_2D, 0, gl_solid_format, glt->width, glt->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+//	glTexImage2D (GL_TEXTURE_2D, 0, gl_solid_format, glt->width, glt->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+	glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, glt->width, glt->height, 0, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, data);
 
 	// set filter modes
 	GL_SetFilterModes (glt);

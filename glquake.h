@@ -148,9 +148,18 @@ extern float gl_hardware_max_anisotropy;
 extern float gl_texture_anisotropy;
 
 //====================================================
-// mh - new defines for lightmapping
-#define GL_BGRA 0x80E1
-#define GL_UNSIGNED_INT_8_8_8_8_REV 0x8367 
+// mh - GL_RGB doesn't actually exist in hardware...
+// http://www.opengl.org/wiki/Common_Mistakes#Texture_upload_and_pixel_reads
+// And if you are interested, most GPUs like chunks of 4 bytes. In other words, RGBA or BGRA is prefered.
+// RGB and BGR is considered bizarre since most GPUs, most CPUs and any other kind of chip don't handle 24
+// bits. This means, the driver converts your RGB or BGR to what the GPU prefers, which typically is BGRA.
+// also note: http://www.opengl.org/wiki/Common_Mistakes#Paletted_textures
+// Notice that the format is GL_BGRA. As explain before, most GPUs prefer the BGRA format; using RGB,
+// BGR and RGBA results in lower performance.
+#ifndef GL_BGRA
+#define GL_BGRA	0x80E1
+#endif
+#define GL_UNSIGNED_INT_8_8_8_8_REV	0x8367 
 
 //====================================================
 
@@ -370,8 +379,8 @@ extern int	indexed_bytes;
 extern int	rgba_bytes;
 extern int	bgra_bytes;
 
-extern	int		gl_solid_format;
-extern	int		gl_alpha_format;
+//extern	int		gl_solid_format;
+//extern	int		gl_alpha_format;
 
 extern	gltexture_t *notexture;
 extern	gltexture_t *nulltexture;
