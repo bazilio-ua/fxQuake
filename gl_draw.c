@@ -79,7 +79,8 @@ GLuint currenttexture = (GLuint)-1; // to avoid unnecessary texture sets
 GLenum TEXTURE0, TEXTURE1;
 qboolean mtexenabled = false;
 
-unsigned int d_8to24table[256]; // for GL renderer
+unsigned int d_8to24table[256];
+unsigned int d_8to24table_rgba[256];
 unsigned int d_8to24table_fbright[256];
 unsigned int d_8to24table_nobright[256];
 unsigned int d_8to24table_conchars[256];
@@ -1309,14 +1310,13 @@ Fills a box of pixels with a single color
 */
 void Draw_Fill (int x, int y, int w, int h, int c)
 {
-	byte *pal = (byte *)d_8to24table; // use d_8to24table instead of host_basepal
+	byte *pal = (byte *)d_8to24table_rgba; // use d_8to24table_rgba instead of host_basepal
 	float alpha = 1.0;
 
 	glDisable (GL_TEXTURE_2D);
 	glEnable (GL_BLEND); // for alpha
 	glDisable (GL_ALPHA_TEST); // for alpha
-//	glColor4f (pal[c*4]/255.0, pal[c*4+1]/255.0, pal[c*4+2]/255.0, alpha); // added alpha
-	glColor4f (pal[c*4+2]/255.0, pal[c*4+1]/255.0, pal[c*4]/255.0, alpha); // added alpha
+	glColor4f (pal[c*4]/255.0, pal[c*4+1]/255.0, pal[c*4+2]/255.0, alpha); // added alpha
 
 	glBegin (GL_QUADS);
 	glVertex2f (x, y);
@@ -1722,6 +1722,7 @@ void GL_UploadLightmap (gltexture_t *glt, byte *data)
 {
 	// upload it
 	GL_Bind (glt);
+//	glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, glt->width, glt->height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
 	glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, glt->width, glt->height, 0, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, data);
 
 	// set filter modes
@@ -1923,6 +1924,30 @@ void GL_FreeTextures (model_t *owner)
 
 /*
 ================
+GL_SwapBytes
+
+swap red and blue bytes
+================
+*/
+void GL_SwapBytes (gltexture_t *glt, byte *data)
+{
+	byte *dest = data;
+	int size, i, swap;
+
+	// swap red and blue bytes
+	size = glt->width*glt->height*rgba_bytes;
+	for (i=0; i<size; i+=rgba_bytes)
+	{
+		swap = dest[i];
+		dest[i] = dest[i+2];
+		dest[i+2] = swap;
+	}
+	if (developer.value > 1)
+		Con_DPrintf ("GL_SwapBytes: RGBA -> BGRA, '%s'\n", glt->name);
+}
+
+/*
+================
 GL_LoadTexture
 
 the one entry point for loading all textures
@@ -1930,7 +1955,7 @@ the one entry point for loading all textures
 */
 gltexture_t *GL_LoadTexture (model_t *owner, char *name, int width, int height, enum srcformat format, byte *data, char *source_file, unsigned source_offset, unsigned flags)
 {
-	int		size = 0; // keep compiler happy
+	int size = 0; // keep compiler happy
 	gltexture_t	*glt;
 	unsigned short crc;
 	int mark;
@@ -1952,7 +1977,7 @@ gltexture_t *GL_LoadTexture (model_t *owner, char *name, int width, int height, 
 			size *= rgba_bytes;
 			break;
 		case SRC_BLOOM:
-			size *= rgba_bytes;
+			size *= bgra_bytes;
 			break;
 	}
 
@@ -2000,6 +2025,7 @@ gltexture_t *GL_LoadTexture (model_t *owner, char *name, int width, int height, 
 			GL_UploadLightmap (glt, data);
 			break;
 		case SRC_RGBA:
+			GL_SwapBytes (glt, data);
 			GL_Upload32 (glt, (unsigned *)data);
 			break;
 		case SRC_BLOOM:
@@ -2022,8 +2048,8 @@ reloads a texture
 */
 void GL_ReloadTexture (gltexture_t *glt)
 {
-	byte	*data = NULL;
-	int		mark;
+	byte *data = NULL;
+	int mark;
 //
 // get source data
 //
@@ -2054,7 +2080,7 @@ void GL_ReloadTexture (gltexture_t *glt)
 					size *= rgba_bytes;
 					break;
 				case SRC_BLOOM:
-					size *= rgba_bytes;
+					size *= bgra_bytes;
 					break;
 			}
 	
@@ -2089,6 +2115,7 @@ void GL_ReloadTexture (gltexture_t *glt)
 			GL_UploadLightmap (glt, data);
 			break;
 		case SRC_RGBA:
+			GL_SwapBytes (glt, data);
 			GL_Upload32 (glt, (unsigned *)data);
 			break;
 		case SRC_BLOOM:

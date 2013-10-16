@@ -52,8 +52,8 @@ R_LoadPalette
 */
 void R_LoadPalette (void)
 {
-	byte mask[] = {255,255,255,0};
-	byte black[] = {0,0,0,255};
+//	byte mask[] = {255,255,255,0};
+//	byte black[] = {0,0,0,255};
 	byte *pal, *src, *dst;
 	int i;
 
@@ -65,7 +65,9 @@ void R_LoadPalette (void)
 
 	pal = host_basepal;
 
-	//standard palette, 255 is transparent
+	//
+	//standard palette (bgra), 255 is transparent
+	//
 	dst = (byte *)d_8to24table;
 	src = pal;
 	for (i=0; i<256; i++)
@@ -81,11 +83,38 @@ void R_LoadPalette (void)
 		dst[3] = 255;
 		dst += 4;
 	}
-	d_8to24table[255] &= *mask; // fix gcc warnings
+//	d_8to24table[255] &= *mask; // fix gcc warnings -- innacurate
+//	d_8to24table[255] &= *(int *)mask; //orig. breaks strict aliasing rules
+	((byte *)&d_8to24table[255])[3] = 0;
 
+	//
+	//rgba palette for particles, fastsky, draw_fill, clearcolor and anything else that needs to index the palette explicitly
+	//
+	dst = (byte *)d_8to24table_rgba;
+	src = pal;
+	for (i=0; i<256; i++)
+	{
+/*		*dst++ = *src++;
+		*dst++ = *src++;
+		*dst++ = *src++;
+		*dst++ = 255;
+*/
+		dst[0] = *src++;
+		dst[1] = *src++;
+		dst[2] = *src++;
+		dst[3] = 255;
+		dst += 4;
+	}
+//	d_8to24table_rgba[255] &= *mask; // fix gcc warnings -- innacurate
+//	d_8to24table_rgba[255] &= *(int *)mask; //orig. breaks strict aliasing rules
+	((byte *)&d_8to24table_rgba[255])[3] = 0;
+
+	//
 	//fullbright palette, 0-223 are black (for additive blending)
+	//
 	src = pal + 224*3;
-	dst = (byte *)(d_8to24table_fbright) + 224*4;
+//	dst = (byte *)(d_8to24table_fbright) + 224*4;
+	dst = (byte *)&d_8to24table_fbright[224];
 	for (i=224; i<256; i++)
 	{
 /*		*dst++ = *src++;
@@ -100,9 +129,19 @@ void R_LoadPalette (void)
 		dst += 4;
 	}
 	for (i=0; i<224; i++)
-		d_8to24table_fbright[i] = *black; // fix gcc warnings
+	{
+//		d_8to24table_fbright[i] = *black; // fix gcc warnings -- innacurate
+//		d_8to24table_fbright[i] = *(int *)black; //orig. breaks strict aliasing rules
+		dst = (byte *)&d_8to24table_fbright[i];
+		dst[2] = 0;
+		dst[1] = 0;
+		dst[0] = 0;
+		dst[3] = 255;
+	}
 
+	//
 	//nobright palette, 224-255 are black (for additive blending)
+	//
 	dst = (byte *)d_8to24table_nobright;
 	src = pal;
 	for (i=0; i<256; i++)
@@ -119,11 +158,23 @@ void R_LoadPalette (void)
 		dst += 4;
 	}
 	for (i=224; i<256; i++)
-		d_8to24table_nobright[i] = *black; // fix gcc warnings
+	{
+//		d_8to24table_nobright[i] = *black; // fix gcc warnings -- innacurate
+//		d_8to24table_nobright[i] = *(int *)black; //orig. breaks strict aliasing rules
+		dst = (byte *)&d_8to24table_nobright[i];
+		dst[2] = 0;
+		dst[1] = 0;
+		dst[0] = 0;
+		dst[3] = 255;
+	}
 
+	//
 	//conchars palette, 0 and 255 are transparent
+	//
 	memcpy(d_8to24table_conchars, d_8to24table, 256*4);
-	d_8to24table_conchars[0] &= *mask; // fix gcc warnings
+//	d_8to24table_conchars[0] &= *mask; // fix gcc warnings -- innacurate
+//	d_8to24table_conchars[0] &= *(int *)mask; //orig. breaks strict aliasing rules
+	((byte *)&d_8to24table_conchars[0])[3] = 0;
 }
 
 /*
@@ -147,9 +198,8 @@ void R_ClearColor (void)
 	byte *rgb;
 
 	// Refresh clearcolor
-	rgb = (byte *)(d_8to24table + ((int)r_clearcolor.value & 0xFF));
-	glClearColor (rgb[0] / 255.0, rgb[1] / 255.0, rgb[2] / 255.0, 0);
-//	glClearColor (rgb[2] / 255.0, rgb[1] / 255.0, rgb[0] / 255.0, 0);
+	rgb = (byte *)(d_8to24table_rgba + ((int)r_clearcolor.value & 0xFF));
+	glClearColor (rgb[0]/255.0, rgb[1]/255.0, rgb[2]/255.0, 0);
 }
 
 /*

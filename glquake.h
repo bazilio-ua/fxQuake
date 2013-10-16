@@ -26,7 +26,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <GL/glx.h>
 #endif
 
-extern unsigned int d_8to24table[256]; // for GL renderer
+extern unsigned int d_8to24table[256];
+extern unsigned int d_8to24table_rgba[256];
 extern unsigned int d_8to24table_fbright[256];
 extern unsigned int d_8to24table_nobright[256];
 extern unsigned int d_8to24table_conchars[256];

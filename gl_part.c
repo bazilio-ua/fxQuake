@@ -798,10 +798,9 @@ void R_DrawParticles (void)
 		scale *= texturescalefactor; // compensate for apparent size of different particle textures
 
 		// particle fade out
-		color = (byte *)&d_8to24table[(int)p->color]; // fix gcc warnings
+		color = (byte *)&d_8to24table_rgba[(int)p->color]; // fix gcc warnings
 		alpha = 255; // reserved for alpha
-//		glColor4ub (color[0], color[1], color[2], alpha);
-		glColor4ub (color[2], color[1], color[0], alpha);
+		glColor4ub (color[0], color[1], color[2], alpha);
 
 		glTexCoord2f (0,0);
 		glVertex3fv (p->org);

@@ -875,7 +875,7 @@ R_Clear
 void R_Clear (void)
 {
 	if (gl_clear.value || isIntel) // intel video workaround
-		glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClear (GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	else
 		glClear (GL_DEPTH_BUFFER_BIT);
 }

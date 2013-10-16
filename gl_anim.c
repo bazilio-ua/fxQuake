@@ -64,8 +64,6 @@ typedef struct targaheader_s {
 
 #define TARGAHEADERSIZE 18 // size on disk
 
-targaheader_t targa_header;
-
 int fgetLittleShort (FILE *f)
 {
 	byte	b1, b2;
@@ -101,6 +99,7 @@ byte *Image_LoadTGA (FILE *fin, int *width, int *height)
 	byte			*targa_rgba;
 	int				realrow; //johnfitz -- fix for upside-down targas
 	qboolean		upside_down; //johnfitz -- fix for upside-down targas
+	targaheader_t targa_header;
 
 	targa_header.id_length = fgetc(fin);
 	targa_header.colormap_type = fgetc(fin);
@@ -148,7 +147,7 @@ byte *Image_LoadTGA (FILE *fin, int *width, int *height)
 				byte red,green,blue,alphabyte;
 				switch (targa_header.pixel_size)
 				{
-				case 24:
+					case 24:
 						blue = getc(fin);
 						green = getc(fin);
 						red = getc(fin);
@@ -157,7 +156,7 @@ byte *Image_LoadTGA (FILE *fin, int *width, int *height)
 						*pixbuf++ = blue;
 						*pixbuf++ = 255;
 						break;
-				case 32:
+					case 32:
 						blue = getc(fin);
 						green = getc(fin);
 						red = getc(fin);
@@ -188,20 +187,20 @@ byte *Image_LoadTGA (FILE *fin, int *width, int *height)
 				{
 					switch (targa_header.pixel_size)
 					{
-					case 24:
+						case 24:
 							blue = getc(fin);
 							green = getc(fin);
 							red = getc(fin);
 							alphabyte = 255;
 							break;
-					case 32:
+						case 32:
 							blue = getc(fin);
 							green = getc(fin);
 							red = getc(fin);
 							alphabyte = getc(fin);
 							break;
-					default: /* avoid compiler warnings */
-						blue = red = green = alphabyte = 0;
+						default: /* avoid compiler warnings */
+							blue = green = red = alphabyte = 0;
 					}
 
 					for(j=0;j<packetSize;j++)
@@ -231,7 +230,7 @@ byte *Image_LoadTGA (FILE *fin, int *width, int *height)
 					{
 						switch (targa_header.pixel_size)
 						{
-						case 24:
+							case 24:
 								blue = getc(fin);
 								green = getc(fin);
 								red = getc(fin);
@@ -240,7 +239,7 @@ byte *Image_LoadTGA (FILE *fin, int *width, int *height)
 								*pixbuf++ = blue;
 								*pixbuf++ = 255;
 								break;
-						case 32:
+							case 32:
 								blue = getc(fin);
 								green = getc(fin);
 								red = getc(fin);
@@ -250,8 +249,8 @@ byte *Image_LoadTGA (FILE *fin, int *width, int *height)
 								*pixbuf++ = blue;
 								*pixbuf++ = alphabyte;
 								break;
-						default: /* avoid compiler warnings */
-							blue = red = green = alphabyte = 0;
+							default: /* avoid compiler warnings */
+								blue = green = red = alphabyte = 0;
 						}
 						column++;
 						if (column==columns) // pixel packet run spans across rows
@@ -1760,7 +1759,7 @@ void R_InitSky (texture_t *mt)
 			p = src[i*256 + j];
 			if (p != 0)
 			{
-				rgba = &d_8to24table[p];
+				rgba = &d_8to24table_rgba[p];
 				r += ((byte *)rgba)[0];
 				g += ((byte *)rgba)[1];
 				b += ((byte *)rgba)[2];
