@@ -92,12 +92,14 @@ typedef struct texture_s
 #define SURF_DRAWTILED		0x20
 #define SURF_DRAWBACKGROUND	0x40
 #define SURF_UNDERWATER		0x80
-#define SURF_NOTEXTURE		0x100 // johnfitz
-#define SURF_DRAWALPHA		0x200
-#define SURF_DRAWLAVA		0x400
-#define SURF_DRAWSLIME		0x800
-#define SURF_DRAWTELE		0x1000
-#define SURF_DRAWWATER		0x2000
+#define SURF_TRANSLUCENT	0x100 // EER1
+#define SURF_DRAWBLACK		0x200
+#define SURF_NOTEXTURE		0x400 // johnfitz
+#define SURF_DRAWALPHA		0x800
+#define SURF_DRAWLAVA		0x1000
+#define SURF_DRAWSLIME		0x2000
+#define SURF_DRAWTELE		0x4000
+#define SURF_DRAWWATER		0x8000
 
 typedef struct
 {
