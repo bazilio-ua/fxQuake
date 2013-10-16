@@ -716,9 +716,9 @@ qboolean Image_WriteTGA (char *name, byte *data, int width, int height, int bpp,
 	if (upsidedown)
 		header[17] = 0x20; // upside-down attribute
 
-	// swap red and blue bytes
 	bytes = bpp/8;
 	size = width*height*bytes;
+	// swap red and blue bytes
 /*	for (i=0; i<size; i+=bytes)
 	{
 		temp = data[i];
