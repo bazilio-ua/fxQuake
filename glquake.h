@@ -374,8 +374,6 @@ extern	mleaf_t		*r_viewleaf, *r_oldviewleaf;
 //
 //
 //
-extern	int		overbright;
-
 extern	int		d_lightstylevalue[256];	// 8.8 fraction of base light value
 
 extern int	indexed_bytes;
@@ -436,7 +434,6 @@ extern	cvar_t	gl_smoothmodels;
 extern	cvar_t	gl_affinemodels;
 extern	cvar_t	gl_polyblend;
 extern	cvar_t	gl_flashblend;
-extern	cvar_t	gl_overbright;
 extern	cvar_t	gl_zfix; // z-fighting fix
 
 // Nehahra

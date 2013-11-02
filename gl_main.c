@@ -95,7 +95,6 @@ cvar_t	gl_smoothmodels = {"gl_smoothmodels","1"};
 cvar_t	gl_affinemodels = {"gl_affinemodels","0"};
 cvar_t	gl_polyblend = {"gl_polyblend","1"};
 cvar_t	gl_flashblend = {"gl_flashblend","1"};
-cvar_t	gl_overbright = {"gl_overbright", "1", true};
 cvar_t	gl_zfix = {"gl_zfix","0"}; // z-fighting fix
 
 /*
@@ -540,7 +539,7 @@ void R_DrawAliasModel (entity_t *e)
 
 	shadedots = r_avertexnormal_dots[((int)(e->angles[1] * (SHADEDOT_QUANT / 360.0))) & (SHADEDOT_QUANT - 1)];
 	//VectorScale (lightcolor, 1.0f / 192.0f, lightcolor);//orig.
-	VectorScale (lightcolor, 1.0f / (160.0f * overbright), lightcolor); //FX, new value
+	VectorScale (lightcolor, 1.0f / 160.0f, lightcolor); //FX, new value
 
 	//
 	// set up textures
@@ -571,7 +570,7 @@ void R_DrawAliasModel (entity_t *e)
 		glTexEnvf (GL_TEXTURE_ENV, GL_COMBINE_RGB_EXT, GL_MODULATE);
 		glTexEnvf (GL_TEXTURE_ENV, GL_SOURCE0_RGB_EXT, GL_TEXTURE);
 		glTexEnvf (GL_TEXTURE_ENV, GL_SOURCE1_RGB_EXT, GL_PRIMARY_COLOR_EXT);
-		glTexEnvf (GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, 2.0f * overbright);
+		glTexEnvf (GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, 2.0f);
 
 		// Binds fullbright skin to texture env 1
 		GL_EnableMultitexture (); // selects TEXTURE1
@@ -591,7 +590,7 @@ void R_DrawAliasModel (entity_t *e)
 		glTexEnvf (GL_TEXTURE_ENV, GL_COMBINE_RGB_EXT, GL_MODULATE);
 		glTexEnvf (GL_TEXTURE_ENV, GL_SOURCE0_RGB_EXT, GL_TEXTURE);
 		glTexEnvf (GL_TEXTURE_ENV, GL_SOURCE1_RGB_EXT, GL_PRIMARY_COLOR_EXT);
-		glTexEnvf (GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, 2.0f * overbright);
+		glTexEnvf (GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, 2.0f);
 		GL_DrawAliasFrame (paliashdr, lerpdata); // FX
 		glTexEnvf (GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, 1.0f);
 		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
