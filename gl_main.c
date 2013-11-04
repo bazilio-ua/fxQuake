@@ -268,50 +268,50 @@ void R_DrawSpriteModel (entity_t *e)
 
 	switch(psprite->type)
 	{
-	case SPR_VP_PARALLEL_UPRIGHT: //faces view plane, up is towards the heavens
-		v_up[0] = 0;
-		v_up[1] = 0;
-		v_up[2] = 1;
-		s_up = v_up;
-		s_right = vright;
-		break;
-	case SPR_FACING_UPRIGHT: //faces camera origin, up is towards the heavens
-		VectorSubtract(e->origin, r_origin, v_forward);
-		v_forward[2] = 0;
-		VectorNormalizeFast(v_forward);
-		v_right[0] = v_forward[1];
-		v_right[1] = -v_forward[0];
-		v_right[2] = 0;
-		v_up[0] = 0;
-		v_up[1] = 0;
-		v_up[2] = 1;
-		s_up = v_up;
-		s_right = v_right;
-		break;
-	case SPR_VP_PARALLEL: //faces view plane, up is towards the top of the screen
-		s_up = vup;
-		s_right = vright;
-		break;
-	case SPR_ORIENTED: //pitch yaw roll are independent of camera
-		AngleVectors (e->angles, v_forward, v_right, v_up);
-		s_up = v_up;
-		s_right = v_right;
-		break;
-	case SPR_VP_PARALLEL_ORIENTED: //faces view plane, but obeys roll value
-		angle = e->angles[ROLL] * M_PI_DIV_180;
-		sr = sin(angle);
-		cr = cos(angle);
-		v_right[0] = vright[0] * cr + vup[0] * sr;
-		v_right[1] = vright[1] * cr + vup[1] * sr;
-		v_right[2] = vright[2] * cr + vup[2] * sr;
-		v_up[0] = vright[0] * -sr + vup[0] * cr;
-		v_up[1] = vright[1] * -sr + vup[1] * cr;
-		v_up[2] = vright[2] * -sr + vup[2] * cr;
-		s_up = v_up;
-		s_right = v_right;
-		break;
-	default:
-		return;
+		case SPR_VP_PARALLEL_UPRIGHT: //faces view plane, up is towards the heavens
+			v_up[0] = 0;
+			v_up[1] = 0;
+			v_up[2] = 1;
+			s_up = v_up;
+			s_right = vright;
+			break;
+		case SPR_FACING_UPRIGHT: //faces camera origin, up is towards the heavens
+			VectorSubtract(e->origin, r_origin, v_forward);
+			v_forward[2] = 0;
+			VectorNormalizeFast(v_forward);
+			v_right[0] = v_forward[1];
+			v_right[1] = -v_forward[0];
+			v_right[2] = 0;
+			v_up[0] = 0;
+			v_up[1] = 0;
+			v_up[2] = 1;
+			s_up = v_up;
+			s_right = v_right;
+			break;
+		case SPR_VP_PARALLEL: //faces view plane, up is towards the top of the screen
+			s_up = vup;
+			s_right = vright;
+			break;
+		case SPR_ORIENTED: //pitch yaw roll are independent of camera
+			AngleVectors (e->angles, v_forward, v_right, v_up);
+			s_up = v_up;
+			s_right = v_right;
+			break;
+		case SPR_VP_PARALLEL_ORIENTED: //faces view plane, but obeys roll value
+			angle = e->angles[ROLL] * M_PI_DIV_180;
+			sr = sin(angle);
+			cr = cos(angle);
+			v_right[0] = vright[0] * cr + vup[0] * sr;
+			v_right[1] = vright[1] * cr + vup[1] * sr;
+			v_right[2] = vright[2] * cr + vup[2] * sr;
+			v_up[0] = vright[0] * -sr + vup[0] * cr;
+			v_up[1] = vright[1] * -sr + vup[1] * cr;
+			v_up[2] = vright[2] * -sr + vup[2] * cr;
+			s_up = v_up;
+			s_right = v_right;
+			break;
+		default:
+			return;
 	}
 
 	// offset decals
