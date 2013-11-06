@@ -697,7 +697,7 @@ TODO: support BGRA and BGR formats (since opengl can return them, and we don't h
 */
 qboolean Image_WriteTGA (char *name, byte *data, int width, int height, int bpp, qboolean upsidedown)
 {
-	int		handle, /* i, temp, */ size, bytes;
+	int		handle, i, temp, size, bytes;
 	char	pathname[MAX_OSPATH];
 	byte	header[TARGAHEADERSIZE];
 
@@ -719,13 +719,13 @@ qboolean Image_WriteTGA (char *name, byte *data, int width, int height, int bpp,
 	bytes = bpp/8;
 	size = width*height*bytes;
 	// swap red and blue bytes
-/*	for (i=0; i<size; i+=bytes)
+	for (i=0; i<size; i+=bytes)
 	{
 		temp = data[i];
 		data[i] = data[i+2];
 		data[i+2] = temp;
 	}
-*/
+
 	Sys_FileWrite (handle, &header, TARGAHEADERSIZE);
 	Sys_FileWrite (handle, data, size);
 	Sys_FileClose (handle);
@@ -767,8 +767,9 @@ void SCR_ScreenShot_f (void)
 //	buffer = malloc(glwidth * glheight * 3);
 	buffer = malloc(glwidth * glheight * 4);
 
-//	glReadPixels (glx, gly, glwidth, glheight, GL_RGB, GL_UNSIGNED_BYTE, buffer);
-	glReadPixels (glx, gly, glwidth, glheight, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, buffer);
+//	glReadPixels (glx, gly, glwidth, glheight, GL_RGB, GL_UNSIGNED_BYTE, buffer); //orig.
+//	glReadPixels (glx, gly, glwidth, glheight, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, buffer); //disabled
+	glReadPixels (glx, gly, glwidth, glheight, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
 
 //
 // now write the file

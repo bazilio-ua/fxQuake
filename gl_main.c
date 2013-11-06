@@ -96,6 +96,7 @@ cvar_t	gl_affinemodels = {"gl_affinemodels","0"};
 cvar_t	gl_polyblend = {"gl_polyblend","1"};
 cvar_t	gl_flashblend = {"gl_flashblend","1"};
 cvar_t	gl_zfix = {"gl_zfix","0"}; // z-fighting fix
+cvar_t  gl_oldspr = {"gl_oldspr", "0"}; // Old opaque sprite
 
 /*
 =================
@@ -314,6 +315,9 @@ void R_DrawSpriteModel (entity_t *e)
 			return;
 	}
 
+	GL_DisableMultitexture (); // selects TEXTURE0
+	GL_Bind (frame->gltexture);
+
 	// offset decals
 	if (psprite->type == SPR_ORIENTED)
 	{
@@ -324,10 +328,14 @@ void R_DrawSpriteModel (entity_t *e)
 
 	glColor3f (1,1,1);
 
-	GL_DisableMultitexture (); // selects TEXTURE0
-	GL_Bind (frame->gltexture);
+	if (gl_oldspr.value)
+		glEnable (GL_ALPHA_TEST);
+	else
+	{
+		glDepthMask (GL_FALSE); // disable zbuffer updates
+		glEnable (GL_BLEND);
+	}
 
-	glEnable (GL_ALPHA_TEST);
 	glBegin (GL_QUADS);
 
 	glTexCoord2f (0, 1);
@@ -351,7 +359,14 @@ void R_DrawSpriteModel (entity_t *e)
 	glVertex3fv (point);
 
 	glEnd ();
-	glDisable (GL_ALPHA_TEST);
+
+	if (gl_oldspr.value)
+		glDisable (GL_ALPHA_TEST);
+	else
+	{
+		glDepthMask (GL_TRUE); // enable zbuffer updates
+		glDisable (GL_BLEND);
+	}
 
 	// offset decals
 	if (psprite->type == SPR_ORIENTED)

@@ -27,7 +27,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 
 extern unsigned int d_8to24table[256];
-extern unsigned int d_8to24table_rgba[256];
+//extern unsigned int d_8to24table_rgba[256];
 extern unsigned int d_8to24table_fbright[256];
 extern unsigned int d_8to24table_nobright[256];
 extern unsigned int d_8to24table_conchars[256];
@@ -378,7 +378,8 @@ extern	int		d_lightstylevalue[256];	// 8.8 fraction of base light value
 
 extern int	indexed_bytes;
 extern int	rgba_bytes;
-extern int	bgra_bytes;
+//extern int	bgra_bytes;
+extern int	lightmap_bytes;
 
 //extern	int		gl_solid_format;
 //extern	int		gl_alpha_format;
@@ -435,6 +436,7 @@ extern	cvar_t	gl_affinemodels;
 extern	cvar_t	gl_polyblend;
 extern	cvar_t	gl_flashblend;
 extern	cvar_t	gl_zfix; // z-fighting fix
+extern	cvar_t  gl_oldspr;
 
 // Nehahra
 extern	cvar_t  gl_fogenable;

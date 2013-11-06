@@ -1759,7 +1759,7 @@ void R_InitSky (texture_t *mt)
 			p = src[i*256 + j];
 			if (p != 0)
 			{
-				rgba = &d_8to24table_rgba[p];
+				rgba = &d_8to24table[p];
 				r += ((byte *)rgba)[0];
 				g += ((byte *)rgba)[1];
 				b += ((byte *)rgba)[2];
