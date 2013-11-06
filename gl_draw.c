@@ -169,7 +169,7 @@ void GL_UploadWarpImage (void)
 		if (glt->flags & TEXPREF_WARPIMAGE)
 		{
 			GL_Bind (glt);
-			glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, gl_warpimage_size, gl_warpimage_size, 0, GL_RGBA, GL_UNSIGNED_BYTE, dummy);
+			glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, gl_warpimage_size, gl_warpimage_size, 0, GL_RGBA, GL_UNSIGNED_BYTE, dummy);
 			glt->width = glt->height = gl_warpimage_size;
 		}
 	}
@@ -1600,6 +1600,7 @@ handles 32bit source data
 */
 void GL_Upload32 (gltexture_t *glt, unsigned *data)
 {
+	int			internalformat;
 	int			scaled_width, scaled_height;
 	int			picmip;
 	unsigned	*scaled = NULL;
@@ -1657,7 +1658,8 @@ void GL_Upload32 (gltexture_t *glt, unsigned *data)
 
 	// upload
 	GL_Bind (glt);
-	glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, scaled_width, scaled_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, scaled);
+	internalformat = (glt->flags & TEXPREF_ALPHA) ? GL_RGBA : GL_RGB;
+	glTexImage2D (GL_TEXTURE_2D, 0, internalformat, scaled_width, scaled_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, scaled);
 
 	// upload mipmaps
 	if (glt->flags & TEXPREF_MIPMAP)
@@ -1673,7 +1675,7 @@ void GL_Upload32 (gltexture_t *glt, unsigned *data)
 			scaled_height = max(scaled_height, 1);
 
 			miplevel++;
-			glTexImage2D (GL_TEXTURE_2D, miplevel, GL_RGBA, scaled_width, scaled_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, scaled);
+			glTexImage2D (GL_TEXTURE_2D, miplevel, internalformat, scaled_width, scaled_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, scaled);
 		}
 	}
 

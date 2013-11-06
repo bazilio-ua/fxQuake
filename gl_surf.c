@@ -556,9 +556,9 @@ void R_DrawSequentialWaterPoly (msurface_t *s)
 			{
 				if (s->flags & SURF_DRAWLAVA)
 					entalpha = CLAMP(0.0, r_lavaalpha.value, 1.0);
-				if (s->flags & SURF_DRAWSLIME)
+				else if (s->flags & SURF_DRAWSLIME)
 					entalpha = CLAMP(0.0, r_slimealpha.value, 1.0);
-				if (s->flags & SURF_DRAWTELE)
+				else if (s->flags & SURF_DRAWTELE)
 					entalpha = CLAMP(0.0, r_telealpha.value, 1.0);
 			}
 			else
@@ -598,7 +598,7 @@ void R_DrawSequentialWaterPoly (msurface_t *s)
 
 			if (s->flags & SURF_DRAWLAVA)
 				entfog = CLAMP(0.0, r_lavafog.value, 1.0);
-			if (s->flags & SURF_DRAWSLIME)
+			else if (s->flags & SURF_DRAWSLIME)
 				entfog = CLAMP(0.0, r_slimefog.value, 1.0);
 
 			if (R_FogGetDensity() > 0 && entfog > 0)
@@ -882,9 +882,9 @@ void R_DrawTextureChainsWater (void)
 				{
 					if (s->flags & SURF_DRAWLAVA)
 						wateralpha = CLAMP(0.0, r_lavaalpha.value, 1.0);
-					if (s->flags & SURF_DRAWSLIME)
+					else if (s->flags & SURF_DRAWSLIME)
 						wateralpha = CLAMP(0.0, r_slimealpha.value, 1.0);
-					if (s->flags & SURF_DRAWTELE)
+					else if (s->flags & SURF_DRAWTELE)
 						wateralpha = CLAMP(0.0, r_telealpha.value, 1.0);
 				}
 				else
@@ -926,7 +926,7 @@ void R_DrawTextureChainsWater (void)
 
 					if (s->flags & SURF_DRAWLAVA)
 						lavafog = CLAMP(0.0, r_lavafog.value, 1.0);
-					if (s->flags & SURF_DRAWSLIME)
+					else if (s->flags & SURF_DRAWSLIME)
 						lavafog = CLAMP(0.0, r_slimefog.value, 1.0);
 
 					if (R_FogGetDensity() > 0 && lavafog > 0)
