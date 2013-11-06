@@ -334,6 +334,8 @@ void R_DrawSpriteModel (entity_t *e)
 	{
 		glDepthMask (GL_FALSE); // disable zbuffer updates
 		glEnable (GL_BLEND);
+		glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+		glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 	}
 
 	glBegin (GL_QUADS);
@@ -366,6 +368,8 @@ void R_DrawSpriteModel (entity_t *e)
 	{
 		glDepthMask (GL_TRUE); // enable zbuffer updates
 		glDisable (GL_BLEND);
+		glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	}
 
 	// offset decals
