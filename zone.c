@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "quakedef.h"
 
-#define	DYNAMIC_SIZE	0x100000	// 1 Mb, was 0x50000 (320 kb), orig. 0xc000 (48 kb)
+#define	DYNAMIC_SIZE	0x200000	// 2 Mb, was 0x50000 (320 kb), orig. 0xc000 (48 kb)
 
 #define	ZONEID	0x1d4a11
 #define MINFRAGMENT	64
