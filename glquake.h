@@ -27,7 +27,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 
 extern unsigned int d_8to24table[256];
-//extern unsigned int d_8to24table_rgba[256];
 extern unsigned int d_8to24table_fbright[256];
 extern unsigned int d_8to24table_nobright[256];
 extern unsigned int d_8to24table_conchars[256];
@@ -149,20 +148,6 @@ extern float gl_hardware_max_anisotropy;
 extern float gl_texture_anisotropy;
 
 //====================================================
-// mh - GL_RGB doesn't actually exist in hardware...
-// http://www.opengl.org/wiki/Common_Mistakes#Texture_upload_and_pixel_reads
-// And if you are interested, most GPUs like chunks of 4 bytes. In other words, RGBA or BGRA is prefered.
-// RGB and BGR is considered bizarre since most GPUs, most CPUs and any other kind of chip don't handle 24
-// bits. This means, the driver converts your RGB or BGR to what the GPU prefers, which typically is BGRA.
-// also note: http://www.opengl.org/wiki/Common_Mistakes#Paletted_textures
-// Notice that the format is GL_BGRA. As explain before, most GPUs prefer the BGRA format; using RGB,
-// BGR and RGBA results in lower performance.
-#ifndef GL_BGRA
-#define GL_BGRA	0x80E1
-#endif
-#define GL_UNSIGNED_INT_8_8_8_8_REV	0x8367 
-
-//====================================================
 
 #define TEXPREF_NONE			0x0000
 #define TEXPREF_MIPMAP			0x0001	// generate mipmaps
@@ -229,8 +214,6 @@ void GL_ReloadTextures_f (void);
 gltexture_t *GL_LoadTexture (model_t *owner, char *name, int width, int height, enum srcformat format, byte *data, char *source_file, unsigned source_offset, unsigned flags);
 gltexture_t *GL_FindTexture (model_t *owner, char *name);
 void GL_Set2D (void);
-//void Draw_Pic (int x, int y, qpic_t *pic);
-//void Draw_SubPic (int x, int y, qpic_t *pic, int srcx, int srcy, int width, int height);
 void GL_SelectTexture (GLenum target);
 void GL_Bind (gltexture_t *texture);
 void GL_DisableMultitexture (void);
@@ -378,11 +361,7 @@ extern	int		d_lightstylevalue[256];	// 8.8 fraction of base light value
 
 extern int	indexed_bytes;
 extern int	rgba_bytes;
-//extern int	bgra_bytes;
 extern int	lightmap_bytes;
-
-//extern	int		gl_solid_format;
-//extern	int		gl_alpha_format;
 
 extern	gltexture_t *notexture;
 extern	gltexture_t *nulltexture;

@@ -764,17 +764,13 @@ void SCR_ScreenShot_f (void)
 //
 // get data
 //
-//	buffer = malloc(glwidth * glheight * 3);
 	buffer = malloc(glwidth * glheight * 4);
 
-//	glReadPixels (glx, gly, glwidth, glheight, GL_RGB, GL_UNSIGNED_BYTE, buffer); //orig.
-//	glReadPixels (glx, gly, glwidth, glheight, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, buffer); //disabled
 	glReadPixels (glx, gly, glwidth, glheight, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
 
 //
 // now write the file
 //
-//	if (Image_WriteTGA (tganame, buffer, glwidth, glheight, 24, false))
 	if (Image_WriteTGA (tganame, buffer, glwidth, glheight, 32, false))
 		Con_Printf ("Wrote %s\n", tganame);
 	else

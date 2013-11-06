@@ -195,11 +195,6 @@ void R_BuildLightMap (msurface_t *surf, byte *dest, int stride)
 	{
 		for (j=0 ; j<smax ; j++)
 		{
-/*			t = *bl++ >> 8;if (t > 255) t = 255;*dest++ = t;
-			t = *bl++ >> 8;if (t > 255) t = 255;*dest++ = t;
-			t = *bl++ >> 8;if (t > 255) t = 255;*dest++ = t;
-			*dest++ = 255;
-*/
 			t = *bl++ >> 8;if (t > 255) t = 255;dest[0] = t;
 			t = *bl++ >> 8;if (t > 255) t = 255;dest[1] = t;
 			t = *bl++ >> 8;if (t > 255) t = 255;dest[2] = t;
@@ -338,10 +333,6 @@ void R_UploadLightmaps (void)
 
 		theRect = &lightmap_rectchange[lmap];
 
-//		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, theRect->t, BLOCK_WIDTH, theRect->h, GL_RGB,
-//			GL_UNSIGNED_BYTE, lightmaps+(lmap* BLOCK_HEIGHT + theRect->t) *BLOCK_WIDTH*3); //orig.
-//		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, theRect->t, BLOCK_WIDTH, theRect->h, GL_BGRA,
-//			GL_UNSIGNED_INT_8_8_8_8_REV, lightmaps+(lmap* BLOCK_HEIGHT + theRect->t) *BLOCK_WIDTH*bgra_bytes); //disabled
 		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, theRect->t, BLOCK_WIDTH, theRect->h, GL_RGBA,
 			GL_UNSIGNED_BYTE, lightmaps+(lmap* BLOCK_HEIGHT + theRect->t) *BLOCK_WIDTH*lightmap_bytes);
 

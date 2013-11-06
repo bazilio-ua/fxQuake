@@ -36,11 +36,7 @@ gltexture_t	*char_texture;
 
 int		indexed_bytes = 1;
 int		rgba_bytes = 4;
-//int		bgra_bytes = 4;
 int		lightmap_bytes = 4;
-
-//int		gl_solid_format = GL_RGB; // was 3
-//int		gl_alpha_format = GL_RGBA; // was 4
 
 #define MAXGLMODES 6
 
@@ -81,7 +77,6 @@ GLenum TEXTURE0, TEXTURE1;
 qboolean mtexenabled = false;
 
 unsigned int d_8to24table[256];
-//unsigned int d_8to24table_rgba[256];
 unsigned int d_8to24table_fbright[256];
 unsigned int d_8to24table_nobright[256];
 unsigned int d_8to24table_conchars[256];
@@ -174,8 +169,6 @@ void GL_UploadWarpImage (void)
 		if (glt->flags & TEXPREF_WARPIMAGE)
 		{
 			GL_Bind (glt);
-//			glTexImage2D (GL_TEXTURE_2D, 0, gl_solid_format, gl_warpimage_size, gl_warpimage_size, 0, GL_RGBA, GL_UNSIGNED_BYTE, dummy); //orig.
-//			glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, gl_warpimage_size, gl_warpimage_size, 0, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, dummy); //disabled
 			glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, gl_warpimage_size, gl_warpimage_size, 0, GL_RGBA, GL_UNSIGNED_BYTE, dummy);
 			glt->width = glt->height = gl_warpimage_size;
 		}
@@ -1607,7 +1600,6 @@ handles 32bit source data
 */
 void GL_Upload32 (gltexture_t *glt, unsigned *data)
 {
-//	int			internalformat;
 	int			scaled_width, scaled_height;
 	int			picmip;
 	unsigned	*scaled = NULL;
@@ -1665,9 +1657,6 @@ void GL_Upload32 (gltexture_t *glt, unsigned *data)
 
 	// upload
 	GL_Bind (glt);
-//	internalformat = (glt->flags & TEXPREF_ALPHA) ? gl_alpha_format : gl_solid_format;
-//	glTexImage2D (GL_TEXTURE_2D, 0, internalformat, scaled_width, scaled_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, scaled); //orig.
-//	glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, scaled_width, scaled_height, 0, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, scaled); //disabled
 	glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, scaled_width, scaled_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, scaled);
 
 	// upload mipmaps
@@ -1684,8 +1673,6 @@ void GL_Upload32 (gltexture_t *glt, unsigned *data)
 			scaled_height = max(scaled_height, 1);
 
 			miplevel++;
-//			glTexImage2D (GL_TEXTURE_2D, miplevel, internalformat, scaled_width, scaled_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, scaled); //orig.
-//			glTexImage2D (GL_TEXTURE_2D, miplevel, GL_RGBA, scaled_width, scaled_height, 0, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, scaled); //disabled
 			glTexImage2D (GL_TEXTURE_2D, miplevel, GL_RGBA, scaled_width, scaled_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, scaled);
 		}
 	}
@@ -1708,8 +1695,6 @@ void GL_UploadBloom (gltexture_t *glt, unsigned *data)
 {
 	// upload it
 	GL_Bind (glt);
-//	glTexImage2D (GL_TEXTURE_2D, 0, gl_solid_format, glt->width, glt->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data); //orig.
-//	glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, glt->width, glt->height, 0, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, data); //disabled
 	glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, glt->width, glt->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 
 	// set filter modes
@@ -1727,8 +1712,6 @@ void GL_UploadLightmap (gltexture_t *glt, byte *data)
 {
 	// upload it
 	GL_Bind (glt);
-//	glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, glt->width, glt->height, 0, GL_RGB, GL_UNSIGNED_BYTE, data); //orig.
-//	glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, glt->width, glt->height, 0, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, data); //disabled
 	glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, glt->width, glt->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 
 	// set filter modes
@@ -1930,32 +1913,6 @@ void GL_FreeTextures (model_t *owner)
 
 /*
 ================
-GL_SwapBytes
-
-swap red and blue bytes
-================
-*/
-/*
-void GL_SwapBytes (gltexture_t *glt, byte *data)
-{
-	byte *dest = data;
-	int size, i, swap;
-
-	// swap red and blue bytes
-	size = glt->width*glt->height*rgba_bytes;
-	for (i=0; i<size; i+=rgba_bytes)
-	{
-		swap = dest[i];
-		dest[i] = dest[i+2];
-		dest[i+2] = swap;
-	}
-	if (developer.value > 1)
-		Con_DPrintf ("GL_SwapBytes: RGBA -> BGRA, '%s'\n", glt->name);
-}
-*/
-
-/*
-================
 GL_LoadTexture
 
 the one entry point for loading all textures
@@ -2033,7 +1990,6 @@ gltexture_t *GL_LoadTexture (model_t *owner, char *name, int width, int height, 
 			GL_UploadLightmap (glt, data);
 			break;
 		case SRC_RGBA:
-//			GL_SwapBytes (glt, data);
 			GL_Upload32 (glt, (unsigned *)data);
 			break;
 		case SRC_BLOOM:
@@ -2123,7 +2079,6 @@ void GL_ReloadTexture (gltexture_t *glt)
 			GL_UploadLightmap (glt, data);
 			break;
 		case SRC_RGBA:
-//			GL_SwapBytes (glt, data);
 			GL_Upload32 (glt, (unsigned *)data);
 			break;
 		case SRC_BLOOM:
