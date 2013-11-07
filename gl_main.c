@@ -247,7 +247,6 @@ mspriteframe_t *R_GetSpriteFrame (entity_t *e)
 	return pspriteframe;
 }
 
-
 /*
 =================
 R_DrawSpriteModel 
@@ -293,7 +292,7 @@ void R_DrawSpriteModel (entity_t *e)
 			s_up = vup;
 			s_right = vright;
 			break;
-		case SPR_ORIENTED: //pitch yaw roll are independent of camera
+		case SPR_ORIENTED: //pitch yaw roll are independent of camera (bullet marks on walls)
 			AngleVectors (e->angles, v_forward, v_right, v_up);
 			s_up = v_up;
 			s_right = v_right;
@@ -332,7 +331,8 @@ void R_DrawSpriteModel (entity_t *e)
 		glEnable (GL_ALPHA_TEST);
 	else
 	{
-		glDepthMask (GL_FALSE); // disable zbuffer updates
+		if (psprite->type == SPR_ORIENTED)
+			glDepthMask (GL_FALSE); // disable zbuffer updates
 		glEnable (GL_BLEND);
 		glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
 		glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
@@ -366,7 +366,8 @@ void R_DrawSpriteModel (entity_t *e)
 		glDisable (GL_ALPHA_TEST);
 	else
 	{
-		glDepthMask (GL_TRUE); // enable zbuffer updates
+		if (psprite->type == SPR_ORIENTED)
+			glDepthMask (GL_TRUE); // enable zbuffer updates
 		glDisable (GL_BLEND);
 		glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -687,17 +688,17 @@ cleanup:
 
 /*
 =============
-R_DrawEntitiesOnList
+R_DrawEntities
 =============
 */
-void R_DrawEntitiesOnList (qboolean alphapass)
+void R_DrawEntities (qboolean alphapass)
 {
 	int		i;
 
 	if (!r_drawentities.value)
 		return;
 
-	// sprites are not a special case
+	// sprites are a special case
 	for (i=0 ; i<cl_numvisedicts ; i++)
 	{
 		if ((i + 1) % 100 == 0)
@@ -725,10 +726,6 @@ void R_DrawEntitiesOnList (qboolean alphapass)
 				R_DrawBrushModel (currententity, false);
 				break;
 
-			case mod_sprite:
-				R_DrawSpriteModel (currententity);
-				break;
-
 			default:
 				break;
 		}
@@ -737,17 +734,17 @@ void R_DrawEntitiesOnList (qboolean alphapass)
 
 /*
 =============
-R_DrawWaterEntitiesOnList
+R_DrawWaterEntities
 =============
 */
-void R_DrawWaterEntitiesOnList (qboolean alphapass)
+void R_DrawWaterEntities (qboolean alphapass)
 {
 	int		i;
 
 	if (!r_drawentities.value)
 		return;
 
-	// sprites are not a special case
+	// special case to draw water entities
 	for (i=0 ; i<cl_numvisedicts ; i++)
 	{
 		if ((i + 1) % 100 == 0)
@@ -761,14 +758,42 @@ void R_DrawWaterEntitiesOnList (qboolean alphapass)
 			(ENTALPHA_DECODE(currententity->alpha) == 1 && alphapass))
 			continue;
 
-		// chase_active
-		if (currententity == &cl_entities[cl.viewentity])
-			currententity->angles[0] *= 0.3;
-
 		switch (currententity->model->type)
 		{
 			case mod_brush:
 				R_DrawBrushModel (currententity, true);
+				break;
+
+			default:
+				break;
+		}
+	}
+}
+
+/*
+=============
+R_DrawSprites
+=============
+*/
+void R_DrawSprites (void)
+{
+	int		i;
+
+	if (!r_drawentities.value)
+		return;
+
+	// draw sprites seperately, because of alpha blending
+	for (i=0 ; i<cl_numvisedicts ; i++)
+	{
+		if ((i + 1) % 100 == 0)
+			S_ExtraUpdateTime (); // don't let sound get messed up if going slow
+
+		currententity = cl_visedicts[i];
+
+		switch (currententity->model->type)
+		{
+			case mod_sprite:
+				R_DrawSpriteModel (currententity);
 				break;
 
 			default:
@@ -1058,12 +1083,13 @@ void R_RenderView (void)
 	R_FogEnableGFog ();
 	R_DrawSky (); // handle worldspawn and bmodels
 	R_DrawWorld (); // adds static entities to the list
-	R_DrawEntitiesOnList (false); // false means this is the pass for nonalpha entities
-	R_DrawWaterEntitiesOnList (false); // special case to draw water nonalpha entities
+	R_DrawEntities (false); // false means this is the pass for nonalpha entities
+	R_DrawWaterEntities (false); // special case to draw water nonalpha entities
 	R_DrawTextureChainsWater (); // drawn here since they might have transparency
-	R_DrawEntitiesOnList (true); // true means this is the pass for alpha entities
-	R_DrawWaterEntitiesOnList (true); // special case to draw water alpha entities
+	R_DrawEntities (true); // true means this is the pass for alpha entities
+	R_DrawWaterEntities (true); // special case to draw water alpha entities
 	R_RenderDlights ();
+	R_DrawSprites ();
 	R_DrawParticles ();
 	R_FogDisableGFog ();
 	R_DrawViewModel ();
