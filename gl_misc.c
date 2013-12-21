@@ -264,6 +264,7 @@ void R_TranslatePlayerSkin (int playernum)
 	int		top, bottom;
 	byte	translate[256];
 	int		i, size;
+	entity_t	*e;
 	model_t	*model;
 	aliashdr_t *paliashdr;
 	byte	*original;
@@ -275,8 +276,8 @@ void R_TranslatePlayerSkin (int playernum)
 	//
 	// locate the original skin pixels
 	//
-	currententity = &cl_entities[1+playernum];
-	model = currententity->model;
+	e = &cl_entities[1+playernum];
+	model = e->model;
 
 	if (!model)
 		return;	// player doesn't have a model yet
@@ -288,9 +289,9 @@ void R_TranslatePlayerSkin (int playernum)
 	top = cl.scores[playernum].colors & 0xf0;
 	bottom = (cl.scores[playernum].colors &15)<<4;
 
-	if (!strcmp (currententity->model->name, "progs/player.mdl"))
+	if (!strcmp (e->model->name, "progs/player.mdl"))
 	{
-		if (top == oldtop[playernum] && bottom == oldbottom[playernum] && currententity->skinnum == oldskinnum[playernum])
+		if (top == oldtop[playernum] && bottom == oldbottom[playernum] && e->skinnum == oldskinnum[playernum])
 			return; // translate if only player change his color
 	}
 	else
@@ -303,7 +304,7 @@ void R_TranslatePlayerSkin (int playernum)
 
 	oldtop[playernum] = top;
 	oldbottom[playernum] = bottom;
-	oldskinnum[playernum] = currententity->skinnum;
+	oldskinnum[playernum] = e->skinnum;
 
 skip:
 	for (i=0 ; i<256 ; i++)
@@ -322,17 +323,17 @@ skip:
 			translate[BOTTOM_RANGE+i] = bottom+15-i;
 	}
 
-	if (currententity->skinnum < 0 || currententity->skinnum >= paliashdr->numskins)
+	if (e->skinnum < 0 || e->skinnum >= paliashdr->numskins)
 		original = (byte *)paliashdr + paliashdr->texels[0];
 	else
-		original = (byte *)paliashdr + paliashdr->texels[currententity->skinnum];
+		original = (byte *)paliashdr + paliashdr->texels[e->skinnum];
 
 	mark = Hunk_LowMark ();
 
 	//
 	// translate texture
 	//
-	sprintf (name, "%s_%i_%i", currententity->model->name, currententity->skinnum, playernum);
+	sprintf (name, "%s_%i_%i", e->model->name, e->skinnum, playernum);
 	size = paliashdr->skinwidth * paliashdr->skinheight;
 
 	// allocate dynamic memory
@@ -348,7 +349,7 @@ skip:
 	original = pixels;
 
 	//upload new image
-	playertextures[playernum] = GL_LoadTexture (currententity->model, name, paliashdr->skinwidth, paliashdr->skinheight, SRC_INDEXED, original, "", (unsigned)original, TEXPREF_PAD | TEXPREF_OVERWRITE);
+	playertextures[playernum] = GL_LoadTexture (e->model, name, paliashdr->skinwidth, paliashdr->skinheight, SRC_INDEXED, original, "", (unsigned)original, TEXPREF_PAD | TEXPREF_OVERWRITE);
 
 	// free allocated memory
 //	free (pixels);

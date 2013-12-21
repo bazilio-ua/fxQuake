@@ -250,8 +250,8 @@ void R_CullSurfaces (void);
 void R_DrawBrushModel (entity_t *e, qboolean water);
 void R_DrawWorld (void);
 void R_DrawTextureChainsWater (void);
-void R_DrawSequentialPoly (msurface_t *s);
-void R_DrawSequentialWaterPoly (msurface_t *s);
+void R_DrawSequentialPoly (entity_t *e, msurface_t *s);
+void R_DrawSequentialWaterPoly (entity_t *e, msurface_t *s);
 void R_DrawGLPoly34 (glpoly_t *p);
 void R_DrawGLPoly56 (glpoly_t *p);
 void R_BuildLightmaps (void);
@@ -333,7 +333,6 @@ typedef struct particle_s
 
 extern	entity_t	r_worldentity;
 extern	vec3_t		modelorg, r_entorigin;
-extern	entity_t	*currententity;
 extern	int			r_visframecount;	// ??? what difs?
 extern	int			r_framecount;
 extern	mplane_t	frustum[4];

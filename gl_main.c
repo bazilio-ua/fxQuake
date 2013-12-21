@@ -24,7 +24,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 entity_t	r_worldentity;
 
 vec3_t		modelorg, r_entorigin;
-entity_t	*currententity;
 
 int			r_visframecount;	// bumped when going to a new PVS
 int			r_framecount;		// used for dlight push checking
@@ -695,6 +694,7 @@ R_DrawEntities
 void R_DrawEntities (qboolean alphapass)
 {
 	int		i;
+	entity_t	*e;
 
 	if (!r_drawentities.value)
 		return;
@@ -705,26 +705,26 @@ void R_DrawEntities (qboolean alphapass)
 		if ((i + 1) % 100 == 0)
 			S_ExtraUpdateTime (); // don't let sound get messed up if going slow
 
-		currententity = cl_visedicts[i];
+		e = cl_visedicts[i];
 
 		// if alphapass is true, draw only alpha entites this time
 		// if alphapass is false, draw only nonalpha entities this time
-		if ((ENTALPHA_DECODE(currententity->alpha) < 1 && !alphapass) ||
-			(ENTALPHA_DECODE(currententity->alpha) == 1 && alphapass))
+		if ((ENTALPHA_DECODE(e->alpha) < 1 && !alphapass) ||
+			(ENTALPHA_DECODE(e->alpha) == 1 && alphapass))
 			continue;
 
 		// chase_active
-		if (currententity == &cl_entities[cl.viewentity])
-			currententity->angles[0] *= 0.3;
+		if (e == &cl_entities[cl.viewentity])
+			e->angles[0] *= 0.3;
 
-		switch (currententity->model->type)
+		switch (e->model->type)
 		{
 			case mod_alias:
-				R_DrawAliasModel (currententity);
+				R_DrawAliasModel (e);
 				break;
 
 			case mod_brush:
-				R_DrawBrushModel (currententity, false);
+				R_DrawBrushModel (e, false);
 				break;
 
 			default:
@@ -741,6 +741,7 @@ R_DrawWaterEntities
 void R_DrawWaterEntities (qboolean alphapass)
 {
 	int		i;
+	entity_t	*e;
 
 	if (!r_drawentities.value)
 		return;
@@ -751,18 +752,18 @@ void R_DrawWaterEntities (qboolean alphapass)
 		if ((i + 1) % 100 == 0)
 			S_ExtraUpdateTime (); // don't let sound get messed up if going slow
 
-		currententity = cl_visedicts[i];
+		e = cl_visedicts[i];
 
 		// if alphapass is true, draw only alpha entites this time
 		// if alphapass is false, draw only nonalpha entities this time
-		if ((ENTALPHA_DECODE(currententity->alpha) < 1 && !alphapass) ||
-			(ENTALPHA_DECODE(currententity->alpha) == 1 && alphapass))
+		if ((ENTALPHA_DECODE(e->alpha) < 1 && !alphapass) ||
+			(ENTALPHA_DECODE(e->alpha) == 1 && alphapass))
 			continue;
 
-		switch (currententity->model->type)
+		switch (e->model->type)
 		{
 			case mod_brush:
-				R_DrawBrushModel (currententity, true);
+				R_DrawBrushModel (e, true);
 				break;
 
 			default:
@@ -779,6 +780,7 @@ R_DrawSprites
 void R_DrawSprites (void)
 {
 	int		i;
+	entity_t	*e;
 
 	if (!r_drawentities.value)
 		return;
@@ -789,12 +791,12 @@ void R_DrawSprites (void)
 		if ((i + 1) % 100 == 0)
 			S_ExtraUpdateTime (); // don't let sound get messed up if going slow
 
-		currententity = cl_visedicts[i];
+		e = cl_visedicts[i];
 
-		switch (currententity->model->type)
+		switch (e->model->type)
 		{
 			case mod_sprite:
-				R_DrawSpriteModel (currententity);
+				R_DrawSpriteModel (e);
 				break;
 
 			default:
@@ -810,25 +812,27 @@ R_DrawViewModel
 */
 void R_DrawViewModel (void)
 {
+	entity_t	*e;
+
 	if (!r_drawviewmodel.value || chase_active.value)
 		return;
 
 	if (cl.items & IT_INVISIBILITY || cl.stats[STAT_HEALTH] <= 0)
 		return;
 
-	currententity = &cl.viewent;
+	e = &cl.viewent;
 
-	if (!currententity->model)
+	if (!e->model)
 		return;
 
 	// this fixes a crash
-	if (currententity->model->type != mod_alias)
+	if (e->model->type != mod_alias)
 		return;
 
 	// Prevent weapon model error
-	if (currententity->model->name[0] == '*')
+	if (e->model->name[0] == '*')
 	{
-		Con_Warning ("R_DrawViewModel: viewmodel %s invalid\n", currententity->model->name);
+		Con_Warning ("R_DrawViewModel: viewmodel %s invalid\n", e->model->name);
 		Cvar_Set ("r_drawviewmodel", "0");
 		return;
 	}
@@ -836,7 +840,7 @@ void R_DrawViewModel (void)
 	// hack the depth range to prevent view model from poking into walls
 	glDepthRange (0, 0.3);
 
-	R_DrawAliasModel (currententity);
+	R_DrawAliasModel (e);
 
 	glDepthRange (0, 1);
 }

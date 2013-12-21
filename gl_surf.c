@@ -208,7 +208,6 @@ void R_BuildLightMap (msurface_t *surf, byte *dest, int stride)
 ===============
 R_TextureAnimation
 
-added "frame" param to eliminate use of "currententity" global
 returns the proper texture for a given time and base texture
 ===============
 */
@@ -355,7 +354,7 @@ Systems that have fast state and texture changes can
 just do everything as it passes with no need to sort
 ================
 */
-void R_DrawSequentialPoly (msurface_t *s)
+void R_DrawSequentialPoly (entity_t *e, msurface_t *s)
 {
 	glpoly_t	*p;
 	texture_t	*t;
@@ -364,8 +363,8 @@ void R_DrawSequentialPoly (msurface_t *s)
 	int			i;
 
 	p = s->polys;
-	t = R_TextureAnimation (s->texinfo->texture, currententity->frame);
-	entalpha = ENTALPHA_DECODE(currententity->alpha);
+	t = R_TextureAnimation (s->texinfo->texture, e->frame);
+	entalpha = ENTALPHA_DECODE(e->alpha);
 
 	//
 	// sky poly
@@ -534,7 +533,7 @@ void R_DrawSequentialPoly (msurface_t *s)
 R_DrawSequentialWaterPoly
 ================
 */
-void R_DrawSequentialWaterPoly (msurface_t *s)
+void R_DrawSequentialWaterPoly (entity_t *e, msurface_t *s)
 {
 	glpoly_t	*p;
 //	texture_t	*t; // unused
@@ -542,15 +541,15 @@ void R_DrawSequentialWaterPoly (msurface_t *s)
 	float		entfog = 0; // keep compiler happy
 
 	p = s->polys;
-//	t = R_TextureAnimation (s->texinfo->texture, currententity->frame);
-	entalpha = ENTALPHA_DECODE(currententity->alpha);
+//	t = R_TextureAnimation (s->texinfo->texture, e->frame);
+	entalpha = ENTALPHA_DECODE(e->alpha);
 
 	//
 	// water poly
 	//
 	if (s->flags & SURF_DRAWTURB)
 	{
-		if (currententity->alpha == ENTALPHA_DEFAULT)
+		if (e->alpha == ENTALPHA_DEFAULT)
 		{
 			if (!r_lockalpha.value) // override water alpha for certain surface types
 			{
@@ -681,7 +680,6 @@ void R_DrawBrushModel (entity_t *e, qboolean water)
 	if (R_CullModelForEntity(e))
 		return;
 
-	currententity = e;
 	clmodel = e->model;
 
 	VectorSubtract (r_refdef.vieworg, e->origin, modelorg);
@@ -747,9 +745,9 @@ void R_DrawBrushModel (entity_t *e, qboolean water)
 			(!(psurf->flags & SURF_PLANEBACK) && (dot > BACKFACE_EPSILON)))
 		{
 			if (water)
-				R_DrawSequentialWaterPoly (psurf); // draw water entities
+				R_DrawSequentialWaterPoly (e, psurf); // draw water entities
 			else
-				R_DrawSequentialPoly (psurf); // draw entities
+				R_DrawSequentialPoly (e, psurf); // draw entities
 			rs_c_brush_polys++; // r_speeds
 		}
 	}
