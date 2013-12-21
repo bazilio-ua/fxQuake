@@ -699,7 +699,7 @@ void R_DrawEntities (qboolean alphapass)
 	if (!r_drawentities.value)
 		return;
 
-	// sprites are a special case
+	// draw standard entities
 	for (i=0 ; i<cl_numvisedicts ; i++)
 	{
 		if ((i + 1) % 100 == 0)
@@ -731,22 +731,8 @@ void R_DrawEntities (qboolean alphapass)
 				break;
 		}
 	}
-}
 
-/*
-=============
-R_DrawWaterEntities
-=============
-*/
-void R_DrawWaterEntities (qboolean alphapass)
-{
-	int		i;
-	entity_t	*e;
-
-	if (!r_drawentities.value)
-		return;
-
-	// special case to draw water entities
+	// special case to draw "water" entities
 	for (i=0 ; i<cl_numvisedicts ; i++)
 	{
 		if ((i + 1) % 100 == 0)
@@ -775,6 +761,8 @@ void R_DrawWaterEntities (qboolean alphapass)
 /*
 =============
 R_DrawSprites
+
+sprites are a special case
 =============
 */
 void R_DrawSprites (void)
@@ -1089,10 +1077,8 @@ void R_RenderView (void)
 	R_DrawSky (); // handle worldspawn and bmodels
 	R_DrawWorld (); // adds static entities to the list
 	R_DrawEntities (false); // false means this is the pass for nonalpha entities
-	R_DrawWaterEntities (false); // special case to draw water nonalpha entities
 	R_DrawTextureChainsWater (); // drawn here since they might have transparency
 	R_DrawEntities (true); // true means this is the pass for alpha entities
-	R_DrawWaterEntities (true); // special case to draw water alpha entities
 	R_RenderDlights ();
 	R_DrawSprites ();
 	R_DrawParticles ();
