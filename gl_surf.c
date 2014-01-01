@@ -947,7 +947,7 @@ void R_DrawTextureChainsWater (void)
 					glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 					glColor3f (1, 1, 1);
 				}
-			}
+		}
 	}
 }
 
@@ -1154,14 +1154,13 @@ void R_MarkSurfaces (void)
 	msurface_t	*surf, **mark;
 	int			i, j;
 	byte		solid[MAX_MAP_LEAFS / 2];
-	qboolean	nearwaterportal;
+	qboolean	nearwaterportal = false;
 
 	// clear lightmap chains
 	memset (lightmap_polys, 0, sizeof(lightmap_polys));
 
 	// Check if near water to avoid HOMs when crossing the surface
 	// TODO: loop through all water surfs and use distance to leaf cullbox
-	nearwaterportal = false;
 	for (i=0, mark = r_viewleaf->firstmarksurface; i < r_viewleaf->nummarksurfaces; i++, mark++)
 	{
 		if ((*mark)->flags & SURF_DRAWTURB)
@@ -1232,6 +1231,17 @@ void R_MarkSurfaces (void)
 				surf->texinfo->texture->texturechain = surf;
 			}
 
+	//the old way
+/*	surf = &cl.worldmodel->surfaces[cl.worldmodel->firstmodelsurface];
+	for (i=0 ; i<cl.worldmodel->nummodelsurfaces ; i++, surf++)
+	{
+		if (surf->visframe == r_visframecount)
+		{
+			surf->texturechain = surf->texinfo->texture->texturechain;
+			surf->texinfo->texture->texturechain = surf;
+		}
+	}
+*/
 }
 
 /*

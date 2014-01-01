@@ -686,15 +686,30 @@ cleanup:
 
 //==================================================================================
 
+typedef struct sortedent_s
+{
+	entity_t	*ent;
+	vec_t		len;
+} sortedent_t;
+
+sortedent_t     cl_transvisedicts[MAX_VISEDICTS];
+sortedent_t		cl_transwateredicts[MAX_VISEDICTS];
+
+int				cl_numtransvisedicts;
+int				cl_numtranswateredicts;
+
 /*
 =============
 R_DrawEntities
 =============
 */
-void R_DrawEntities (qboolean alphapass)
+void R_DrawEntities (void)
 {
 	int		i;
 	entity_t	*e;
+	mleaf_t *leaf;
+	vec3_t result;
+	vec3_t adjust_origin;
 
 	if (!r_drawentities.value)
 		return;
@@ -707,10 +722,7 @@ void R_DrawEntities (qboolean alphapass)
 
 		e = cl_visedicts[i];
 
-		// if alphapass is true, draw only alpha entites this time
-		// if alphapass is false, draw only nonalpha entities this time
-		if ((ENTALPHA_DECODE(e->alpha) < 1 && !alphapass) ||
-			(ENTALPHA_DECODE(e->alpha) == 1 && alphapass))
+		if (ENTALPHA_DECODE(e->alpha) < 1)
 			continue;
 
 		// chase_active
@@ -725,6 +737,7 @@ void R_DrawEntities (qboolean alphapass)
 
 			case mod_brush:
 				R_DrawBrushModel (e, false);
+//				R_DrawBrushModel (e, true);//tst
 				break;
 
 			default:
@@ -740,10 +753,7 @@ void R_DrawEntities (qboolean alphapass)
 
 		e = cl_visedicts[i];
 
-		// if alphapass is true, draw only alpha entites this time
-		// if alphapass is false, draw only nonalpha entities this time
-		if ((ENTALPHA_DECODE(e->alpha) < 1 && !alphapass) ||
-			(ENTALPHA_DECODE(e->alpha) == 1 && alphapass))
+		if (ENTALPHA_DECODE(e->alpha) < 1)
 			continue;
 
 		switch (e->model->type)
@@ -756,7 +766,139 @@ void R_DrawEntities (qboolean alphapass)
 				break;
 		}
 	}
+
+	cl_numtransvisedicts = 0;
+	cl_numtranswateredicts = 0;
+
+	// create transparent entities list
+	for (i=0 ; i<cl_numvisedicts ; i++)
+	{
+		e = cl_visedicts[i];
+
+		if (ENTALPHA_DECODE(e->alpha) == 1) //todo: add check condition for sprite, (sprite is always alpha)
+			continue;
+			
+		VectorCopy(e->origin, adjust_origin);
+		if (e->model->type == mod_brush)
+		{
+
+			adjust_origin[0] += (e->model->mins[0] + e->model->maxs[0]) / 2;
+			adjust_origin[1] += (e->model->mins[1] + e->model->maxs[1]) / 2;
+			adjust_origin[2] += (e->model->mins[2] + e->model->maxs[2]) / 2;
+			
+/*			Con_Printf("adjust_origin: model: %s, adjust_origin[0]: %f, adjust_origin[1]: %f, adjust_origin[2]: %f\n---*---\n", e->model->name, 
+				adjust_origin[0], adjust_origin[1], adjust_origin[2]);
+*/		}
+		leaf = Mod_PointInLeaf (adjust_origin, cl.worldmodel);//was e->origin
+		VectorSubtract (adjust_origin, r_origin, result);//was e->origin
+
+		
+		if (leaf->contents == CONTENTS_WATER || leaf->contents == CONTENTS_SLIME || leaf->contents == CONTENTS_LAVA)
+		{
+			cl_transwateredicts[cl_numtranswateredicts].ent = e;
+			cl_transwateredicts[cl_numtranswateredicts++].len = (result[0] * result[0]) + (result[1] * result[1]) + (result[2] * result[2]);
+		}
+		else
+		{
+			cl_transvisedicts[cl_numtransvisedicts].ent = e;
+			cl_transvisedicts[cl_numtransvisedicts++].len = (result[0] * result[0]) + (result[1] * result[1]) + (result[2] * result[2]);
+		}
+	}
+
 }
+
+//==================================================================================
+
+
+int TransDistComp (const void *arg1, const void *arg2) 
+{
+	const sortedent_t *a1, *a2;
+	a1 = (sortedent_t *) arg1;
+	a2 = (sortedent_t *) arg2;
+	return (a2->len - a1->len); // Sorted in reverse order.  Neat, huh?
+}
+
+/*
+=============
+R_DrawTransEntities
+=============
+*/
+void R_DrawTransEntities (qboolean inwater)
+{
+	int		i;
+	entity_t	*e;
+	int		numents;
+	sortedent_t	*theents;
+
+	if (!r_drawentities.value)
+		return;
+
+	theents = (inwater) ? cl_transwateredicts : cl_transvisedicts;
+	numents = (inwater) ? cl_numtranswateredicts : cl_numtransvisedicts;
+/*
+	if (inwater)
+		Con_Printf("in water\n");
+	else
+		Con_Printf("in empty\n");
+	
+	for (i=0 ; i<numents ; i++)
+		Con_Printf("model: %s, nument: %d, len before sort: %f\n", theents[i].ent->model->name, i, theents[i].len);
+*/
+	qsort((void *) theents, numents, sizeof(sortedent_t), TransDistComp);
+	// Add in BETTER sorting here
+/*
+	for (i=0 ; i<numents ; i++)
+		Con_Printf("model: %s, nument: %d, len after sort: %f\n", theents[i].ent->model->name, i, theents[i].len);
+*/
+	// standard entities
+	for (i=0 ; i<numents ; i++)
+	{
+		if ((i + 1) % 100 == 0)
+			S_ExtraUpdateTime (); // don't let sound get messed up if going slow
+
+		e = theents[i].ent;
+
+		// chase_active
+		if (e == &cl_entities[cl.viewentity])
+			e->angles[0] *= 0.3;
+
+		switch (e->model->type)
+		{
+			case mod_alias:
+				R_DrawAliasModel (e);
+				break;
+
+			case mod_brush:
+				R_DrawBrushModel (e, false);
+//				R_DrawBrushModel (e, true);//tst
+				break;
+
+			default:
+				break;
+		}
+	}
+
+	// "water" entities
+	for (i=0 ; i<numents ; i++)
+	{
+		if ((i + 1) % 100 == 0)
+			S_ExtraUpdateTime (); // don't let sound get messed up if going slow
+
+		e = theents[i].ent;
+
+		switch (e->model->type)
+		{
+			case mod_brush:
+				R_DrawBrushModel (e, true);
+				break;
+
+			default:
+				break;
+		}
+	}
+}
+
+//==================================================================================
 
 /*
 =============
@@ -915,6 +1057,9 @@ void R_Clear (void)
 	else
 		glClear (GL_DEPTH_BUFFER_BIT);
 }
+
+void R_RecursiveWorldNode (mnode_t *node);
+void R_MarkLeaves (void);
 
 /*
 ===============
@@ -1076,9 +1221,10 @@ void R_RenderView (void)
 	R_FogEnableGFog ();
 	R_DrawSky (); // handle worldspawn and bmodels
 	R_DrawWorld (); // adds static entities to the list
-	R_DrawEntities (false); // false means this is the pass for nonalpha entities
+	R_DrawEntities ();
+	R_DrawTransEntities (r_viewleaf->contents == CONTENTS_EMPTY);
 	R_DrawTextureChainsWater (); // drawn here since they might have transparency
-	R_DrawEntities (true); // true means this is the pass for alpha entities
+	R_DrawTransEntities (r_viewleaf->contents != CONTENTS_EMPTY);
 	R_RenderDlights ();
 	R_DrawSprites ();
 	R_DrawParticles ();
