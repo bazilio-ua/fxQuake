@@ -1058,9 +1058,6 @@ void R_Clear (void)
 		glClear (GL_DEPTH_BUFFER_BIT);
 }
 
-void R_RecursiveWorldNode (mnode_t *node);
-void R_MarkLeaves (void);
-
 /*
 ===============
 R_SetupFrame

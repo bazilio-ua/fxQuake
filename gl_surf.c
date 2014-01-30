@@ -947,7 +947,7 @@ void R_DrawTextureChainsWater (void)
 					glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 					glColor3f (1, 1, 1);
 				}
-		}
+			}
 	}
 }
 
