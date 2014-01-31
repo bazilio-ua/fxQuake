@@ -128,7 +128,6 @@ void R_LoadPalette (void);
 void R_InitEfrags (void);
 void R_SndExtraUpdate (void);
 void R_RenderView (void);		// must set r_refdef first
-void R_MarkSurfaces (void);
 void R_InitSky (struct texture_s *mt);	// called at level load
 
 void R_AddEfrags (entity_t *ent);

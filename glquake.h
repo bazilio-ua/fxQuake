@@ -246,6 +246,7 @@ void R_MarkLights (dlight_t *light, int num, mnode_t *node);
 void R_InitFlashBlendBubble (void);
 
 // gl_surf.c
+void R_MarkSurfaces (void);
 void R_CullSurfaces (void);
 void R_DrawBrushModel (entity_t *e, qboolean water);
 void R_DrawWorld (void);
