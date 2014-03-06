@@ -247,9 +247,6 @@ void R_InitFlashBlendBubble (void);
 
 // gl_surf.c
 void R_MarkLeaves (void);
-void R_MarkChains (void);
-void R_MarkSurfaces (void);
-void R_CullSurfaces (void);
 void R_DrawBrushModel (entity_t *e, qboolean water);
 void R_DrawWorld (void);
 void R_DrawTextureChainsWater (void);

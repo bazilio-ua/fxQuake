@@ -312,6 +312,41 @@ dynamic:
 }
 
 
+/*
+===============
+R_UploadLightmaps
+
+uploads the modified lightmap to opengl if necessary
+assumes lightmap texture is already bound
+===============
+*/
+void R_UploadLightmaps (void)
+{
+	int lmap;
+	glRect_t	*theRect;
+
+	for (lmap = 0; lmap < MAX_LIGHTMAPS; lmap++)
+	{
+		if (!lightmap_modified[lmap])
+			continue;
+
+		GL_Bind (lightmap_textures[lmap]);
+		lightmap_modified[lmap] = false;
+
+		theRect = &lightmap_rectchange[lmap];
+
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, theRect->t, BLOCK_WIDTH, theRect->h, GL_RGBA,
+			GL_UNSIGNED_BYTE, lightmaps+(lmap* BLOCK_HEIGHT + theRect->t) *BLOCK_WIDTH*lightmap_bytes);
+
+		theRect->l = BLOCK_WIDTH;
+		theRect->t = BLOCK_HEIGHT;
+		theRect->h = 0;
+		theRect->w = 0;
+
+		// r_speeds
+		rs_c_dynamic_lightmaps++;
+	}
+}
 
 
 /*
@@ -511,19 +546,23 @@ void R_DrawSequentialWaterPoly (entity_t *e, msurface_t *s)
 {
 	glpoly_t	*p;
 //	texture_t	*t; // unused
-	float		entalpha;
+	float		entalpha = 1.0;
 	float		entfog = 0; // keep compiler happy
 
 	p = s->polys;
 //	t = R_TextureAnimation (s->texinfo->texture, e->frame);
-	entalpha = ENTALPHA_DECODE(e->alpha);
+//	t = R_TextureAnimation (s->texinfo->texture, e ? e->frame : 0);
+//	entalpha = ENTALPHA_DECODE(e->alpha);
+//	entalpha = e ? ENTALPHA_DECODE(e->alpha) : 1.0;
 
 	//
 	// water poly
 	//
 	if (s->flags & SURF_DRAWTURB)
 	{
-		if (e->alpha == ENTALPHA_DEFAULT)
+//		if (e->alpha == ENTALPHA_DEFAULT)
+//		if (!e || e && e->alpha == ENTALPHA_DEFAULT)
+//		if (entalpha == 1.0f)
 		{
 			if (!r_lockalpha.value) // override water alpha for certain surface types
 			{
@@ -534,9 +573,9 @@ void R_DrawSequentialWaterPoly (entity_t *e, msurface_t *s)
 				else if (s->flags & SURF_DRAWTELE)
 					entalpha = CLAMP(0.0, r_telealpha.value, 1.0);
 			}
-			else
-				entalpha = 1.0f;
-
+/*			else
+				entalpha = 1.0f; //fixme: this is not needed?
+*/
 			if (s->flags & SURF_DRAWWATER)
 			{
 				if (globalwateralpha > 0)
@@ -867,7 +906,6 @@ void R_RecursiveWorldNode (mnode_t *node)
 			if (R_CullBox(surf->mins, surf->maxs))
 				continue;		// outside
 
-				
 			if (surf->flags & SURF_DRAWSKY)
 			{
 				surf->texturechain = skychain;
@@ -895,8 +933,6 @@ void R_RecursiveWorldNode (mnode_t *node)
 	R_RecursiveWorldNode (node->children[!side]);
 }
 //original way
-//EER1
-//EER1
 
 
 
@@ -911,9 +947,9 @@ void R_DrawTextureChainsWater (void)
 	int			i;
 	msurface_t	*s;
 	texture_t	*t;
-	qboolean	texbound;
-	float	wateralpha = 1.0f; // keep compiler happy
-	float	lavafog = 0; // keep compiler happy
+//	qboolean	texbound;
+//	float	wateralpha = 1.0f; // keep compiler happy
+//	float	lavafog = 0; // keep compiler happy
 
 	if (!r_drawworld.value)
 		return;
@@ -931,6 +967,12 @@ void R_DrawTextureChainsWater (void)
 //		for (s = t->texturechain; s; s = s->texturechain)
 		for (s = waterchain; s; s = s->texturechain)
 		{
+
+
+			R_DrawSequentialWaterPoly (NULL, s);
+
+			
+/*/
 //			if (!s->culled)
 			{
 				if (!r_lockalpha.value) // override water alpha for certain surface types
@@ -1006,6 +1048,9 @@ void R_DrawTextureChainsWater (void)
 					glColor3f (1, 1, 1);
 				}
 			}
+/*/			
+			
+			
 		}
 
 		
@@ -1031,6 +1076,8 @@ void R_DrawWorld (void)
 	// clear lightmap chains
 	memset (lightmap_polys, 0, sizeof(lightmap_polys));
 	
+	R_UploadLightmaps ();
+
 	// set all chains to null
 //	skychain = NULL;
 //	waterchain = NULL;
