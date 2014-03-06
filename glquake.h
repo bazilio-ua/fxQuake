@@ -246,6 +246,8 @@ void R_MarkLights (dlight_t *light, int num, mnode_t *node);
 void R_InitFlashBlendBubble (void);
 
 // gl_surf.c
+void R_MarkLeaves (void);
+void R_MarkChains (void);
 void R_MarkSurfaces (void);
 void R_CullSurfaces (void);
 void R_DrawBrushModel (entity_t *e, qboolean water);
@@ -373,8 +375,10 @@ extern	gltexture_t *particletexture2;
 extern	gltexture_t	*playertextures[MAX_SCOREBOARD];
 extern	gltexture_t	*skyboxtextures[6];
 
-extern float globalwateralpha;
+extern	float globalwateralpha;
 
+extern	msurface_t *skychain;
+extern	msurface_t *waterchain;
 //
 //
 //

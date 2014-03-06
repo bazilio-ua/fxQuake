@@ -378,6 +378,9 @@ void R_NewMap (void)
 		cl.worldmodel->leafs[i].efrags = NULL;
 
 	r_viewleaf = NULL;
+	
+	skychain = 
+	waterchain = NULL;
 
 	R_ClearParticles ();
 

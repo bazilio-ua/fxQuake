@@ -129,7 +129,7 @@ typedef struct glpoly_s
 typedef struct msurface_s
 {
 	int			visframe;		// should be drawn when node is crossed
-	qboolean	culled;			// for frustum culling
+//	qboolean	culled;			// for frustum culling
 	float		mins[3];		// for frustum culling
 	float		maxs[3];		// for frustum culling
 

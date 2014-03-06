@@ -1103,10 +1103,6 @@ void R_SetupFrame (void)
 	}
 
 	R_SetFrustum (r_fovx, r_fovy); // use r_fov* vars
-	R_MarkSurfaces ();	// create texture chains from PVS (done here so we know if we're in water)
-	R_CullSurfaces ();	// do after R_SetFrustum and R_MarkSurfaces
-	R_UpdateWarpTextures ();	// do this before R_Clear
-	R_Clear ();
 }
 
 void GL_SetFrustum (float fovx, float fovy)
@@ -1211,6 +1207,9 @@ void R_RenderView (void)
 	// render normal view
 	// r_refdef must be set before the first call
 	R_SetupFrame ();
+	R_MarkLeaves ();	// done here so we know if we're in water
+	R_UpdateWarpTextures ();	// do this before R_Clear
+	R_Clear ();
 	R_SetupGL ();
 
 	S_ExtraUpdateTime ();	// don't let sound get messed up if going slow

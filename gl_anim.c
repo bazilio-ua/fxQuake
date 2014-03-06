@@ -1507,16 +1507,23 @@ void R_SkyProcessTextureChains (void)
 	if (!r_drawworld.value)
 		return;
 
-	for (i=0 ; i<cl.worldmodel->numtextures ; i++)
+//	for (i=0 ; i<cl.worldmodel->numtextures ; i++)
+	if (skychain)
 	{
-		t = cl.worldmodel->textures[i];
+/*		t = cl.worldmodel->textures[i];
 
 		if (!t || !t->texturechain || !(t->texturechain->flags & SURF_DRAWSKY))
 			continue;
-
-		for (s = t->texturechain; s; s = s->texturechain)
-			if (!s->culled)
+*/
+//		for (s = t->texturechain; s; s = s->texturechain)
+		for (s = skychain; s; s = s->texturechain)
+		{
+//			if (!s->culled)
 				R_SkyProcessPoly (s->polys);
+		}
+		
+		
+		skychain = NULL;
 	}
 }
 
