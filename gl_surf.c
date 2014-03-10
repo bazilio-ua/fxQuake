@@ -563,6 +563,7 @@ void R_DrawSequentialWaterPoly (entity_t *e, msurface_t *s)
 //		if (e->alpha == ENTALPHA_DEFAULT)
 //		if (!e || e && e->alpha == ENTALPHA_DEFAULT)
 //		if (entalpha == 1.0f)
+		if (!e) // avoid entities with *liquid surfaces to have transparency
 		{
 			if (!r_lockalpha.value) // override water alpha for certain surface types
 			{
@@ -915,7 +916,7 @@ void R_RecursiveWorldNode (mnode_t *node)
 			{
 				surf->texturechain = waterchain;
 				waterchain = surf;
-				surf->texinfo->texture->update_warp = true;
+//				surf->texinfo->texture->update_warp = true;
 			}
 			else
 			{
