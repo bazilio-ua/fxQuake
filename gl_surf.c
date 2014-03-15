@@ -678,6 +678,7 @@ void R_DrawGLPoly56 (glpoly_t *p)
 }
 
 
+
 /*
 =================
 R_DrawBrushModel
@@ -939,6 +940,95 @@ void R_RecursiveWorldNode (mnode_t *node)
 
 
 /*
+=============
+R_DrawWorld
+=============
+*/
+void R_DrawWorld (void)
+{
+	if (!r_drawworld.value)
+		return;
+	
+	// clear lightmap chains
+	memset (lightmap_polys, 0, sizeof(lightmap_polys));
+	
+	R_UploadLightmaps ();
+
+	// set all chains to null
+//	skychain = NULL;
+//	waterchain = NULL;
+
+
+	VectorCopy (r_refdef.vieworg, modelorg);
+
+	R_RecursiveWorldNode (cl.worldmodel->nodes);
+
+}
+
+
+
+//original way
+/*
+===============
+R_MarkLeaves
+===============
+*/
+void R_MarkLeaves (void)
+{
+	byte	*vis;
+	mnode_t	*node;
+	msurface_t **mark;
+	int	   i;
+	byte	   solid[MAX_MAP_LEAFS / 2];
+	qboolean   nearwaterportal = false;
+
+	// Check if near water to avoid HOMs when crossing the surface
+	for (i=0, mark = r_viewleaf->firstmarksurface; i < r_viewleaf->nummarksurfaces; i++, mark++)
+	{
+		if ((*mark)->flags & SURF_DRAWTURB)
+		{
+			nearwaterportal = true;
+//			Con_SafePrintf ("R_MarkLeaves: nearwaterportal, surfs=%d\n", r_viewleaf->nummarksurfaces);
+			break;
+		}
+	}
+
+	if (r_oldviewleaf == r_viewleaf && !r_novis.value && !nearwaterportal)
+		return;
+
+	r_visframecount++;
+	r_oldviewleaf = r_viewleaf;
+
+	if (r_novis.value)
+	{
+		vis = solid;
+		memset (solid, 0xff, (cl.worldmodel->numleafs+7)>>3);
+	}
+	else if (nearwaterportal)
+		vis = SV_FatPVS (r_origin, cl.worldmodel);
+	else
+		vis = Mod_LeafPVS (r_viewleaf, cl.worldmodel);
+		
+	for (i=0 ; i<cl.worldmodel->numleafs ; i++)
+	{
+		if (vis[i>>3] & (1<<(i&7)))
+		{
+			node = (mnode_t *)&cl.worldmodel->leafs[i+1];
+			do
+			{
+				if (node->visframe == r_visframecount)
+					break;
+				node->visframe = r_visframecount;
+				node = node->parent;
+			} while (node);
+		}
+	}
+}
+//original way
+
+
+
+/*
 ================
 R_DrawTextureChainsWater
 ================
@@ -1059,97 +1149,6 @@ void R_DrawTextureChainsWater (void)
 	}
 }
 
-
-
-
-
-
-/*
-=============
-R_DrawWorld
-=============
-*/
-void R_DrawWorld (void)
-{
-	if (!r_drawworld.value)
-		return;
-	
-	// clear lightmap chains
-	memset (lightmap_polys, 0, sizeof(lightmap_polys));
-	
-	R_UploadLightmaps ();
-
-	// set all chains to null
-//	skychain = NULL;
-//	waterchain = NULL;
-
-
-	VectorCopy (r_refdef.vieworg, modelorg);
-
-	R_RecursiveWorldNode (cl.worldmodel->nodes);
-
-}
-
-
-
-//original way
-/*
-===============
-R_MarkLeaves
-===============
-*/
-void R_MarkLeaves (void)
-{
-	byte	*vis;
-	mnode_t	*node;
-	msurface_t **mark;
-	int	   i;
-	byte	   solid[MAX_MAP_LEAFS / 2];
-	qboolean   nearwaterportal = false;
-
-	// Check if near water to avoid HOMs when crossing the surface
-	for (i=0, mark = r_viewleaf->firstmarksurface; i < r_viewleaf->nummarksurfaces; i++, mark++)
-	{
-		if ((*mark)->flags & SURF_DRAWTURB)
-		{
-			nearwaterportal = true;
-//			Con_SafePrintf ("R_MarkLeaves: nearwaterportal, surfs=%d\n", r_viewleaf->nummarksurfaces);
-			break;
-		}
-	}
-
-	if (r_oldviewleaf == r_viewleaf && !r_novis.value && !nearwaterportal)
-		return;
-
-	r_visframecount++;
-	r_oldviewleaf = r_viewleaf;
-
-	if (r_novis.value)
-	{
-		vis = solid;
-		memset (solid, 0xff, (cl.worldmodel->numleafs+7)>>3);
-	}
-	else if (nearwaterportal)
-		vis = SV_FatPVS (r_origin, cl.worldmodel);
-	else
-		vis = Mod_LeafPVS (r_viewleaf, cl.worldmodel);
-		
-	for (i=0 ; i<cl.worldmodel->numleafs ; i++)
-	{
-		if (vis[i>>3] & (1<<(i&7)))
-		{
-			node = (mnode_t *)&cl.worldmodel->leafs[i+1];
-			do
-			{
-				if (node->visframe == r_visframecount)
-					break;
-				node->visframe = r_visframecount;
-				node = node->parent;
-			} while (node);
-		}
-	}
-}
-//original way
 
 
 /*

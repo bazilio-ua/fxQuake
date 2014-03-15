@@ -779,7 +779,7 @@ void R_DrawParticles (void)
 	glDepthMask (GL_FALSE); // don't bother writing Z (fix for particle z-buffer bug)
 
 	glBegin (GL_QUADS); // quads save fillrate
-	for (p=active_particles ; p ; p=p->next)
+	for (p=active_particles ; p ; p=p->next) // TODO: need to split-up active_particles array to under/beyond water arrays
 	{
 		// improve sound when many particles
 		if (++j % 8192 == 0)

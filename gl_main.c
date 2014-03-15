@@ -745,7 +745,7 @@ void R_DrawEntities (void)
 		}
 	}
 
-	// special case to draw "water" entities
+/*	// special case to draw "water" entities
 	for (i=0 ; i<cl_numvisedicts ; i++)
 	{
 		if ((i + 1) % 100 == 0)
@@ -766,7 +766,7 @@ void R_DrawEntities (void)
 				break;
 		}
 	}
-
+*/
 	cl_numtransvisedicts = 0;
 	cl_numtranswateredicts = 0;
 
@@ -775,7 +775,7 @@ void R_DrawEntities (void)
 	{
 		e = cl_visedicts[i];
 
-		if (ENTALPHA_DECODE(e->alpha) == 1) //todo: add check condition for sprite, (sprite is always alpha)
+		if (ENTALPHA_DECODE(e->alpha) == 1 && e->model->type != mod_sprite) //todo: add check condition for sprite, (sprite is always alpha)
 			continue;
 			
 		VectorCopy(e->origin, adjust_origin);
@@ -873,12 +873,18 @@ void R_DrawTransEntities (qboolean inwater)
 //				R_DrawBrushModel (e, true);//tst
 				break;
 
+				
+			case mod_sprite:
+				R_DrawSpriteModel (e);
+				break;
+
+				
 			default:
 				break;
 		}
 	}
 
-	// "water" entities
+/*	// "water" entities
 	for (i=0 ; i<numents ; i++)
 	{
 		if ((i + 1) % 100 == 0)
@@ -896,6 +902,56 @@ void R_DrawTransEntities (qboolean inwater)
 				break;
 		}
 	}
+*/
+}
+
+//==================================================================================
+
+/*
+=============
+R_DrawWaterEntities
+
+a special case
+=============
+*/
+void R_DrawWaterEntities (void)
+{
+	int		i;
+	entity_t	*e;
+
+	// special case to draw "water" entities
+	for (i=0 ; i<cl_numvisedicts ; i++)
+	{
+		if ((i + 1) % 100 == 0)
+			S_ExtraUpdateTime (); // don't let sound get messed up if going slow
+
+		e = cl_visedicts[i];
+
+//		if (ENTALPHA_DECODE(e->alpha) < 1)
+//			continue;
+
+//		if (e->alpha == ENTALPHA_ZERO)
+//			continue;
+
+		switch (e->model->type)
+		{
+			case mod_brush:
+				R_DrawBrushModel (e, true);
+				break;
+
+			default:
+				break;
+		}
+	}
+
+}
+
+
+void R_DrawWater (void)
+{
+	R_DrawWaterEntities ();
+
+	R_DrawTextureChainsWater ();
 }
 
 //==================================================================================
@@ -1218,12 +1274,14 @@ void R_RenderView (void)
 	R_DrawSky (); // handle worldspawn and bmodels
 	R_DrawWorld (); // adds static entities to the list
 	R_DrawEntities ();
+//	R_DrawParticles (); // moved here.
 	R_DrawTransEntities (r_viewleaf->contents == CONTENTS_EMPTY);
-	R_DrawTextureChainsWater (); // drawn here since they might have transparency
+//	R_DrawTextureChainsWater (); // drawn here since they might have transparency
+	R_DrawWater ();
 	R_DrawTransEntities (r_viewleaf->contents != CONTENTS_EMPTY);
 	R_RenderDlights ();
-	R_DrawSprites ();
-	R_DrawParticles ();
+//	R_DrawSprites ();
+	R_DrawParticles (); // TODO: need move it upper and seperate rendering under/beyond water
 	R_FogDisableGFog ();
 	R_DrawViewModel ();
 	R_PolyBlend ();

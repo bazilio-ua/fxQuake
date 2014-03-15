@@ -1549,6 +1549,9 @@ void R_SkyProcessEntities (void)
 
 	for (i=0 ; i<cl_numvisedicts ; i++)
 	{
+		if ((i + 1) % 100 == 0)
+			S_ExtraUpdateTime (); // don't let sound get messed up if going slow
+
 		e = cl_visedicts[i];
 
 		if (e->model->type != mod_brush)
