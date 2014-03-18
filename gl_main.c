@@ -45,7 +45,6 @@ vec3_t	vpn;
 vec3_t	vright;
 vec3_t	r_origin;
 
-// mirror unused stuff
 float	r_world_matrix[16];
 float	r_base_world_matrix[16];
 
@@ -745,7 +744,7 @@ void R_DrawEntities (void)
 		}
 	}
 
-/*	// special case to draw "water" entities
+	// special case to draw "water" entities
 	for (i=0 ; i<cl_numvisedicts ; i++)
 	{
 		if ((i + 1) % 100 == 0)
@@ -753,8 +752,8 @@ void R_DrawEntities (void)
 
 		e = cl_visedicts[i];
 
-		if (ENTALPHA_DECODE(e->alpha) < 1)
-			continue;
+//		if (ENTALPHA_DECODE(e->alpha) < 1)
+//			continue;
 
 		switch (e->model->type)
 		{
@@ -766,7 +765,7 @@ void R_DrawEntities (void)
 				break;
 		}
 	}
-*/
+
 	cl_numtransvisedicts = 0;
 	cl_numtranswateredicts = 0;
 
@@ -1264,6 +1263,7 @@ void R_RenderView (void)
 	// r_refdef must be set before the first call
 	R_SetupFrame ();
 	R_MarkLeaves ();	// done here so we know if we're in water
+	R_MarkParticles ();
 	R_UpdateWarpTextures ();	// do this before R_Clear
 	R_Clear ();
 	R_SetupGL ();
@@ -1274,14 +1274,16 @@ void R_RenderView (void)
 	R_DrawSky (); // handle worldspawn and bmodels
 	R_DrawWorld (); // adds static entities to the list
 	R_DrawEntities ();
-//	R_DrawParticles (); // moved here.
 	R_DrawTransEntities (r_viewleaf->contents == CONTENTS_EMPTY);
-//	R_DrawTextureChainsWater (); // drawn here since they might have transparency
-	R_DrawWater ();
+	R_DrawParticles (r_viewleaf->contents == CONTENTS_EMPTY);
+//	R_DrawWaterEntities ();
+	R_DrawTextureChainsWater (); // drawn here since they might have transparency
+//	R_DrawWater ();
 	R_DrawTransEntities (r_viewleaf->contents != CONTENTS_EMPTY);
+	R_DrawParticles (r_viewleaf->contents != CONTENTS_EMPTY);
 	R_RenderDlights ();
 //	R_DrawSprites ();
-	R_DrawParticles (); // TODO: need move it upper and seperate rendering under/beyond water
+//	R_DrawParticles ();
 	R_FogDisableGFog ();
 	R_DrawViewModel ();
 	R_PolyBlend ();

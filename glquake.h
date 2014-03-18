@@ -232,7 +232,8 @@ void R_TranslatePlayerSkin (int playernum);
 
 // gl_part.c
 void R_InitParticles (void);
-void R_DrawParticles (void);
+void R_MarkParticles (void);
+void R_DrawParticles (qboolean inwater);// void
 void R_ClearParticles (void);
 
 // gl_efrag.c
@@ -355,9 +356,14 @@ extern	refdef_t	r_refdef;
 extern	mleaf_t		*r_viewleaf, *r_oldviewleaf;
 
 //
-//
+// light style
 //
 extern	int		d_lightstylevalue[256];	// 8.8 fraction of base light value
+
+//
+// world matrix
+//
+extern	float	r_world_matrix[16];
 
 extern int	indexed_bytes;
 extern int	rgba_bytes;

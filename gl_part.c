@@ -263,11 +263,11 @@ void R_ParseParticleEffect (void)
 	msgcount = MSG_ReadByte (net_message);
 	color = MSG_ReadByte (net_message);
 
-if (msgcount == 255)
-	count = 1024;
-else
-	count = msgcount;
-	
+	if (msgcount == 255)
+		count = 1024;
+	else
+		count = msgcount;
+
 	R_RunParticleEffect (org, dir, color, count);
 }
 	
@@ -752,6 +752,40 @@ void R_UpdateParticles (void)
 	}
 }
 
+
+particle_t	*air_active_particles[MAX_PARTICLES];
+particle_t	*water_active_particles[MAX_PARTICLES];
+
+int			num_air_active_particles;
+int			num_water_active_particles;
+
+void R_MarkParticles (void)
+{
+	mleaf_t			*leaf;
+	particle_t		*p;
+
+	if (!r_particles.value)
+		return;
+
+	num_air_active_particles = 0;
+	num_water_active_particles = 0;
+	
+	for (p=active_particles ; p ; p=p->next)
+	{
+		leaf = Mod_PointInLeaf (p->org, cl.worldmodel);
+		if (leaf->contents == CONTENTS_WATER || leaf->contents == CONTENTS_SLIME || leaf->contents == CONTENTS_LAVA)
+		{
+			water_active_particles[num_water_active_particles++] = p;
+		}
+		else if (leaf->contents == CONTENTS_EMPTY)
+		{
+			air_active_particles[num_air_active_particles++] = p;
+		}
+
+	}
+
+}
+
 /*
 ===============
 R_DrawParticles
@@ -759,31 +793,46 @@ R_DrawParticles
 moved all non-drawing code to R_UpdateParticles
 ===============
 */
-void R_DrawParticles (void)
+void R_DrawParticles (qboolean inwater)// void
 {
-	particle_t		*p;
-	int				j = 0;
+	particle_t		*p, **a;
+//	int				j = 0;
+	int				i, n;
 	vec3_t			up, right, p_up, p_right, p_upright;
 	float			scale;
 	byte			*color, alpha;
+//	qboolean		alphaTestEnabled; 
 
 	if (!r_particles.value)
 		return;
+
+	a = (inwater) ? water_active_particles : air_active_particles;
+	n = (inwater) ? num_water_active_particles : num_air_active_particles;
+
 
 	VectorScale (vup, 1.5, up);
 	VectorScale (vright, 1.5, right);
 
 	GL_Bind(particletexture);
+	
+/*	alphaTestEnabled = glIsEnabled(GL_ALPHA_TEST);
+	if (alphaTestEnabled)
+		glDisable(GL_ALPHA_TEST);	
+*/	
 	glEnable (GL_BLEND);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	glDepthMask (GL_FALSE); // don't bother writing Z (fix for particle z-buffer bug)
 
 	glBegin (GL_QUADS); // quads save fillrate
-	for (p=active_particles ; p ; p=p->next) // TODO: need to split-up active_particles array to under/beyond water arrays
+//	for (p=active_particles ; p ; p=p->next)
+	for (i=0 ; i<n ; i++)
 	{
 		// improve sound when many particles
-		if (++j % 8192 == 0)
+//		if ( ++j % 8192 == 0)
+		if ( /* ++j */ (i + 1) % 8192 == 0)
 			S_ExtraUpdateTime ();
+
+		p = a[i];
 
 		// hack a scale up to keep particles from disapearing
 		scale = (p->org[0] - r_origin[0])*vpn[0] 
@@ -823,6 +872,10 @@ void R_DrawParticles (void)
 
 	glDepthMask (GL_TRUE); // back to normal Z buffering
 	glDisable (GL_BLEND);
+	
+/*	if (alphaTestEnabled)
+		glEnable(GL_ALPHA_TEST);
+*/	
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 	glColor3f(1,1,1);
 }

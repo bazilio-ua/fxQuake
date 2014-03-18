@@ -1045,6 +1045,11 @@ void R_DrawTextureChainsWater (void)
 	if (!r_drawworld.value)
 		return;
 
+	//
+	// go back to the world matrix
+	//
+	glLoadMatrixf (r_world_matrix);
+
 //	for (i=0 ; i<cl.worldmodel->numtextures ; i++)
 	if (waterchain)
 	{
