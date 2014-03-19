@@ -845,7 +845,7 @@ void R_DrawParticles (qboolean inwater)// void
 		if ((i + 1) % 8192 == 0)
 			S_ExtraUpdateTime ();
 
-// this work
+// this work too
 //		leaf = Mod_PointInLeaf (p->org, cl.worldmodel);
 //		if (((leaf->contents == CONTENTS_WATER || leaf->contents == CONTENTS_SLIME || leaf->contents == CONTENTS_LAVA) && inwater) ||
 //			((leaf->contents == CONTENTS_EMPTY || leaf->contents == CONTENTS_SOLID) && !inwater))
