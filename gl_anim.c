@@ -1560,8 +1560,9 @@ void R_SkyProcessEntities (void)
 		if (R_CullModelForEntity(e))
 			continue;
 
-		if (e->alpha == ENTALPHA_ZERO)
-			continue;
+//this is not needed, if entity has alpha = -1.0 (ENTALPHA_ZERO) its not sending by server to client anyway
+//		if (e->alpha == ENTALPHA_ZERO)
+//			continue;
 
 		VectorSubtract (r_refdef.vieworg, e->origin, modelorg);
 		if (e->angles[0] || e->angles[1] || e->angles[2])

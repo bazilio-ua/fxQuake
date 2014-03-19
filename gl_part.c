@@ -759,11 +759,16 @@ particle_t	*water_active_particles[MAX_PARTICLES];
 int			num_air_active_particles;
 int			num_water_active_particles;
 
+/*
+===============
+R_MarkParticles
+===============
+*/
 void R_MarkParticles (void)
 {
 	mleaf_t			*leaf;
 	particle_t		*p;
-
+//int i=0;
 	if (!r_particles.value)
 		return;
 
@@ -776,12 +781,19 @@ void R_MarkParticles (void)
 		if (leaf->contents == CONTENTS_WATER || leaf->contents == CONTENTS_SLIME || leaf->contents == CONTENTS_LAVA)
 		{
 			water_active_particles[num_water_active_particles++] = p;
+//		Con_Printf("number water particles: %d\n", num_water_active_particles);
 		}
-		else if (leaf->contents == CONTENTS_EMPTY)
+		else //if (leaf->contents == CONTENTS_EMPTY)// CONTENTS_SKY, CONTENTS_EMPTY, CONTENTS_SOLID
 		{
 			air_active_particles[num_air_active_particles++] = p;
+//		Con_Printf("number air particles: %d\n", num_air_active_particles);
 		}
-
+/*		else if (leaf->contents == CONTENTS_SOLID)
+		{
+		i++;
+//		Con_Printf("number solid particles: %d\n", i);
+		}
+*/
 	}
 
 }
@@ -802,6 +814,7 @@ void R_DrawParticles (qboolean inwater)// void
 	float			scale;
 	byte			*color, alpha;
 //	qboolean		alphaTestEnabled; 
+//	mleaf_t			*leaf;
 
 	if (!r_particles.value)
 		return;
@@ -829,9 +842,14 @@ void R_DrawParticles (qboolean inwater)// void
 	{
 		// improve sound when many particles
 //		if ( ++j % 8192 == 0)
-		if ( /* ++j */ (i + 1) % 8192 == 0)
+		if ((i + 1) % 8192 == 0)
 			S_ExtraUpdateTime ();
 
+// this work
+//		leaf = Mod_PointInLeaf (p->org, cl.worldmodel);
+//		if (((leaf->contents == CONTENTS_WATER || leaf->contents == CONTENTS_SLIME || leaf->contents == CONTENTS_LAVA) && inwater) ||
+//			((leaf->contents == CONTENTS_EMPTY || leaf->contents == CONTENTS_SOLID) && !inwater))
+//{		
 		p = a[i];
 
 		// hack a scale up to keep particles from disapearing
@@ -867,6 +885,9 @@ void R_DrawParticles (qboolean inwater)// void
 		glVertex3fv (p_right);
 
 		rs_c_particles++; // r_speeds
+		
+//}else continue;		
+
 	}
 	glEnd ();
 

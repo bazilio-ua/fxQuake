@@ -1287,7 +1287,7 @@ void R_RenderView (void)
 	R_FogDisableGFog ();
 	R_DrawViewModel ();
 	R_PolyBlend ();
-	R_BloomBlend (); // bloom on each frame. 
+	R_BloomBlend (); // bloom on each frame
 
 	S_ExtraUpdateTime ();	// don't let sound get messed up if going slow
 
