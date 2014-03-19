@@ -563,7 +563,8 @@ void R_DrawSequentialWaterPoly (entity_t *e, msurface_t *s)
 //		if (e->alpha == ENTALPHA_DEFAULT)
 //		if (!e || e && e->alpha == ENTALPHA_DEFAULT)
 //		if (entalpha == 1.0f)
-		if (!e) // avoid entities with *liquid surfaces to have transparency
+//		if (!e) // avoid entities with *liquid surfaces to have transparency
+		if (e == NULL) // avoid entities with water surfaces from having transparency
 		{
 			if (!r_lockalpha.value) // override water alpha for certain surface types
 			{
@@ -787,7 +788,7 @@ void R_DrawBrushModel (entity_t *e, qboolean water)
 */
 
 //original way
-//static int RecursCount;
+int recursivecount;
 /*
 ================
 R_RecursiveWorldNode
@@ -879,9 +880,9 @@ void R_RecursiveWorldNode (mnode_t *node)
 	else
 		side = 1;
 
-/*	if (++RecursCount % 2000 == 0)
+	if (++recursivecount % 2000 == 0)
 		S_ExtraUpdateTime ();	// don't let sound get messed up if going slow
-*/
+
 // recurse down the children, front side first
 	R_RecursiveWorldNode (node->children[side]);
 
@@ -961,6 +962,7 @@ void R_DrawWorld (void)
 
 	VectorCopy (r_refdef.vieworg, modelorg);
 
+	recursivecount = 0;
 	R_RecursiveWorldNode (cl.worldmodel->nodes);
 
 }

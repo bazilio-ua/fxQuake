@@ -232,7 +232,7 @@ void R_TranslatePlayerSkin (int playernum);
 
 // gl_part.c
 void R_InitParticles (void);
-void R_MarkParticles (void);
+void R_SetupParticles (void);
 void R_DrawParticles (qboolean inwater);// void
 void R_ClearParticles (void);
 

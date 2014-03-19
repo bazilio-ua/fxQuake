@@ -685,18 +685,6 @@ cleanup:
 
 //==================================================================================
 
-typedef struct sortedent_s
-{
-	entity_t	*ent;
-	vec_t		len;
-} sortedent_t;
-
-sortedent_t     cl_transvisedicts[MAX_VISEDICTS];
-sortedent_t		cl_transwateredicts[MAX_VISEDICTS];
-
-int				cl_numtransvisedicts;
-int				cl_numtranswateredicts;
-
 /*
 =============
 R_DrawEntities
@@ -706,9 +694,6 @@ void R_DrawEntities (void)
 {
 	int		i;
 	entity_t	*e;
-	mleaf_t *leaf;
-	vec3_t result;
-	vec3_t adjust_origin;
 
 	if (!r_drawentities.value)
 		return;
@@ -766,6 +751,34 @@ void R_DrawEntities (void)
 		}
 	}
 
+
+}
+
+//==================================================================================
+
+typedef struct sortedent_s
+{
+	entity_t	*ent;
+	vec_t		len;
+} sortedent_t;
+
+sortedent_t     cl_transvisedicts[MAX_VISEDICTS];
+sortedent_t		cl_transwateredicts[MAX_VISEDICTS];
+
+int				cl_numtransvisedicts;
+int				cl_numtranswateredicts;
+
+void R_SetupTransEntities (void)
+{
+	int		i;
+	entity_t	*e;
+	mleaf_t	*leaf;
+	vec3_t	result;
+	vec3_t	adjust_origin;
+
+	if (!r_drawentities.value)
+		return;
+
 	cl_numtransvisedicts = 0;
 	cl_numtranswateredicts = 0;
 
@@ -774,7 +787,7 @@ void R_DrawEntities (void)
 	{
 		e = cl_visedicts[i];
 
-		if (ENTALPHA_DECODE(e->alpha) == 1 && e->model->type != mod_sprite) //todo: add check condition for sprite, (sprite is always alpha)
+		if (ENTALPHA_DECODE(e->alpha) == 1 && e->model->type != mod_sprite) // sprite is always alpha
 			continue;
 			
 		VectorCopy(e->origin, adjust_origin);
@@ -805,8 +818,6 @@ void R_DrawEntities (void)
 	}
 
 }
-
-//==================================================================================
 
 
 int TransDistComp (const void *arg1, const void *arg2) 
@@ -849,7 +860,7 @@ void R_DrawTransEntities (qboolean inwater)
 	for (i=0 ; i<numents ; i++)
 		Con_Printf("model: %s, nument: %d, len after sort: %f\n", theents[i].ent->model->name, i, theents[i].len);
 */
-	// standard entities
+	// transparent entities
 	for (i=0 ; i<numents ; i++)
 	{
 		if ((i + 1) % 100 == 0)
@@ -913,6 +924,7 @@ R_DrawWaterEntities
 a special case
 =============
 */
+/*
 void R_DrawWaterEntities (void)
 {
 	int		i;
@@ -944,14 +956,16 @@ void R_DrawWaterEntities (void)
 	}
 
 }
+*/
 
-
+/*
 void R_DrawWater (void)
 {
 	R_DrawWaterEntities ();
 
 	R_DrawTextureChainsWater ();
 }
+*/
 
 //==================================================================================
 
@@ -962,6 +976,7 @@ R_DrawSprites
 sprites are a special case
 =============
 */
+/*
 void R_DrawSprites (void)
 {
 	int		i;
@@ -989,6 +1004,7 @@ void R_DrawSprites (void)
 		}
 	}
 }
+*/
 
 /*
 =============
@@ -1263,10 +1279,12 @@ void R_RenderView (void)
 	// r_refdef must be set before the first call
 	R_SetupFrame ();
 	R_MarkLeaves ();	// done here so we know if we're in water
-	R_MarkParticles ();
 	R_UpdateWarpTextures ();	// do this before R_Clear
 	R_Clear ();
 	R_SetupGL ();
+
+	R_SetupTransEntities ();
+	R_SetupParticles ();
 
 	S_ExtraUpdateTime ();	// don't let sound get messed up if going slow
 

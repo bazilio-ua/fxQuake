@@ -761,10 +761,10 @@ int			num_water_active_particles;
 
 /*
 ===============
-R_MarkParticles
+R_SetupParticles
 ===============
 */
-void R_MarkParticles (void)
+void R_SetupParticles (void)
 {
 	mleaf_t			*leaf;
 	particle_t		*p;

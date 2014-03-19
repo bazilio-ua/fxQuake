@@ -445,8 +445,9 @@ void GL_SetupState (void)
 {
 	glClearColor (0.15,0.15,0.15,0); // originally was 1,0,0,0
 
-	glCullFace (GL_BACK); // glquake used CCW with backwards culling -- let's do it right
-	glFrontFace (GL_CW); // glquake used CCW with backwards culling -- let's do it right
+	glCullFace (GL_FRONT);
+//	glCullFace (GL_BACK); // glquake used CCW with backwards culling -- let's do it right
+//	glFrontFace (GL_CW); // glquake used CCW with backwards culling -- let's do it right
 
 	glEnable (GL_TEXTURE_2D);
 
