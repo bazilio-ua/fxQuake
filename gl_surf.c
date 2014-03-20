@@ -1002,7 +1002,7 @@ void R_MarkLeaves (void)
 		}
 	}
 
-	// return if surface chains don't need regenerating
+	// return if viewleaf don't need regenerating
 	if (r_oldviewleaf == r_viewleaf && !r_novis.value && !nearwaterportal)
 		return;
 
