@@ -1500,9 +1500,9 @@ handles sky polys in world model
 */
 void R_SkyProcessTextureChains (void)
 {
-	int			i;
+//	int			i;
 	msurface_t	*s;
-	texture_t	*t;
+//	texture_t	*t;
 
 	if (!r_drawworld.value)
 		return;

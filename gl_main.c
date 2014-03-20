@@ -790,7 +790,7 @@ void R_SetupTransEntities (void)
 
 		if (ENTALPHA_DECODE(e->alpha) == 1 && e->model->type != mod_sprite) // sprite is always alpha
 			continue;
-			
+		
 		VectorCopy(e->origin, adjust_origin);
 		if (e->model->type == mod_brush)
 		{
@@ -809,12 +809,12 @@ void R_SetupTransEntities (void)
 		if (leaf->contents == CONTENTS_WATER || leaf->contents == CONTENTS_SLIME || leaf->contents == CONTENTS_LAVA)
 		{
 			cl_transwateredicts[cl_numtranswateredicts].ent = e;
-			cl_transwateredicts[cl_numtranswateredicts++].len = (result[0] * result[0]) + (result[1] * result[1]) + (result[2] * result[2]);
+			cl_transwateredicts[cl_numtranswateredicts++].len = DotProduct (result, result); //(result[0] * result[0]) + (result[1] * result[1]) + (result[2] * result[2]);
 		}
 		else
 		{
 			cl_transvisedicts[cl_numtransvisedicts].ent = e;
-			cl_transvisedicts[cl_numtransvisedicts++].len = (result[0] * result[0]) + (result[1] * result[1]) + (result[2] * result[2]);
+			cl_transvisedicts[cl_numtransvisedicts++].len = DotProduct (result, result); //(result[0] * result[0]) + (result[1] * result[1]) + (result[2] * result[2]);
 		}
 	}
 
@@ -851,16 +851,16 @@ void R_DrawTransEntities (qboolean inwater)
 		Con_Printf("in water\n");
 	else
 		Con_Printf("in empty\n");
-	
-	for (i=0 ; i<numents ; i++)
-		Con_Printf("model: %s, nument: %d, len before sort: %f\n", theents[i].ent->model->name, i, theents[i].len);
-*/
+*/	
+//	for (i=0 ; i<numents ; i++)
+//		Con_Printf("model: %s, nument: %d, len before sort: %f\n", theents[i].ent->model->name, i, theents[i].len);
+
 	qsort((void *) theents, numents, sizeof(sortedent_t), TransDistComp);
 	// Add in BETTER sorting here
-/*
-	for (i=0 ; i<numents ; i++)
-		Con_Printf("model: %s, nument: %d, len after sort: %f\n", theents[i].ent->model->name, i, theents[i].len);
-*/
+
+//	for (i=0 ; i<numents ; i++)
+//		Con_Printf("model: %s, nument: %d, len after sort: %f\n", theents[i].ent->model->name, i, theents[i].len);
+
 	// transparent entities
 	for (i=0 ; i<numents ; i++)
 	{

@@ -769,6 +769,7 @@ void R_DrawBrushModel (entity_t *e, qboolean water)
 				R_DrawSequentialWaterPoly (e, psurf); // draw water entities
 			else
 				R_DrawSequentialPoly (e, psurf); // draw entities
+			
 			rs_c_brush_polys++; // r_speeds
 		}
 	}
@@ -805,7 +806,7 @@ void R_RecursiveWorldNode (mnode_t *node)
 	mplane_t	*plane;
 	msurface_t	*surf, **mark;
 	mleaf_t		*pleaf;
-	double		dot;
+	float		dot;
 //	static float	lastmsg = 0;
 
 	if (node->contents == CONTENTS_SOLID)
@@ -1046,9 +1047,9 @@ R_DrawTextureChainsWater
 */
 void R_DrawTextureChainsWater (void)
 {
-	int			i;
+//	int			i;
 	msurface_t	*s;
-	texture_t	*t;
+//	texture_t	*t;
 //	qboolean	texbound;
 //	float	wateralpha = 1.0f; // keep compiler happy
 //	float	lavafog = 0; // keep compiler happy
