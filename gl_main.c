@@ -790,7 +790,7 @@ void R_SetupTransEntities (void)
 
 		if (ENTALPHA_DECODE(e->alpha) == 1 && e->model->type != mod_sprite) // sprite is always alpha
 			continue;
-		
+
 		VectorCopy(e->origin, adjust_origin);
 		if (e->model->type == mod_brush)
 		{
@@ -805,16 +805,22 @@ void R_SetupTransEntities (void)
 		leaf = Mod_PointInLeaf (adjust_origin, cl.worldmodel);//was e->origin
 		VectorSubtract (adjust_origin, r_origin, result);//was e->origin
 
-		
+/*
+		Con_Printf("model: %s, result[0]: %f, result[1]: %f, result[2]: %f\n", e->model->name, result[0], result[1], result[2]);
+		Con_Printf("model: %s, (result[0] * result[0]) + (result[1] * result[1]) + (result[2] * result[2]) %f\n", e->model->name, (result[0] * result[0]) + (result[1] * result[1]) + (result[2] * result[2]));
+		Con_Printf("model: %s, DotProduct(result,result) %f\n", e->model->name, DotProduct (result,result));
+		Con_Printf("model: %s, VectorLength(result) %f\n", e->model->name, VectorLength (result));
+*/		
+
 		if (leaf->contents == CONTENTS_WATER || leaf->contents == CONTENTS_SLIME || leaf->contents == CONTENTS_LAVA)
 		{
 			cl_transwateredicts[cl_numtranswateredicts].ent = e;
-			cl_transwateredicts[cl_numtranswateredicts++].len = DotProduct (result, result); //(result[0] * result[0]) + (result[1] * result[1]) + (result[2] * result[2]);
+			cl_transwateredicts[cl_numtranswateredicts++].len = VectorLength (result); // DotProduct (result, result); //(result[0] * result[0]) + (result[1] * result[1]) + (result[2] * result[2]);
 		}
 		else
 		{
 			cl_transvisedicts[cl_numtransvisedicts].ent = e;
-			cl_transvisedicts[cl_numtransvisedicts++].len = DotProduct (result, result); //(result[0] * result[0]) + (result[1] * result[1]) + (result[2] * result[2]);
+			cl_transvisedicts[cl_numtransvisedicts++].len = VectorLength (result); // DotProduct (result, result); //(result[0] * result[0]) + (result[1] * result[1]) + (result[2] * result[2]);
 		}
 	}
 
@@ -846,8 +852,8 @@ void R_DrawTransEntities (qboolean inwater)
 
 	theents = (inwater) ? cl_transwateredicts : cl_transvisedicts;
 	numents = (inwater) ? cl_numtranswateredicts : cl_numtransvisedicts;
-/*
-	if (inwater)
+
+/*	if (inwater)
 		Con_Printf("in water\n");
 	else
 		Con_Printf("in empty\n");
