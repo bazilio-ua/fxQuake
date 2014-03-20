@@ -783,12 +783,12 @@ void R_SetupParticles (void)
 			water_active_particles[num_water_active_particles++] = p;
 //		Con_Printf("number water particles: %d\n", num_water_active_particles);
 		}
-		else //if (leaf->contents == CONTENTS_EMPTY)// CONTENTS_SKY, CONTENTS_EMPTY, CONTENTS_SOLID
+		else //if (leaf->contents == CONTENTS_EMPTY)
 		{
 			air_active_particles[num_air_active_particles++] = p;
 //		Con_Printf("number air particles: %d\n", num_air_active_particles);
 		}
-/*		else if (leaf->contents == CONTENTS_SOLID)
+/*		else if (leaf->contents == CONTENTS_SOLID)// CONTENTS_SKY, CONTENTS_EMPTY, CONTENTS_SOLID
 		{
 		i++;
 //		Con_Printf("number solid particles: %d\n", i);
