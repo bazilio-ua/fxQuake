@@ -93,6 +93,7 @@ cvar_t	gl_smoothmodels = {"gl_smoothmodels","1"};
 cvar_t	gl_affinemodels = {"gl_affinemodels","0"};
 cvar_t	gl_polyblend = {"gl_polyblend","1"};
 cvar_t	gl_flashblend = {"gl_flashblend","1"};
+cvar_t	gl_overbright = {"gl_overbright", "1", true};
 cvar_t	gl_zfix = {"gl_zfix","0"}; // z-fighting fix
 cvar_t  gl_oldspr = {"gl_oldspr", "0"}; // Old opaque sprite
 
@@ -558,7 +559,7 @@ void R_DrawAliasModel (entity_t *e)
 
 	shadedots = r_avertexnormal_dots[((int)(e->angles[1] * (SHADEDOT_QUANT / 360.0))) & (SHADEDOT_QUANT - 1)];
 	//VectorScale (lightcolor, 1.0f / 192.0f, lightcolor);//orig.
-	VectorScale (lightcolor, 1.0f / 160.0f, lightcolor); //FX, new value
+	VectorScale (lightcolor, 1.0f / (160.0f * d_overbright), lightcolor); //FX, new value
 
 	//
 	// set up textures
@@ -589,7 +590,7 @@ void R_DrawAliasModel (entity_t *e)
 		glTexEnvf (GL_TEXTURE_ENV, GL_COMBINE_RGB_EXT, GL_MODULATE);
 		glTexEnvf (GL_TEXTURE_ENV, GL_SOURCE0_RGB_EXT, GL_TEXTURE);
 		glTexEnvf (GL_TEXTURE_ENV, GL_SOURCE1_RGB_EXT, GL_PRIMARY_COLOR_EXT);
-		glTexEnvf (GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, 2.0f);
+		glTexEnvf (GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, d_overbrightscale); // 2.0f * d_overbright
 
 		// Binds fullbright skin to texture env 1
 		GL_EnableMultitexture (); // selects TEXTURE1
@@ -609,7 +610,7 @@ void R_DrawAliasModel (entity_t *e)
 		glTexEnvf (GL_TEXTURE_ENV, GL_COMBINE_RGB_EXT, GL_MODULATE);
 		glTexEnvf (GL_TEXTURE_ENV, GL_SOURCE0_RGB_EXT, GL_TEXTURE);
 		glTexEnvf (GL_TEXTURE_ENV, GL_SOURCE1_RGB_EXT, GL_PRIMARY_COLOR_EXT);
-		glTexEnvf (GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, 2.0f);
+		glTexEnvf (GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, d_overbrightscale); // 2.0f * d_overbright
 		GL_DrawAliasFrame (paliashdr, lerpdata); // FX
 		glTexEnvf (GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, 1.0f);
 		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
@@ -1275,6 +1276,7 @@ void R_RenderView (void)
 	if (gl_finish.value /* || r_speeds.value */)
 		glFinish ();
 
+//	Con_Printf("overbright: %d, overbrightscale: %f\n",d_overbright, d_overbrightscale);
 	// render normal view
 	// r_refdef must be set before the first call
 	R_SetupFrame ();

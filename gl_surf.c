@@ -45,6 +45,9 @@ int			allocated[MAX_LIGHTMAPS][BLOCK_WIDTH];
 // main memory so texsubimage can update properly
 byte		lightmaps[4*MAX_LIGHTMAPS*BLOCK_WIDTH*BLOCK_HEIGHT]; // (4)lightmap_bytes*MAX_LIGHTMAPS*BLOCK_WIDTH*BLOCK_HEIGHT
 
+int			d_overbright = 1;
+float		d_overbrightscale = OVERBRIGHT_SCALE;
+
 msurface_t  *skychain = NULL;
 msurface_t  *waterchain = NULL;
 
@@ -149,6 +152,7 @@ void R_BuildLightMap (msurface_t *surf, byte *dest, int stride)
 	unsigned	scale;
 	int			maps;
 	unsigned	*bl;
+	int			shift;
 
 	surf->cached_dlight = (surf->dlightframe == r_framecount);
 
@@ -193,14 +197,15 @@ void R_BuildLightMap (msurface_t *surf, byte *dest, int stride)
 
 	// bound, invert, and shift
 	stride -= smax * 4;
+	shift = 7 + d_overbright;
 	bl = blocklights;
 	for (i=0 ; i<tmax ; i++, dest += stride)
 	{
 		for (j=0 ; j<smax ; j++)
 		{
-			t = *bl++ >> 8;if (t > 255) t = 255;dest[0] = t;
-			t = *bl++ >> 8;if (t > 255) t = 255;dest[1] = t;
-			t = *bl++ >> 8;if (t > 255) t = 255;dest[2] = t;
+			t = *bl++ >> shift;if (t > 255) t = 255;dest[0] = t;
+			t = *bl++ >> shift;if (t > 255) t = 255;dest[1] = t;
+			t = *bl++ >> shift;if (t > 255) t = 255;dest[2] = t;
 			dest[3] = 255;
 			dest += 4;
 		}
@@ -446,7 +451,7 @@ void R_DrawSequentialPoly (entity_t *e, msurface_t *s)
 			glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_RGB_EXT, GL_MODULATE);
 			glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE0_RGB_EXT, GL_PREVIOUS_EXT);
 			glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE1_RGB_EXT, GL_TEXTURE);
-			glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, 2.0f);
+			glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, d_overbrightscale); // 2.0f * d_overbright
 
 			glBegin(GL_POLYGON);
 			v = p->verts[0];

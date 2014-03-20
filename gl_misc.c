@@ -155,6 +155,23 @@ void R_ClearColor (void)
 }
 
 /*
+====================
+GL_Overbright
+====================
+*/
+void GL_Overbright (void)
+{
+	if (gl_mtexable && gl_texture_env_combine && gl_texture_env_add)
+	{
+		d_overbright = CLAMP(1.0, gl_overbright.value, 2.0);
+		d_overbrightscale = OVERBRIGHT_SCALE * d_overbright;
+
+		// Refresh lightmaps
+		R_BuildLightmaps ();
+	}
+}
+
+/*
 ===============
 R_Init
 ===============
@@ -201,6 +218,7 @@ void R_Init (void)
 	Cvar_RegisterVariable (&gl_affinemodels, NULL);
 	Cvar_RegisterVariable (&gl_polyblend, NULL);
 	Cvar_RegisterVariable (&gl_flashblend, NULL);
+	Cvar_RegisterVariable (&gl_overbright, GL_Overbright);
 	Cvar_RegisterVariable (&gl_zfix, NULL); // z-fighting fix
 	Cvar_RegisterVariable (&gl_oldspr, NULL);
 

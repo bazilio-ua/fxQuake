@@ -381,6 +381,10 @@ extern	gltexture_t	*skyboxtextures[6];
 
 extern	float globalwateralpha;
 
+#define	OVERBRIGHT_SCALE	2.0
+extern	int		d_overbright;
+extern	float	d_overbrightscale;
+
 extern	msurface_t *skychain;
 extern	msurface_t *waterchain;
 //
@@ -422,6 +426,7 @@ extern	cvar_t	gl_smoothmodels;
 extern	cvar_t	gl_affinemodels;
 extern	cvar_t	gl_polyblend;
 extern	cvar_t	gl_flashblend;
+extern	cvar_t	gl_overbright;
 extern	cvar_t	gl_zfix; // z-fighting fix
 extern	cvar_t  gl_oldspr;
 
