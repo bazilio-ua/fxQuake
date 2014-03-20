@@ -929,6 +929,8 @@ void R_RecursiveWorldNode (mnode_t *node)
 //				surf->texinfo->texture->texturechain = surf;
 
 			}
+			
+			rs_c_brush_polys++; // r_speeds (count wpolys here)
 		}
 	}
 
@@ -984,7 +986,7 @@ void R_MarkLeaves (void)
 	byte	   solid[MAX_MAP_LEAFS / 2];
 	qboolean   nearwaterportal = false;
 
-	// Check if near water to avoid HOMs when crossing the surface
+	// check if near water to avoid HOMs when crossing the surface
 	for (i=0, mark = r_viewleaf->firstmarksurface; i < r_viewleaf->nummarksurfaces; i++, mark++)
 	{
 		if ((*mark)->flags & SURF_DRAWTURB)
@@ -995,13 +997,15 @@ void R_MarkLeaves (void)
 		}
 	}
 
+	// return if surface chains don't need regenerating
 	if (r_oldviewleaf == r_viewleaf && !r_novis.value && !nearwaterportal)
 		return;
 
 	r_visframecount++;
 	r_oldviewleaf = r_viewleaf;
 
-	if (r_novis.value)
+	// choose vis data
+	if (r_novis.value || r_viewleaf->contents == CONTENTS_SOLID || r_viewleaf->contents == CONTENTS_SKY)
 	{
 		vis = solid;
 		memset (solid, 0xff, (cl.worldmodel->numleafs+7)>>3);
