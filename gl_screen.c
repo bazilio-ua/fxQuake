@@ -577,8 +577,6 @@ void SCR_DrawPause (void)
 		(vid.height - 48 - pic->height)/2, pic);
 }
 
-
-
 /*
 ==============
 SCR_DrawLoading
@@ -596,10 +594,7 @@ void SCR_DrawLoading (void)
 		(vid.height - 48 - pic->height)/2, pic);
 }
 
-
-
 //=============================================================================
-
 
 /*
 ==================
@@ -779,7 +774,6 @@ void SCR_ScreenShot_f (void)
 	free (buffer);
 } 
 
-
 //=============================================================================
 
 /*
@@ -923,9 +917,7 @@ int SCR_ModalMessage (char *text, float timeout) //johnfitz -- timeout
 	return key_lastpress == 'y';
 }
 
-
 //=============================================================================
-
 
 /*
 ==================
