@@ -261,6 +261,8 @@ void R_DrawSpriteModel (entity_t *e)
 	float			*s_up, *s_right;
 	float			angle, sr, cr;
 
+	// don't even bother culling, because it's just a single
+	// polygon without a surface cache
 	//TODO: frustum cull it?
 	frame = R_GetSpriteFrame (e);
 	psprite = e->model->cache.data;
@@ -274,6 +276,7 @@ void R_DrawSpriteModel (entity_t *e)
 			s_up = v_up;
 			s_right = vright;
 			break;
+			
 		case SPR_FACING_UPRIGHT: //faces camera origin, up is towards the heavens
 			VectorSubtract(e->origin, r_origin, v_forward);
 			v_forward[2] = 0;
@@ -287,15 +290,18 @@ void R_DrawSpriteModel (entity_t *e)
 			s_up = v_up;
 			s_right = v_right;
 			break;
+			
 		case SPR_VP_PARALLEL: //faces view plane, up is towards the top of the screen
 			s_up = vup;
 			s_right = vright;
 			break;
+			
 		case SPR_ORIENTED: //pitch yaw roll are independent of camera (bullet marks on walls)
 			AngleVectors (e->angles, v_forward, v_right, v_up);
 			s_up = v_up;
 			s_right = v_right;
 			break;
+			
 		case SPR_VP_PARALLEL_ORIENTED: //faces view plane, but obeys roll value
 			angle = e->angles[ROLL] * M_PI_DIV_180;
 			sr = sin(angle);
@@ -309,6 +315,7 @@ void R_DrawSpriteModel (entity_t *e)
 			s_up = v_up;
 			s_right = v_right;
 			break;
+			
 		default:
 			return;
 	}
