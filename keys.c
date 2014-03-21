@@ -402,7 +402,8 @@ void Key_Console (int key)
 			return;
 		}
 
-		do {
+		do 
+		{
 			history_line = (history_line + 1) & (CMDLINES-1);
 		} while (history_line != edit_line
 			&& !key_lines[history_line][1]);
@@ -740,7 +741,8 @@ void History_Init (void)
 	int i, c;
 	FILE *hf;
 
-	for (i = 0; i < CMDLINES; i++) {
+	for (i = 0; i < CMDLINES; i++) 
+	{
 		key_lines[i][0] = ']';
 		key_lines[i][1] = 0;
 	}
