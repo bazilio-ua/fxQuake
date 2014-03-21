@@ -184,6 +184,9 @@ void R_AddEfrags (entity_t *ent)
 		r_emaxs[i] = ent->origin[i] + entmodel->maxs[i];
 	}
 
+	if (!cl.worldmodel)
+		Host_Error ("R_AddEfrags: NULL worldmodel\n");
+
 	R_SplitEntityOnNode (cl.worldmodel->nodes);
 
 	ent->topnode = r_pefragtopnode;
