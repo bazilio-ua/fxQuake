@@ -565,8 +565,7 @@ void R_DrawAliasModel (entity_t *e)
 		VectorScale (lightcolor, add, lightcolor);
 
 	shadedots = r_avertexnormal_dots[((int)(e->angles[1] * (SHADEDOT_QUANT / 360.0))) & (SHADEDOT_QUANT - 1)];
-	//VectorScale (lightcolor, 1.0f / 192.0f, lightcolor);//orig.
-	VectorScale (lightcolor, 1.0f / (160.0f * d_overbright), lightcolor); //FX, new value
+	VectorScale (lightcolor, 1.0f / (160.0f * d_overbright), lightcolor); //FX, new value (orig. was 192.0f)
 
 	//
 	// set up textures
@@ -597,7 +596,7 @@ void R_DrawAliasModel (entity_t *e)
 		glTexEnvf (GL_TEXTURE_ENV, GL_COMBINE_RGB_EXT, GL_MODULATE);
 		glTexEnvf (GL_TEXTURE_ENV, GL_SOURCE0_RGB_EXT, GL_TEXTURE);
 		glTexEnvf (GL_TEXTURE_ENV, GL_SOURCE1_RGB_EXT, GL_PRIMARY_COLOR_EXT);
-		glTexEnvf (GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, d_overbrightscale); // 2.0f * d_overbright
+		glTexEnvf (GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, d_overbrightscale);
 
 		// Binds fullbright skin to texture env 1
 		GL_EnableMultitexture (); // selects TEXTURE1
@@ -617,7 +616,7 @@ void R_DrawAliasModel (entity_t *e)
 		glTexEnvf (GL_TEXTURE_ENV, GL_COMBINE_RGB_EXT, GL_MODULATE);
 		glTexEnvf (GL_TEXTURE_ENV, GL_SOURCE0_RGB_EXT, GL_TEXTURE);
 		glTexEnvf (GL_TEXTURE_ENV, GL_SOURCE1_RGB_EXT, GL_PRIMARY_COLOR_EXT);
-		glTexEnvf (GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, d_overbrightscale); // 2.0f * d_overbright
+		glTexEnvf (GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, d_overbrightscale);
 		GL_DrawAliasFrame (paliashdr, lerpdata); // FX
 		glTexEnvf (GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, 1.0f);
 		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
@@ -729,7 +728,6 @@ void R_DrawEntities (void)
 
 			case mod_brush:
 				R_DrawBrushModel (e, false);
-//				R_DrawBrushModel (e, true);//tst
 				break;
 
 			default:
@@ -737,16 +735,13 @@ void R_DrawEntities (void)
 		}
 	}
 
-	// special case to draw "water" entities
+	// special case to draw water entities
 	for (i=0 ; i<cl_numvisedicts ; i++)
 	{
 		if ((i + 1) % 100 == 0)
 			S_ExtraUpdateTime (); // don't let sound get messed up if going slow
 
 		e = cl_visedicts[i];
-
-//		if (ENTALPHA_DECODE(e->alpha) < 1)
-//			continue;
 
 		switch (e->model->type)
 		{
@@ -801,38 +796,25 @@ void R_SetupTransEntities (void)
 		VectorCopy(e->origin, adjust_origin);
 		if (e->model->type == mod_brush)
 		{
-
 			adjust_origin[0] += (e->model->mins[0] + e->model->maxs[0]) / 2;
 			adjust_origin[1] += (e->model->mins[1] + e->model->maxs[1]) / 2;
 			adjust_origin[2] += (e->model->mins[2] + e->model->maxs[2]) / 2;
-			
-/*			Con_Printf("adjust_origin: model: %s, adjust_origin[0]: %f, adjust_origin[1]: %f, adjust_origin[2]: %f\n---*---\n", e->model->name, 
-				adjust_origin[0], adjust_origin[1], adjust_origin[2]);
-*/		}
-		leaf = Mod_PointInLeaf (adjust_origin, cl.worldmodel);//was e->origin
-		VectorSubtract (adjust_origin, r_origin, result);//was e->origin
-
-/*
-		Con_Printf("model: %s, result[0]: %f, result[1]: %f, result[2]: %f\n", e->model->name, result[0], result[1], result[2]);
-		Con_Printf("model: %s, (result[0] * result[0]) + (result[1] * result[1]) + (result[2] * result[2]) %f\n", e->model->name, (result[0] * result[0]) + (result[1] * result[1]) + (result[2] * result[2]));
-		Con_Printf("model: %s, DotProduct(result,result) %f\n", e->model->name, DotProduct (result,result));
-		Con_Printf("model: %s, VectorLength(result) %f\n", e->model->name, VectorLength (result));
-*/		
+		}
+		leaf = Mod_PointInLeaf (adjust_origin, cl.worldmodel);
+		VectorSubtract (adjust_origin, r_origin, result);
 
 		if (leaf->contents == CONTENTS_WATER || leaf->contents == CONTENTS_SLIME || leaf->contents == CONTENTS_LAVA)
 		{
 			cl_transwateredicts[cl_numtranswateredicts].ent = e;
-			cl_transwateredicts[cl_numtranswateredicts++].len = VectorLength (result); // DotProduct (result, result); //(result[0] * result[0]) + (result[1] * result[1]) + (result[2] * result[2]);
+			cl_transwateredicts[cl_numtranswateredicts++].len = VectorLength (result);
 		}
 		else
 		{
 			cl_transvisedicts[cl_numtransvisedicts].ent = e;
-			cl_transvisedicts[cl_numtransvisedicts++].len = VectorLength (result); // DotProduct (result, result); //(result[0] * result[0]) + (result[1] * result[1]) + (result[2] * result[2]);
+			cl_transvisedicts[cl_numtransvisedicts++].len = VectorLength (result);
 		}
 	}
-
 }
-
 
 int TransDistComp (const void *arg1, const void *arg2) 
 {
@@ -860,21 +842,10 @@ void R_DrawTransEntities (qboolean inwater)
 	theents = (inwater) ? cl_transwateredicts : cl_transvisedicts;
 	numents = (inwater) ? cl_numtranswateredicts : cl_numtransvisedicts;
 
-/*	if (inwater)
-		Con_Printf("in water\n");
-	else
-		Con_Printf("in empty\n");
-*/	
-//	for (i=0 ; i<numents ; i++)
-//		Con_Printf("model: %s, nument: %d, len before sort: %f\n", theents[i].ent->model->name, i, theents[i].len);
-
 	qsort((void *) theents, numents, sizeof(sortedent_t), TransDistComp);
 	// Add in BETTER sorting here
 
-//	for (i=0 ; i<numents ; i++)
-//		Con_Printf("model: %s, nument: %d, len after sort: %f\n", theents[i].ent->model->name, i, theents[i].len);
-
-	// transparent entities
+	// draw transparent entities
 	for (i=0 ; i<numents ; i++)
 	{
 		if ((i + 1) % 100 == 0)
@@ -894,121 +865,8 @@ void R_DrawTransEntities (qboolean inwater)
 
 			case mod_brush:
 				R_DrawBrushModel (e, false);
-//				R_DrawBrushModel (e, true);//tst
 				break;
 
-				
-			case mod_sprite:
-				R_DrawSpriteModel (e);
-				break;
-
-				
-			default:
-				break;
-		}
-	}
-
-/*	// "water" entities
-	for (i=0 ; i<numents ; i++)
-	{
-		if ((i + 1) % 100 == 0)
-			S_ExtraUpdateTime (); // don't let sound get messed up if going slow
-
-		e = theents[i].ent;
-
-		switch (e->model->type)
-		{
-			case mod_brush:
-				R_DrawBrushModel (e, true);
-				break;
-
-			default:
-				break;
-		}
-	}
-*/
-}
-
-//==================================================================================
-
-/*
-=============
-R_DrawWaterEntities
-
-a special case
-=============
-*/
-/*
-void R_DrawWaterEntities (void)
-{
-	int		i;
-	entity_t	*e;
-
-	// special case to draw "water" entities
-	for (i=0 ; i<cl_numvisedicts ; i++)
-	{
-		if ((i + 1) % 100 == 0)
-			S_ExtraUpdateTime (); // don't let sound get messed up if going slow
-
-		e = cl_visedicts[i];
-
-//		if (ENTALPHA_DECODE(e->alpha) < 1)
-//			continue;
-
-//		if (e->alpha == ENTALPHA_ZERO)
-//			continue;
-
-		switch (e->model->type)
-		{
-			case mod_brush:
-				R_DrawBrushModel (e, true);
-				break;
-
-			default:
-				break;
-		}
-	}
-
-}
-*/
-
-/*
-void R_DrawWater (void)
-{
-	R_DrawWaterEntities ();
-
-	R_DrawTextureChainsWater ();
-}
-*/
-
-//==================================================================================
-
-/*
-=============
-R_DrawSprites
-
-sprites are a special case
-=============
-*/
-/*
-void R_DrawSprites (void)
-{
-	int		i;
-	entity_t	*e;
-
-	if (!r_drawentities.value)
-		return;
-
-	// draw sprites seperately, because of alpha blending
-	for (i=0 ; i<cl_numvisedicts ; i++)
-	{
-		if ((i + 1) % 100 == 0)
-			S_ExtraUpdateTime (); // don't let sound get messed up if going slow
-
-		e = cl_visedicts[i];
-
-		switch (e->model->type)
-		{
 			case mod_sprite:
 				R_DrawSpriteModel (e);
 				break;
@@ -1018,7 +876,8 @@ void R_DrawSprites (void)
 		}
 	}
 }
-*/
+
+//==================================================================================
 
 /*
 =============
@@ -1289,7 +1148,6 @@ void R_RenderView (void)
 	if (gl_finish.value /* || r_speeds.value */)
 		glFinish ();
 
-//	Con_Printf("overbright: %d, overbrightscale: %f\n",d_overbright, d_overbrightscale);
 	// render normal view
 	// r_refdef must be set before the first call
 	R_SetupFrame ();
@@ -1309,14 +1167,10 @@ void R_RenderView (void)
 	R_DrawEntities ();
 	R_DrawTransEntities (r_viewleaf->contents == CONTENTS_EMPTY);
 	R_DrawParticles (r_viewleaf->contents == CONTENTS_EMPTY);
-//	R_DrawWaterEntities ();
 	R_DrawTextureChainsWater (); // drawn here since they might have transparency
-//	R_DrawWater ();
 	R_DrawTransEntities (r_viewleaf->contents != CONTENTS_EMPTY);
 	R_DrawParticles (r_viewleaf->contents != CONTENTS_EMPTY);
 	R_RenderDlights ();
-//	R_DrawSprites ();
-//	R_DrawParticles ();
 	R_FogDisableGFog ();
 	R_DrawViewModel ();
 	R_PolyBlend ();

@@ -371,15 +371,9 @@ void R_DrawSequentialPoly (entity_t *e, msurface_t *s)
 	int			i;
 
 	p = s->polys;
-//	t = R_TextureAnimation (s->texinfo->texture, e->frame);
 	t = R_TextureAnimation (s->texinfo->texture, e ? e->frame : 0);
-//	entalpha = ENTALPHA_DECODE(e->alpha);
 	entalpha = e ? ENTALPHA_DECODE(e->alpha) : 1.0;
-/*	if (e)
-		entalpha = ENTALPHA_DECODE(e->alpha);
-	else
-		entalpha = 1.0;
-*/
+
 	//
 	// sky poly
 	//
@@ -451,7 +445,7 @@ void R_DrawSequentialPoly (entity_t *e, msurface_t *s)
 			glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_RGB_EXT, GL_MODULATE);
 			glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE0_RGB_EXT, GL_PREVIOUS_EXT);
 			glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE1_RGB_EXT, GL_TEXTURE);
-			glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, d_overbrightscale); // 2.0f * d_overbright
+			glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, d_overbrightscale);
 
 			glBegin(GL_POLYGON);
 			v = p->verts[0];
@@ -550,25 +544,16 @@ R_DrawSequentialWaterPoly
 void R_DrawSequentialWaterPoly (entity_t *e, msurface_t *s)
 {
 	glpoly_t	*p;
-//	texture_t	*t; // unused
 	float		entalpha = 1.0;
 	float		entfog = 0; // keep compiler happy
 
 	p = s->polys;
-//	t = R_TextureAnimation (s->texinfo->texture, e->frame);
-//	t = R_TextureAnimation (s->texinfo->texture, e ? e->frame : 0);
-//	entalpha = ENTALPHA_DECODE(e->alpha);
-//	entalpha = e ? ENTALPHA_DECODE(e->alpha) : 1.0;
 
 	//
 	// water poly
 	//
 	if (s->flags & SURF_DRAWTURB)
 	{
-//		if (e->alpha == ENTALPHA_DEFAULT)
-//		if (!e || e && e->alpha == ENTALPHA_DEFAULT)
-//		if (entalpha == 1.0f)
-//		if (!e) // avoid entities with *liquid surfaces to have transparency
 		if (e == NULL) // avoid entities with water surfaces from having transparency
 		{
 			if (!r_lockalpha.value) // override water alpha for certain surface types
@@ -580,9 +565,7 @@ void R_DrawSequentialWaterPoly (entity_t *e, msurface_t *s)
 				else if (s->flags & SURF_DRAWTELE)
 					entalpha = CLAMP(0.0, r_telealpha.value, 1.0);
 			}
-/*			else
-				entalpha = 1.0f; //fixme: this is not needed?
-*/
+
 			if (s->flags & SURF_DRAWWATER)
 			{
 				if (globalwateralpha > 0)
@@ -732,13 +715,7 @@ void R_DrawBrushModel (entity_t *e, qboolean water)
 		}
 	}
 
-	/* MH: z-fighting is really a mapping problem, 
-	and it should be fixed in the map and not by the engine. 
-	
-	The traditional "fix" (using polygon offset) sucks because (a) the z-buffer is non-linear 
-	so offset factors will have different effects at different depths, 
-	and (b) the OpenGL spec allows polygon offset to be implementation-dependent, 
-	so the same offset factor may have different effects on different hardware. */
+	// mh -- z-fighting is really a mapping problem, and it should be fixed in the map and not by the engine
 	if (gl_zfix.value) // z-fighting fix
 	{
 		glPolygonOffset (DIST_EPSILON, 0);
@@ -793,7 +770,6 @@ void R_DrawBrushModel (entity_t *e, qboolean water)
 =============================================================
 */
 
-//original way
 int recursivecount;
 /*
 ================
@@ -807,7 +783,6 @@ void R_RecursiveWorldNode (mnode_t *node)
 	msurface_t	*surf, **mark;
 	mleaf_t		*pleaf;
 	float		dot;
-//	static float	lastmsg = 0;
 
 	if (node->contents == CONTENTS_SOLID)
 		return;		// solid
@@ -822,32 +797,13 @@ void R_RecursiveWorldNode (mnode_t *node)
 	if (node->contents < 0)
 	{
 		pleaf = (mleaf_t *)node;
-
 		mark = pleaf->firstmarksurface;
-
-/*		if ((long)mark < (long)cl.worldmodel->marksurfaces ||
-		    (long)mark >= (long)(cl.worldmodel->marksurfaces + cl.worldmodel->nummarksurfaces))
-		{
-			if (IsTimeout(&lastmsg, 2))
-				Con_Printf ("R_RecursiveWorldNode: mark outside range\n");
-
-			return;
-		}*/
-		
 		c = pleaf->nummarksurfaces;
 
 		if (c)
 		{
 			do
 			{
-/*				if (InvalidPtr ((long)*mark))
-				{
-					if (IsTimeout(&lastmsg, 2))
-						Con_Printf ("R_RecursiveWorldNode: *mark invalid\n");
-
-					return;
-				}*/
-
 				(*mark)->visframe = r_framecount;
 				mark++;
 			} while (--c);
@@ -924,16 +880,10 @@ void R_RecursiveWorldNode (mnode_t *node)
 			{
 				surf->texturechain = waterchain;
 				waterchain = surf;
-//				surf->texinfo->texture->update_warp = true;
 			}
 			else
 			{
-
 				R_DrawSequentialPoly (NULL, surf); // draw solid world (worldspawn)
-				
-//				surf->texturechain = surf->texinfo->texture->texturechain;
-//				surf->texinfo->texture->texturechain = surf;
-
 			}
 			
 			rs_c_brush_polys++; // r_speeds (count wpolys here)
@@ -943,10 +893,6 @@ void R_RecursiveWorldNode (mnode_t *node)
 // recurse down the back side
 	R_RecursiveWorldNode (node->children[!side]);
 }
-//original way
-
-
-
 
 /*
 =============
@@ -957,27 +903,18 @@ void R_DrawWorld (void)
 {
 	if (!r_drawworld.value)
 		return;
-	
+
 	// clear lightmap chains
 	memset (lightmap_polys, 0, sizeof(lightmap_polys));
-	
+
 	R_UploadLightmaps ();
-
-	// set all chains to null
-//	skychain = NULL;
-//	waterchain = NULL;
-
 
 	VectorCopy (r_refdef.vieworg, modelorg);
 
 	recursivecount = 0;
 	R_RecursiveWorldNode (cl.worldmodel->nodes);
-
 }
 
-
-
-//original way
 /*
 ===============
 R_MarkLeaves
@@ -1036,9 +973,6 @@ void R_MarkLeaves (void)
 		}
 	}
 }
-//original way
-
-
 
 /*
 ================
@@ -1047,12 +981,7 @@ R_DrawTextureChainsWater
 */
 void R_DrawTextureChainsWater (void)
 {
-//	int			i;
 	msurface_t	*s;
-//	texture_t	*t;
-//	qboolean	texbound;
-//	float	wateralpha = 1.0f; // keep compiler happy
-//	float	lavafog = 0; // keep compiler happy
 
 	if (!r_drawworld.value)
 		return;
@@ -1062,110 +991,16 @@ void R_DrawTextureChainsWater (void)
 	//
 	glLoadMatrixf (r_world_matrix);
 
-//	for (i=0 ; i<cl.worldmodel->numtextures ; i++)
 	if (waterchain)
 	{
-/*		t = cl.worldmodel->textures[i];
-
-		if (!t || !t->texturechain || !(t->texturechain->flags & SURF_DRAWTURB))
-			continue;
-*/
-//		texbound = false;
-
-//		for (s = t->texturechain; s; s = s->texturechain)
 		for (s = waterchain; s; s = s->texturechain)
 		{
-
-
 			R_DrawSequentialWaterPoly (NULL, s);
-
-			
-/*/
-//			if (!s->culled)
-			{
-				if (!r_lockalpha.value) // override water alpha for certain surface types
-				{
-					if (s->flags & SURF_DRAWLAVA)
-						wateralpha = CLAMP(0.0, r_lavaalpha.value, 1.0);
-					else if (s->flags & SURF_DRAWSLIME)
-						wateralpha = CLAMP(0.0, r_slimealpha.value, 1.0);
-					else if (s->flags & SURF_DRAWTELE)
-						wateralpha = CLAMP(0.0, r_telealpha.value, 1.0);
-				}
-				else
-					wateralpha = 1.0f;
-
-				if (s->flags & SURF_DRAWWATER)
-				{
-					if (globalwateralpha > 0)
-						wateralpha = globalwateralpha;
-					else
-						wateralpha = CLAMP(0.0, r_wateralpha.value, 1.0);
-				}
-
-				if (wateralpha < 1.0)
-				{
-					glDepthMask(GL_FALSE);
-					glEnable (GL_BLEND);
-					glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-					glColor4f (1, 1, 1, wateralpha);
-				}
-
-//				if (!texbound) // only bind once we are sure we need this texture
-				{
-//					GL_Bind (t->warpimage);
-//					texbound = true;
-					GL_Bind (s->texinfo->texture->warpimage);
-				}
-
-				if ( !(s->flags & (SURF_DRAWLAVA | SURF_DRAWSLIME)) )
-				{
-					R_DrawGLPoly34 (s->polys);
-					rs_c_brush_passes++; // r_speeds
-				}
-				else
-				{
-					R_FogDisableGFog ();
-					R_DrawGLPoly34 (s->polys);
-					rs_c_brush_passes++; // r_speeds
-					R_FogEnableGFog ();
-
-					if (s->flags & SURF_DRAWLAVA)
-						lavafog = CLAMP(0.0, r_lavafog.value, 1.0);
-					else if (s->flags & SURF_DRAWSLIME)
-						lavafog = CLAMP(0.0, r_slimefog.value, 1.0);
-
-					if (R_FogGetDensity() > 0 && lavafog > 0)
-					{
-						float *c = R_FogGetColor();
-
-						glEnable (GL_BLEND);
-						glColor4f (c[0],c[1],c[2], lavafog);
-						R_DrawGLPoly34 (s->polys);
-						rs_c_brush_passes++; // r_speeds
-						glColor3f (1, 1, 1);
-						glDisable (GL_BLEND);
-					}
-				}
-
-				if (wateralpha < 1.0)
-				{
-					glDepthMask(GL_TRUE);
-					glDisable (GL_BLEND);
-					glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-					glColor3f (1, 1, 1);
-				}
-			}
-/*/			
-			
-			
 		}
 
-		
 		waterchain = NULL;
 	}
 }
-
 
 
 /*

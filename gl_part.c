@@ -768,7 +768,7 @@ void R_SetupParticles (void)
 {
 	mleaf_t			*leaf;
 	particle_t		*p;
-//int i=0;
+
 	if (!r_particles.value)
 		return;
 
@@ -781,21 +781,12 @@ void R_SetupParticles (void)
 		if (leaf->contents == CONTENTS_WATER || leaf->contents == CONTENTS_SLIME || leaf->contents == CONTENTS_LAVA)
 		{
 			water_active_particles[num_water_active_particles++] = p;
-//		Con_Printf("number water particles: %d\n", num_water_active_particles);
 		}
 		else //if (leaf->contents == CONTENTS_EMPTY)
 		{
 			air_active_particles[num_air_active_particles++] = p;
-//		Con_Printf("number air particles: %d\n", num_air_active_particles);
 		}
-/*		else if (leaf->contents == CONTENTS_SOLID)// CONTENTS_SKY, CONTENTS_EMPTY, CONTENTS_SOLID
-		{
-		i++;
-//		Con_Printf("number solid particles: %d\n", i);
-		}
-*/
 	}
-
 }
 
 /*
@@ -805,16 +796,13 @@ R_DrawParticles
 moved all non-drawing code to R_UpdateParticles
 ===============
 */
-void R_DrawParticles (qboolean inwater)// void
+void R_DrawParticles (qboolean inwater)
 {
 	particle_t		*p, **a;
-//	int				j = 0;
 	int				i, n;
 	vec3_t			up, right, p_up, p_right, p_upright;
 	float			scale;
 	byte			*color, alpha;
-//	qboolean		alphaTestEnabled; 
-//	mleaf_t			*leaf;
 
 	if (!r_particles.value)
 		return;
@@ -822,34 +810,22 @@ void R_DrawParticles (qboolean inwater)// void
 	a = (inwater) ? water_active_particles : air_active_particles;
 	n = (inwater) ? num_water_active_particles : num_air_active_particles;
 
-
 	VectorScale (vup, 1.5, up);
 	VectorScale (vright, 1.5, right);
 
 	GL_Bind(particletexture);
-	
-/*	alphaTestEnabled = glIsEnabled(GL_ALPHA_TEST);
-	if (alphaTestEnabled)
-		glDisable(GL_ALPHA_TEST);	
-*/	
+
 	glEnable (GL_BLEND);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	glDepthMask (GL_FALSE); // don't bother writing Z (fix for particle z-buffer bug)
 
 	glBegin (GL_QUADS); // quads save fillrate
-//	for (p=active_particles ; p ; p=p->next)
 	for (i=0 ; i<n ; i++)
 	{
 		// improve sound when many particles
-//		if ( ++j % 8192 == 0)
 		if ((i + 1) % 8192 == 0)
 			S_ExtraUpdateTime ();
 
-// this work too
-//		leaf = Mod_PointInLeaf (p->org, cl.worldmodel);
-//		if (((leaf->contents == CONTENTS_WATER || leaf->contents == CONTENTS_SLIME || leaf->contents == CONTENTS_LAVA) && inwater) ||
-//			((leaf->contents == CONTENTS_EMPTY || leaf->contents == CONTENTS_SOLID) && !inwater))
-//{		
 		p = a[i];
 
 		// hack a scale up to keep particles from disapearing
@@ -885,18 +861,11 @@ void R_DrawParticles (qboolean inwater)// void
 		glVertex3fv (p_right);
 
 		rs_c_particles++; // r_speeds
-		
-//}else continue;		
-
 	}
 	glEnd ();
 
 	glDepthMask (GL_TRUE); // back to normal Z buffering
 	glDisable (GL_BLEND);
-	
-/*	if (alphaTestEnabled)
-		glEnable(GL_ALPHA_TEST);
-*/	
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 	glColor3f(1,1,1);
 }

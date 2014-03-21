@@ -1500,29 +1500,18 @@ handles sky polys in world model
 */
 void R_SkyProcessTextureChains (void)
 {
-//	int			i;
 	msurface_t	*s;
-//	texture_t	*t;
 
 	if (!r_drawworld.value)
 		return;
 
-//	for (i=0 ; i<cl.worldmodel->numtextures ; i++)
 	if (skychain)
 	{
-/*		t = cl.worldmodel->textures[i];
-
-		if (!t || !t->texturechain || !(t->texturechain->flags & SURF_DRAWSKY))
-			continue;
-*/
-//		for (s = t->texturechain; s; s = s->texturechain)
 		for (s = skychain; s; s = s->texturechain)
 		{
-//			if (!s->culled)
-				R_SkyProcessPoly (s->polys);
+			R_SkyProcessPoly (s->polys);
 		}
-		
-		
+
 		skychain = NULL;
 	}
 }
@@ -1559,10 +1548,6 @@ void R_SkyProcessEntities (void)
 
 		if (R_CullModelForEntity(e))
 			continue;
-
-//this is not needed, if entity has alpha = -1.0 (ENTALPHA_ZERO) its not sending by server to client anyway
-//		if (e->alpha == ENTALPHA_ZERO)
-//			continue;
 
 		VectorSubtract (r_refdef.vieworg, e->origin, modelorg);
 		if (e->angles[0] || e->angles[1] || e->angles[2])
