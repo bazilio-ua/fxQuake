@@ -317,6 +317,7 @@ int RecursiveLightPoint (vec3_t color, mnode_t *node, vec3_t start, vec3_t end)
 	vec3_t		mid;
 
 loc0:
+	// check for a hit
 	if (node->contents < 0)
 		return false;		// didn't hit anything
 
@@ -357,7 +358,7 @@ loc0:
 		lightplane = node->plane;
 
 		surf = cl.worldmodel->surfaces + node->firstsurface;
-		for (i = 0;i < node->numsurfaces;i++, surf++)
+		for (i=0 ; i<node->numsurfaces ; i++, surf++)
 		{
 			if (surf->flags & SURF_DRAWTILED)
 				continue;	// no lightmaps
@@ -384,7 +385,7 @@ loc0:
 
 				lightmap = surf->samples + ((dt>>4) * ((surf->extents[0]>>4)+1) + (ds>>4))*3; // LordHavoc: *3 for color
 
-				for (maps = 0;maps < MAXLIGHTMAPS && surf->styles[maps] != 255;maps++)
+				for (maps = 0 ; maps < MAXLIGHTMAPS && surf->styles[maps] != 255 ; maps++)
 				{
 					scale = (float) d_lightstylevalue[surf->styles[maps]] * 1.0 / 256.0;
 					r00 += (float) lightmap[      0] * scale;g00 += (float) lightmap[      1] * scale;b00 += (float) lightmap[2] * scale;
