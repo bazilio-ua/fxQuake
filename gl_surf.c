@@ -784,6 +784,7 @@ void R_RecursiveWorldNode (mnode_t *node)
 	mleaf_t		*pleaf;
 	float		dot;
 
+restart:
 	if (node->contents == CONTENTS_SOLID)
 		return;		// solid
 
@@ -792,7 +793,7 @@ void R_RecursiveWorldNode (mnode_t *node)
 
 	if (R_CullBox (node->minmaxs, node->minmaxs+3))
 		return;
-	
+
 // if a leaf node, draw stuff
 	if (node->contents < 0)
 	{
@@ -824,6 +825,18 @@ void R_RecursiveWorldNode (mnode_t *node)
 	switch (plane->type)
 	{
 		case PLANE_X:
+		case PLANE_Y:
+		case PLANE_Z:
+			dot = modelorg[plane->type] - plane->dist;
+			break;
+		default:
+			dot = DotProduct (modelorg, plane->normal) - plane->dist;
+			break;
+	}
+
+/*	switch (plane->type)
+	{
+		case PLANE_X:
 			dot = modelorg[0] - plane->dist;
 			break;
 		case PLANE_Y:
@@ -836,7 +849,7 @@ void R_RecursiveWorldNode (mnode_t *node)
 			dot = DotProduct (modelorg, plane->normal) - plane->dist;
 			break;
 	}
-
+*/
 	if (dot >= 0)
 		side = 0;
 	else
@@ -891,7 +904,12 @@ void R_RecursiveWorldNode (mnode_t *node)
 	}
 
 // recurse down the back side
-	R_RecursiveWorldNode (node->children[!side]);
+
+// optimize tail recursion
+	node = node->children[!side];
+	goto restart;
+
+//	R_RecursiveWorldNode (node->children[!side]);
 }
 
 /*

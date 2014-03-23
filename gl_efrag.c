@@ -185,7 +185,7 @@ void R_AddEfrags (entity_t *ent)
 	}
 
 	if (!cl.worldmodel)
-		Host_Error ("R_AddEfrags: NULL worldmodel\n");
+		Host_Error ("R_AddEfrags: NULL worldmodel");
 
 	R_SplitEntityOnNode (cl.worldmodel->nodes);
 

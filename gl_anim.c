@@ -732,7 +732,8 @@ void R_FogStopAdditive (void)
 */
 
 // skybox
-vec3_t	skyclip[6] = {
+vec3_t	skyclip[6] = 
+{
 	{1,1,0},
 	{1,-1,0},
 	{0,-1,1},
@@ -741,7 +742,7 @@ vec3_t	skyclip[6] = {
 	{-1,0,1}
 };
 
-int	st_to_vec[6][3] =
+int	st_to_vec[6][3] = 
 {
 	{3,-1,2},
 	{-3,1,2},
@@ -751,7 +752,7 @@ int	st_to_vec[6][3] =
  	{2,-1,-3}		// look straight down
 };
 
-int	vec_to_st[6][3] =
+int	vec_to_st[6][3] = 
 {
 	{-2,3,1},
 	{2,3,-1},

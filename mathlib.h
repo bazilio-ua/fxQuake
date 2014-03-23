@@ -218,6 +218,20 @@ static inline void VectorInverse (vec3_t v)
 	v[2] = -v[2];
 }
 
+static inline void VectorNegate (vec3_t in, vec3_t out)
+{
+	out[0] = -in[0];
+	out[1] = -in[1];
+	out[2] = -in[2];
+}
+
+static inline void VectorClear (vec3_t v)
+{
+	v[0] = 0;
+	v[1] = 0;
+	v[2] = 0;
+}
+
 static inline void VectorScale (vec3_t in, vec_t scale, vec3_t out)
 {
 	out[0] = in[0]*scale;

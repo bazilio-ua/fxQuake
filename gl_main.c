@@ -518,7 +518,7 @@ void R_DrawAliasModel (entity_t *e)
 	//
 	// set up lighting
 	//
-	R_LightPoint (e->origin);
+	R_LightPoint (e->origin, lightcolor);
 
 	// add dlights
 	for (lnum=0 ; lnum<MAX_DLIGHTS ; lnum++)

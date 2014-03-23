@@ -597,6 +597,7 @@ qboolean SV_RecursiveHullCheck (hull_t *hull, int num, float p1f, float p2f, vec
 	float		midf;
 	static float	lastmsg = 0;
 
+restart:
 // check for empty
 	if (num < 0)
 	{
@@ -622,7 +623,21 @@ qboolean SV_RecursiveHullCheck (hull_t *hull, int num, float p1f, float p2f, vec
 	node = hull->clipnodes + num;
 	plane = hull->planes + node->planenum;
 
-	if (plane->type < 3)
+	switch (plane->type)
+	{
+		case PLANE_X:
+		case PLANE_Y:
+		case PLANE_Z:
+			t1 = p1[plane->type] - plane->dist;
+			t2 = p2[plane->type] - plane->dist;
+			break;
+		default:
+			t1 = DotProduct (plane->normal, p1) - plane->dist;
+			t2 = DotProduct (plane->normal, p2) - plane->dist;
+			break;
+	}
+
+/*	if (plane->type < 3)
 	{
 		t1 = p1[plane->type] - plane->dist;
 		t2 = p2[plane->type] - plane->dist;
@@ -632,22 +647,38 @@ qboolean SV_RecursiveHullCheck (hull_t *hull, int num, float p1f, float p2f, vec
 		t1 = DotProduct (plane->normal, p1) - plane->dist;
 		t2 = DotProduct (plane->normal, p2) - plane->dist;
 	}
+*/
 
+// LordHavoc: recursion optimization
+// see which sides we need to consider
 	if (t1 >= 0 && t2 >= 0)
+	{
+		num = node->children[0];	// go down the front side
+		goto restart;
+	}
+	if (t1 < 0 && t2 < 0)
+	{
+		num = node->children[1];	// go down the back side
+		goto restart;
+	}
+
+/*	if (t1 >= 0 && t2 >= 0)
 		return SV_RecursiveHullCheck (hull, node->children[0], p1f, p2f, p1, p2, trace);
 	if (t1 < 0 && t2 < 0)
 		return SV_RecursiveHullCheck (hull, node->children[1], p1f, p2f, p1, p2, trace);
+*/
 
 // put the crosspoint DIST_EPSILON pixels on the near side
 	if (t1 < 0)
 		frac = (t1 + DIST_EPSILON)/(t1-t2);
 	else
 		frac = (t1 - DIST_EPSILON)/(t1-t2);
+
 	if (frac < 0)
 		frac = 0;
 	if (frac > 1)
 		frac = 1;
-		
+
 	midf = p1f + (p2f - p1f)*frac;
 	for (i=0 ; i<3 ; i++)
 		mid[i] = p1[i] + frac*(p2[i] - p1[i]);
@@ -655,17 +686,17 @@ qboolean SV_RecursiveHullCheck (hull_t *hull, int num, float p1f, float p2f, vec
 	side = (t1 < 0);
 
 // move up to the node
-	if (!SV_RecursiveHullCheck (hull, node->children[side], p1f, midf, p1, mid, trace) )
+	if (!SV_RecursiveHullCheck (hull, node->children[side], p1f, midf, p1, mid, trace))
 		return false;
-	
-	if (SV_HullPointContents (hull, node->children[side^1], mid)
-	!= CONTENTS_SOLID)
+
+// LordHavoc: this recursion can not be optimized because mid would need to be duplicated on a stack
 // go past the node
+	if (SV_HullPointContents (hull, node->children[side^1], mid) != CONTENTS_SOLID)
 		return SV_RecursiveHullCheck (hull, node->children[side^1], midf, p2f, mid, p2, trace);
 
 	if (trace->allsolid)
 		return false;		// never got out of the solid area
-		
+
 //==================
 // the other side of the node is solid, this is the impact point
 //==================
