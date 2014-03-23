@@ -707,7 +707,8 @@ restart:
 	}
 	else
 	{
-		VectorSubtract (vec3_origin, plane->normal, trace->plane.normal);
+		VectorNegate (plane->normal, trace->plane.normal);
+//		VectorSubtract (vec3_origin, plane->normal, trace->plane.normal);//EER1 replace this
 		trace->plane.dist = -plane->dist;
 	}
 
@@ -797,7 +798,8 @@ trace_t SV_ClipMoveToEntity (edict_t *ent, vec3_t start, vec3_t mins, vec3_t max
 		
 		if (trace.fraction != 1)
 		{
-			VectorSubtract (vec3_origin, ent->v.angles, a);
+			VectorNegate (ent->v.angles, a);
+//			VectorSubtract (vec3_origin, ent->v.angles, a);//EER1 replace this
 			AngleVectors (a, forward, right, up);
 			
 			VectorCopy (trace.endpos, temp);

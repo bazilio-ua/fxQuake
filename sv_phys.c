@@ -276,7 +276,8 @@ int SV_FlyMove (edict_t *ent, float time, trace_t *steptrace)
 
 		if (trace.allsolid)
 		{	// entity is trapped in another solid
-			VectorCopy (vec3_origin, ent->v.velocity);
+			VectorClear (ent->v.velocity);
+//			VectorCopy (vec3_origin, ent->v.velocity);//EER1 replace this
 			return 3;
 		}
 
@@ -322,7 +323,8 @@ int SV_FlyMove (edict_t *ent, float time, trace_t *steptrace)
 	// cliped to another plane
 		if (numplanes >= MAX_CLIP_PLANES)
 		{	// this shouldn't really happen
-			VectorCopy (vec3_origin, ent->v.velocity);
+			VectorClear (ent->v.velocity);
+//			VectorCopy (vec3_origin, ent->v.velocity);//EER1 replace this
 			return 3;
 		}
 
@@ -354,7 +356,8 @@ int SV_FlyMove (edict_t *ent, float time, trace_t *steptrace)
 			if (numplanes != 2)
 			{
 //				Con_Printf ("clip velocity, numplanes == %i\n",numplanes);
-				VectorCopy (vec3_origin, ent->v.velocity);
+				VectorClear (ent->v.velocity);
+//				VectorCopy (vec3_origin, ent->v.velocity);//EER1 replace this
 				return 7;
 			}
 			CrossProduct (planes[0], planes[1], dir);
@@ -368,7 +371,8 @@ int SV_FlyMove (edict_t *ent, float time, trace_t *steptrace)
 //
 		if (DotProduct (ent->v.velocity, primal_velocity) <= 0)
 		{
-			VectorCopy (vec3_origin, ent->v.velocity);
+			VectorClear (ent->v.velocity);
+//			VectorCopy (vec3_origin, ent->v.velocity);//EER1 replace this
 			return blocked;
 		}
 	}
@@ -601,7 +605,8 @@ void SV_PushRotate (edict_t *pusher, float movetime)
 	for (i=0 ; i<3 ; i++)
 		amove[i] = pusher->v.avelocity[i] * movetime;
 
-	VectorSubtract (vec3_origin, amove, a);
+	VectorNegate (amove, a);
+//	VectorSubtract (vec3_origin, amove, a);//EER1 replace this
 	AngleVectors (a, forward, right, up);
 
 	VectorCopy (pusher->v.angles, pushorig);
@@ -919,7 +924,8 @@ int SV_TryUnstick (edict_t *ent, vec3_t oldvel)
 	trace_t	steptrace;
 	
 	VectorCopy (ent->v.origin, oldorg);
-	VectorCopy (vec3_origin, dir);
+	VectorClear (dir);
+//	VectorCopy (vec3_origin, dir);//EER1 replace this
 
 	for (i=0 ; i<8 ; i++)
 	{
@@ -955,7 +961,8 @@ int SV_TryUnstick (edict_t *ent, vec3_t oldvel)
 		VectorCopy (oldorg, ent->v.origin);
 	}
 	
-	VectorCopy (vec3_origin, ent->v.velocity);
+	VectorClear (ent->v.velocity);
+//	VectorCopy (vec3_origin, ent->v.velocity);//EER1 replace this
 	return 7;		// still not moving
 }
 
@@ -1010,8 +1017,10 @@ void SV_WalkMove (edict_t *ent)
 //
 	VectorCopy (oldorg, ent->v.origin);	// back to start pos
 
-	VectorCopy (vec3_origin, upmove);
-	VectorCopy (vec3_origin, downmove);
+	VectorClear (upmove);
+	VectorClear (downmove);
+//	VectorCopy (vec3_origin, upmove);//EER1 replace this
+//	VectorCopy (vec3_origin, downmove);//EER1 replace this
 	upmove[2] = STEPSIZE;
 	downmove[2] = -STEPSIZE + oldvel[2]*host_frametime;
 
@@ -1328,8 +1337,10 @@ void SV_Physics_Toss (edict_t *ent)
 		{
 			ent->v.flags = (int)ent->v.flags | FL_ONGROUND;
 			ent->v.groundentity = EDICT_TO_PROG(trace.ent);
-			VectorCopy (vec3_origin, ent->v.velocity);
-			VectorCopy (vec3_origin, ent->v.avelocity);
+			VectorClear (ent->v.velocity);
+			VectorClear (ent->v.avelocity);
+//			VectorCopy (vec3_origin, ent->v.velocity);//EER1 replace this
+//			VectorCopy (vec3_origin, ent->v.avelocity);//EER1 replace this
 		}
 	}
 	

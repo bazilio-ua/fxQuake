@@ -1312,7 +1312,8 @@ void R_SkyProjectPoly (int nump, vec3_t vecs)
 	float	*vp;
 
 	// decide which face it maps to
-	VectorCopy (vec3_origin, v);
+	VectorClear (v);
+//	VectorCopy (vec3_origin, v);//EER1 replace this
 	for (i=0, vp=vecs ; i<nump ; i++, vp+=3)
 	{
 		VectorAdd (vp, v, v);
