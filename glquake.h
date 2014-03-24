@@ -315,7 +315,8 @@ void R_Fog_f (void);
 
 texture_t *R_TextureAnimation (texture_t *base, int frame);
 
-typedef enum {
+typedef enum 
+{
 	pt_static, pt_grav, pt_slowgrav, pt_fire, pt_explode, pt_explode2, pt_blob, pt_blob2
 } ptype_t;
 
