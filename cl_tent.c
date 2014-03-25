@@ -109,7 +109,6 @@ void CL_ParseTEnt (void)
 	int		type;
 	vec3_t	pos;
 	vec3_t	color;
-
 	dlight_t	*dl;
 	int		rnd;
 	int		colorStart, colorLength;
@@ -124,6 +123,7 @@ void CL_ParseTEnt (void)
 		pos[1] = MSG_ReadCoord (net_message);
 		pos[2] = MSG_ReadCoord (net_message);
 		R_RunParticleEffect (pos, vec3_origin, 20, 30);
+		
 		S_StartSound (-1, 0, cl_sfx_wizhit, pos, 1, 1);
 		break;
 		
@@ -132,6 +132,7 @@ void CL_ParseTEnt (void)
 		pos[1] = MSG_ReadCoord (net_message);
 		pos[2] = MSG_ReadCoord (net_message);
 		R_RunParticleEffect (pos, vec3_origin, 226, 20);
+		
 		S_StartSound (-1, 0, cl_sfx_knighthit, pos, 1, 1);
 		break;
 		
@@ -139,9 +140,8 @@ void CL_ParseTEnt (void)
 		pos[0] = MSG_ReadCoord (net_message);
 		pos[1] = MSG_ReadCoord (net_message);
 		pos[2] = MSG_ReadCoord (net_message);
-
 		R_RunParticleEffect (pos, vec3_origin, 0, 10);
-
+		
 		if ( rand() % 5 )
 			S_StartSound (-1, 0, cl_sfx_tink1, pos, 1, 1);
 		else
@@ -161,7 +161,7 @@ void CL_ParseTEnt (void)
 		pos[1] = MSG_ReadCoord (net_message);
 		pos[2] = MSG_ReadCoord (net_message);
 		R_RunParticleEffect (pos, vec3_origin, 0, 20);
-
+		
 		if ( rand() % 5 )
 			S_StartSound (-1, 0, cl_sfx_tink1, pos, 1, 1);
 		else
@@ -188,15 +188,16 @@ void CL_ParseTEnt (void)
 		pos[1] = MSG_ReadCoord (net_message);
 		pos[2] = MSG_ReadCoord (net_message);
 		R_ParticleExplosion (pos);
+		
 		dl = CL_AllocDlight (0);
 		VectorCopy (pos, dl->origin);
 		dl->radius = 350;
 		dl->die = cl.time + 0.5;
 		dl->decay = 300;
-
+		
 		CL_ColorDlight (dl, 0.4, 0.2, 0.1);
 //		dl->color[0] = 0.4; dl->color[1] = 0.2; dl->color[2] = 0.1;
-
+		
 		S_StartSound (-1, 0, cl_sfx_r_exp3, pos, 1, 1);
 		break;
 		
@@ -222,8 +223,8 @@ void CL_ParseTEnt (void)
 		break;
 		
 // Nehahra		
-        case TE_LIGHTNING4:                             // lightning bolts
-                CL_ParseBeam (Mod_ForName(MSG_ReadString(net_message), true));
+	case TE_LIGHTNING4:				// lightning bolts
+		CL_ParseBeam (Mod_ForName(MSG_ReadString(net_message), true));
 		break;
 		
 // PGM 01/21/97 
@@ -253,6 +254,7 @@ void CL_ParseTEnt (void)
 		colorStart = MSG_ReadByte (net_message);
 		colorLength = MSG_ReadByte (net_message);
 		R_ParticleExplosion2 (pos, colorStart, colorLength);
+		
 		dl = CL_AllocDlight (0);
 		VectorCopy (pos, dl->origin);
 		dl->radius = 350;
@@ -272,10 +274,11 @@ void CL_ParseTEnt (void)
 		break;
 		
 // Nehahra		
-        case TE_EXPLOSION3:                      // rocket explosion (colored)
+	case TE_EXPLOSION3:				// rocket explosion (colored)
 		pos[0] = MSG_ReadCoord (net_message);
 		pos[1] = MSG_ReadCoord (net_message);
 		pos[2] = MSG_ReadCoord (net_message);
+		
 		dl = CL_AllocDlight (0);
 		VectorCopy (pos, dl->origin);
 		dl->radius = 350;
