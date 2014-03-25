@@ -153,6 +153,7 @@ void CL_ParseTEnt (void)
 				S_StartSound (-1, 0, cl_sfx_ric3, pos, 1, 1);
 		}
 		break;
+		
 	case TE_SUPERSPIKE:			// super spike hitting wall
 		pos[0] = MSG_ReadCoord (net_message);
 		pos[1] = MSG_ReadCoord (net_message);
@@ -209,29 +210,29 @@ void CL_ParseTEnt (void)
 	case TE_LIGHTNING2:				// lightning bolts
 		CL_ParseBeam (Mod_ForName("progs/bolt2.mdl", true));
 		break;
-	
+		
 	case TE_LIGHTNING3:				// lightning bolts
 		CL_ParseBeam (Mod_ForName("progs/bolt3.mdl", true));
 		break;
-	
+		
 // Nehahra		
         case TE_LIGHTNING4:                             // lightning bolts
                 CL_ParseBeam (Mod_ForName(MSG_ReadString(net_message), true));
 		break;
-
+		
 // PGM 01/21/97 
 	case TE_BEAM:				// grappling hook beam
 		CL_ParseBeam (Mod_ForName("progs/beam.mdl", true));
 		break;
 // PGM 01/21/97
-
+		
 	case TE_LAVASPLASH:	
 		pos[0] = MSG_ReadCoord (net_message);
 		pos[1] = MSG_ReadCoord (net_message);
 		pos[2] = MSG_ReadCoord (net_message);
 		R_LavaSplash (pos);
 		break;
-	
+		
 	case TE_TELEPORT:
 		pos[0] = MSG_ReadCoord (net_message);
 		pos[1] = MSG_ReadCoord (net_message);
@@ -253,9 +254,9 @@ void CL_ParseTEnt (void)
 		dl->decay = 300;
 		S_StartSound (-1, 0, cl_sfx_r_exp3, pos, 1, 1);
 		break;
-
+		
 // Nehahra		
-        case TE_EXPLOSION3:                      // rocket explosion
+        case TE_EXPLOSION3:                      // rocket explosion (colored)
 		pos[0] = MSG_ReadCoord (net_message);
 		pos[1] = MSG_ReadCoord (net_message);
 		pos[2] = MSG_ReadCoord (net_message);
@@ -264,11 +265,12 @@ void CL_ParseTEnt (void)
 		dl->radius = 350;
 		dl->die = cl.time + 0.5;
 		dl->decay = 300;
-                MSG_ReadCoord(net_message);
-                MSG_ReadCoord(net_message);
-                MSG_ReadCoord(net_message);
+		MSG_ReadCoord(net_message);
+		MSG_ReadCoord(net_message);
+		MSG_ReadCoord(net_message);
 		S_StartSound (-1, 0, cl_sfx_r_exp3, pos, 1, 1);
 		break;
+		
 	default:
 //		Sys_Error ("CL_ParseTEnt: bad type %d", type);
 		if (IsTimeout(&lastmsg, 2))
