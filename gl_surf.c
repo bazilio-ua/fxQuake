@@ -67,7 +67,7 @@ void R_AddDynamicLights (msurface_t *surf)
 	int			smax, tmax;
 	mtexinfo_t	*tex;
 	// lit support via lordhavoc
-	float		cred, cgreen, cblue, brightness;
+	float		r, g, b, brightness;
 	unsigned	*bl;
 
 	smax = (surf->extents[0]>>4)+1;
@@ -102,9 +102,9 @@ void R_AddDynamicLights (msurface_t *surf)
 		
 		// lit support via lordhavoc
 		bl = blocklights;
-		cred = cl_dlights[lnum].color[0] * 256.0f;
-		cgreen = cl_dlights[lnum].color[1] * 256.0f;
-		cblue = cl_dlights[lnum].color[2] * 256.0f;
+		r = cl_dlights[lnum].color[0] * 256.0f;
+		g = cl_dlights[lnum].color[1] * 256.0f;
+		b = cl_dlights[lnum].color[2] * 256.0f;
 
 		for (t = 0 ; t<tmax ; t++)
 		{
@@ -125,9 +125,9 @@ void R_AddDynamicLights (msurface_t *surf)
 				// lit support via lordhavoc
 				{
 					brightness = rad - dist;
-					bl[0] += (int) (brightness * cred);
-					bl[1] += (int) (brightness * cgreen);
-					bl[2] += (int) (brightness * cblue);
+					bl[0] += (int) (brightness * r);
+					bl[1] += (int) (brightness * g);
+					bl[2] += (int) (brightness * b);
 				}
 				bl += 3;
 			}

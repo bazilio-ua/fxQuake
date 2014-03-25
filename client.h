@@ -255,6 +255,9 @@ extern	cvar_t	cl_anglespeedkey;
 extern	cvar_t	cl_shownet;
 extern	cvar_t	cl_nolerp;
 
+extern	cvar_t	cl_coloredlight;
+extern	cvar_t	cl_coloredlightmflash;
+
 extern	cvar_t	cl_pitchdriftspeed;
 extern	cvar_t	lookspring;
 extern	cvar_t	lookstrafe;
@@ -286,6 +289,7 @@ extern	beam_t			cl_beams[MAX_BEAMS];
 // cl_main.c
 //
 dlight_t *CL_AllocDlight (int key);
+void	CL_ColorDlight (dlight_t *dl, float r, float g, float b);
 void	CL_DecayLights (void);
 
 void CL_Init (void);

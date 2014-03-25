@@ -31,6 +31,9 @@ cvar_t	cl_color = {"cl_color", "0", true};
 cvar_t	cl_shownet = {"cl_shownet","0"};	// can be 0, 1, or 2
 cvar_t	cl_nolerp = {"cl_nolerp","0"};
 
+cvar_t	cl_coloredlight = {"cl_coloredlight","0"};
+cvar_t	cl_coloredlightmflash = {"cl_coloredlightmflash","0"};
+
 cvar_t	lookspring = {"lookspring","0", true};
 cvar_t	lookstrafe = {"lookstrafe","0", true};
 cvar_t	sensitivity = {"sensitivity","3", true};
@@ -298,6 +301,17 @@ dlight_t *CL_AllocDlight (int key)
 	return dl;
 }
 
+void CL_ColorDlight (dlight_t *dl, float r, float g, float b)
+{
+	// leave dlight with white value it had at allocation
+	if (!cl_coloredlight.value)
+		return;
+
+	dl->color[0] = r;
+	dl->color[1] = g;
+	dl->color[2] = b;
+}
+
 
 /*
 ===============
@@ -507,6 +521,9 @@ void CL_RelinkEntities (void)
 			dl->radius = 200 + (rand()&31);
 			dl->minlight = 32;
 			dl->die = cl.time + 0.1;
+
+			CL_ColorDlight (dl, 0.3, 0.2, 0.1);
+//			dl->color[0] = 0.3; dl->color[1] = 0.2; dl->color[2] = 0.1;
 		}
 		if (ent->effects & EF_BRIGHTLIGHT)
 		{			
@@ -515,6 +532,9 @@ void CL_RelinkEntities (void)
 			dl->origin[2] += 16;
 			dl->radius = 400 + (rand()&31);
 			dl->die = cl.time + 0.001;
+
+			CL_ColorDlight (dl, 0.1, 0.1, 0.1);
+//			dl->color[0] = 0.1;dl->color[1] = 0.1;dl->color[2] = 0.1;
 		}
 		if (ent->effects & EF_DIMLIGHT)
 		{			
@@ -522,6 +542,44 @@ void CL_RelinkEntities (void)
 			VectorCopy (ent->origin,  dl->origin);
 			dl->radius = 200 + (rand()&31);
 			dl->die = cl.time + 0.001;
+
+			CL_ColorDlight (dl, 0.1, 0.1, 0.1);
+//			dl->color[0] = 0.1;dl->color[1] = 0.1;dl->color[2] = 0.1;
+		}
+
+// Nehahra
+		if (ent->effects & EF_RED) // red
+		{			
+			if (ent->effects & EF_BLUE) // magenta
+			{
+				dl = CL_AllocDlight (i);
+				VectorCopy (ent->origin,  dl->origin);
+				dl->radius = 200 + (rand()&31);
+				dl->die = cl.time + 0.001;
+
+				CL_ColorDlight (dl, 0.7, 0.07, 0.7);
+//				dl->color[0] = 0.7;dl->color[1] = 0.07;dl->color[2] = 0.7;
+			}
+			else // red
+			{
+				dl = CL_AllocDlight (i);
+				VectorCopy (ent->origin,  dl->origin);
+				dl->radius = 200 + (rand()&31);
+				dl->die = cl.time + 0.001;
+
+				CL_ColorDlight (dl, 0.8, 0.05, 0.05);
+//				dl->color[0] = 0.8;dl->color[1] = 0.05;dl->color[2] = 0.05;
+			}
+		}
+		else if (ent->effects & EF_BLUE) // blue
+		{
+			dl = CL_AllocDlight (i);
+			VectorCopy (ent->origin,  dl->origin);
+			dl->radius = 200 + (rand()&31);
+			dl->die = cl.time + 0.001;
+
+			CL_ColorDlight (dl, 0.05, 0.05, 0.8);
+//			dl->color[0] = 0.05;dl->color[1] = 0.05;dl->color[2] = 0.8;
 		}
 
 		if (ent->model->flags & EF_GIB)
@@ -529,9 +587,14 @@ void CL_RelinkEntities (void)
 		else if (ent->model->flags & EF_ZOMGIB)
 			R_RocketTrail (oldorg, ent->origin, 4);
 		else if (ent->model->flags & EF_TRACER)
+			// wizard trail
 			R_RocketTrail (oldorg, ent->origin, 3);
 		else if (ent->model->flags & EF_TRACER2)
+			// knight trail
 			R_RocketTrail (oldorg, ent->origin, 5);
+		else if (ent->model->flags & EF_TRACER3)
+			// vore trail
+			R_RocketTrail (oldorg, ent->origin, 6);
 		else if (ent->model->flags & EF_ROCKET)
 		{
 			R_RocketTrail (oldorg, ent->origin, 0);
@@ -539,15 +602,21 @@ void CL_RelinkEntities (void)
 			VectorCopy (ent->origin, dl->origin);
 			dl->radius = 200;
 			dl->die = cl.time + 0.01;
+
+			CL_ColorDlight (dl, 0.4, 0.2, 0.1);
+//			dl->color[0] = 0.4; dl->color[1] = 0.2; dl->color[2] = 0.1;
 		}
 		else if (ent->model->flags & EF_GRENADE)
 			R_RocketTrail (oldorg, ent->origin, 1);
-		else if (ent->model->flags & EF_TRACER3)
-			R_RocketTrail (oldorg, ent->origin, 6);
 
 		ent->forcelink = false;
 
 		if (i == cl.viewentity && !chase_active.value)
+			continue;
+
+// Nehahra
+// LordHavoc: enabled EF_NODRAW
+		if (ent->effects & EF_NODRAW)
 			continue;
 
 		if (cl_numvisedicts < MAX_VISEDICTS)
@@ -732,6 +801,9 @@ void CL_Init (void)
 	Cvar_RegisterVariable (&cl_anglespeedkey, NULL);
 	Cvar_RegisterVariable (&cl_shownet, NULL);
 	Cvar_RegisterVariable (&cl_nolerp, NULL);
+
+	Cvar_RegisterVariable (&cl_coloredlight, NULL);
+	Cvar_RegisterVariable (&cl_coloredlightmflash, NULL);
 
 	Cvar_RegisterVariable (&lookspring, NULL);
 	Cvar_RegisterVariable (&lookstrafe, NULL);

@@ -79,7 +79,7 @@ DYNAMIC LIGHTS BLEND RENDERING
 =============================================================================
 */
 
-void AddLightBlend (float r, float g, float b, float a2)
+void R_AddLightBlend (float r, float g, float b, float a2)
 {
 	float	a;
 
@@ -87,7 +87,7 @@ void AddLightBlend (float r, float g, float b, float a2)
 
 	a2 = a2/a;
 
-	v_blend[0] = v_blend[1]*(1-a2) + r*a2;
+	v_blend[0] = v_blend[0]*(1-a2) + r*a2; // was [1]
 	v_blend[1] = v_blend[1]*(1-a2) + g*a2;
 	v_blend[2] = v_blend[2]*(1-a2) + b*a2;
 }
@@ -106,7 +106,14 @@ void R_InitFlashBlendBubble (void)
 	}
 }
 
-void R_RenderDlight (dlight_t *light)
+/*
+=============
+R_RenderFlashBlend
+
+EER1 -- renamed R_RenderDlight
+=============
+*/
+void R_RenderFlashBlend (dlight_t *light)
 {
 	int		i, j;
 	vec3_t	v;
@@ -118,7 +125,7 @@ void R_RenderDlight (dlight_t *light)
 	VectorSubtract (light->origin, r_origin, v);
 	if (VectorLength (v) < rad)
 	{	// view is inside the dlight
-		AddLightBlend (1, 0.5, 0, light->radius * 0.0003);
+		R_AddLightBlend (1, 0.5, 0, light->radius * 0.0003);
 		return;
 	}
 
@@ -140,10 +147,12 @@ void R_RenderDlight (dlight_t *light)
 
 /*
 =============
-R_RenderDlights
+R_FlashBlend
+
+EER1 -- renamed R_RenderDlights
 =============
 */
-void R_RenderDlights (void) // Flash blend dlights
+void R_FlashBlend (void) // Flash blend dlights
 {
 	int		i;
 	dlight_t	*l;
@@ -166,7 +175,7 @@ void R_RenderDlights (void) // Flash blend dlights
 		if (l->die < cl.time || !l->radius)
 			continue;
 		R_FogDisableGFog ();
-		R_RenderDlight (l);
+		R_RenderFlashBlend (l);
 		R_FogEnableGFog ();
 	}
 

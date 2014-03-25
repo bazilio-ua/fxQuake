@@ -108,10 +108,12 @@ void CL_ParseTEnt (void)
 {
 	int		type;
 	vec3_t	pos;
+	vec3_t	color;
 
 	dlight_t	*dl;
 	int		rnd;
 	int		colorStart, colorLength;
+	byte		*colorByte;
 	static float	lastmsg = 0;
 
 	type = MSG_ReadByte (net_message);
@@ -191,6 +193,10 @@ void CL_ParseTEnt (void)
 		dl->radius = 350;
 		dl->die = cl.time + 0.5;
 		dl->decay = 300;
+
+		CL_ColorDlight (dl, 0.4, 0.2, 0.1);
+//		dl->color[0] = 0.4; dl->color[1] = 0.2; dl->color[2] = 0.1;
+
 		S_StartSound (-1, 0, cl_sfx_r_exp3, pos, 1, 1);
 		break;
 		
@@ -252,6 +258,16 @@ void CL_ParseTEnt (void)
 		dl->radius = 350;
 		dl->die = cl.time + 0.5;
 		dl->decay = 300;
+
+		colorByte = (byte *)&d_8to24table[colorStart];
+		color[0] = colorByte[0] * (2.0 / 255.0);
+		color[1] = colorByte[1] * (2.0 / 255.0);
+		color[2] = colorByte[2] * (2.0 / 255.0);
+		CL_ColorDlight (dl, color[0], color[1], color[2]);
+//		dl->color[0] = colorByte[0] * (2.0 / 255.0);
+//		dl->color[1] = colorByte[1] * (2.0 / 255.0);
+//		dl->color[2] = colorByte[2] * (2.0 / 255.0);
+
 		S_StartSound (-1, 0, cl_sfx_r_exp3, pos, 1, 1);
 		break;
 		
@@ -265,9 +281,15 @@ void CL_ParseTEnt (void)
 		dl->radius = 350;
 		dl->die = cl.time + 0.5;
 		dl->decay = 300;
-		MSG_ReadCoord(net_message);
-		MSG_ReadCoord(net_message);
-		MSG_ReadCoord(net_message);
+
+		color[0] = MSG_ReadCoord(net_message);
+		color[1] = MSG_ReadCoord(net_message);
+		color[2] = MSG_ReadCoord(net_message);
+		CL_ColorDlight (dl, color[0], color[1], color[2]);
+//		dl->color[0] = MSG_ReadCoord(net_message);
+//		dl->color[1] = MSG_ReadCoord(net_message);
+//		dl->color[2] = MSG_ReadCoord(net_message);
+
 		S_StartSound (-1, 0, cl_sfx_r_exp3, pos, 1, 1);
 		break;
 		

@@ -243,8 +243,8 @@ void R_StoreEfrags (efrag_t **ppefrag);
 void R_AnimateLight (void);
 //int R_LightPoint (vec3_t p);
 void R_LightPoint (vec3_t p, vec3_t color);
-void R_RenderDlights (void);
 void R_MarkLights (dlight_t *light, int num, mnode_t *node);
+void R_FlashBlend (void);
 void R_InitFlashBlendBubble (void);
 
 // gl_surf.c

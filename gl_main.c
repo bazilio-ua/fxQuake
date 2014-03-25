@@ -1170,7 +1170,7 @@ void R_RenderView (void)
 	R_DrawTextureChainsWater (); // drawn here since they might have transparency
 	R_DrawTransEntities (r_viewleaf->contents != CONTENTS_EMPTY);
 	R_DrawParticles (r_viewleaf->contents != CONTENTS_EMPTY);
-	R_RenderDlights ();
+	R_FlashBlend ();
 	R_FogDisableGFog ();
 	R_DrawViewModel ();
 	R_PolyBlend ();

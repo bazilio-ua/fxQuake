@@ -35,6 +35,10 @@ m*_t structures are in-memory
 #define	EF_MUZZLEFLASH 			2
 #define	EF_BRIGHTLIGHT 			4
 #define	EF_DIMLIGHT 			8
+// Nehahra
+#define	EF_NODRAW				16
+#define	EF_BLUE					64
+#define	EF_RED					128
 
 
 /*
