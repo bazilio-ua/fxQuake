@@ -256,7 +256,7 @@ extern	cvar_t	cl_shownet;
 extern	cvar_t	cl_nolerp;
 
 extern	cvar_t	cl_coloredlight;
-extern	cvar_t	cl_coloredlightmflash;
+extern	cvar_t	cl_extradlight;
 
 extern	cvar_t	cl_pitchdriftspeed;
 extern	cvar_t	lookspring;

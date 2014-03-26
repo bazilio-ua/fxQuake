@@ -112,46 +112,50 @@ void CL_ParseTEnt (void)
 		pos[0] = MSG_ReadCoord (net_message);
 		pos[1] = MSG_ReadCoord (net_message);
 		pos[2] = MSG_ReadCoord (net_message);
+
+		if (cl_extradlight.value)
+		{
+			dl = CL_AllocDlight (0);
+			VectorCopy (pos, dl->origin);
+			dl->radius = 250;
+			dl->die = cl.time + 0.5;
+			dl->decay = 300;
+			
+			CL_ColorDlight (dl, 0.4, 0.2, 0.1);
+			//dl->color[0] = 0.4; dl->color[1] = 0.2; dl->color[2] = 0.1;
+		}
+		
 		R_RunParticleEffect (pos, vec3_origin, 20, 30);
-		
 		S_StartSound (-1, 0, cl_sfx_wizhit, pos, 1, 1);
-		
-		dl = CL_AllocDlight (0);
-		VectorCopy (pos, dl->origin);
-		dl->radius = 250;
-		dl->die = cl.time + 0.5;
-		dl->decay = 300;
-		
-		CL_ColorDlight (dl, 0.4, 0.2, 0.1);
-//		dl->color[0] = 0.4; dl->color[1] = 0.2; dl->color[2] = 0.1;
-		
 		break;
 		
 	case TE_KNIGHTSPIKE:			// spike hitting wall
 		pos[0] = MSG_ReadCoord (net_message);
 		pos[1] = MSG_ReadCoord (net_message);
 		pos[2] = MSG_ReadCoord (net_message);
+		
+		if (cl_extradlight.value)
+		{
+			dl = CL_AllocDlight (0);
+			VectorCopy (pos, dl->origin);
+			dl->radius = 250;
+			dl->die = cl.time + 0.5;
+			dl->decay = 300;
+			
+			CL_ColorDlight (dl, 0.4, 0.2, 0.1);
+			//dl->color[0] = 0.4; dl->color[1] = 0.2; dl->color[2] = 0.1;
+		}
+		
 		R_RunParticleEffect (pos, vec3_origin, 226, 20);
-		
 		S_StartSound (-1, 0, cl_sfx_knighthit, pos, 1, 1);
-		
-		dl = CL_AllocDlight (0);
-		VectorCopy (pos, dl->origin);
-		dl->radius = 250;
-		dl->die = cl.time + 0.5;
-		dl->decay = 300;
-		
-		CL_ColorDlight (dl, 0.4, 0.2, 0.1);
-//		dl->color[0] = 0.4; dl->color[1] = 0.2; dl->color[2] = 0.1;
-		
 		break;
 		
 	case TE_SPIKE:			// spike hitting wall
 		pos[0] = MSG_ReadCoord (net_message);
 		pos[1] = MSG_ReadCoord (net_message);
 		pos[2] = MSG_ReadCoord (net_message);
-		R_RunParticleEffect (pos, vec3_origin, 0, 10);
 		
+		R_RunParticleEffect (pos, vec3_origin, 0, 10);
 		if ( rand() % 5 )
 			S_StartSound (-1, 0, cl_sfx_tink1, pos, 1, 1);
 		else
@@ -170,8 +174,8 @@ void CL_ParseTEnt (void)
 		pos[0] = MSG_ReadCoord (net_message);
 		pos[1] = MSG_ReadCoord (net_message);
 		pos[2] = MSG_ReadCoord (net_message);
-		R_RunParticleEffect (pos, vec3_origin, 0, 20);
 		
+		R_RunParticleEffect (pos, vec3_origin, 0, 20);
 		if ( rand() % 5 )
 			S_StartSound (-1, 0, cl_sfx_tink1, pos, 1, 1);
 		else
@@ -190,6 +194,7 @@ void CL_ParseTEnt (void)
 		pos[0] = MSG_ReadCoord (net_message);
 		pos[1] = MSG_ReadCoord (net_message);
 		pos[2] = MSG_ReadCoord (net_message);
+		
 		R_RunParticleEffect (pos, vec3_origin, 0, 20);
 		break;
 		
@@ -197,7 +202,6 @@ void CL_ParseTEnt (void)
 		pos[0] = MSG_ReadCoord (net_message);
 		pos[1] = MSG_ReadCoord (net_message);
 		pos[2] = MSG_ReadCoord (net_message);
-		R_ParticleExplosion (pos);
 		
 		dl = CL_AllocDlight (0);
 		VectorCopy (pos, dl->origin);
@@ -206,8 +210,9 @@ void CL_ParseTEnt (void)
 		dl->decay = 300;
 		
 		CL_ColorDlight (dl, 0.4, 0.2, 0.1);
-//		dl->color[0] = 0.4; dl->color[1] = 0.2; dl->color[2] = 0.1;
+		//dl->color[0] = 0.4; dl->color[1] = 0.2; dl->color[2] = 0.1;
 		
+		R_ParticleExplosion (pos);
 		S_StartSound (-1, 0, cl_sfx_r_exp3, pos, 1, 1);
 		break;
 		
@@ -215,17 +220,20 @@ void CL_ParseTEnt (void)
 		pos[0] = MSG_ReadCoord (net_message);
 		pos[1] = MSG_ReadCoord (net_message);
 		pos[2] = MSG_ReadCoord (net_message);
+		
+		if (cl_extradlight.value)
+		{
+			dl = CL_AllocDlight (0);
+			VectorCopy (pos, dl->origin);
+			dl->radius = 350;
+			dl->die = cl.time + 0.5;
+			dl->decay = 300;
+			
+			CL_ColorDlight (dl, 0.4, 0.2, 0.1);
+			//dl->color[0] = 0.4; dl->color[1] = 0.2; dl->color[2] = 0.1;
+		}
+		
 		R_BlobExplosion (pos);
-		
-		dl = CL_AllocDlight (0);
-		VectorCopy (pos, dl->origin);
-		dl->radius = 350;
-		dl->die = cl.time + 0.5;
-		dl->decay = 300;
-		
-		CL_ColorDlight (dl, 0.4, 0.2, 0.1);
-//		dl->color[0] = 0.4; dl->color[1] = 0.2; dl->color[2] = 0.1;
-		
 		S_StartSound (-1, 0, cl_sfx_r_exp3, pos, 1, 1);
 		break;
 		
@@ -240,23 +248,26 @@ void CL_ParseTEnt (void)
 		end[1] = MSG_ReadCoord (net_message);
 		end[2] = MSG_ReadCoord (net_message);
 		
-		dl = CL_AllocDlight (0);
-		VectorCopy (start, dl->origin);
-		dl->radius = 250;
-		dl->die = cl.time + 0.1;
-		dl->decay = 300;
-		
-		CL_ColorDlight (dl, 0.4, 0.2, 0.1);
-//		dl->color[0] = 0.4; dl->color[1] = 0.2; dl->color[2] = 0.1;
-		
-		dl = CL_AllocDlight (0);
-		VectorCopy (end, dl->origin);
-		dl->radius = 250;
-		dl->die = cl.time + 0.1;
-		dl->decay = 300;
-		
-		CL_ColorDlight (dl, 0.4, 0.2, 0.1);
-//		dl->color[0] = 0.4; dl->color[1] = 0.2; dl->color[2] = 0.1;
+		if (cl_extradlight.value)
+		{
+			dl = CL_AllocDlight (0);
+			VectorCopy (start, dl->origin);
+			dl->radius = 250;
+			dl->die = cl.time + 0.1;
+			dl->decay = 300;
+			
+			CL_ColorDlight (dl, 0.4, 0.2, 0.1);
+			//dl->color[0] = 0.4; dl->color[1] = 0.2; dl->color[2] = 0.1;
+			
+			dl = CL_AllocDlight (0);
+			VectorCopy (end, dl->origin);
+			dl->radius = 250;
+			dl->die = cl.time + 0.1;
+			dl->decay = 300;
+			
+			CL_ColorDlight (dl, 0.4, 0.2, 0.1);
+			//dl->color[0] = 0.4; dl->color[1] = 0.2; dl->color[2] = 0.1;
+		}
 		
 		CL_ParseBeam (Mod_ForName("progs/bolt.mdl", true), ent, start, end);
 		break;
@@ -272,23 +283,26 @@ void CL_ParseTEnt (void)
 		end[1] = MSG_ReadCoord (net_message);
 		end[2] = MSG_ReadCoord (net_message);
 		
-		dl = CL_AllocDlight (0);
-		VectorCopy (start, dl->origin);
-		dl->radius = 250;
-		dl->die = cl.time + 0.1;
-		dl->decay = 300;
-		
-		CL_ColorDlight (dl, 0.4, 0.2, 0.1);
-//		dl->color[0] = 0.4; dl->color[1] = 0.2; dl->color[2] = 0.1;
-		
-		dl = CL_AllocDlight (0);
-		VectorCopy (end, dl->origin);
-		dl->radius = 250;
-		dl->die = cl.time + 0.1;
-		dl->decay = 300;
-		
-		CL_ColorDlight (dl, 0.4, 0.2, 0.1);
-//		dl->color[0] = 0.4; dl->color[1] = 0.2; dl->color[2] = 0.1;
+		if (cl_extradlight.value)
+		{
+			dl = CL_AllocDlight (0);
+			VectorCopy (start, dl->origin);
+			dl->radius = 250;
+			dl->die = cl.time + 0.1;
+			dl->decay = 300;
+			
+			CL_ColorDlight (dl, 0.4, 0.2, 0.1);
+			//dl->color[0] = 0.4; dl->color[1] = 0.2; dl->color[2] = 0.1;
+			
+			dl = CL_AllocDlight (0);
+			VectorCopy (end, dl->origin);
+			dl->radius = 250;
+			dl->die = cl.time + 0.1;
+			dl->decay = 300;
+			
+			CL_ColorDlight (dl, 0.4, 0.2, 0.1);
+			//dl->color[0] = 0.4; dl->color[1] = 0.2; dl->color[2] = 0.1;
+		}
 		
 		CL_ParseBeam (Mod_ForName("progs/bolt2.mdl", true), ent, start, end);
 		break;
@@ -304,23 +318,26 @@ void CL_ParseTEnt (void)
 		end[1] = MSG_ReadCoord (net_message);
 		end[2] = MSG_ReadCoord (net_message);
 		
-		dl = CL_AllocDlight (0);
-		VectorCopy (start, dl->origin);
-		dl->radius = 250;
-		dl->die = cl.time + 0.1;
-		dl->decay = 300;
-		
-		CL_ColorDlight (dl, 0.4, 0.2, 0.1);
-//		dl->color[0] = 0.4; dl->color[1] = 0.2; dl->color[2] = 0.1;
-		
-		dl = CL_AllocDlight (0);
-		VectorCopy (end, dl->origin);
-		dl->radius = 250;
-		dl->die = cl.time + 0.1;
-		dl->decay = 300;
-		
-		CL_ColorDlight (dl, 0.4, 0.2, 0.1);
-//		dl->color[0] = 0.4; dl->color[1] = 0.2; dl->color[2] = 0.1;
+		if (cl_extradlight.value)
+		{
+			dl = CL_AllocDlight (0);
+			VectorCopy (start, dl->origin);
+			dl->radius = 250;
+			dl->die = cl.time + 0.1;
+			dl->decay = 300;
+			
+			CL_ColorDlight (dl, 0.4, 0.2, 0.1);
+			//dl->color[0] = 0.4; dl->color[1] = 0.2; dl->color[2] = 0.1;
+			
+			dl = CL_AllocDlight (0);
+			VectorCopy (end, dl->origin);
+			dl->radius = 250;
+			dl->die = cl.time + 0.1;
+			dl->decay = 300;
+			
+			CL_ColorDlight (dl, 0.4, 0.2, 0.1);
+			//dl->color[0] = 0.4; dl->color[1] = 0.2; dl->color[2] = 0.1;
+		}
 		
 		CL_ParseBeam (Mod_ForName("progs/bolt3.mdl", true), ent, start, end);
 		break;
@@ -337,23 +354,26 @@ void CL_ParseTEnt (void)
 		end[1] = MSG_ReadCoord (net_message);
 		end[2] = MSG_ReadCoord (net_message);
 		
-		dl = CL_AllocDlight (0);
-		VectorCopy (start, dl->origin);
-		dl->radius = 250;
-		dl->die = cl.time + 0.1;
-		dl->decay = 300;
-		
-		CL_ColorDlight (dl, 0.4, 0.2, 0.1);
-//		dl->color[0] = 0.4; dl->color[1] = 0.2; dl->color[2] = 0.1;
-		
-		dl = CL_AllocDlight (0);
-		VectorCopy (end, dl->origin);
-		dl->radius = 250;
-		dl->die = cl.time + 0.1;
-		dl->decay = 300;
-		
-		CL_ColorDlight (dl, 0.4, 0.2, 0.1);
-//		dl->color[0] = 0.4; dl->color[1] = 0.2; dl->color[2] = 0.1;
+		if (cl_extradlight.value)
+		{
+			dl = CL_AllocDlight (0);
+			VectorCopy (start, dl->origin);
+			dl->radius = 250;
+			dl->die = cl.time + 0.1;
+			dl->decay = 300;
+			
+			CL_ColorDlight (dl, 0.4, 0.2, 0.1);
+			//dl->color[0] = 0.4; dl->color[1] = 0.2; dl->color[2] = 0.1;
+			
+			dl = CL_AllocDlight (0);
+			VectorCopy (end, dl->origin);
+			dl->radius = 250;
+			dl->die = cl.time + 0.1;
+			dl->decay = 300;
+			
+			CL_ColorDlight (dl, 0.4, 0.2, 0.1);
+			//dl->color[0] = 0.4; dl->color[1] = 0.2; dl->color[2] = 0.1;
+		}
 		
 		CL_ParseBeam (Mod_ForName(MSG_ReadString(net_message), true), ent, start, end);
 		break;
@@ -378,14 +398,19 @@ void CL_ParseTEnt (void)
 		pos[0] = MSG_ReadCoord (net_message);
 		pos[1] = MSG_ReadCoord (net_message);
 		pos[2] = MSG_ReadCoord (net_message);
+		
+		//TODO: add CL_ColorDlight here?
+		
 		R_LavaSplash (pos);
-		//TODO: add CL_ColorDlight here
 		break;
 		
 	case TE_TELEPORT:
 		pos[0] = MSG_ReadCoord (net_message);
 		pos[1] = MSG_ReadCoord (net_message);
 		pos[2] = MSG_ReadCoord (net_message);
+		
+		//TODO: add CL_ColorDlight here? Yes, even on a teleport
+		
 		R_TeleportSplash (pos);
 		break;
 		
@@ -393,9 +418,9 @@ void CL_ParseTEnt (void)
 		pos[0] = MSG_ReadCoord (net_message);
 		pos[1] = MSG_ReadCoord (net_message);
 		pos[2] = MSG_ReadCoord (net_message);
+		
 		colorStart = MSG_ReadByte (net_message);
 		colorLength = MSG_ReadByte (net_message);
-		R_ParticleExplosion2 (pos, colorStart, colorLength);
 		
 		dl = CL_AllocDlight (0);
 		VectorCopy (pos, dl->origin);
@@ -408,14 +433,23 @@ void CL_ParseTEnt (void)
 		color[1] = colorByte[1] * (2.0 / 255.0);
 		color[2] = colorByte[2] * (2.0 / 255.0);
 		CL_ColorDlight (dl, color[0], color[1], color[2]);
-//		dl->color[0] = colorByte[0] * (2.0 / 255.0);
-//		dl->color[1] = colorByte[1] * (2.0 / 255.0);
-//		dl->color[2] = colorByte[2] * (2.0 / 255.0);
+		//dl->color[0] = colorByte[0] * (2.0 / 255.0);
+		//dl->color[1] = colorByte[1] * (2.0 / 255.0);
+		//dl->color[2] = colorByte[2] * (2.0 / 255.0);
 		
+		R_ParticleExplosion2 (pos, colorStart, colorLength);
 		S_StartSound (-1, 0, cl_sfx_r_exp3, pos, 1, 1);
 		break;
 		
-// Nehahra		
+// Nehahra
+	case TE_SMOKE:
+		// falls through to explosion 3
+		MSG_ReadCoord (net_message);
+		MSG_ReadCoord (net_message);
+		MSG_ReadCoord (net_message);
+		
+		MSG_ReadByte (net_message);
+		
 	case TE_EXPLOSION3:				// rocket explosion (colored)
 		pos[0] = MSG_ReadCoord (net_message);
 		pos[1] = MSG_ReadCoord (net_message);
@@ -431,14 +465,22 @@ void CL_ParseTEnt (void)
 		color[1] = MSG_ReadCoord(net_message);
 		color[2] = MSG_ReadCoord(net_message);
 		CL_ColorDlight (dl, color[0], color[1], color[2]);
-//		dl->color[0] = MSG_ReadCoord(net_message);
-//		dl->color[1] = MSG_ReadCoord(net_message);
-//		dl->color[2] = MSG_ReadCoord(net_message);
+		//dl->color[0] = MSG_ReadCoord(net_message);
+		//dl->color[1] = MSG_ReadCoord(net_message);
+		//dl->color[2] = MSG_ReadCoord(net_message);
 		
 		S_StartSound (-1, 0, cl_sfx_r_exp3, pos, 1, 1);
 		break;
 		
+	case TE_NEW1:
+		break;
+		
+	case TE_NEW2:
+		break;
+		
 	default:
+		// no need to crash the engine but we will crash the map, as it means we have
+		// a malformed packet
 //		Sys_Error ("CL_ParseTEnt: bad type %d", type);
 		if (IsTimeout(&lastmsg, 2))
 		{
@@ -446,9 +488,10 @@ void CL_ParseTEnt (void)
 		}
 		
 		// Blind parsing ...
-		pos[0] = MSG_ReadCoord (net_message);
-		pos[1] = MSG_ReadCoord (net_message);
-		pos[2] = MSG_ReadCoord (net_message);
+		// note - this might crash the server at some stage if more data is expected
+		MSG_ReadCoord (net_message);
+		MSG_ReadCoord (net_message);
+		MSG_ReadCoord (net_message);
 		break;
 	}
 }

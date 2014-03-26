@@ -240,3 +240,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // Nehahra
 #define TE_EXPLOSION3           16
 #define TE_LIGHTNING4           17
+#define TE_SMOKE                18
+#define TE_NEW1                 19
+#define TE_NEW2                 20
