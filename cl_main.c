@@ -408,7 +408,7 @@ void CL_RelinkEntities (void)
 	vec3_t		delta;
 	float		objrotate;
 	vec3_t		oldorg;
-	vec3_t		color;
+//	vec3_t		color;
 	dlight_t	*dl;
 	static float	lastmsg = 0;
 
@@ -524,26 +524,27 @@ void CL_RelinkEntities (void)
 
 			if (i == cl.viewentity)
 			{
+				// switch the flash colour for the current weapon
 				if (cl.stats[STAT_ACTIVEWEAPON] == IT_SUPER_LIGHTNING) 
-					CL_ColorDlight (dl, 1.0, 0.5, 1.0);
+					CL_ColorDlight (dl, DL_COLOR_CYAN);
 				else if (cl.stats[STAT_ACTIVEWEAPON] == IT_LIGHTNING)
-					CL_ColorDlight (dl, 1.0, 0.5, 1.0);
+					CL_ColorDlight (dl, DL_COLOR_CYAN);
 				//else if TODO: add more weapons
 				else
-					CL_ColorDlight (dl, 0.3, 0.2, 0.1); //default orange
+					CL_ColorDlight (dl, DL_COLOR_ORANGE); //default orange
 			}
 			else
 			{
 				// some entities have different attacks resulting in a different flash colour
 				if (!strcmp (ent->model->name, "progs/wizard.mdl"))
-					CL_ColorDlight (dl, 0.3, 0.2, 0.1);
+					CL_ColorDlight (dl, DL_COLOR_GREEN);
 				else if (!strcmp (ent->model->name, "progs/shalrath.mdl"))
-					CL_ColorDlight (dl, 0.3, 0.2, 0.1);
+					CL_ColorDlight (dl, DL_COLOR_PURPLE);
 				else if (!strcmp (ent->model->name, "progs/shambler.mdl"))
-					CL_ColorDlight (dl, 0.3, 0.2, 0.1);
+					CL_ColorDlight (dl, DL_COLOR_CYAN);
 				//else if TODO: add more models
 				else 
-					CL_ColorDlight (dl, 0.3, 0.2, 0.1); //default orange
+					CL_ColorDlight (dl, DL_COLOR_ORANGE); //default orange
 				//dl->color[0] = 0.3; dl->color[1] = 0.2; dl->color[2] = 0.1;
 			}
 		}
@@ -556,7 +557,7 @@ void CL_RelinkEntities (void)
 			dl->radius = 400 + (rand()&31);
 			dl->die = cl.time + 0.001;
 
-//			CL_ColorDlight (dl, 0.1, 0.1, 0.1); // EER1 -- uncoloured? (set to white light?)
+			CL_ColorDlight (dl, DL_COLOR_WHITE);
 			//dl->color[0] = 0.1;dl->color[1] = 0.1;dl->color[2] = 0.1;
 		}
 		if (ent->effects & EF_DIMLIGHT)
@@ -566,23 +567,22 @@ void CL_RelinkEntities (void)
 			VectorCopy (ent->origin,  dl->origin);
 			dl->radius = 200 + (rand()&31);
 			dl->die = cl.time + 0.001;
-
-//			CL_ColorDlight (dl, 0.1, 0.1, 0.1); // EER1 -- commented this, emmit color effect only from viewent? (set to white light?)
-			//dl->color[0] = 0.1;dl->color[1] = 0.1;dl->color[2] = 0.1;
-
+			
 			if (i == cl.viewentity)
 			{
-				color[0] = 0.05;
-				color[1] = 0.05;
-				color[2] = 0.05;
-
-				if (cl.items & IT_INVULNERABILITY)
-					color[0] = 1.0;
-				if (cl.items & IT_QUAD)
-					color[2] = 1.0;
-
-				CL_ColorDlight (dl, color[0], color[1], color[2]);
+				// set the appropriate colour depending on the current powerup(s)
+				if ((cl.items & IT_QUAD) && (cl.items & IT_INVULNERABILITY))
+					CL_ColorDlight (dl, DL_COLOR_PURPLE);
+				else if (cl.items & IT_QUAD)
+					CL_ColorDlight (dl, DL_COLOR_BLUE);
+				else if (cl.items & IT_INVULNERABILITY)
+					CL_ColorDlight (dl, DL_COLOR_RED);
+				else
+					CL_ColorDlight (dl, DL_COLOR_WHITE);
 			}
+			else
+				CL_ColorDlight (dl, DL_COLOR_WHITE);
+			//dl->color[0] = 0.1;dl->color[1] = 0.1;dl->color[2] = 0.1;
 		}
 
 // Nehahra
@@ -593,16 +593,13 @@ void CL_RelinkEntities (void)
 			dl->radius = 200 + (rand()&31);
 			dl->die = cl.time + 0.001;
 			
-			color[0] = 0.05;
-			color[1] = 0.05;
-			color[2] = 0.05;
-			
-			if (ent->effects & EF_RED)
-				color[0] = 0.8;
-			if (ent->effects & EF_BLUE)
-				color[2] = 0.8;
-			
-			CL_ColorDlight (dl, color[0], color[1], color[2]);
+			// set the appropriate colour
+			if ((ent->effects & EF_RED) && (ent->effects & EF_BLUE))
+				CL_ColorDlight (dl, DL_COLOR_PURPLE);
+			else if (ent->effects & EF_RED)
+				CL_ColorDlight (dl, DL_COLOR_RED);
+			else if (ent->effects & EF_BLUE)
+				CL_ColorDlight (dl, DL_COLOR_BLUE);
 			//dl->color[0] = 0.7;dl->color[1] = 0.07;dl->color[2] = 0.7;
 		}
 
@@ -646,6 +643,7 @@ void CL_RelinkEntities (void)
 			R_RocketTrail (oldorg, ent->origin, 4);
 		else if (ent->model->flags & EF_TRACER)
 		{
+			// wizard trail
 			if (cl_extradlight.value)
 			{
 				dl = CL_AllocDlight (i);
@@ -653,14 +651,14 @@ void CL_RelinkEntities (void)
 				dl->radius = 200;
 				dl->die = cl.time + 0.01;
 				
-				CL_ColorDlight (dl, 0.1, 0.4, 0.1);
+				CL_ColorDlight (dl, DL_COLOR_GREEN);
 			}
 			
-			// wizard trail
 			R_RocketTrail (oldorg, ent->origin, 3);
 		}
 		else if (ent->model->flags & EF_TRACER2)
 		{
+			// knight trail
 			if (cl_extradlight.value)
 			{
 				dl = CL_AllocDlight (i);
@@ -668,14 +666,14 @@ void CL_RelinkEntities (void)
 				dl->radius = 200;
 				dl->die = cl.time + 0.01;
 				
-				CL_ColorDlight (dl, 0.4, 0.2, 0.1);
+				CL_ColorDlight (dl, DL_COLOR_ORANGE);
 			}
 			
-			// knight trail
 			R_RocketTrail (oldorg, ent->origin, 5);
 		}
 		else if (ent->model->flags & EF_TRACER3)
 		{
+			// vore trail
 			if (cl_extradlight.value)
 			{
 				dl = CL_AllocDlight (i);
@@ -683,10 +681,9 @@ void CL_RelinkEntities (void)
 				dl->radius = 200;
 				dl->die = cl.time + 0.01;
 				
-				CL_ColorDlight (dl, 0.4, 0.1, 0.2);
+				CL_ColorDlight (dl, DL_COLOR_PURPLE);
 			}
 			
-			// vore trail
 			R_RocketTrail (oldorg, ent->origin, 6);
 		}
 		else if (ent->model->flags & EF_ROCKET)
@@ -698,7 +695,7 @@ void CL_RelinkEntities (void)
 			dl->radius = 200;
 			dl->die = cl.time + 0.01;
 
-			CL_ColorDlight (dl, 0.4, 0.2, 0.1);
+			CL_ColorDlight (dl, DL_COLOR_ORANGE);
 			//dl->color[0] = 0.4; dl->color[1] = 0.2; dl->color[2] = 0.1;
 		}
 		else if (ent->model->flags & EF_GRENADE)

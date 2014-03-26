@@ -121,7 +121,7 @@ void CL_ParseTEnt (void)
 			dl->die = cl.time + 0.5;
 			dl->decay = 300;
 			
-			CL_ColorDlight (dl, 0.4, 0.2, 0.1);
+			CL_ColorDlight (dl, DL_COLOR_GREEN);
 			//dl->color[0] = 0.4; dl->color[1] = 0.2; dl->color[2] = 0.1;
 		}
 		
@@ -142,7 +142,7 @@ void CL_ParseTEnt (void)
 			dl->die = cl.time + 0.5;
 			dl->decay = 300;
 			
-			CL_ColorDlight (dl, 0.4, 0.2, 0.1);
+			CL_ColorDlight (dl, DL_COLOR_ORANGE);
 			//dl->color[0] = 0.4; dl->color[1] = 0.2; dl->color[2] = 0.1;
 		}
 		
@@ -209,7 +209,7 @@ void CL_ParseTEnt (void)
 		dl->die = cl.time + 0.5;
 		dl->decay = 300;
 		
-		CL_ColorDlight (dl, 0.4, 0.2, 0.1);
+		CL_ColorDlight (dl, DL_COLOR_ORANGE);
 		//dl->color[0] = 0.4; dl->color[1] = 0.2; dl->color[2] = 0.1;
 		
 		R_ParticleExplosion (pos);
@@ -229,7 +229,7 @@ void CL_ParseTEnt (void)
 			dl->die = cl.time + 0.5;
 			dl->decay = 300;
 			
-			CL_ColorDlight (dl, 0.4, 0.2, 0.1);
+			CL_ColorDlight (dl, DL_COLOR_PURPLE);
 			//dl->color[0] = 0.4; dl->color[1] = 0.2; dl->color[2] = 0.1;
 		}
 		
@@ -256,7 +256,7 @@ void CL_ParseTEnt (void)
 			dl->die = cl.time + 0.1;
 			dl->decay = 300;
 			
-			CL_ColorDlight (dl, 0.4, 0.2, 0.1);
+			CL_ColorDlight (dl, DL_COLOR_CYAN);
 			//dl->color[0] = 0.4; dl->color[1] = 0.2; dl->color[2] = 0.1;
 			
 			dl = CL_AllocDlight (0);
@@ -265,7 +265,7 @@ void CL_ParseTEnt (void)
 			dl->die = cl.time + 0.1;
 			dl->decay = 300;
 			
-			CL_ColorDlight (dl, 0.4, 0.2, 0.1);
+			CL_ColorDlight (dl, DL_COLOR_CYAN);
 			//dl->color[0] = 0.4; dl->color[1] = 0.2; dl->color[2] = 0.1;
 		}
 		
@@ -291,7 +291,7 @@ void CL_ParseTEnt (void)
 			dl->die = cl.time + 0.1;
 			dl->decay = 300;
 			
-			CL_ColorDlight (dl, 0.4, 0.2, 0.1);
+			CL_ColorDlight (dl, DL_COLOR_CYAN);
 			//dl->color[0] = 0.4; dl->color[1] = 0.2; dl->color[2] = 0.1;
 			
 			dl = CL_AllocDlight (0);
@@ -300,7 +300,7 @@ void CL_ParseTEnt (void)
 			dl->die = cl.time + 0.1;
 			dl->decay = 300;
 			
-			CL_ColorDlight (dl, 0.4, 0.2, 0.1);
+			CL_ColorDlight (dl, DL_COLOR_CYAN);
 			//dl->color[0] = 0.4; dl->color[1] = 0.2; dl->color[2] = 0.1;
 		}
 		
@@ -326,7 +326,7 @@ void CL_ParseTEnt (void)
 			dl->die = cl.time + 0.1;
 			dl->decay = 300;
 			
-			CL_ColorDlight (dl, 0.4, 0.2, 0.1);
+			CL_ColorDlight (dl, DL_COLOR_CYAN);
 			//dl->color[0] = 0.4; dl->color[1] = 0.2; dl->color[2] = 0.1;
 			
 			dl = CL_AllocDlight (0);
@@ -335,7 +335,7 @@ void CL_ParseTEnt (void)
 			dl->die = cl.time + 0.1;
 			dl->decay = 300;
 			
-			CL_ColorDlight (dl, 0.4, 0.2, 0.1);
+			CL_ColorDlight (dl, DL_COLOR_CYAN);
 			//dl->color[0] = 0.4; dl->color[1] = 0.2; dl->color[2] = 0.1;
 		}
 		
@@ -362,7 +362,7 @@ void CL_ParseTEnt (void)
 			dl->die = cl.time + 0.1;
 			dl->decay = 300;
 			
-			CL_ColorDlight (dl, 0.4, 0.2, 0.1);
+			CL_ColorDlight (dl, DL_COLOR_CYAN);
 			//dl->color[0] = 0.4; dl->color[1] = 0.2; dl->color[2] = 0.1;
 			
 			dl = CL_AllocDlight (0);
@@ -371,7 +371,7 @@ void CL_ParseTEnt (void)
 			dl->die = cl.time + 0.1;
 			dl->decay = 300;
 			
-			CL_ColorDlight (dl, 0.4, 0.2, 0.1);
+			CL_ColorDlight (dl, DL_COLOR_CYAN);
 			//dl->color[0] = 0.4; dl->color[1] = 0.2; dl->color[2] = 0.1;
 		}
 		
@@ -443,6 +443,7 @@ void CL_ParseTEnt (void)
 		
 // Nehahra
 	case TE_SMOKE:
+		// Just parse msg
 		// falls through to explosion 3
 		MSG_ReadCoord (net_message);
 		MSG_ReadCoord (net_message);

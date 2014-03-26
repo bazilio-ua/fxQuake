@@ -79,7 +79,7 @@ DYNAMIC LIGHTS BLEND RENDERING
 =============================================================================
 */
 
-void R_AddLightBlend (float r, float g, float b, float a2)
+void V_AddLightBlend (float r, float g, float b, float a2)
 {
 	float	a;
 
@@ -125,12 +125,14 @@ void R_RenderFlashBlend (dlight_t *light)
 	VectorSubtract (light->origin, r_origin, v);
 	if (VectorLength (v) < rad)
 	{	// view is inside the dlight
-		R_AddLightBlend (1, 0.5, 0, light->radius * 0.0003);
+		V_AddLightBlend (1, 0.5, 0, light->radius * 0.0003);
+//		V_AddLightBlend (light->color[0], light->color[1], light->color[2], light->radius * 0.0003);
 		return;
 	}
 
 	glBegin (GL_TRIANGLE_FAN);
 	glColor3f (0.2, 0.1, 0.0);
+//	glColor3f (light->color[0], light->color[1], light->color[2]);
 	for (i=0 ; i<3 ; i++)
 		v[i] = light->origin[i] - vpn[i]*rad;
 	glVertex3fv (v);

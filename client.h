@@ -77,6 +77,17 @@ typedef struct
 	vec3_t	color;				// lit support via lordhavoc
 } dlight_t;
 
+// keep dlight colours in the one place so that if i need to change them i only need to do it once
+#define DL_COLOR_GREEN		0.196078, 0.803922, 0.196078 // limegreen rgb 0.196078 0.803922 0.196078
+#define DL_COLOR_PURPLE		0.627451, 0.125490, 0.941176 // purple rgb 0.627451 0.12549 0.941176
+#define DL_COLOR_BLUE		0.482353, 0.407843, 0.933333 // mediumslateblue rgb 0.482353 0.407843 0.933333
+#define DL_COLOR_CYAN		0.000000, 0.749020, 1.000000 // deepskyblue rgb 0 0.74902 1
+#define DL_COLOR_ORANGE		1.000000, 0.647059, 0.000000 // orange rgb 1 0.647059 0
+#define DL_COLOR_RED		1.000000, 0.270588, 0.000000 // orangered rgb 1 0.270588 0
+#define DL_COLOR_GOLD		1.000000, 0.843137, 0.000000 // gold rgb 1 0.843137 0
+#define DL_COLOR_YELLOW		0.933333, 0.866667, 0.509804 // lightgoldenrod rgb 0.933333 0.866667 0.509804
+#define DL_COLOR_WHITE		1.000000, 1.000000, 1.000000 // full white
+
 
 #define	MAX_BEAMS	256 //was 32 //johnfitz -- was 24
 typedef struct
