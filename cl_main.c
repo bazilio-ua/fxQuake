@@ -531,7 +531,7 @@ void CL_RelinkEntities (void)
 					CL_ColorDlight (dl, DL_COLOR_CYAN);
 				//else if TODO: add more weapons
 				else
-					CL_ColorDlight (dl, DL_COLOR_ORANGE); //default orange
+					CL_ColorDlight (dl, DL_COLOR_ORANGE);
 			}
 			else
 			{
@@ -544,8 +544,7 @@ void CL_RelinkEntities (void)
 					CL_ColorDlight (dl, DL_COLOR_CYAN);
 				//else if TODO: add more models
 				else 
-					CL_ColorDlight (dl, DL_COLOR_ORANGE); //default orange
-				//dl->color[0] = 0.3; dl->color[1] = 0.2; dl->color[2] = 0.1;
+					CL_ColorDlight (dl, DL_COLOR_ORANGE);
 			}
 		}
 		if (ent->effects & EF_BRIGHTLIGHT)
@@ -558,7 +557,6 @@ void CL_RelinkEntities (void)
 			dl->die = cl.time + 0.001;
 
 			CL_ColorDlight (dl, DL_COLOR_WHITE);
-			//dl->color[0] = 0.1;dl->color[1] = 0.1;dl->color[2] = 0.1;
 		}
 		if (ent->effects & EF_DIMLIGHT)
 		{			
@@ -583,7 +581,6 @@ void CL_RelinkEntities (void)
 			}
 			else
 				CL_ColorDlight (dl, DL_COLOR_WHITE);
-			//dl->color[0] = 0.1;dl->color[1] = 0.1;dl->color[2] = 0.1;
 		}
 
 // Nehahra
@@ -601,43 +598,8 @@ void CL_RelinkEntities (void)
 				CL_ColorDlight (dl, DL_COLOR_RED);
 			else if (ent->effects & EF_BLUE)
 				CL_ColorDlight (dl, DL_COLOR_BLUE);
-			//dl->color[0] = 0.7;dl->color[1] = 0.07;dl->color[2] = 0.7;
 		}
 
-/*		if (ent->effects & EF_RED) // red
-		{			
-			if (ent->effects & EF_BLUE) // magenta
-			{
-				dl = CL_AllocDlight (i);
-				VectorCopy (ent->origin,  dl->origin);
-				dl->radius = 200 + (rand()&31);
-				dl->die = cl.time + 0.001;
-
-				CL_ColorDlight (dl, 0.7, 0.07, 0.7);
-				//dl->color[0] = 0.7;dl->color[1] = 0.07;dl->color[2] = 0.7;
-			}
-			else // red
-			{
-				dl = CL_AllocDlight (i);
-				VectorCopy (ent->origin,  dl->origin);
-				dl->radius = 200 + (rand()&31);
-				dl->die = cl.time + 0.001;
-
-				CL_ColorDlight (dl, 0.8, 0.05, 0.05);
-				//dl->color[0] = 0.8;dl->color[1] = 0.05;dl->color[2] = 0.05;
-			}
-		}
-		else if (ent->effects & EF_BLUE) // blue
-		{
-			dl = CL_AllocDlight (i);
-			VectorCopy (ent->origin,  dl->origin);
-			dl->radius = 200 + (rand()&31);
-			dl->die = cl.time + 0.001;
-
-			CL_ColorDlight (dl, 0.05, 0.05, 0.8);
-			//dl->color[0] = 0.05;dl->color[1] = 0.05;dl->color[2] = 0.8;
-		}
-*/
 		if (ent->model->flags & EF_GIB)
 			R_RocketTrail (oldorg, ent->origin, RT_GIB);
 		else if (ent->model->flags & EF_ZOMGIB)
@@ -697,7 +659,6 @@ void CL_RelinkEntities (void)
 			dl->die = cl.time + 0.01;
 
 			CL_ColorDlight (dl, DL_COLOR_ORANGE);
-			//dl->color[0] = 0.4; dl->color[1] = 0.2; dl->color[2] = 0.1;
 		}
 		else if (ent->model->flags & EF_GRENADE)
 			R_RocketTrail (oldorg, ent->origin, RT_GRENADE);

@@ -122,7 +122,6 @@ void CL_ParseTEnt (void)
 			dl->decay = 300;
 			
 			CL_ColorDlight (dl, DL_COLOR_GREEN);
-			//dl->color[0] = 0.4; dl->color[1] = 0.2; dl->color[2] = 0.1;
 		}
 		
 		R_RunParticleEffect (pos, vec3_origin, 20, 30);
@@ -143,7 +142,6 @@ void CL_ParseTEnt (void)
 			dl->decay = 300;
 			
 			CL_ColorDlight (dl, DL_COLOR_ORANGE);
-			//dl->color[0] = 0.4; dl->color[1] = 0.2; dl->color[2] = 0.1;
 		}
 		
 		R_RunParticleEffect (pos, vec3_origin, 226, 20);
@@ -210,7 +208,6 @@ void CL_ParseTEnt (void)
 		dl->decay = 300;
 		
 		CL_ColorDlight (dl, DL_COLOR_ORANGE);
-		//dl->color[0] = 0.4; dl->color[1] = 0.2; dl->color[2] = 0.1;
 		
 		R_ParticleExplosion (pos);
 		S_StartSound (-1, 0, cl_sfx_r_exp3, pos, 1, 1);
@@ -230,7 +227,6 @@ void CL_ParseTEnt (void)
 			dl->decay = 300;
 			
 			CL_ColorDlight (dl, DL_COLOR_PURPLE);
-			//dl->color[0] = 0.4; dl->color[1] = 0.2; dl->color[2] = 0.1;
 		}
 		
 		R_BlobExplosion (pos);
@@ -257,7 +253,6 @@ void CL_ParseTEnt (void)
 			dl->decay = 300;
 			
 			CL_ColorDlight (dl, DL_COLOR_CYAN);
-			//dl->color[0] = 0.4; dl->color[1] = 0.2; dl->color[2] = 0.1;
 			
 			dl = CL_AllocDlight (0);
 			VectorCopy (end, dl->origin);
@@ -266,7 +261,6 @@ void CL_ParseTEnt (void)
 			dl->decay = 300;
 			
 			CL_ColorDlight (dl, DL_COLOR_CYAN);
-			//dl->color[0] = 0.4; dl->color[1] = 0.2; dl->color[2] = 0.1;
 		}
 		
 		CL_ParseBeam (Mod_ForName("progs/bolt.mdl", true), ent, start, end);
@@ -292,7 +286,6 @@ void CL_ParseTEnt (void)
 			dl->decay = 300;
 			
 			CL_ColorDlight (dl, DL_COLOR_CYAN);
-			//dl->color[0] = 0.4; dl->color[1] = 0.2; dl->color[2] = 0.1;
 			
 			dl = CL_AllocDlight (0);
 			VectorCopy (end, dl->origin);
@@ -301,7 +294,6 @@ void CL_ParseTEnt (void)
 			dl->decay = 300;
 			
 			CL_ColorDlight (dl, DL_COLOR_CYAN);
-			//dl->color[0] = 0.4; dl->color[1] = 0.2; dl->color[2] = 0.1;
 		}
 		
 		CL_ParseBeam (Mod_ForName("progs/bolt2.mdl", true), ent, start, end);
@@ -327,7 +319,6 @@ void CL_ParseTEnt (void)
 			dl->decay = 300;
 			
 			CL_ColorDlight (dl, DL_COLOR_CYAN);
-			//dl->color[0] = 0.4; dl->color[1] = 0.2; dl->color[2] = 0.1;
 			
 			dl = CL_AllocDlight (0);
 			VectorCopy (end, dl->origin);
@@ -336,7 +327,6 @@ void CL_ParseTEnt (void)
 			dl->decay = 300;
 			
 			CL_ColorDlight (dl, DL_COLOR_CYAN);
-			//dl->color[0] = 0.4; dl->color[1] = 0.2; dl->color[2] = 0.1;
 		}
 		
 		CL_ParseBeam (Mod_ForName("progs/bolt3.mdl", true), ent, start, end);
@@ -363,7 +353,6 @@ void CL_ParseTEnt (void)
 			dl->decay = 300;
 			
 			CL_ColorDlight (dl, DL_COLOR_CYAN);
-			//dl->color[0] = 0.4; dl->color[1] = 0.2; dl->color[2] = 0.1;
 			
 			dl = CL_AllocDlight (0);
 			VectorCopy (end, dl->origin);
@@ -372,7 +361,6 @@ void CL_ParseTEnt (void)
 			dl->decay = 300;
 			
 			CL_ColorDlight (dl, DL_COLOR_CYAN);
-			//dl->color[0] = 0.4; dl->color[1] = 0.2; dl->color[2] = 0.1;
 		}
 		
 		CL_ParseBeam (Mod_ForName(MSG_ReadString(net_message), true), ent, start, end);
@@ -433,9 +421,6 @@ void CL_ParseTEnt (void)
 		color[1] = colorByte[1] * (2.0 / 255.0);
 		color[2] = colorByte[2] * (2.0 / 255.0);
 		CL_ColorDlight (dl, color[0], color[1], color[2]);
-		//dl->color[0] = colorByte[0] * (2.0 / 255.0);
-		//dl->color[1] = colorByte[1] * (2.0 / 255.0);
-		//dl->color[2] = colorByte[2] * (2.0 / 255.0);
 		
 		R_ParticleExplosion2 (pos, colorStart, colorLength);
 		S_StartSound (-1, 0, cl_sfx_r_exp3, pos, 1, 1);
@@ -466,9 +451,6 @@ void CL_ParseTEnt (void)
 		color[1] = MSG_ReadCoord(net_message);
 		color[2] = MSG_ReadCoord(net_message);
 		CL_ColorDlight (dl, color[0], color[1], color[2]);
-		//dl->color[0] = MSG_ReadCoord(net_message);
-		//dl->color[1] = MSG_ReadCoord(net_message);
-		//dl->color[2] = MSG_ReadCoord(net_message);
 		
 		S_StartSound (-1, 0, cl_sfx_r_exp3, pos, 1, 1);
 		break;
