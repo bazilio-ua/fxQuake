@@ -410,6 +410,7 @@ extern	cvar_t	r_lavaalpha;
 extern	cvar_t	r_slimealpha;
 extern	cvar_t	r_teleportalpha;
 extern	cvar_t	r_dynamic;
+extern	cvar_t	r_dynamicscale;
 extern	cvar_t	r_novis;
 extern	cvar_t	r_lockfrustum;
 extern	cvar_t	r_lockpvs;

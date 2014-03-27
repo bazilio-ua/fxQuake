@@ -457,6 +457,7 @@ void R_LightPoint (vec3_t p, vec3_t color) // lit support via lordhavoc
 		return;
 	}
 
+	// set end point (back to 2048 for less BSP tree tracing)
 	end[0] = p[0];
 	end[1] = p[1];
 	end[2] = p[2] - 8192; // was 2048

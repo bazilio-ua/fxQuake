@@ -441,7 +441,7 @@ void R_UpdateWarpTextures (void)
 	int i;
 	float x, y, x2, warptess;
 
-	warptess = 128.0/CLAMP (4.0, floor(r_waterquality.value), 64.0);
+	warptess = 128.0 / CLAMP(4.0, floor(r_waterquality.value), 64.0);
 
 	for (i=0; i<cl.worldmodel->numtextures; i++)
 	{

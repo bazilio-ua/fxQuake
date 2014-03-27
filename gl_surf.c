@@ -69,7 +69,10 @@ void R_AddDynamicLights (msurface_t *surf)
 	// lit support via lordhavoc
 	float		r, g, b, brightness;
 	unsigned	*bl;
-
+	float		scale;
+	
+	scale = CLAMP(1.0, r_dynamicscale.value, 32.0) * 256.0f;
+	
 	smax = (surf->extents[0]>>4)+1;
 	tmax = (surf->extents[1]>>4)+1;
 	tex = surf->texinfo;
@@ -102,9 +105,9 @@ void R_AddDynamicLights (msurface_t *surf)
 		
 		// lit support via lordhavoc
 		bl = blocklights;
-		r = cl_dlights[lnum].color[0] * 256.0f;
-		g = cl_dlights[lnum].color[1] * 256.0f;
-		b = cl_dlights[lnum].color[2] * 256.0f;
+		r = cl_dlights[lnum].color[0] * scale;//256.0f;
+		g = cl_dlights[lnum].color[1] * scale;//256.0f;
+		b = cl_dlights[lnum].color[2] * scale;//256.0f;
 
 		for (t = 0 ; t<tmax ; t++)
 		{

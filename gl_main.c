@@ -79,7 +79,8 @@ cvar_t	r_slimefog = {"r_slimefog","0.8", true};
 cvar_t	r_lavaalpha = {"r_lavaalpha","1", true};
 cvar_t	r_slimealpha = {"r_slimealpha","1", true};
 cvar_t	r_teleportalpha = {"r_teleportalpha","1", true};
-cvar_t	r_dynamic = {"r_dynamic","1"};
+cvar_t	r_dynamic = {"r_dynamic","1", true};
+cvar_t	r_dynamicscale = {"r_dynamicscale","1", true};
 cvar_t	r_novis = {"r_novis","0"};
 cvar_t	r_lockfrustum =	{"r_lockfrustum","0"};
 cvar_t	r_lockpvs = {"r_lockpvs","0"};
@@ -529,7 +530,7 @@ void R_DrawAliasModel (entity_t *e)
 			add = cl_dlights[lnum].radius - VectorLength(dist);
 
 			if (add > 0)
-				VectorMA (lightcolor, add, cl_dlights[lnum].color, lightcolor);
+				VectorMA (lightcolor, add * CLAMP(1.0, r_dynamicscale.value, 32.0), cl_dlights[lnum].color, lightcolor);
 		}
 	}
 
