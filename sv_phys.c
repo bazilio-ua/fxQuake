@@ -277,7 +277,6 @@ int SV_FlyMove (edict_t *ent, float time, trace_t *steptrace)
 		if (trace.allsolid)
 		{	// entity is trapped in another solid
 			VectorClear (ent->v.velocity);
-//			VectorCopy (vec3_origin, ent->v.velocity);//EER1 replace this
 			return 3;
 		}
 
@@ -324,7 +323,6 @@ int SV_FlyMove (edict_t *ent, float time, trace_t *steptrace)
 		if (numplanes >= MAX_CLIP_PLANES)
 		{	// this shouldn't really happen
 			VectorClear (ent->v.velocity);
-//			VectorCopy (vec3_origin, ent->v.velocity);//EER1 replace this
 			return 3;
 		}
 
@@ -357,7 +355,6 @@ int SV_FlyMove (edict_t *ent, float time, trace_t *steptrace)
 			{
 //				Con_Printf ("clip velocity, numplanes == %i\n",numplanes);
 				VectorClear (ent->v.velocity);
-//				VectorCopy (vec3_origin, ent->v.velocity);//EER1 replace this
 				return 7;
 			}
 			CrossProduct (planes[0], planes[1], dir);
@@ -372,7 +369,6 @@ int SV_FlyMove (edict_t *ent, float time, trace_t *steptrace)
 		if (DotProduct (ent->v.velocity, primal_velocity) <= 0)
 		{
 			VectorClear (ent->v.velocity);
-//			VectorCopy (vec3_origin, ent->v.velocity);//EER1 replace this
 			return blocked;
 		}
 	}
@@ -606,7 +602,6 @@ void SV_PushRotate (edict_t *pusher, float movetime)
 		amove[i] = pusher->v.avelocity[i] * movetime;
 
 	VectorNegate (amove, a);
-//	VectorSubtract (vec3_origin, amove, a);//EER1 replace this
 	AngleVectors (a, forward, right, up);
 
 	VectorCopy (pusher->v.angles, pushorig);
@@ -925,7 +920,6 @@ int SV_TryUnstick (edict_t *ent, vec3_t oldvel)
 	
 	VectorCopy (ent->v.origin, oldorg);
 	VectorClear (dir);
-//	VectorCopy (vec3_origin, dir);//EER1 replace this
 
 	for (i=0 ; i<8 ; i++)
 	{
@@ -962,7 +956,6 @@ int SV_TryUnstick (edict_t *ent, vec3_t oldvel)
 	}
 	
 	VectorClear (ent->v.velocity);
-//	VectorCopy (vec3_origin, ent->v.velocity);//EER1 replace this
 	return 7;		// still not moving
 }
 
@@ -1019,8 +1012,6 @@ void SV_WalkMove (edict_t *ent)
 
 	VectorClear (upmove);
 	VectorClear (downmove);
-//	VectorCopy (vec3_origin, upmove);//EER1 replace this
-//	VectorCopy (vec3_origin, downmove);//EER1 replace this
 	upmove[2] = STEPSIZE;
 	downmove[2] = -STEPSIZE + oldvel[2]*host_frametime;
 
@@ -1339,8 +1330,6 @@ void SV_Physics_Toss (edict_t *ent)
 			ent->v.groundentity = EDICT_TO_PROG(trace.ent);
 			VectorClear (ent->v.velocity);
 			VectorClear (ent->v.avelocity);
-//			VectorCopy (vec3_origin, ent->v.velocity);//EER1 replace this
-//			VectorCopy (vec3_origin, ent->v.avelocity);//EER1 replace this
 		}
 	}
 	

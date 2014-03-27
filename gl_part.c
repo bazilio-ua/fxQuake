@@ -548,7 +548,6 @@ void R_RocketTrail (vec3_t start, vec3_t end, int type)
 		active_particles = p;
 
 		VectorClear (p->vel);
-//		VectorCopy (vec3_origin, p->vel);//EER1 replace this
 		p->die = cl.time + 2;
 
 		switch (type)
@@ -901,7 +900,6 @@ void R_ReadPointFile_f (void)
 		p->color = (-c)&15;
 		p->type = pt_static;
 		VectorClear (p->vel);
-//		VectorCopy (vec3_origin, p->vel);//EER1 replace this
 		VectorCopy (org, p->org);
 	}
 

@@ -136,8 +136,6 @@ void ED_Free (edict_t *ed)
 	ed->v.frame = 0;
 	VectorClear (ed->v.origin);
 	VectorClear (ed->v.angles);
-//	VectorCopy (vec3_origin, ed->v.origin);//EER1 replace this
-//	VectorCopy (vec3_origin, ed->v.angles);//EER1 replace this
 	ed->v.nextthink = -1;
 	ed->v.solid = 0;
 	ed->alpha = ENTALPHA_DEFAULT; //johnfitz -- reset alpha for next entity
