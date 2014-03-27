@@ -108,12 +108,12 @@ void R_InitFlashBlendBubble (void)
 
 /*
 =============
-R_RenderFlashBlend
+R_DrawFlashBlend
 
 EER1 -- renamed R_RenderDlight
 =============
 */
-void R_RenderFlashBlend (dlight_t *light)
+void R_DrawFlashBlend (dlight_t *light)
 {
 	int		i, j;
 	vec3_t	v;
@@ -149,12 +149,12 @@ void R_RenderFlashBlend (dlight_t *light)
 
 /*
 =============
-R_FlashBlend
+R_RenderFlashBlend
 
 EER1 -- renamed R_RenderDlights
 =============
 */
-void R_FlashBlend (void) // Flash blend dlights
+void R_RenderFlashBlend (void) // Flash blend dlights
 {
 	int		i;
 	dlight_t	*l;
@@ -177,7 +177,7 @@ void R_FlashBlend (void) // Flash blend dlights
 		if (l->die < cl.time || !l->radius)
 			continue;
 		R_FogDisableGFog ();
-		R_RenderFlashBlend (l);
+		R_DrawFlashBlend (l);
 		R_FogEnableGFog ();
 	}
 

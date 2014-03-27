@@ -244,7 +244,7 @@ void R_AnimateLight (void);
 //int R_LightPoint (vec3_t p);
 void R_LightPoint (vec3_t p, vec3_t color);
 void R_MarkLights (dlight_t *light, int num, mnode_t *node);
-void R_FlashBlend (void);
+void R_RenderFlashBlend (void);
 void R_InitFlashBlendBubble (void);
 
 // gl_surf.c
@@ -283,7 +283,7 @@ void R_FogStopAdditive (void);
 void R_FogSetupFrame (void);
 
 void R_InitBloomTextures (void);
-void R_BloomBlend (void);
+void R_RenderBloomBlend (void);
 
 extern float turbsin[];
 #define TURBSCALE (256.0 / (2 * M_PI))

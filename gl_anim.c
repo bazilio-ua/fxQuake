@@ -2214,10 +2214,10 @@ static void R_Bloom_DownsampleView (void)
 
 /*
 =================
-R_BloomBlend
+R_RenderBloomBlend
 =================
 */
-void R_BloomBlend (void)
+void R_RenderBloomBlend (void)
 {
 	if (!r_bloom.value)
 		return;

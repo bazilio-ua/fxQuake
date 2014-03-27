@@ -922,10 +922,10 @@ void R_DrawViewModel (void)
 
 /*
 ============
-R_PolyBlend
+R_RenderPolyBlend
 ============
 */
-void R_PolyBlend (void)
+void R_RenderPolyBlend (void)
 {
 	if (!gl_polyblend.value)
 		return;
@@ -1170,11 +1170,11 @@ void R_RenderView (void)
 	R_DrawTextureChainsWater (); // drawn here since they might have transparency
 	R_DrawTransEntities (r_viewleaf->contents != CONTENTS_EMPTY);
 	R_DrawParticles (r_viewleaf->contents != CONTENTS_EMPTY);
-	R_FlashBlend ();
+	R_RenderFlashBlend ();
 	R_FogDisableGFog ();
 	R_DrawViewModel ();
-	R_PolyBlend ();
-	R_BloomBlend (); // bloom on each frame
+	R_RenderPolyBlend ();
+	R_RenderBloomBlend (); // bloom on each frame
 
 	S_ExtraUpdateTime ();	// don't let sound get messed up if going slow
 
