@@ -197,7 +197,7 @@ void R_Init (void)
 	Cvar_RegisterVariable (&r_slimefog, NULL);
 	Cvar_RegisterVariable (&r_lavaalpha, NULL);
 	Cvar_RegisterVariable (&r_slimealpha, NULL);
-	Cvar_RegisterVariable (&r_telealpha, NULL);
+	Cvar_RegisterVariable (&r_teleportalpha, NULL);
 	Cvar_RegisterVariable (&r_dynamic, NULL);
 	Cvar_RegisterVariable (&r_novis, NULL);
 	Cvar_RegisterVariable (&r_lockfrustum, NULL);

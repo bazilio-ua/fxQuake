@@ -1216,7 +1216,7 @@ void Mod_LoadFaces (lump_t *l)
 			else if (!strncasecmp(out->texinfo->texture->name, "*tele", 5)
 			|| !strncasecmp(out->texinfo->texture->name, "*rift", 5)
 			|| !strncasecmp(out->texinfo->texture->name, "*gate", 5))
-				out->flags |= SURF_DRAWTELE;
+				out->flags |= SURF_DRAWTELEPORT;
 			else
 				out->flags |= SURF_DRAWWATER; 
 

@@ -562,8 +562,8 @@ void R_DrawSequentialWaterPoly (entity_t *e, msurface_t *s)
 					wateralpha = CLAMP(0.0, r_lavaalpha.value, 1.0);
 				else if (s->flags & SURF_DRAWSLIME)
 					wateralpha = CLAMP(0.0, r_slimealpha.value, 1.0);
-				else if (s->flags & SURF_DRAWTELE)
-					wateralpha = CLAMP(0.0, r_telealpha.value, 1.0);
+				else if (s->flags & SURF_DRAWTELEPORT)
+					wateralpha = CLAMP(0.0, r_teleportalpha.value, 1.0);
 			}
 
 			if (s->flags & SURF_DRAWWATER)

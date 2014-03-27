@@ -102,7 +102,7 @@ typedef struct texture_s
 #define SURF_DRAWALPHA		0x800
 #define SURF_DRAWLAVA		0x1000
 #define SURF_DRAWSLIME		0x2000
-#define SURF_DRAWTELE		0x4000
+#define SURF_DRAWTELEPORT	0x4000
 #define SURF_DRAWWATER		0x8000
 
 typedef struct
