@@ -55,7 +55,7 @@ refdef_t	r_refdef;
 
 mleaf_t		*r_viewleaf, *r_oldviewleaf;
 
-int		d_lightstylevalue[256];	// 8.8 fraction of base light value
+int		d_lightstyle[256];	// 8.8 fraction of base light value
 
 float r_fovx, r_fovy;
 
@@ -415,7 +415,7 @@ float	*shadedots = r_avertexnormal_dots[0];
 
 qboolean shading = true; // if false, disable vertex shading for various reasons (fullbright, etc)
 
-float	entalpha;
+float	modelalpha;
 
 
 /*
@@ -504,12 +504,12 @@ void R_DrawAliasModel (entity_t *e)
 	//
 	// set up for alpha blending
 	//
-	entalpha = ENTALPHA_DECODE(e->alpha);
+	modelalpha = ENTALPHA_DECODE(e->alpha);
 
-	if (entalpha == 0)
+	if (modelalpha == 0)
 		goto cleanup;
 
-	if (entalpha < 1.0)
+	if (modelalpha < 1.0)
 	{
 		glDepthMask (GL_FALSE);
 		glEnable (GL_BLEND);
@@ -630,7 +630,7 @@ void R_DrawAliasModel (entity_t *e)
 			glBlendFunc (GL_ONE, GL_ONE);
 			glDepthMask (GL_FALSE);
 			shading = false;
-			glColor3f (entalpha, entalpha, entalpha);
+			glColor3f (modelalpha, modelalpha, modelalpha);
 			R_FogStartAdditive ();
 			GL_DrawAliasFrame (paliashdr, lerpdata); // FX
 			R_FogStopAdditive ();
@@ -668,7 +668,7 @@ void R_DrawAliasModel (entity_t *e)
 			glBlendFunc (GL_ONE, GL_ONE);
 			glDepthMask (GL_FALSE);
 			shading = false;
-			glColor3f (entalpha, entalpha, entalpha);
+			glColor3f (modelalpha, modelalpha, modelalpha);
 			R_FogStartAdditive ();
 			GL_DrawAliasFrame (paliashdr, lerpdata); // FX
 			R_FogStopAdditive ();
@@ -759,17 +759,18 @@ void R_DrawEntities (void)
 
 //==================================================================================
 
-typedef struct sortedent_s
+// For rendering speed when many trans ents
+typedef struct distent_s
 {
-	entity_t	*ent;
-	vec_t		len;
-} sortedent_t;
+	entity_t	*e;
+	vec_t		dist;
+} distent_t;
 
-sortedent_t     cl_transvisedicts[MAX_VISEDICTS];
-sortedent_t		cl_transwateredicts[MAX_VISEDICTS];
+distent_t		cl_transair_visedicts[MAX_VISEDICTS];
+distent_t		cl_transwater_visedicts[MAX_VISEDICTS];
 
-int				cl_numtransvisedicts;
-int				cl_numtranswateredicts;
+int				cl_num_transair_visedicts;
+int				cl_num_transwater_visedicts;
 
 void R_SetupTransEntities (void)
 {
@@ -782,8 +783,8 @@ void R_SetupTransEntities (void)
 	if (!r_drawentities.value)
 		return;
 
-	cl_numtransvisedicts = 0;
-	cl_numtranswateredicts = 0;
+	cl_num_transair_visedicts = 0;
+	cl_num_transwater_visedicts = 0;
 
 	// create transparent entities list
 	for (i=0 ; i<cl_numvisedicts ; i++)
@@ -805,23 +806,20 @@ void R_SetupTransEntities (void)
 
 		if (leaf->contents == CONTENTS_WATER || leaf->contents == CONTENTS_SLIME || leaf->contents == CONTENTS_LAVA)
 		{
-			cl_transwateredicts[cl_numtranswateredicts].ent = e;
-			cl_transwateredicts[cl_numtranswateredicts++].len = VectorLength (result);
+			cl_transwater_visedicts[cl_num_transwater_visedicts].e = e;
+			cl_transwater_visedicts[cl_num_transwater_visedicts++].dist = VectorLength (result);
 		}
 		else
 		{
-			cl_transvisedicts[cl_numtransvisedicts].ent = e;
-			cl_transvisedicts[cl_numtransvisedicts++].len = VectorLength (result);
+			cl_transair_visedicts[cl_num_transair_visedicts].e = e;
+			cl_transair_visedicts[cl_num_transair_visedicts++].dist = VectorLength (result);
 		}
 	}
 }
 
-int TransDistComp (const void *arg1, const void *arg2) 
+int transdistcomp (const void *arg1, const void *arg2) 
 {
-	const sortedent_t *a1, *a2;
-	a1 = (sortedent_t *) arg1;
-	a2 = (sortedent_t *) arg2;
-	return (a2->len - a1->len); // Sorted in reverse order.  Neat, huh?
+	return ((distent_t *)arg2)->dist - ((distent_t *)arg1)->dist; // Sorted in reverse order
 }
 
 /*
@@ -831,27 +829,30 @@ R_DrawTransEntities
 */
 void R_DrawTransEntities (qboolean inwater)
 {
+	// need to draw back to front
+	// fixme: this isn't my favorite option
 	int		i;
 	entity_t	*e;
-	int		numents;
-	sortedent_t	*theents;
+	int		num_transents;
+	distent_t	*transents;
 
 	if (!r_drawentities.value)
 		return;
 
-	theents = (inwater) ? cl_transwateredicts : cl_transvisedicts;
-	numents = (inwater) ? cl_numtranswateredicts : cl_numtransvisedicts;
+	transents = (inwater) ? cl_transwater_visedicts : cl_transair_visedicts;
+	num_transents = (inwater) ? cl_num_transwater_visedicts : cl_num_transair_visedicts;
 
-	qsort((void *) theents, numents, sizeof(sortedent_t), TransDistComp);
+	// Sort in descending dist order, i.e. back to front
+	qsort((void *) transents, num_transents, sizeof(distent_t), transdistcomp);
 	// Add in BETTER sorting here
 
 	// draw transparent entities
-	for (i=0 ; i<numents ; i++)
+	for (i=0 ; i<num_transents ; i++)
 	{
 		if ((i + 1) % 100 == 0)
 			S_ExtraUpdateTime (); // don't let sound get messed up if going slow
 
-		e = theents[i].ent;
+		e = transents[i].e;
 
 		// chase_active
 		if (e == &cl_entities[cl.viewentity])
@@ -1221,7 +1222,7 @@ void GL_DrawEntityTransform (lerpdata_t lerpdata)
 =============
 GL_DrawAliasFrame -- model animation interpolation (lerping)
 
-support colored light, lerping, entalpha, multitexture
+support colored light, lerping, alpha, multitexture
 =============
 */
 void GL_DrawAliasFrame (aliashdr_t *paliashdr, lerpdata_t lerpdata)
@@ -1257,7 +1258,7 @@ void GL_DrawAliasFrame (aliashdr_t *paliashdr, lerpdata_t lerpdata)
 
 	commands = (int *)((byte *)paliashdr + paliashdr->commands);
 
-	vertcolor[3] = entalpha; // never changes, so there's no need to put this inside the loop
+	vertcolor[3] = modelalpha; // never changes, so there's no need to put this inside the loop
 
 	while (1)
 	{

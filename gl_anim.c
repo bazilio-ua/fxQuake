@@ -876,10 +876,10 @@ float globalwateralpha = 0.0;
 
 /*
 =================
-R_ParseWorldspawnNewMap
+R_ParseWorldspawn
 =================
 */
-void R_ParseWorldspawnNewMap (void)
+void R_ParseWorldspawn (void)
 {
 	char  key[MAX_KEY], value[MAX_VALUE];
 	char  *data;

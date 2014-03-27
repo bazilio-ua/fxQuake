@@ -385,7 +385,7 @@ void R_NewMap (void)
 	int		i;
 
 	for (i=0 ; i<256 ; i++)
-		d_lightstylevalue[i] = 264;		// normal light value
+		d_lightstyle[i] = 264;		// normal light value
 
 	memset (&r_worldentity, 0, sizeof(r_worldentity));
 	r_worldentity.model = cl.worldmodel;
@@ -404,7 +404,7 @@ void R_NewMap (void)
 
 	R_BuildLightmaps ();
 
-	R_ParseWorldspawnNewMap ();
+	R_ParseWorldspawn ();
 }
 
 

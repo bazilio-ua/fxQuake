@@ -735,11 +735,11 @@ void R_UpdateParticles (void)
 }
 
 
-particle_t	*air_active_particles[MAX_PARTICLES];
-particle_t	*water_active_particles[MAX_PARTICLES];
+particle_t	*air_particles[MAX_PARTICLES];
+particle_t	*water_particles[MAX_PARTICLES];
 
-int			num_air_active_particles;
-int			num_water_active_particles;
+int			num_air_particles;
+int			num_water_particles;
 
 /*
 ===============
@@ -754,19 +754,19 @@ void R_SetupParticles (void)
 	if (!r_particles.value)
 		return;
 
-	num_air_active_particles = 0;
-	num_water_active_particles = 0;
+	num_air_particles = 0;
+	num_water_particles = 0;
 	
 	for (p=active_particles ; p ; p=p->next)
 	{
 		leaf = Mod_PointInLeaf (p->org, cl.worldmodel);
 		if (leaf->contents == CONTENTS_WATER || leaf->contents == CONTENTS_SLIME || leaf->contents == CONTENTS_LAVA)
 		{
-			water_active_particles[num_water_active_particles++] = p;
+			water_particles[num_water_particles++] = p;
 		}
 		else //if (leaf->contents == CONTENTS_EMPTY)
 		{
-			air_active_particles[num_air_active_particles++] = p;
+			air_particles[num_air_particles++] = p;
 		}
 	}
 }
@@ -780,8 +780,8 @@ moved all non-drawing code to R_UpdateParticles
 */
 void R_DrawParticles (qboolean inwater)
 {
-	particle_t		*p, **a;
-	int				i, n;
+	particle_t		*p, **active;
+	int				i, num_active;
 	vec3_t			up, right, p_up, p_right, p_upright;
 	float			scale;
 	byte			*color, alpha;
@@ -789,8 +789,8 @@ void R_DrawParticles (qboolean inwater)
 	if (!r_particles.value)
 		return;
 
-	a = (inwater) ? water_active_particles : air_active_particles;
-	n = (inwater) ? num_water_active_particles : num_air_active_particles;
+	active = (inwater) ? water_particles : air_particles;
+	num_active = (inwater) ? num_water_particles : num_air_particles;
 
 	VectorScale (vup, 1.5, up);
 	VectorScale (vright, 1.5, right);
@@ -802,13 +802,13 @@ void R_DrawParticles (qboolean inwater)
 	glDepthMask (GL_FALSE); // don't bother writing Z (fix for particle z-buffer bug)
 
 	glBegin (GL_QUADS); // quads save fillrate
-	for (i=0 ; i<n ; i++)
+	for (i=0 ; i<num_active ; i++)
 	{
 		// improve sound when many particles
 		if ((i + 1) % 8192 == 0)
 			S_ExtraUpdateTime ();
 
-		p = a[i];
+		p = active[i];
 
 		// hack a scale up to keep particles from disapearing
 		scale = (p->org[0] - r_origin[0])*vpn[0] 

@@ -1060,7 +1060,7 @@ creates polys for unlightmapped surfaces (sky and water)
 TODO: merge this into R_BuildSurfaceDisplayList?
 ================
 */
-void Mod_PolyForUnlitSurface (msurface_t *fa)
+void Mod_PolyForUnlitSurface (msurface_t *s)
 {
 	vec3_t		verts[64];
 	int			numverts, i, lindex;
@@ -1068,7 +1068,7 @@ void Mod_PolyForUnlitSurface (msurface_t *fa)
 	glpoly_t	*poly;
 	float		texscale;
 
-	if (fa->flags & (SURF_DRAWTURB | SURF_DRAWSKY))
+	if (s->flags & (SURF_DRAWTURB | SURF_DRAWSKY))
 		texscale = (1.0/128.0); // warp animation repeats every 128
 	else
 		texscale = (1.0/16.0); // to match notexture_mip
@@ -1077,9 +1077,9 @@ void Mod_PolyForUnlitSurface (msurface_t *fa)
 	// convert edges back to a normal polygon
 	//
 	numverts = 0;
-	for (i=0 ; i<fa->numedges ; i++)
+	for (i=0 ; i<s->numedges ; i++)
 	{
-		lindex = loadmodel->surfedges[fa->firstedge + i];
+		lindex = loadmodel->surfedges[s->firstedge + i];
 
 		if (lindex > 0)
 			vec = loadmodel->vertexes[loadmodel->edges[lindex].v[0]].position;
@@ -1096,13 +1096,13 @@ void Mod_PolyForUnlitSurface (msurface_t *fa)
 	//create the poly
 	poly = Hunk_AllocName (sizeof(glpoly_t) + (numverts-4) * VERTEXSIZE * sizeof(float), "unlitpoly");
 	poly->next = NULL;
-	fa->polys = poly;
+	s->polys = poly;
 	poly->numverts = numverts;
 	for (i=0, vec=(float *)verts; i<numverts; i++, vec+= 3)
 	{
 		VectorCopy (vec, poly->verts[i]);
-		poly->verts[i][3] = DotProduct(vec, fa->texinfo->vecs[0]) * texscale;
-		poly->verts[i][4] = DotProduct(vec, fa->texinfo->vecs[1]) * texscale;
+		poly->verts[i][3] = DotProduct(vec, s->texinfo->vecs[0]) * texscale;
+		poly->verts[i][4] = DotProduct(vec, s->texinfo->vecs[1]) * texscale;
 	}
 }
 

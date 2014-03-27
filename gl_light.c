@@ -47,12 +47,12 @@ void R_AnimateLight (void)
 	{
 		if (!cl_lightstyle[j].length)
 		{	// was 256, changed to 264 for consistency
-			d_lightstylevalue[j] = 264;
+			d_lightstyle[j] = 264;
 			continue;
 		}
 		else if (cl_lightstyle[j].length == 1)
 		{	// single length style so don't bother interpolating
-			d_lightstylevalue[j] = 22 * (cl_lightstyle[j].map[0] - 'a');
+			d_lightstyle[j] = 22 * (cl_lightstyle[j].map[0] - 'a');
 			continue;
 		}
 
@@ -67,7 +67,7 @@ void R_AnimateLight (void)
 		k = cl_lightstyle[j].map[k] - 'a';
 		l += (float)(k * 22) * lerpfrac;
 
-		d_lightstylevalue[j] = (int)l;
+		d_lightstyle[j] = (int)l;
 	}	
 }
 
@@ -449,7 +449,7 @@ restart:
 
 				for (maps = 0 ; maps < MAXLIGHTMAPS && surf->styles[maps] != 255 ; maps++)
 				{
-					scale = (float) d_lightstylevalue[surf->styles[maps]] * 1.0 / 256.0;
+					scale = (float) d_lightstyle[surf->styles[maps]] * 1.0 / 256.0;
 					r00 += (float) lightmap[      0] * scale;g00 += (float) lightmap[      1] * scale;b00 += (float) lightmap[2] * scale;
 					r01 += (float) lightmap[      3] * scale;g01 += (float) lightmap[      4] * scale;b01 += (float) lightmap[5] * scale;
 					r10 += (float) lightmap[line3+0] * scale;g10 += (float) lightmap[line3+1] * scale;b10 += (float) lightmap[line3+2] * scale;

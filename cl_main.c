@@ -577,6 +577,7 @@ void CL_RelinkEntities (void)
 					CL_ColorDlight (dl, DL_COLOR_BLUE);
 				else if (cl.items & IT_INVULNERABILITY)
 					CL_ColorDlight (dl, DL_COLOR_RED);
+				//else if TODO: add more powerups
 				else
 					CL_ColorDlight (dl, DL_COLOR_WHITE);
 			}
