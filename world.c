@@ -637,18 +637,6 @@ restart:
 			break;
 	}
 
-/*	if (plane->type < 3)
-	{
-		t1 = p1[plane->type] - plane->dist;
-		t2 = p2[plane->type] - plane->dist;
-	}
-	else
-	{
-		t1 = DotProduct (plane->normal, p1) - plane->dist;
-		t2 = DotProduct (plane->normal, p2) - plane->dist;
-	}
-*/
-
 // LordHavoc: recursion optimization
 // see which sides we need to consider
 	if (t1 >= 0 && t2 >= 0)
@@ -661,12 +649,6 @@ restart:
 		num = node->children[1];	// go down the back side
 		goto restart;
 	}
-
-/*	if (t1 >= 0 && t2 >= 0)
-		return SV_RecursiveHullCheck (hull, node->children[0], p1f, p2f, p1, p2, trace);
-	if (t1 < 0 && t2 < 0)
-		return SV_RecursiveHullCheck (hull, node->children[1], p1f, p2f, p1, p2, trace);
-*/
 
 // put the crosspoint DIST_EPSILON pixels on the near side
 	if (t1 < 0)

@@ -202,7 +202,7 @@ DYNAMIC LIGHTS
 R_MarkLights
 
 rewritten to use LordHavoc's lighting speedup
-goes through the nodes marking the surfaces near the dynamic light as lit
+recursive goes through the nodes marking the surfaces near the dynamic light as lit
 =============
 */
 void R_MarkLights (dlight_t *light, int num, mnode_t *node)
@@ -234,11 +234,6 @@ restart:
 			break;
 	}
 
-/*	if (plane->type < 3)
-		dist = light->origin[plane->type] - plane->dist;
-	else
-		dist = DotProduct (light->origin, plane->normal) - plane->dist;
-*/
 	if (dist > light->radius)
 	{
 		node = node->children[0];
@@ -336,7 +331,6 @@ R_RecursiveLightPoint
 replaced entire function for lit support via lordhavoc
 =============
 */
-//int R_RecursiveLightPoint (vec3_t color, mnode_t *node, vec3_t start, vec3_t end)
 qboolean R_RecursiveLightPoint (vec3_t color, mnode_t *node, vec3_t start, vec3_t end)
 {
 	mplane_t	*plane;
@@ -344,15 +338,10 @@ qboolean R_RecursiveLightPoint (vec3_t color, mnode_t *node, vec3_t start, vec3_
 	float		front, back, frac;
 	vec3_t		mid;
 
-//loc0:
 restart:
 	// check for a hit
 	if (node->contents < 0)
-	{
-//	Con_Printf("node->contents: %d\n", node->contents);
 		return false;		// didn't hit anything
-//		return node->contents;
-	}
 
 // calculate mid point
 // node is just a decision point, so go down the apropriate sides
@@ -376,17 +365,6 @@ restart:
 
 	side = front < 0;
 
-/*	if (node->plane->type < 3)
-	{
-		front = start[node->plane->type] - node->plane->dist;
-		back = end[node->plane->type] - node->plane->dist;
-	}
-	else
-	{
-		front = DotProduct(start, node->plane->normal) - node->plane->dist;
-		back = DotProduct(end, node->plane->normal) - node->plane->dist;
-	}
-*/
 	// LordHavoc: optimized recursion
 	// completely on one side - tail recursion optimization
 	if ((back < 0) == side)
@@ -395,19 +373,12 @@ restart:
 		goto restart;
 	}
 
-/*	if ((back < 0) == (front < 0))
-	{
-		node = node->children[front < 0];
-		goto loc0;
-	}
-*/
 	frac = front / (front-back);
 	mid[0] = start[0] + (end[0] - start[0])*frac;
 	mid[1] = start[1] + (end[1] - start[1])*frac;
 	mid[2] = start[2] + (end[2] - start[2])*frac;
 
 // go down front side
-//	if (R_RecursiveLightPoint (color, node->children[front < 0], start, mid))
 	if (R_RecursiveLightPoint (color, node->children[side], start, mid))
 		return true;	// hit something
 	else
@@ -465,7 +436,6 @@ restart:
 		}
 
 	// go down back side
-//		return R_RecursiveLightPoint (color, node->children[front >= 0], mid, end);
 		return R_RecursiveLightPoint (color, node->children[!side], mid, end);
 	}
 }
@@ -477,34 +447,20 @@ R_LightPoint
 replaced entire function for lit support via lordhavoc
 =============
 */
-//int R_LightPoint (vec3_t p)
 void R_LightPoint (vec3_t p, vec3_t color) // lit support via lordhavoc
 {
 	vec3_t		end;
-//	int r;
 
 	if (r_fullbright.value || !cl.worldmodel->lightdata)
 	{
 		color[0] = color[1] = color[2] = 255;
 		return;
-/*		lightcolor[0] = lightcolor[1] = lightcolor[2] = 255;
-		return 255;
-*/	}
+	}
 
 	end[0] = p[0];
 	end[1] = p[1];
 	end[2] = p[2] - 8192; // was 2048
 
 	color[0] = color[1] = color[2] = 0;
-//	r = 
 	R_RecursiveLightPoint (color, cl.worldmodel->nodes, p, end);
-//	Con_Printf("r: %d -*- color[0]: %f, color[1]: %f, color[2]: %f\n",r,color[0],color[1],color[2]);
-
-//	return color;
-/*	lightcolor[0] = lightcolor[1] = lightcolor[2] = 0;
-	r = R_RecursiveLightPoint (lightcolor, cl.worldmodel->nodes, p, end);
-	Con_Printf("r: %d -*- lightcolor[0]: %f, lightcolor[1]: %f, lightcolor[2]: %f\n",r,lightcolor[0],lightcolor[1],lightcolor[2]);
-
-	return ((lightcolor[0] + lightcolor[1] + lightcolor[2]) * (1.0f / 3.0f));
-*/
 }
