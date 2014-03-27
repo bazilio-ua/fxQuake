@@ -19,6 +19,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // client.h
 
+// R_RocketTrail types (self-documenting code!)
+#define RT_ROCKET			0
+#define RT_GRENADE			1
+#define RT_GIB				2
+#define RT_WIZARD			3
+#define RT_ZOMGIB			4
+#define RT_KNIGHT			5
+#define RT_VORE				6
+
+
 typedef struct
 {
 	vec3_t	viewangles;

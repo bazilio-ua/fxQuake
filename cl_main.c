@@ -639,9 +639,9 @@ void CL_RelinkEntities (void)
 		}
 */
 		if (ent->model->flags & EF_GIB)
-			R_RocketTrail (oldorg, ent->origin, 2);
+			R_RocketTrail (oldorg, ent->origin, RT_GIB);
 		else if (ent->model->flags & EF_ZOMGIB)
-			R_RocketTrail (oldorg, ent->origin, 4);
+			R_RocketTrail (oldorg, ent->origin, RT_ZOMGIB);
 		else if (ent->model->flags & EF_TRACER)
 		{
 			// wizard trail
@@ -655,7 +655,7 @@ void CL_RelinkEntities (void)
 				CL_ColorDlight (dl, DL_COLOR_GREEN);
 			}
 			
-			R_RocketTrail (oldorg, ent->origin, 3);
+			R_RocketTrail (oldorg, ent->origin, RT_WIZARD);
 		}
 		else if (ent->model->flags & EF_TRACER2)
 		{
@@ -670,7 +670,7 @@ void CL_RelinkEntities (void)
 				CL_ColorDlight (dl, DL_COLOR_ORANGE);
 			}
 			
-			R_RocketTrail (oldorg, ent->origin, 5);
+			R_RocketTrail (oldorg, ent->origin, RT_KNIGHT);
 		}
 		else if (ent->model->flags & EF_TRACER3)
 		{
@@ -685,11 +685,11 @@ void CL_RelinkEntities (void)
 				CL_ColorDlight (dl, DL_COLOR_PURPLE);
 			}
 			
-			R_RocketTrail (oldorg, ent->origin, 6);
+			R_RocketTrail (oldorg, ent->origin, RT_VORE);
 		}
 		else if (ent->model->flags & EF_ROCKET)
 		{
-			R_RocketTrail (oldorg, ent->origin, 0);
+			R_RocketTrail (oldorg, ent->origin, RT_ROCKET);
 			
 			dl = CL_AllocDlight (i);
 			VectorCopy (ent->origin, dl->origin);
@@ -700,7 +700,7 @@ void CL_RelinkEntities (void)
 			//dl->color[0] = 0.4; dl->color[1] = 0.2; dl->color[2] = 0.1;
 		}
 		else if (ent->model->flags & EF_GRENADE)
-			R_RocketTrail (oldorg, ent->origin, 1);
+			R_RocketTrail (oldorg, ent->origin, RT_GRENADE);
 
 		ent->forcelink = false;
 

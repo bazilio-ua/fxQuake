@@ -515,7 +515,6 @@ void R_TeleportSplash (vec3_t org)
 ===============
 R_RocketTrail
 
-FIXME -- rename function and use #defined types instead of numbers
 ===============
 */
 void R_RocketTrail (vec3_t start, vec3_t end, int type)
@@ -554,7 +553,7 @@ void R_RocketTrail (vec3_t start, vec3_t end, int type)
 
 		switch (type)
 		{
-			case 0:	// rocket trail
+			case RT_ROCKET:		// rocket trail
 				p->ramp = (rand()&3);
 				p->color = ramp3[(int)p->ramp];
 				p->type = pt_fire;
@@ -562,7 +561,7 @@ void R_RocketTrail (vec3_t start, vec3_t end, int type)
 					p->org[j] = start[j] + ((rand()%6)-3);
 				break;
 
-			case 1:	// smoke smoke
+			case RT_GRENADE:	// smoke smoke
 				p->ramp = (rand()&3) + 2;
 				p->color = ramp3[(int)p->ramp];
 				p->type = pt_fire;
@@ -570,15 +569,15 @@ void R_RocketTrail (vec3_t start, vec3_t end, int type)
 					p->org[j] = start[j] + ((rand()%6)-3);
 				break;
 
-			case 2:	// blood
+			case RT_GIB:		// blood
 				p->type = pt_grav;
 				p->color = 67 + (rand()&3);
 				for (j=0 ; j<3 ; j++)
 					p->org[j] = start[j] + ((rand()%6)-3);
 				break;
 
-			case 3:
-			case 5:	// tracer
+			case RT_WIZARD:		// wizard tracer
+			case RT_KNIGHT:		// knight tracer
 				p->die = cl.time + 0.5;
 				p->type = pt_static;
 				if (type == 3)
@@ -601,7 +600,7 @@ void R_RocketTrail (vec3_t start, vec3_t end, int type)
 				}
 				break;
 
-			case 4:	// slight blood
+			case RT_ZOMGIB:		// slight blood
 				p->type = pt_grav;
 				p->color = 67 + (rand()&3);
 				for (j=0 ; j<3 ; j++)
@@ -609,7 +608,7 @@ void R_RocketTrail (vec3_t start, vec3_t end, int type)
 				len -= 3;
 				break;
 
-			case 6:	// voor trail
+			case RT_VORE:		// voor trail
 				p->color = 9*16 + 8 + (rand()&3);
 				p->type = pt_static;
 				p->die = cl.time + 0.3;
