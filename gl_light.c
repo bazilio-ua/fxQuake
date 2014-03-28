@@ -38,6 +38,7 @@ void R_AnimateLight (void)
 
 	if (!r_dynamic.value) // EER1
 	{
+		// set everything to normal 'm' light
 		for (j = 0 ; j < MAX_LIGHTSTYLES ; j++)
 			d_lightstyle[j] = 264;
 	}
