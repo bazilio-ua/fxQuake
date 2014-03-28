@@ -71,6 +71,9 @@ void R_AddDynamicLights (msurface_t *surf)
 	unsigned	*bl;
 	float		scale;
 	
+	if (!r_dynamic.value) // EER1
+		return;
+	
 	scale = CLAMP(1.0, r_dynamicscale.value, 32.0) * 256.0f;
 	
 	smax = (surf->extents[0]>>4)+1;
@@ -286,7 +289,7 @@ void R_RenderDynamicLightmaps (msurface_t *s)
 		|| s->cached_dlight)			// dynamic previously
 	{
 dynamic:
-		if (r_dynamic.value && !r_fullbright.value)
+		if ( /* r_dynamic.value && */ !r_fullbright.value) // EER1
 		{
 			lightmap_modified[s->lightmaptexture] = true;
 			rect = &lightmap_rectchange[s->lightmaptexture];

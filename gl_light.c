@@ -36,39 +36,47 @@ void R_AnimateLight (void)
 	int		j, k, flight, clight;
 	float	l, lerpfrac, backlerp;
 
-	// light animations
-	// 'm' is normal light, 'a' is no light, 'z' is double bright
-	flight = (int)floor(cl.time * 10);
-	clight = (int)ceil(cl.time * 10);
-	lerpfrac = (cl.time * 10) - flight;
-	backlerp = 1.0 - lerpfrac;
-
-	for (j = 0 ; j < MAX_LIGHTSTYLES ; j++)
+	if (!r_dynamic.value) // EER1
 	{
-		if (!cl_lightstyle[j].length)
-		{	// was 256, changed to 264 for consistency
+		for (j = 0 ; j < MAX_LIGHTSTYLES ; j++)
 			d_lightstyle[j] = 264;
-			continue;
+	}
+	else
+	{
+		// light animations
+		// 'm' is normal light, 'a' is no light, 'z' is double bright
+		flight = (int)floor(cl.time * 10);
+		clight = (int)ceil(cl.time * 10);
+		lerpfrac = (cl.time * 10) - flight;
+		backlerp = 1.0 - lerpfrac;
+	
+		for (j = 0 ; j < MAX_LIGHTSTYLES ; j++)
+		{
+			if (!cl_lightstyle[j].length)
+			{	// was 256, changed to 264 for consistency
+				d_lightstyle[j] = 264;
+				continue;
+			}
+			else if (cl_lightstyle[j].length == 1)
+			{	// single length style so don't bother interpolating
+				d_lightstyle[j] = 22 * (cl_lightstyle[j].map[0] - 'a');
+				continue;
+			}
+	
+			// interpolate animating light
+			// frame just gone
+			k = flight % cl_lightstyle[j].length;
+			k = cl_lightstyle[j].map[k] - 'a';
+			l = (float)(k * 22) * backlerp;
+	
+			// upcoming frame
+			k = clight % cl_lightstyle[j].length;
+			k = cl_lightstyle[j].map[k] - 'a';
+			l += (float)(k * 22) * lerpfrac;
+	
+			d_lightstyle[j] = (int)l;
 		}
-		else if (cl_lightstyle[j].length == 1)
-		{	// single length style so don't bother interpolating
-			d_lightstyle[j] = 22 * (cl_lightstyle[j].map[0] - 'a');
-			continue;
-		}
-
-		// interpolate animating light
-		// frame just gone
-		k = flight % cl_lightstyle[j].length;
-		k = cl_lightstyle[j].map[k] - 'a';
-		l = (float)(k * 22) * backlerp;
-
-		// upcoming frame
-		k = clight % cl_lightstyle[j].length;
-		k = cl_lightstyle[j].map[k] - 'a';
-		l += (float)(k * 22) * lerpfrac;
-
-		d_lightstyle[j] = (int)l;
-	}	
+	}
 }
 
 /*
@@ -295,7 +303,10 @@ void R_PushDlights (void)
 {
 	int		i;
 	dlight_t	*l;
-
+	
+	if (!r_dynamic.value) // EER1
+		return;
+	
 //	if (gl_flashblend.value) //FX -- commented out
 //		return;
 

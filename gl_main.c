@@ -522,15 +522,18 @@ void R_DrawAliasModel (entity_t *e)
 	R_LightPoint (e->origin, lightcolor);
 
 	// add dlights
-	for (lnum=0 ; lnum<MAX_DLIGHTS ; lnum++)
+	if (r_dynamic.value) // EER1
 	{
-		if (cl_dlights[lnum].die >= cl.time)
+		for (lnum=0 ; lnum<MAX_DLIGHTS ; lnum++)
 		{
-			VectorSubtract (e->origin, cl_dlights[lnum].origin, dist);
-			add = cl_dlights[lnum].radius - VectorLength(dist);
-
-			if (add > 0)
-				VectorMA (lightcolor, add * CLAMP(1.0, r_dynamicscale.value, 32.0), cl_dlights[lnum].color, lightcolor);
+			if (cl_dlights[lnum].die >= cl.time)
+			{
+				VectorSubtract (e->origin, cl_dlights[lnum].origin, dist);
+				add = cl_dlights[lnum].radius - VectorLength(dist);
+				
+				if (add > 0)
+					VectorMA (lightcolor, add * CLAMP(1.0, r_dynamicscale.value, 32.0), cl_dlights[lnum].color, lightcolor);
+			}
 		}
 	}
 
