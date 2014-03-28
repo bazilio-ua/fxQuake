@@ -101,7 +101,7 @@ void V_AddLightBlend (float r, float g, float b, float a2)
 	v_blend[2] = v_blend[2]*(1-a2) + b*a2;
 }
 
-static float	bubble_sin[17], bubble_cos[17];
+static float	bubble_sintable[17], bubble_costable[17];
 void R_InitFlashBlendBubble (void)
 {
 	int	i;
@@ -110,8 +110,8 @@ void R_InitFlashBlendBubble (void)
 	for (i=16 ; i>=0 ; i--)
 	{
 		a = i/16.0 * M_PI*2;
-		bubble_sin[i] = sin(a);
-		bubble_cos[i] = cos(a);
+		bubble_sintable[i] = sin(a);
+		bubble_costable[i] = cos(a);
 	}
 }
 
@@ -134,14 +134,14 @@ void R_DrawFlashBlend (dlight_t *light)
 	VectorSubtract (light->origin, r_origin, v);
 	if (VectorLength (v) < rad)
 	{	// view is inside the dlight
-//		V_AddLightBlend (1, 0.5, 0, light->radius * 0.0003);
-		V_AddLightBlend (light->color[0], light->color[1], light->color[2], light->radius * 0.0003);
+		V_AddLightBlend (1, 0.5, 0, light->radius * 0.0003);
+//		V_AddLightBlend (light->color[0], light->color[1], light->color[2], light->radius * 0.0003);
 		return;
 	}
 
 	glBegin (GL_TRIANGLE_FAN);
-//	glColor3f (0.2, 0.1, 0.0);
-	glColor4f (light->color[0], light->color[1], light->color[2], 0.2);
+	glColor3f (0.2, 0.1, 0.0);
+//	glColor4f (light->color[0], light->color[1], light->color[2], 0.2);
 	for (i=0 ; i<3 ; i++)
 		v[i] = light->origin[i] - vpn[i]*rad;
 	glVertex3fv (v);
@@ -149,7 +149,7 @@ void R_DrawFlashBlend (dlight_t *light)
 	for (i=16 ; i>=0 ; i--)
 	{
 		for (j=0 ; j<3 ; j++)
-			v[j] = light->origin[j] + vright[j] * bubble_cos[i] * rad + vup[j] * bubble_sin[i] * rad;
+			v[j] = light->origin[j] + vright[j] * bubble_costable[i] * rad + vup[j] * bubble_sintable[i] * rad;
 
 		glVertex3fv (v);
 	}
@@ -179,17 +179,19 @@ void R_RenderFlashBlend (void) // Flash blend dlights
 	glEnable (GL_BLEND);
 	//glBlendFunc (GL_ONE, GL_ONE);//orig.
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE);//ver.2 attempt to make it more smooth
-
+	
+	R_FogDisableGFog ();
+	
 	l = cl_dlights;
 	for (i=0 ; i<MAX_DLIGHTS ; i++, l++)
 	{
 		if (l->die < cl.time || !l->radius)
 			continue;
-		R_FogDisableGFog ();
 		R_DrawFlashBlend (l);
-		R_FogEnableGFog ();
 	}
-
+	
+	R_FogEnableGFog ();
+	
 	glColor3f (1,1,1);
 	glDisable (GL_BLEND);
 	glEnable (GL_TEXTURE_2D);

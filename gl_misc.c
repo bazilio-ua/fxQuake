@@ -219,6 +219,7 @@ void R_Init (void)
 	Cvar_RegisterVariable (&gl_affinemodels, NULL);
 	Cvar_RegisterVariable (&gl_polyblend, NULL);
 	Cvar_RegisterVariable (&gl_flashblend, NULL);
+	Cvar_RegisterVariable (&gl_coronas, NULL);
 	Cvar_RegisterVariable (&gl_overbright, GL_Overbright);
 	Cvar_RegisterVariable (&gl_zfix, NULL); // z-fighting fix
 	Cvar_RegisterVariable (&gl_oldspr, NULL);

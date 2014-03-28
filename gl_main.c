@@ -92,8 +92,9 @@ cvar_t	gl_clear = {"gl_clear","0"};
 cvar_t	gl_cull = {"gl_cull","1"};
 cvar_t	gl_smoothmodels = {"gl_smoothmodels","1"};
 cvar_t	gl_affinemodels = {"gl_affinemodels","0"};
-cvar_t	gl_polyblend = {"gl_polyblend","1"};
-cvar_t	gl_flashblend = {"gl_flashblend","1"};
+cvar_t	gl_polyblend = {"gl_polyblend","1", true};
+cvar_t	gl_flashblend = {"gl_flashblend","1", true};
+cvar_t	gl_coronas = {"gl_coronas", "1", true};
 cvar_t	gl_overbright = {"gl_overbright", "1", true};
 cvar_t	gl_zfix = {"gl_zfix","0"}; // z-fighting fix
 cvar_t  gl_oldspr = {"gl_oldspr", "0"}; // Old opaque sprite
@@ -1176,6 +1177,7 @@ void R_RenderView (void)
 	R_DrawTransEntities (r_viewleaf->contents != CONTENTS_EMPTY);
 	R_DrawParticles (r_viewleaf->contents != CONTENTS_EMPTY);
 	R_RenderFlashBlend ();
+	R_RenderGlowEffects ();
 	R_FogDisableGFog ();
 	R_DrawViewModel ();
 	R_RenderPolyBlend ();

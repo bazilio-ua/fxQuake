@@ -547,7 +547,7 @@ void CL_RelinkEntities (void)
 					CL_ColorDlight (dl, DL_COLOR_ORANGE);
 			}
 		}
-		if (ent->effects & EF_BRIGHTLIGHT)
+		if (ent->effects & EF_BRIGHTLIGHT) // is not used by original progs
 		{
 			// uncoloured
 			dl = CL_AllocDlight (i);
@@ -558,7 +558,7 @@ void CL_RelinkEntities (void)
 
 			CL_ColorDlight (dl, DL_COLOR_WHITE);
 		}
-		if (ent->effects & EF_DIMLIGHT)
+		if (ent->effects & EF_DIMLIGHT) // is for powerup glows and enforcer's laser 
 		{			
 			// powerup dynamic lights
 			dl = CL_AllocDlight (i);
@@ -606,6 +606,8 @@ void CL_RelinkEntities (void)
 			R_RocketTrail (oldorg, ent->origin, RT_ZOMGIB);
 		else if (ent->model->flags & EF_TRACER)
 		{
+			R_RocketTrail (oldorg, ent->origin, RT_WIZARD);
+			
 			// wizard trail
 			if (cl_extradlight.value)
 			{
@@ -616,11 +618,11 @@ void CL_RelinkEntities (void)
 				
 				CL_ColorDlight (dl, DL_COLOR_GREEN);
 			}
-			
-			R_RocketTrail (oldorg, ent->origin, RT_WIZARD);
 		}
 		else if (ent->model->flags & EF_TRACER2)
 		{
+			R_RocketTrail (oldorg, ent->origin, RT_KNIGHT);
+			
 			// knight trail
 			if (cl_extradlight.value)
 			{
@@ -631,11 +633,11 @@ void CL_RelinkEntities (void)
 				
 				CL_ColorDlight (dl, DL_COLOR_ORANGE);
 			}
-			
-			R_RocketTrail (oldorg, ent->origin, RT_KNIGHT);
 		}
 		else if (ent->model->flags & EF_TRACER3)
 		{
+			R_RocketTrail (oldorg, ent->origin, RT_VORE);
+			
 			// vore trail
 			if (cl_extradlight.value)
 			{
@@ -646,8 +648,6 @@ void CL_RelinkEntities (void)
 				
 				CL_ColorDlight (dl, DL_COLOR_PURPLE);
 			}
-			
-			R_RocketTrail (oldorg, ent->origin, RT_VORE);
 		}
 		else if (ent->model->flags & EF_ROCKET)
 		{
@@ -659,6 +659,9 @@ void CL_RelinkEntities (void)
 			dl->die = cl.time + 0.01;
 
 			CL_ColorDlight (dl, DL_COLOR_ORANGE);
+			
+			if (!strcmp (ent->model->name, "progs/lavaball.mdl")) //EER1 tst
+				R_AddGlowEffect (DL_COLOR_ORANGE, 10.0, ent->origin); //EER1 tst
 		}
 		else if (ent->model->flags & EF_GRENADE)
 			R_RocketTrail (oldorg, ent->origin, RT_GRENADE);

@@ -2288,3 +2288,186 @@ void R_RenderBloomBlend (void)
 	R_Bloom_DrawEffect ();
 }
 
+//==================================================================================================================
+
+/*
+============================================================================== 
+
+	GLOW EFFECTS
+
+============================================================================== 
+*/
+// glow generation code
+#define MAX_GLOWS 2048
+
+typedef struct glows_s
+{
+	float	 red;
+	float	 green;
+	float	 blue;
+	float	 radius;
+	vec3_t	 origin;
+} glows_t;
+
+glows_t glow_effects[MAX_GLOWS]; 
+
+
+int num_glows = 0;
+
+// sin and cos tables from 0 to 1 in 0.0625 increments to speed up glow rendering
+float glowcos[17] = 
+{
+		1.000000,
+		0.923879,
+		0.707106,
+		0.382682,
+		-0.000002,
+		-0.382686,
+		-0.707109,
+		-0.923881,
+		-1.000000,
+		-0.923878,
+		-0.707103,
+		-0.382678,
+		0.000006,
+		0.382689,
+		0.707112,
+		0.923882,
+		1.000000,
+};
+
+float glowsin[17] = 
+{
+		0.000000,
+		0.382684,
+		0.707107,
+		0.923880,
+		1.000000,
+		0.923879,
+		0.707105,
+		0.382680,
+		-0.000004,
+		-0.382687,
+		-0.707110,
+		-0.923882,
+		-1.000000,
+		-0.923877,
+		-0.707102,
+		-0.382677,
+		0.000008,
+};
+
+/*
+================
+R_RenderGlowEffects
+================
+*/
+void R_RenderGlowEffects (void)
+{
+	int		i, j, k;
+	vec3_t	v;
+	float	rad;
+
+	if (!num_glows)
+		return;
+
+	glDepthMask (GL_FALSE);
+	glDisable (GL_TEXTURE_2D);
+	glShadeModel (GL_SMOOTH);
+	glEnable (GL_BLEND);
+	glBlendFunc (GL_ONE, GL_ONE);
+
+	R_FogDisableGFog ();
+
+	for (k=0 ; k<num_glows ; k++)	
+	{
+		rad = glow_effects[k].radius;
+
+		VectorSubtract (glow_effects[k].origin, r_origin, v);
+
+		// see is the view inside the glow
+		if (VectorLength (v) < rad)
+		{
+			vec3_t	rgb;
+			float	max = 0;
+			float	mody;
+
+			// find the max and scale as appropriate
+			if (glow_effects[k].red > max) max = glow_effects[k].red;
+			if (glow_effects[k].green > max) max = glow_effects[k].green;
+			if (glow_effects[k].blue > max) max = glow_effects[k].blue;
+
+			// prevent division by 0
+			if (max)
+			{
+				mody = 1.0 / max;
+
+				rgb[0] = glow_effects[k].red * mody;
+				rgb[1] = glow_effects[k].green * mody;
+				rgb[2] = glow_effects[k].blue * mody;
+
+				V_AddLightBlend (rgb[0], rgb[1], rgb[2], glow_effects[k].radius * 0.0003);
+			}
+			continue;
+		}
+		glBegin (GL_TRIANGLE_FAN);
+
+		glColor3f (glow_effects[k].red, glow_effects[k].green, glow_effects[k].blue);
+
+		for (i = 0; i < 3; i++)
+		{
+			v[i] = glow_effects[k].origin[i] - vpn[i] * rad;
+		}
+		glVertex3fv (v);
+		glColor3f (0, 0, 0);
+
+		for (i = 16; i >= 0; i--)
+		{
+			for (j = 0; j < 3; j++)
+			{
+				v[j] = glow_effects[k].origin[j] + vright[j] * glowcos[i] * rad + vup[j] * glowsin[i] * rad;
+			}
+			glVertex3fv (v);
+		}
+		glEnd ();
+	}
+
+	R_FogEnableGFog ();
+
+	glColor3f (1, 1, 1);
+	glDisable (GL_BLEND);
+	glEnable (GL_TEXTURE_2D);
+	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glDepthMask (GL_TRUE);
+
+	num_glows = 0;
+}
+
+/*
+================
+R_AddGlowEffect
+================
+*/
+void R_AddGlowEffect (float red, float green, float blue, float radius, vec3_t origin)
+{
+	if (!gl_coronas.value)
+		return;
+	
+	if (num_glows >= MAX_GLOWS)
+	{
+		Con_DPrintf ("Too many glowtype\n");
+		return;
+	}
+
+	glow_effects[num_glows].red = red;
+	glow_effects[num_glows].green = green;
+	glow_effects[num_glows].blue = blue;
+
+	glow_effects[num_glows].radius = radius;
+
+	glow_effects[num_glows].origin[0] = origin[0];
+	glow_effects[num_glows].origin[1] = origin[1];
+	glow_effects[num_glows].origin[2] = origin[2];
+
+	num_glows++;
+}
