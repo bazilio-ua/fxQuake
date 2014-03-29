@@ -573,6 +573,17 @@ void R_DrawAliasModel (entity_t *e)
 	VectorScale (lightcolor, 1.0f / (160.0f * d_overbright), lightcolor); //FX, new value (orig. was 192.0f)
 
 	//
+	// set up glows
+	//
+//TODO: add model glow effects section here
+	if (!strncmp(clmodel->name, "progs/bolt",10)) //EER1 tst
+	{
+		float	radius=10.0; 
+		R_AddGlowEffect (0.05, 0.05, 0.2, radius += (float) (rand () & 7), e->origin); //EER1 tst
+	}
+//TODO:
+
+	//
 	// set up textures
 	//
 //	GL_DisableMultitexture (); // selects TEXTURE0
@@ -692,7 +703,6 @@ cleanup:
 	glDisable (GL_BLEND);
 	glColor3f (1, 1, 1);
 	glPopMatrix ();
-
 }
 
 //==================================================================================
@@ -1177,9 +1187,9 @@ void R_RenderView (void)
 	R_DrawTransEntities (r_viewleaf->contents != CONTENTS_EMPTY);
 	R_DrawParticles (r_viewleaf->contents != CONTENTS_EMPTY);
 	R_RenderFlashBlend ();
+	R_DrawViewModel ();
 	R_RenderGlowEffects ();
 	R_FogDisableGFog ();
-	R_DrawViewModel ();
 	R_RenderPolyBlend ();
 	R_RenderBloomBlend (); // bloom on each frame
 
