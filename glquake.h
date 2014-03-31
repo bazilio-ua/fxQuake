@@ -243,7 +243,7 @@ void R_StoreEfrags (efrag_t **ppefrag);
 void R_AnimateLight (void);
 void R_LightPoint (vec3_t p, vec3_t color);
 void R_MarkLights (dlight_t *light, int num, mnode_t *node);
-void R_RenderFlashBlend (void);
+void R_RenderDlights (void);
 void R_InitFlashBlendBubble (void);
 
 // gl_surf.c
@@ -282,7 +282,7 @@ void R_FogStopAdditive (void);
 void R_FogSetupFrame (void);
 
 void R_InitBloomTextures (void);
-void R_RenderBloomBlend (void);
+void R_BloomBlend (void);
 
 void R_AddGlowEffect (float red, float green, float blue, float radius, vec3_t origin);
 void R_RenderGlowEffects (void);

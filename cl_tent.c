@@ -382,22 +382,40 @@ void CL_ParseTEnt (void)
 		break;
 // PGM 01/21/97
 		
-	case TE_LAVASPLASH:	
+	case TE_LAVASPLASH:			// Chthon
 		pos[0] = MSG_ReadCoord (net_message);
 		pos[1] = MSG_ReadCoord (net_message);
 		pos[2] = MSG_ReadCoord (net_message);
 		
-		//TODO: add CL_ColorDlight here?
+		if (cl_extradlight.value)
+		{
+			dl = CL_AllocDlight (0);
+			VectorCopy (pos, dl->origin);
+			dl->radius = 450;
+			dl->die = cl.time + 3.5;
+			dl->decay = 300;
+			
+			CL_ColorDlight (dl, DL_COLOR_RED);
+		}
 		
 		R_LavaSplash (pos);
 		break;
 		
-	case TE_TELEPORT:
+	case TE_TELEPORT:			// all teleport
 		pos[0] = MSG_ReadCoord (net_message);
 		pos[1] = MSG_ReadCoord (net_message);
 		pos[2] = MSG_ReadCoord (net_message);
 		
-		//TODO: add CL_ColorDlight here? Yes, even on a teleport
+		if (cl_extradlight.value)
+		{
+			dl = CL_AllocDlight (0);
+			VectorCopy (pos, dl->origin);
+			dl->radius = 250;
+			dl->die = cl.time + 0.2;
+			dl->decay = 300;
+			
+			CL_ColorDlight (dl, DL_COLOR_WHITE);
+		}
 		
 		R_TeleportSplash (pos);
 		break;

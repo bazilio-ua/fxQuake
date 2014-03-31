@@ -659,9 +659,6 @@ void CL_RelinkEntities (void)
 			dl->die = cl.time + 0.01;
 
 			CL_ColorDlight (dl, DL_COLOR_ORANGE);
-			
-			if (!strcmp (ent->model->name, "progs/lavaball.mdl")) //EER1 tst
-				R_AddGlowEffect (DL_COLOR_ORANGE, 10.0, ent->origin); //EER1 tst
 		}
 		else if (ent->model->flags & EF_GRENADE)
 			R_RocketTrail (oldorg, ent->origin, RT_GRENADE);

@@ -576,11 +576,13 @@ void R_DrawAliasModel (entity_t *e)
 	// set up glows
 	//
 //TODO: add model glow effects section here
-	if (!strncmp(clmodel->name, "progs/bolt",10)) //EER1 tst
+	if (!strncmp(clmodel->name, "progs/bolt", 10)) //EER1 tst
 	{
 		float	radius=10.0; 
 		R_AddGlowEffect (0.05, 0.05, 0.2, radius += (float) (rand () & 7), e->origin); //EER1 tst
 	}
+	else if (!strcmp (clmodel->name, "progs/lavaball.mdl")) //EER1 tst
+		R_AddGlowEffect (0.2, 0.05, 0.05, 10.0, e->origin); //EER1 tst
 //TODO:
 
 	//
@@ -938,10 +940,10 @@ void R_DrawViewModel (void)
 
 /*
 ============
-R_RenderPolyBlend
+R_PolyBlend
 ============
 */
-void R_RenderPolyBlend (void)
+void R_PolyBlend (void)
 {
 	if (!gl_polyblend.value)
 		return;
@@ -1186,12 +1188,12 @@ void R_RenderView (void)
 	R_DrawTextureChainsWater (); // drawn here since they might have transparency
 	R_DrawTransEntities (r_viewleaf->contents != CONTENTS_EMPTY);
 	R_DrawParticles (r_viewleaf->contents != CONTENTS_EMPTY);
-	R_RenderFlashBlend ();
+	R_RenderDlights (); // flash blend dlights
 	R_DrawViewModel ();
-	R_RenderGlowEffects ();
+	R_RenderGlowEffects (); // coronas
 	R_FogDisableGFog ();
-	R_RenderPolyBlend ();
-	R_RenderBloomBlend (); // bloom on each frame
+	R_PolyBlend ();
+	R_BloomBlend (); // bloom on each frame
 
 	S_ExtraUpdateTime ();	// don't let sound get messed up if going slow
 

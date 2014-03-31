@@ -117,19 +117,62 @@ void R_InitFlashBlendBubble (void)
 
 /*
 =============
-R_DrawFlashBlend
+R_RenderDlight
 
-EER1 -- renamed R_RenderDlight
 =============
 */
-void R_DrawFlashBlend (dlight_t *light)
+void R_RenderDlight (dlight_t *light)
+{
+	int		i, j;
+	vec3_t	v, v_right, v_up;
+	float	rad, length;
+
+	rad = light->radius * 0.35;
+	//rad = light->radius * 0.15; // reduce the bubble size so that it coexists more peacefully with proper light
+
+	VectorSubtract (light->origin, r_origin, v);
+	length = VectorNormalize (v);
+
+	if (length < rad)
+	{	// view is inside the dlight
+		V_AddLightBlend (1, 0.5, 0, light->radius * 0.0003);
+		return;
+	}
+
+	glBegin (GL_TRIANGLE_FAN);
+	glColor3f (0.2, 0.1, 0.0);
+
+	VectorVectors(v, v_right, v_up);
+
+	if (length - rad > 8)
+		VectorScale (v, rad, v);
+	else // make sure the light bubble will not be clipped by near z clip plane
+		VectorScale (v, length - 8, v);
+
+	VectorSubtract (light->origin, v, v);
+
+	glVertex3fv (v);
+	glColor3f (0,0,0);
+	for (i=16 ; i>=0 ; i--)
+	{
+		for (j=0 ; j<3 ; j++)
+			v[j] = light->origin[j] + (v_right[j] * bubble_costable[i] + v_up[j] * bubble_sintable[i]) * rad;
+
+		glVertex3fv (v);
+	}
+	glEnd ();
+}
+
+/*
+//old version
+void R_RenderDlight (dlight_t *light)
 {
 	int		i, j;
 	vec3_t	v;
 	float	rad;
 
 	//rad = light->radius * 0.35;
-	rad = light->radius * 0.15; // reduce the corona size so that it coexists more peacefully with proper light
+	rad = light->radius * 0.15; // reduce the bubble size so that it coexists more peacefully with proper light
 
 	VectorSubtract (light->origin, r_origin, v);
 	if (VectorLength (v) < rad)
@@ -155,15 +198,16 @@ void R_DrawFlashBlend (dlight_t *light)
 	}
 	glEnd ();
 }
+*/
 
 /*
 =============
-R_RenderFlashBlend
+R_RenderDlights
 
-EER1 -- renamed R_RenderDlights
+flash blend dlights
 =============
 */
-void R_RenderFlashBlend (void) // Flash blend dlights
+void R_RenderDlights (void)
 {
 	int		i;
 	dlight_t	*l;
@@ -187,7 +231,7 @@ void R_RenderFlashBlend (void) // Flash blend dlights
 	{
 		if (l->die < cl.time || !l->radius)
 			continue;
-		R_DrawFlashBlend (l);
+		R_RenderDlight (l);
 	}
 	
 	R_FogEnableGFog ();
@@ -461,7 +505,7 @@ R_LightPoint
 replaced entire function for lit support via lordhavoc
 =============
 */
-void R_LightPoint (vec3_t p, vec3_t color) // lit support via lordhavoc
+void R_LightPoint (vec3_t p, vec3_t color)
 {
 	vec3_t		end;
 

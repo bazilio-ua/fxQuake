@@ -2213,10 +2213,10 @@ static void R_Bloom_DownsampleView (void)
 
 /*
 =================
-R_RenderBloomBlend
+R_BloomBlend
 =================
 */
-void R_RenderBloomBlend (void)
+void R_BloomBlend (void)
 {
 	if (!r_bloom.value)
 		return;
@@ -2302,9 +2302,9 @@ void R_RenderBloomBlend (void)
 
 typedef struct glows_s
 {
-	float	 red;
-	float	 green;
-	float	 blue;
+	float	 r;
+	float	 g;
+	float	 b;
 	float	 radius;
 	vec3_t	 origin;
 } glows_t;
@@ -2315,7 +2315,7 @@ glows_t glow_effects[MAX_GLOWS];
 int num_glows = 0;
 
 // sin and cos tables from 0 to 1 in 0.0625 increments to speed up glow rendering
-float glowcos[17] = 
+float glow_costable[17] = 
 {
 		1.000000,
 		0.923879,
@@ -2336,7 +2336,7 @@ float glowcos[17] =
 		1.000000,
 };
 
-float glowsin[17] = 
+float glow_sintable[17] = 
 {
 		0.000000,
 		0.382684,
@@ -2388,31 +2388,31 @@ void R_RenderGlowEffects (void)
 		// see is the view inside the glow
 		if (VectorLength (v) < rad)
 		{
-			vec3_t	rgb;
+			vec3_t	color;
 			float	max = 0;
 			float	mody;
 
 			// find the max and scale as appropriate
-			if (glow_effects[k].red > max) max = glow_effects[k].red;
-			if (glow_effects[k].green > max) max = glow_effects[k].green;
-			if (glow_effects[k].blue > max) max = glow_effects[k].blue;
+			if (glow_effects[k].r > max) max = glow_effects[k].r;
+			if (glow_effects[k].g > max) max = glow_effects[k].g;
+			if (glow_effects[k].b > max) max = glow_effects[k].b;
 
 			// prevent division by 0
 			if (max)
 			{
 				mody = 1.0 / max;
 
-				rgb[0] = glow_effects[k].red * mody;
-				rgb[1] = glow_effects[k].green * mody;
-				rgb[2] = glow_effects[k].blue * mody;
+				color[0] = glow_effects[k].r * mody;
+				color[1] = glow_effects[k].g * mody;
+				color[2] = glow_effects[k].b * mody;
 
-				V_AddLightBlend (rgb[0], rgb[1], rgb[2], glow_effects[k].radius * 0.0003);
+				V_AddLightBlend (color[0], color[1], color[2], glow_effects[k].radius * 0.0003);
 			}
 			continue;
 		}
 		glBegin (GL_TRIANGLE_FAN);
 
-		glColor3f (glow_effects[k].red, glow_effects[k].green, glow_effects[k].blue);
+		glColor3f (glow_effects[k].r, glow_effects[k].g, glow_effects[k].b);
 
 		for (i = 0; i < 3; i++)
 		{
@@ -2425,7 +2425,7 @@ void R_RenderGlowEffects (void)
 		{
 			for (j = 0; j < 3; j++)
 			{
-				v[j] = glow_effects[k].origin[j] + vright[j] * glowcos[i] * rad + vup[j] * glowsin[i] * rad;
+				v[j] = glow_effects[k].origin[j] + vright[j] * glow_costable[i] * rad + vup[j] * glow_sintable[i] * rad;
 			}
 			glVertex3fv (v);
 		}
@@ -2448,20 +2448,23 @@ void R_RenderGlowEffects (void)
 R_AddGlowEffect
 ================
 */
-void R_AddGlowEffect (float red, float green, float blue, float radius, vec3_t origin)
+void R_AddGlowEffect (float r, float g, float b, float radius, vec3_t origin)
 {
+	static float	lastmsg = 0;
+	
 	if (!gl_coronas.value)
 		return;
-	
+
 	if (num_glows >= MAX_GLOWS)
 	{
-		Con_DPrintf ("Too many glowtype\n");
+		if (IsTimeout (&lastmsg, 2))
+			Con_DPrintf ("R_AddGlowEffect: too many glows (max = %d)\n", MAX_GLOWS);
 		return;
 	}
 
-	glow_effects[num_glows].red = red;
-	glow_effects[num_glows].green = green;
-	glow_effects[num_glows].blue = blue;
+	glow_effects[num_glows].r = r;
+	glow_effects[num_glows].g = g;
+	glow_effects[num_glows].b = b;
 
 	glow_effects[num_glows].radius = radius;
 
