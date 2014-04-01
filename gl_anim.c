@@ -2452,9 +2452,9 @@ void R_AddGlowEffect (float r, float g, float b, float radius, vec3_t origin)
 {
 	static float	lastmsg = 0;
 	
-	if (!gl_coronas.value)
+/*	if (!gl_coronas.value)
 		return;
-
+*/
 	if (num_glows >= MAX_GLOWS)
 	{
 		if (IsTimeout (&lastmsg, 2))

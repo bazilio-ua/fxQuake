@@ -36,6 +36,23 @@ int			rs_c_dynamic_lightmaps, rs_c_particles;
 //up to 16 color translated skins
 gltexture_t *playertextures[MAX_SCOREBOARD]; // changed to an array of pointers
 
+//
+// glow effects pulse
+//
+float		frametime;
+
+float		slowpulse = 0;
+float		fastpulse = 0;
+float		killpulse = 0;
+
+int			slowpulsedir = 1;
+int			fastpulsedir = 1;
+int			killpulsedir = 1;
+
+float		slowcycle = 0;
+float		fastcycle = 0;
+float		killcycle = 0;
+
 
 //
 // view origin
@@ -573,8 +590,61 @@ void R_DrawAliasModel (entity_t *e)
 	VectorScale (lightcolor, 1.0f / (160.0f * d_overbright), lightcolor); //FX, new value (orig. was 192.0f)
 
 	//
-	// set up glows
+	// set up glow effects
 	//
+	// fixme: this isn't my favorite option
+	if (gl_coronas.value)
+	{
+		if (r_viewleaf->contents == CONTENTS_EMPTY || r_viewleaf->contents == CONTENTS_SOLID)
+		{
+			// somewhat redone this function
+			// now uses enumerators
+			if (clmodel->glowtype != FX_NORMAL)
+			{
+				vec3_t	lightorigin;
+				float	radius;
+				
+				// set up for drawing later
+				VectorCopy (e->origin, lightorigin);
+				radius = clmodel->glowradius;// * 0.2;
+				
+				if (clmodel->glowtype == FX_TORCH)
+				{
+					lightorigin[2] += 8.0;
+					radius += (float) (rand () & 3);
+				}
+				else if (clmodel->glowtype == FX_ENTITY)
+				{
+					lightorigin[2] += 1.5;
+					radius += (fastcycle * 2.5);
+				}
+				else if (clmodel->glowtype == FX_BOLT)
+				{
+					radius += (float) (rand () & 7);
+				}
+				else if (clmodel->glowtype == FX_POWERUP)
+				{
+					lightorigin[2] += 20.0;
+					radius += (slowcycle * 40.0);
+				}
+				else if (clmodel->glowtype == FX_MISSILE)
+				{
+					lightorigin[0] += cos (e->angles[1] / 180 * M_PI) * (-20.0f);
+					lightorigin[1] += sin (e->angles[1] / 180 * M_PI) * (-20.0f);
+					lightorigin[2] += sin (e->angles[0] / 180 * M_PI) * (-20.0f);
+				}
+				else if (clmodel->glowtype == FX_SHAMBLER)
+				{
+					lightorigin[2] += 75.0;
+					radius += (float) (rand () & 7);
+				}
+				
+				R_AddGlowEffect (clmodel->glowcolours[0], clmodel->glowcolours[1], clmodel->glowcolours[2], radius, lightorigin);
+			}
+		}
+	}
+	// glow
+/*
 //TODO: add model glow effects section here
 	if (!strncmp(clmodel->name, "progs/bolt", 10)) //EER1 tst
 	{
@@ -584,6 +654,7 @@ void R_DrawAliasModel (entity_t *e)
 	else if (!strcmp (clmodel->name, "progs/lavaball.mdl")) //EER1 tst
 		R_AddGlowEffect (0.2, 0.05, 0.05, 10.0, e->origin); //EER1 tst
 //TODO:
+*/
 
 	//
 	// set up textures
@@ -1166,6 +1237,56 @@ void R_RenderView (void)
 	if (gl_finish.value /* || r_speeds.value */)
 		glFinish ();
 
+	//
+	// glow effects pulse
+	//
+	// we want this every frame whether we draw or not
+	frametime = cl.time - cl.oldtime;
+
+	// one pulse cycle (down to up and back again) every second
+	slowpulse = slowpulse + (frametime * slowpulsedir);
+
+	if (slowpulse > 0.5) {
+		slowpulse = 0.5;
+		slowpulsedir = -1;
+	}
+
+	if (slowpulse < 0.0) {
+		slowpulse = 0.0;
+		slowpulsedir = 1;
+	}
+
+	// one pulse cycle (down to up and back again) every tenth of a second
+	fastpulse = fastpulse + (frametime * fastpulsedir);
+
+	if (fastpulse > 0.05) {
+		fastpulse = 0.05;
+		fastpulsedir = -1;
+	}
+
+	if (fastpulse < 0.0) {
+		fastpulse = 0.0;
+		fastpulsedir = 1;
+	}
+
+	// one pulse cycle (down to up and back again) every 10 seconds
+	killpulse = killpulse + (frametime * killpulsedir);
+
+	if (killpulse > 5.0) {
+		killpulse = 5.0;
+		killpulsedir = -1;
+	}
+
+	if (killpulse < 0.0) {
+		killpulse = 0.0;
+		killpulsedir = 1;
+	}
+
+	fastcycle = fastpulse * 10;
+	slowcycle = slowpulse;
+	killcycle = killpulse / 10;
+	// glow
+	
 	// render normal view
 	// r_refdef must be set before the first call
 	R_SetupFrame ();
