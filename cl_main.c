@@ -511,7 +511,11 @@ void CL_RelinkEntities (void)
 			ent->angles[1] = objrotate;
 		
 		if (ent->effects & EF_BRIGHTFIELD)
+		{
+			Con_Printf("catch EF_BRIGHTFIELD\n");//eer1 DBG
+			
 			R_EntityParticles (ent);
+		}
 		
 		if (ent->effects & EF_MUZZLEFLASH)
 		{
@@ -525,7 +529,9 @@ void CL_RelinkEntities (void)
 			dl->radius = 200 + (rand()&31);
 			dl->minlight = 32;
 			dl->die = cl.time + 0.1;
-
+			
+			Con_Printf("catch EF_MUZZLEFLASH\n");//eer1 DBG
+			
 			if (i == cl.viewentity)
 			{
 				// switch the flash colour for the current weapon
@@ -559,7 +565,9 @@ void CL_RelinkEntities (void)
 			dl->origin[2] += 16;
 			dl->radius = 400 + (rand()&31);
 			dl->die = cl.time + 0.001;
-
+			
+			Con_Printf("catch EF_BRIGHTLIGHT\n");//eer1 DBG
+			
 			CL_ColorDlight (dl, DL_COLOR_WHITE);
 		}
 		if (ent->effects & EF_DIMLIGHT) // is for powerup glows and enforcer's laser 
@@ -569,6 +577,8 @@ void CL_RelinkEntities (void)
 			VectorCopy (ent->origin,  dl->origin);
 			dl->radius = 200 + (rand()&31);
 			dl->die = cl.time + 0.001;
+			
+			Con_Printf("catch EF_DIMLIGHT\n");//eer1 DBG
 			
 			if (i == cl.viewentity)
 			{
@@ -599,7 +609,10 @@ void CL_RelinkEntities (void)
 			if ((ent->effects & EF_RED) && (ent->effects & EF_BLUE))
 				CL_ColorDlight (dl, DL_COLOR_PURPLE);
 			else if (ent->effects & EF_RED)
+			{
+				Con_Printf("catch EF_RED\n");//eer1 DBG
 				CL_ColorDlight (dl, DL_COLOR_RED);
+			}
 			else if (ent->effects & EF_BLUE)
 				CL_ColorDlight (dl, DL_COLOR_BLUE);
 		}

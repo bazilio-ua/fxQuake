@@ -103,6 +103,7 @@ void CL_ParseTEnt (void)
 	byte		*colorByte;
 	int		ent;
 	vec3_t	start, end;
+	char	*name;
 	static float	lastmsg = 0;
 
 	type = MSG_ReadByte (net_message);
@@ -153,6 +154,8 @@ void CL_ParseTEnt (void)
 		pos[1] = MSG_ReadCoord (net_message);
 		pos[2] = MSG_ReadCoord (net_message);
 		
+//		Con_Printf("catch TE_SPIKE\n");//eer1 DBG
+		
 		R_RunParticleEffect (pos, vec3_origin, 0, 10);
 		if ( rand() % 5 )
 			S_StartSound (-1, 0, cl_sfx_tink1, pos, 1, 1);
@@ -172,6 +175,8 @@ void CL_ParseTEnt (void)
 		pos[0] = MSG_ReadCoord (net_message);
 		pos[1] = MSG_ReadCoord (net_message);
 		pos[2] = MSG_ReadCoord (net_message);
+		
+//		Con_Printf("catch TE_SUPERSPIKE\n");//eer1 DBG
 		
 		R_RunParticleEffect (pos, vec3_origin, 0, 20);
 		if ( rand() % 5 )
@@ -334,6 +339,9 @@ void CL_ParseTEnt (void)
 		
 // Nehahra		
 	case TE_LIGHTNING4:				// lightning bolts
+		// need to do it this way for correct parsing order
+		name = MSG_ReadString(net_message);
+		
 		ent = MSG_ReadShort (net_message);
 		
 		start[0] = MSG_ReadCoord (net_message);
@@ -363,7 +371,7 @@ void CL_ParseTEnt (void)
 			CL_ColorDlight (dl, DL_COLOR_CYAN);
 		}
 		
-		CL_ParseBeam (Mod_ForName(MSG_ReadString(net_message), true), ent, start, end);
+		CL_ParseBeam (Mod_ForName(name, true), ent, start, end);
 		break;
 		
 // PGM 01/21/97 
@@ -378,6 +386,25 @@ void CL_ParseTEnt (void)
 		end[1] = MSG_ReadCoord (net_message);
 		end[2] = MSG_ReadCoord (net_message);
 
+		if (cl_extradlight.value)
+		{
+			dl = CL_AllocDlight (0);
+			VectorCopy (start, dl->origin);
+			dl->radius = 100;
+			dl->die = cl.time + 0.1;
+			dl->decay = 300;
+			
+			CL_ColorDlight (dl, DL_COLOR_YELLOW);
+			
+			dl = CL_AllocDlight (0);
+			VectorCopy (end, dl->origin);
+			dl->radius = 100;
+			dl->die = cl.time + 0.1;
+			dl->decay = 300;
+			
+			CL_ColorDlight (dl, DL_COLOR_YELLOW);
+		}
+		
 		CL_ParseBeam (Mod_ForName("progs/beam.mdl", true), ent, start, end);
 		break;
 // PGM 01/21/97
@@ -410,7 +437,7 @@ void CL_ParseTEnt (void)
 		{
 			dl = CL_AllocDlight (0);
 			VectorCopy (pos, dl->origin);
-			dl->radius = 250;
+			dl->radius = 200; // 250
 			dl->die = cl.time + 0.2;
 			dl->decay = 300;
 			
@@ -424,6 +451,8 @@ void CL_ParseTEnt (void)
 		pos[0] = MSG_ReadCoord (net_message);
 		pos[1] = MSG_ReadCoord (net_message);
 		pos[2] = MSG_ReadCoord (net_message);
+		
+//		Con_Printf("catch TE_EXPLOSION2 (color mapped)\n");//eer1 DBG
 		
 		colorStart = MSG_ReadByte (net_message);
 		colorLength = MSG_ReadByte (net_message);
@@ -458,6 +487,8 @@ void CL_ParseTEnt (void)
 		pos[0] = MSG_ReadCoord (net_message);
 		pos[1] = MSG_ReadCoord (net_message);
 		pos[2] = MSG_ReadCoord (net_message);
+		
+//		Con_Printf("catch TE_EXPLOSION3 (colored)\n");//eer1 DBG
 		
 		dl = CL_AllocDlight (0);
 		VectorCopy (pos, dl->origin);
