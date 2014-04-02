@@ -361,18 +361,6 @@ extern	trivertx_t	*poseverts[MAXALIASFRAMES];
 
 typedef enum {mod_brush, mod_sprite, mod_alias} modtype_t;
 
-// glow model types
-typedef enum
-{
-	FX_NORMAL,
-	FX_ENTITY,
-	FX_TORCH,
-	FX_MISSILE,
-	FX_SHAMBLER,
-	FX_BOLT,
-	FX_POWERUP
-} glowtype_t;
-
 #define	EF_ROCKET	1			// leave a trail
 #define	EF_GRENADE	2			// leave a trail
 #define	EF_GIB		4			// leave a trail
@@ -402,13 +390,6 @@ typedef struct model_s
 	vec3_t		mins, maxs;
 	vec3_t		ymins, ymaxs; // bounds for entities with nonzero yaw
 	vec3_t		rmins, rmaxs; // bounds for entities with nonzero pitch or roll
-
-//
-// glow model data 
-//
-	glowtype_t			glowtype;		// glow model types
-	vec3_t				glowcolours;
-	float				glowradius;
 
 //
 // brush model

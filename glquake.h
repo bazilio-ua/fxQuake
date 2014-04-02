@@ -244,7 +244,6 @@ void R_AnimateLight (void);
 void R_LightPoint (vec3_t p, vec3_t color);
 void R_MarkLights (dlight_t *light, int num, mnode_t *node);
 void R_RenderDlights (void);
-void R_InitFlashBlendBubble (void);
 
 // gl_surf.c
 void R_MarkLeaves (void);
@@ -284,8 +283,6 @@ void R_FogSetupFrame (void);
 void R_InitBloomTextures (void);
 void R_BloomBlend (void);
 
-void R_AddGlowEffect (float red, float green, float blue, float radius, vec3_t origin);
-void R_RenderGlowEffects (void);
 
 extern float turbsin[];
 #define TURBSCALE (256.0 / (2 * M_PI))
@@ -433,7 +430,6 @@ extern	cvar_t	gl_affinemodels;
 extern	cvar_t	gl_polyblend;
 extern	cvar_t	gl_flashblend;
 extern	cvar_t	gl_flashblendview;
-extern	cvar_t	gl_coronas;
 extern	cvar_t	gl_overbright;
 extern	cvar_t	gl_zfix; // z-fighting fix
 extern	cvar_t  gl_oldspr;

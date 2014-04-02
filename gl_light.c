@@ -101,8 +101,28 @@ void V_AddLightBlend (float r, float g, float b, float a2)
 	v_blend[2] = v_blend[2]*(1-a2) + b*a2;
 }
 
+// sin and cos tables from 0 to 1 in 0.0625 increments to speed up glow rendering
+float bubble_sintable[17] = 
+{
+		0.000000,
+		0.382684,
+		0.707107,
+		0.923880,
+		1.000000,
+		0.923879,
+		0.707105,
+		0.382680,
+		-0.000004,
+		-0.382687,
+		-0.707110,
+		-0.923882,
+		-1.000000,
+		-0.923877,
+		-0.707102,
+		-0.382677,
+		0.000008,
+};
 
-//
 float bubble_costable[17] = 
 {
 		1.000000,
@@ -124,96 +144,12 @@ float bubble_costable[17] =
 		1.000000,
 };
 
-float bubble_sintable[17] = 
-{
-		0.000000,
-		0.382684,
-		0.707107,
-		0.923880,
-		1.000000,
-		0.923879,
-		0.707105,
-		0.382680,
-		-0.000004,
-		-0.382687,
-		-0.707110,
-		-0.923882,
-		-1.000000,
-		-0.923877,
-		-0.707102,
-		-0.382677,
-		0.000008,
-};
-//
-
-//static float	bubble_sintable[17], bubble_costable[17];
-void R_InitFlashBlendBubble (void)
-{
-/*	int	i;
-	float	a;
-
-	for (i=16 ; i>=0 ; i--)
-	{
-		a = i/16.0 * M_PI*2;
-		bubble_sintable[i] = sin(a);
-		bubble_costable[i] = cos(a);
-	}
-*/
-}
-
 /*
 =============
 R_RenderDlight
 
 =============
 */
-/*
-void R_RenderDlight (dlight_t *light)
-{
-	int		i, j;
-	vec3_t	v, v_right, v_up;
-	float	rad, length;
-
-	//rad = light->radius * 0.35;
-	rad = light->radius * 0.15; // reduce the bubble size so that it coexists more peacefully with proper light
-
-	VectorSubtract (light->origin, r_origin, v);
-	length = VectorNormalize (v);
-
-	if (length < rad)
-	{	// view is inside the dlight
-		V_AddLightBlend (1, 0.5, 0, light->radius * 0.0003);
-		return;
-	}
-
-	glBegin (GL_TRIANGLE_FAN);
-	glColor3f (0.2, 0.1, 0.0);
-
-	VectorVectors(v, v_right, v_up);
-
-	if (length - rad > 8)
-		VectorScale (v, rad, v);
-	else // make sure the light bubble will not be clipped by near z clip plane
-		VectorScale (v, length - 8, v);
-
-	VectorSubtract (light->origin, v, v);
-
-	glVertex3fv (v);
-	glColor3f (0,0,0);
-	for (i=16 ; i>=0 ; i--)
-	{
-		for (j=0 ; j<3 ; j++)
-			v[j] = light->origin[j] + (v_right[j] * bubble_costable[i] + v_up[j] * bubble_sintable[i]) * rad;
-
-		glVertex3fv (v);
-	}
-	glEnd ();
-}
-*/
-
-
-//old version
-//#define DLIGHT_COLOR	1, 0.5, 0
 vec3_t	bubblecolor = {1.0, 0.5, 0.0};
 void R_RenderDlight (dlight_t *light)
 {
@@ -221,49 +157,21 @@ void R_RenderDlight (dlight_t *light)
 	vec3_t	v;
 	vec3_t	color;
 	float	rad;
-
-/*	if (light->colored)
-//		color = light->color;
-		VectorCopy (light->color, color);
-	else
-//		color = DLIGHT_COLOR;
-		VectorCopy (bubblecolor, color);
-*/
+	
 	VectorCopy (light->colored ? light->color : bubblecolor, color);
-		
-	//rad = light->radius * 0.35;
-//	rad = light->radius * 0.15; // reduce the bubble size so that it coexists more peacefully with proper light
-	rad = light->radius * 0.1; // reduce the bubble size so that it coexists more peacefully with proper light
-
+	rad = light->radius * 0.1; // (orig. 0.35) reduce the bubble size so that it coexists more peacefully with proper light
+	
 	VectorSubtract (light->origin, r_origin, v);
 	if (VectorLength (v) < rad)
 	{	// view is inside the dlight
 		if (gl_flashblendview.value)
-		{
-/*			if (light->colored)
-				V_AddLightBlend (light->color[0], light->color[1], light->color[2], light->radius * 0.0003);
-			else
-				V_AddLightBlend (1, 0.5, 0, light->radius * 0.0003);
-*/
-				V_AddLightBlend (color[0], color[1], color[2], light->radius * 0.0003);
-
-		}
+			V_AddLightBlend (color[0], color[1], color[2], light->radius * 0.0003);
 		return;
 	}
-
+	
 	glBegin (GL_TRIANGLE_FAN);
 	VectorScale (color, 0.2, color);
 	glColor3fv (color);
-/*	if (light->colored)
-	{
-		VectorScale (light->color, 0.2, color);
-		glColor3f (color[0], color[1], color[2]);
-//		glColor4f (light->color[0] * 0.2, light->color[1] * 0.2, light->color[2] * 0.2, 0.2);
-//		glColor3f (light->color[0] * 0.2, light->color[1] * 0.2, light->color[2] * 0.2);
-	}
-	else
-		glColor3f (0.2, 0.1, 0.0);
-*/
 	for (i=0 ; i<3 ; i++)
 		v[i] = light->origin[i] - vpn[i]*rad;
 	glVertex3fv (v);
@@ -272,12 +180,10 @@ void R_RenderDlight (dlight_t *light)
 	{
 		for (j=0 ; j<3 ; j++)
 			v[j] = light->origin[j] + vright[j] * bubble_costable[i] * rad + vup[j] * bubble_sintable[i] * rad;
-
 		glVertex3fv (v);
 	}
 	glEnd ();
 }
-
 
 /*
 =============

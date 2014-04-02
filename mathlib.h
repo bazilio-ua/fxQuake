@@ -278,39 +278,6 @@ static inline void VectorNormalizeFast(vec3_t v)
 } 
 
 /*-----------------------------------------------------------------*/
-/*
-// LordHavoc: like AngleVectors, but taking a forward vector instead of angles, useful!
-static inline void VectorVectors(vec3_t forward, vec3_t right, vec3_t up)
-{
-	// NOTE: this is consistent to AngleVectors applied to AnglesFromVectors
-	if (forward[0] == 0 && forward[1] == 0)
-	{
-		if(forward[2] > 0)
-		{
-			VectorSet(right, 0, -1, 0);
-			VectorSet(up, -1, 0, 0);
-		}
-		else
-		{
-			VectorSet(right, 0, -1, 0);
-			VectorSet(up, 1, 0, 0);
-		}
-	}
-	else
-	{
-		right[0] = forward[1];
-		right[1] = -forward[0];
-		right[2] = 0;
-		VectorNormalize(right);
-
-		up[0] = (-forward[2]*forward[0]);
-		up[1] = (-forward[2]*forward[1]);
-		up[2] = (forward[0]*forward[0] + forward[1]*forward[1]);
-		VectorNormalize(up);
-	}
-} 
-*/
-/*-----------------------------------------------------------------*/
 
 int SignbitsForPlane (struct mplane_s *out);
 
