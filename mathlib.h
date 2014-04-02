@@ -278,7 +278,7 @@ static inline void VectorNormalizeFast(vec3_t v)
 } 
 
 /*-----------------------------------------------------------------*/
-
+/*
 // LordHavoc: like AngleVectors, but taking a forward vector instead of angles, useful!
 static inline void VectorVectors(vec3_t forward, vec3_t right, vec3_t up)
 {
@@ -309,7 +309,7 @@ static inline void VectorVectors(vec3_t forward, vec3_t right, vec3_t up)
 		VectorNormalize(up);
 	}
 } 
-
+*/
 /*-----------------------------------------------------------------*/
 
 int SignbitsForPlane (struct mplane_s *out);

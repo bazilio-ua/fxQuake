@@ -111,6 +111,7 @@ cvar_t	gl_smoothmodels = {"gl_smoothmodels","1"};
 cvar_t	gl_affinemodels = {"gl_affinemodels","0"};
 cvar_t	gl_polyblend = {"gl_polyblend","1", true};
 cvar_t	gl_flashblend = {"gl_flashblend","1", true};
+cvar_t	gl_flashblendview = {"gl_flashblendview","1", true};
 cvar_t	gl_coronas = {"gl_coronas", "1", true};
 cvar_t	gl_overbright = {"gl_overbright", "1", true};
 cvar_t	gl_zfix = {"gl_zfix","0"}; // z-fighting fix

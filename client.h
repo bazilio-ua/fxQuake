@@ -85,6 +85,7 @@ typedef struct
 	float	minlight;			// don't add when contributing less
 	int		key;
 	vec3_t	color;				// lit support via lordhavoc
+	qboolean	colored;
 } dlight_t;
 
 // keep dlight colours in the one place so that if i need to change them i only need to do it once

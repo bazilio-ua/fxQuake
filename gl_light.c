@@ -101,10 +101,55 @@ void V_AddLightBlend (float r, float g, float b, float a2)
 	v_blend[2] = v_blend[2]*(1-a2) + b*a2;
 }
 
-static float	bubble_sintable[17], bubble_costable[17];
+
+//
+float bubble_costable[17] = 
+{
+		1.000000,
+		0.923879,
+		0.707106,
+		0.382682,
+		-0.000002,
+		-0.382686,
+		-0.707109,
+		-0.923881,
+		-1.000000,
+		-0.923878,
+		-0.707103,
+		-0.382678,
+		0.000006,
+		0.382689,
+		0.707112,
+		0.923882,
+		1.000000,
+};
+
+float bubble_sintable[17] = 
+{
+		0.000000,
+		0.382684,
+		0.707107,
+		0.923880,
+		1.000000,
+		0.923879,
+		0.707105,
+		0.382680,
+		-0.000004,
+		-0.382687,
+		-0.707110,
+		-0.923882,
+		-1.000000,
+		-0.923877,
+		-0.707102,
+		-0.382677,
+		0.000008,
+};
+//
+
+//static float	bubble_sintable[17], bubble_costable[17];
 void R_InitFlashBlendBubble (void)
 {
-	int	i;
+/*	int	i;
 	float	a;
 
 	for (i=16 ; i>=0 ; i--)
@@ -113,6 +158,7 @@ void R_InitFlashBlendBubble (void)
 		bubble_sintable[i] = sin(a);
 		bubble_costable[i] = cos(a);
 	}
+*/
 }
 
 /*
@@ -121,14 +167,15 @@ R_RenderDlight
 
 =============
 */
+/*
 void R_RenderDlight (dlight_t *light)
 {
 	int		i, j;
 	vec3_t	v, v_right, v_up;
 	float	rad, length;
 
-	rad = light->radius * 0.35;
-	//rad = light->radius * 0.15; // reduce the bubble size so that it coexists more peacefully with proper light
+	//rad = light->radius * 0.35;
+	rad = light->radius * 0.15; // reduce the bubble size so that it coexists more peacefully with proper light
 
 	VectorSubtract (light->origin, r_origin, v);
 	length = VectorNormalize (v);
@@ -162,29 +209,61 @@ void R_RenderDlight (dlight_t *light)
 	}
 	glEnd ();
 }
+*/
 
-/*
+
 //old version
+//#define DLIGHT_COLOR	1, 0.5, 0
+vec3_t	bubblecolor = {1.0, 0.5, 0.0};
 void R_RenderDlight (dlight_t *light)
 {
 	int		i, j;
 	vec3_t	v;
+	vec3_t	color;
 	float	rad;
 
+/*	if (light->colored)
+//		color = light->color;
+		VectorCopy (light->color, color);
+	else
+//		color = DLIGHT_COLOR;
+		VectorCopy (bubblecolor, color);
+*/
+	VectorCopy (light->colored ? light->color : bubblecolor, color);
+		
 	//rad = light->radius * 0.35;
-	rad = light->radius * 0.15; // reduce the bubble size so that it coexists more peacefully with proper light
+//	rad = light->radius * 0.15; // reduce the bubble size so that it coexists more peacefully with proper light
+	rad = light->radius * 0.1; // reduce the bubble size so that it coexists more peacefully with proper light
 
 	VectorSubtract (light->origin, r_origin, v);
 	if (VectorLength (v) < rad)
 	{	// view is inside the dlight
-		V_AddLightBlend (1, 0.5, 0, light->radius * 0.0003);
-//		V_AddLightBlend (light->color[0], light->color[1], light->color[2], light->radius * 0.0003);
+		if (gl_flashblendview.value)
+		{
+/*			if (light->colored)
+				V_AddLightBlend (light->color[0], light->color[1], light->color[2], light->radius * 0.0003);
+			else
+				V_AddLightBlend (1, 0.5, 0, light->radius * 0.0003);
+*/
+				V_AddLightBlend (color[0], color[1], color[2], light->radius * 0.0003);
+
+		}
 		return;
 	}
 
 	glBegin (GL_TRIANGLE_FAN);
-	glColor3f (0.2, 0.1, 0.0);
-//	glColor4f (light->color[0], light->color[1], light->color[2], 0.2);
+	VectorScale (color, 0.2, color);
+	glColor3fv (color);
+/*	if (light->colored)
+	{
+		VectorScale (light->color, 0.2, color);
+		glColor3f (color[0], color[1], color[2]);
+//		glColor4f (light->color[0] * 0.2, light->color[1] * 0.2, light->color[2] * 0.2, 0.2);
+//		glColor3f (light->color[0] * 0.2, light->color[1] * 0.2, light->color[2] * 0.2);
+	}
+	else
+		glColor3f (0.2, 0.1, 0.0);
+*/
 	for (i=0 ; i<3 ; i++)
 		v[i] = light->origin[i] - vpn[i]*rad;
 	glVertex3fv (v);
@@ -198,7 +277,7 @@ void R_RenderDlight (dlight_t *light)
 	}
 	glEnd ();
 }
-*/
+
 
 /*
 =============
