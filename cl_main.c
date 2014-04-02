@@ -557,7 +557,7 @@ void CL_RelinkEntities (void)
 					CL_ColorDlight (dl, DL_COLOR_ORANGE);
 			}
 		}
-		if (ent->effects & EF_BRIGHTLIGHT) // is not used by original progs
+		if (ent->effects & EF_BRIGHTLIGHT) // rogue mp plasma/eel
 		{
 			// uncoloured
 			dl = CL_AllocDlight (i);
@@ -570,7 +570,7 @@ void CL_RelinkEntities (void)
 			
 			CL_ColorDlight (dl, DL_COLOR_WHITE);
 		}
-		if (ent->effects & EF_DIMLIGHT) // is for powerup glows and enforcer's laser 
+		if (ent->effects & EF_DIMLIGHT) // powerup(s) glows and laser 
 		{			
 			// powerup dynamic lights
 			dl = CL_AllocDlight (i);

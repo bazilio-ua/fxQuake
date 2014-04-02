@@ -154,7 +154,7 @@ void CL_ParseTEnt (void)
 		pos[1] = MSG_ReadCoord (net_message);
 		pos[2] = MSG_ReadCoord (net_message);
 		
-//		Con_Printf("catch TE_SPIKE\n");//eer1 DBG
+		Con_Printf("catch TE_SPIKE\n");//eer1 DBG
 		
 		R_RunParticleEffect (pos, vec3_origin, 0, 10);
 		if ( rand() % 5 )
@@ -176,7 +176,7 @@ void CL_ParseTEnt (void)
 		pos[1] = MSG_ReadCoord (net_message);
 		pos[2] = MSG_ReadCoord (net_message);
 		
-//		Con_Printf("catch TE_SUPERSPIKE\n");//eer1 DBG
+		Con_Printf("catch TE_SUPERSPIKE\n");//eer1 DBG
 		
 		R_RunParticleEffect (pos, vec3_origin, 0, 20);
 		if ( rand() % 5 )
@@ -452,7 +452,7 @@ void CL_ParseTEnt (void)
 		pos[1] = MSG_ReadCoord (net_message);
 		pos[2] = MSG_ReadCoord (net_message);
 		
-//		Con_Printf("catch TE_EXPLOSION2 (color mapped)\n");//eer1 DBG
+		Con_Printf("catch TE_EXPLOSION2 (color mapped)\n");//eer1 DBG
 		
 		colorStart = MSG_ReadByte (net_message);
 		colorLength = MSG_ReadByte (net_message);
@@ -488,7 +488,7 @@ void CL_ParseTEnt (void)
 		pos[1] = MSG_ReadCoord (net_message);
 		pos[2] = MSG_ReadCoord (net_message);
 		
-//		Con_Printf("catch TE_EXPLOSION3 (colored)\n");//eer1 DBG
+		Con_Printf("catch TE_EXPLOSION3 (colored)\n");//eer1 DBG
 		
 		dl = CL_AllocDlight (0);
 		VectorCopy (pos, dl->origin);
