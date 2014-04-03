@@ -534,11 +534,24 @@ void CL_RelinkEntities (void)
 			if (i == cl.viewentity)
 			{
 				// switch the flash colour for the current weapon
-				if (cl.stats[STAT_ACTIVEWEAPON] == IT_SUPER_LIGHTNING) 
+				if (cl.stats[STAT_ACTIVEWEAPON] == IT_LIGHTNING || cl.stats[STAT_ACTIVEWEAPON] == IT_SUPER_LIGHTNING)
 					CL_ColorDlight (dl, DL_COLOR_CYAN);
-				else if (cl.stats[STAT_ACTIVEWEAPON] == IT_LIGHTNING)
+				else if (rogue && cl.stats[STAT_ACTIVEWEAPON] == RIT_PLASMA_GUN)
+				{
 					CL_ColorDlight (dl, DL_COLOR_CYAN);
-				//else if TODO: add more weapons
+					Con_Printf("plasma here.\n");//eer1 DBG
+				}
+				else if (hipnotic && cl.stats[STAT_ACTIVEWEAPON] == HIT_MJOLNIR)
+				{
+					CL_ColorDlight (dl, DL_COLOR_CYAN);
+					Con_Printf("mjolnir here.\n");//eer1 DBG
+				}
+				else if (hipnotic && cl.stats[STAT_ACTIVEWEAPON] == HIT_LASER_CANNON)
+				{
+					CL_ColorDlight (dl, DL_COLOR_RED);
+					Con_Printf("laser here.\n");//eer1 DBG
+				}
+				//else if (TODO: add more weapons)
 				else
 					CL_ColorDlight (dl, DL_COLOR_ORANGE);
 			}
@@ -551,12 +564,14 @@ void CL_RelinkEntities (void)
 					CL_ColorDlight (dl, DL_COLOR_PURPLE);
 				else if (!strcmp (ent->model->name, "progs/shambler.mdl"))
 					CL_ColorDlight (dl, DL_COLOR_CYAN);
-				//else if TODO: add more models
+				else if (!strcmp (ent->model->name, "progs/enforcer.mdl"))
+					CL_ColorDlight (dl, DL_COLOR_RED);
+				//else if (TODO: add more models)
 				else 
 					CL_ColorDlight (dl, DL_COLOR_ORANGE);
 			}
 		}
-		if (ent->effects & EF_BRIGHTLIGHT) // rogue mp plasma/eel
+		if (ent->effects & EF_BRIGHTLIGHT) // rogue mp plasma and eel
 		{
 			// uncoloured
 			dl = CL_AllocDlight (i);
@@ -588,12 +603,25 @@ void CL_RelinkEntities (void)
 					CL_ColorDlight (dl, DL_COLOR_BLUE);
 				else if (cl.items & IT_INVULNERABILITY)
 					CL_ColorDlight (dl, DL_COLOR_RED);
-				//else if TODO: add more powerups
+				//else if (TODO: add more powerups)
 				else
 					CL_ColorDlight (dl, DL_COLOR_WHITE);
 			}
 			else
-				CL_ColorDlight (dl, DL_COLOR_WHITE);
+			{
+				if (!strcmp (ent->model->name, "progs/laser.mdl"))
+				{
+					CL_ColorDlight (dl, DL_COLOR_RED);
+					Con_Printf("laser model\n");//eer1 DBG
+				}
+				else if (!strcmp (ent->model->name, "progs/lasrspik.mdl")) // hipnotic
+				{
+					CL_ColorDlight (dl, DL_COLOR_RED);
+					Con_Printf("lasrspik model\n");//eer1 DBG
+				}
+				else
+					CL_ColorDlight (dl, DL_COLOR_WHITE);
+			}
 		}
 
 // Nehahra
