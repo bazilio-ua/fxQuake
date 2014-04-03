@@ -1550,8 +1550,11 @@ void Host_Give_f (void)
 		}
 		break;
 
-	// give armour
+	// give armor
 	case 'a':
+		// the types here came from id1 qc and may not be fully accurate for mods
+		// rogue mod if give armor > 100 break items flag caused to disappearing gun
+		// but who knows? who cares? it's cheating anyway!!!
 		if (v > 150)
 		{
 			sv_player->v.armortype = 0.8;
@@ -1570,7 +1573,7 @@ void Host_Give_f (void)
 			else
 				sv_player->v.items = sv_player->v.items - ((int)(sv_player->v.items) & (int)(IT_ARMOR1 | IT_ARMOR2 | IT_ARMOR3)) + IT_ARMOR2;
 		}
-		else if (v >= 0)
+		else if (v > 0)
 		{
 			sv_player->v.armortype = 0.3;
 			sv_player->v.armorvalue = v;
