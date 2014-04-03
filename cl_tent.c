@@ -340,7 +340,7 @@ void CL_ParseTEnt (void)
 // Nehahra		
 	case TE_LIGHTNING4:				// lightning bolts
 		// need to do it this way for correct parsing order
-		name = MSG_ReadString(net_message);
+		name = MSG_ReadString (net_message);
 		
 		ent = MSG_ReadShort (net_message);
 		

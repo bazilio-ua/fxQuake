@@ -412,7 +412,6 @@ void CL_RelinkEntities (void)
 	vec3_t		delta;
 	float		objrotate;
 	vec3_t		oldorg;
-//	vec3_t		color;
 	dlight_t	*dl;
 	static float	lastmsg = 0;
 
@@ -571,7 +570,7 @@ void CL_RelinkEntities (void)
 			CL_ColorDlight (dl, DL_COLOR_WHITE);
 		}
 		if (ent->effects & EF_DIMLIGHT) // powerup(s) glows and laser 
-		{			
+		{
 			// powerup dynamic lights
 			dl = CL_AllocDlight (i);
 			VectorCopy (ent->origin,  dl->origin);
