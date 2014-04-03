@@ -147,25 +147,25 @@ byte *Image_LoadTGA (FILE *fin, int *width, int *height)
 				byte red,green,blue,alphabyte;
 				switch (targa_header.pixel_size)
 				{
-					case 24:
-						blue = getc(fin);
-						green = getc(fin);
-						red = getc(fin);
-						*pixbuf++ = red;
-						*pixbuf++ = green;
-						*pixbuf++ = blue;
-						*pixbuf++ = 255;
-						break;
-					case 32:
-						blue = getc(fin);
-						green = getc(fin);
-						red = getc(fin);
-						alphabyte = getc(fin);
-						*pixbuf++ = red;
-						*pixbuf++ = green;
-						*pixbuf++ = blue;
-						*pixbuf++ = alphabyte;
-						break;
+				case 24:
+					blue = getc(fin);
+					green = getc(fin);
+					red = getc(fin);
+					*pixbuf++ = red;
+					*pixbuf++ = green;
+					*pixbuf++ = blue;
+					*pixbuf++ = 255;
+					break;
+				case 32:
+					blue = getc(fin);
+					green = getc(fin);
+					red = getc(fin);
+					alphabyte = getc(fin);
+					*pixbuf++ = red;
+					*pixbuf++ = green;
+					*pixbuf++ = blue;
+					*pixbuf++ = alphabyte;
+					break;
 				}
 			}
 		}
@@ -187,20 +187,20 @@ byte *Image_LoadTGA (FILE *fin, int *width, int *height)
 				{
 					switch (targa_header.pixel_size)
 					{
-						case 24:
-							blue = getc(fin);
-							green = getc(fin);
-							red = getc(fin);
-							alphabyte = 255;
-							break;
-						case 32:
-							blue = getc(fin);
-							green = getc(fin);
-							red = getc(fin);
-							alphabyte = getc(fin);
-							break;
-						default: /* avoid compiler warnings */
-							blue = green = red = alphabyte = 0;
+					case 24:
+						blue = getc(fin);
+						green = getc(fin);
+						red = getc(fin);
+						alphabyte = 255;
+						break;
+					case 32:
+						blue = getc(fin);
+						green = getc(fin);
+						red = getc(fin);
+						alphabyte = getc(fin);
+						break;
+					default: /* avoid compiler warnings */
+						blue = green = red = alphabyte = 0;
 					}
 
 					for(j=0;j<packetSize;j++)
@@ -230,27 +230,27 @@ byte *Image_LoadTGA (FILE *fin, int *width, int *height)
 					{
 						switch (targa_header.pixel_size)
 						{
-							case 24:
-								blue = getc(fin);
-								green = getc(fin);
-								red = getc(fin);
-								*pixbuf++ = red;
-								*pixbuf++ = green;
-								*pixbuf++ = blue;
-								*pixbuf++ = 255;
-								break;
-							case 32:
-								blue = getc(fin);
-								green = getc(fin);
-								red = getc(fin);
-								alphabyte = getc(fin);
-								*pixbuf++ = red;
-								*pixbuf++ = green;
-								*pixbuf++ = blue;
-								*pixbuf++ = alphabyte;
-								break;
-							default: /* avoid compiler warnings */
-								blue = green = red = alphabyte = 0;
+						case 24:
+							blue = getc(fin);
+							green = getc(fin);
+							red = getc(fin);
+							*pixbuf++ = red;
+							*pixbuf++ = green;
+							*pixbuf++ = blue;
+							*pixbuf++ = 255;
+							break;
+						case 32:
+							blue = getc(fin);
+							green = getc(fin);
+							red = getc(fin);
+							alphabyte = getc(fin);
+							*pixbuf++ = red;
+							*pixbuf++ = green;
+							*pixbuf++ = blue;
+							*pixbuf++ = alphabyte;
+							break;
+						default: /* avoid compiler warnings */
+							blue = green = red = alphabyte = 0;
 						}
 						column++;
 						if (column==columns) // pixel packet run spans across rows
@@ -571,48 +571,48 @@ void R_Fog_f (void)
 {
 	switch (Cmd_Argc())
 	{
-		default:
-		case 1:
-			Con_Printf ("usage:\n");
-			Con_Printf ("   fog <density>\n");
-			Con_Printf ("   fog <density> <rgb>\n");
-			Con_Printf ("   fog <red> <green> <blue>\n");
-			Con_Printf ("   fog <density> <red> <green> <blue>\n");
-			Con_Printf("current values:\n");
-			Con_Printf("   fog is %sabled\n", gl_fogenable.value ? "en" : "dis");
-			Con_Printf("   density is %f\n", gl_fogdensity.value);
-			Con_Printf("   red   is %f\n", gl_fogred.value);
-			Con_Printf("   green is %f\n", gl_foggreen.value);
-			Con_Printf("   blue  is %f\n", gl_fogblue.value);
-			break;
-		case 2:
-			R_FogUpdate(max(0.0, atof(Cmd_Argv(1))), 
-				gl_fogred.value, 
-				gl_foggreen.value, 
-				gl_fogblue.value, 
-				0.0);
-			break;
-		case 3:
-			R_FogUpdate(max(0.0, atof(Cmd_Argv(1))), 
-				CLAMP(0.0, atof(Cmd_Argv(2)), 1.0), 
-				CLAMP(0.0, atof(Cmd_Argv(2)), 1.0), 
-				CLAMP(0.0, atof(Cmd_Argv(2)), 1.0), 
-				0.0);
-			break;
-		case 4:
-			R_FogUpdate(gl_fogdensity.value, 
-				CLAMP(0.0, atof(Cmd_Argv(1)), 1.0), 
-				CLAMP(0.0, atof(Cmd_Argv(2)), 1.0), 
-				CLAMP(0.0, atof(Cmd_Argv(3)), 1.0), 
-				0.0);
-			break;
-		case 5:
-			R_FogUpdate(max(0.0, atof(Cmd_Argv(1))), 
-				CLAMP(0.0, atof(Cmd_Argv(2)), 1.0), 
-				CLAMP(0.0, atof(Cmd_Argv(3)), 1.0), 
-				CLAMP(0.0, atof(Cmd_Argv(4)), 1.0), 
-				0.0);
-			break;
+	default:
+	case 1:
+		Con_Printf ("usage:\n");
+		Con_Printf ("   fog <density>\n");
+		Con_Printf ("   fog <density> <rgb>\n");
+		Con_Printf ("   fog <red> <green> <blue>\n");
+		Con_Printf ("   fog <density> <red> <green> <blue>\n");
+		Con_Printf("current values:\n");
+		Con_Printf("   fog is %sabled\n", gl_fogenable.value ? "en" : "dis");
+		Con_Printf("   density is %f\n", gl_fogdensity.value);
+		Con_Printf("   red   is %f\n", gl_fogred.value);
+		Con_Printf("   green is %f\n", gl_foggreen.value);
+		Con_Printf("   blue  is %f\n", gl_fogblue.value);
+		break;
+	case 2:
+		R_FogUpdate(max(0.0, atof(Cmd_Argv(1))), 
+			gl_fogred.value, 
+			gl_foggreen.value, 
+			gl_fogblue.value, 
+			0.0);
+		break;
+	case 3:
+		R_FogUpdate(max(0.0, atof(Cmd_Argv(1))), 
+			CLAMP(0.0, atof(Cmd_Argv(2)), 1.0), 
+			CLAMP(0.0, atof(Cmd_Argv(2)), 1.0), 
+			CLAMP(0.0, atof(Cmd_Argv(2)), 1.0), 
+			0.0);
+		break;
+	case 4:
+		R_FogUpdate(gl_fogdensity.value, 
+			CLAMP(0.0, atof(Cmd_Argv(1)), 1.0), 
+			CLAMP(0.0, atof(Cmd_Argv(2)), 1.0), 
+			CLAMP(0.0, atof(Cmd_Argv(3)), 1.0), 
+			0.0);
+		break;
+	case 5:
+		R_FogUpdate(max(0.0, atof(Cmd_Argv(1))), 
+			CLAMP(0.0, atof(Cmd_Argv(2)), 1.0), 
+			CLAMP(0.0, atof(Cmd_Argv(3)), 1.0), 
+			CLAMP(0.0, atof(Cmd_Argv(4)), 1.0), 
+			0.0);
+		break;
 	}
 }
 
@@ -966,14 +966,14 @@ void R_Sky_f (void)
 {
 	switch (Cmd_Argc())
 	{
-		case 1:
-			Con_Printf("\"sky\" is \"%s\"\n", skybox_name);
-			break;
-		case 2:
-			R_LoadSkyBox(Cmd_Argv(1));
-			break;
-		default:
-			Con_Printf("usage: sky <skyname>\n");
+	case 1:
+		Con_Printf("\"sky\" is \"%s\"\n", skybox_name);
+		break;
+	case 2:
+		R_LoadSkyBox(Cmd_Argv(1));
+		break;
+	default:
+		Con_Printf("usage: sky <skyname>\n");
 	}
 }
 
@@ -2105,22 +2105,22 @@ static void R_Bloom_GeneratexDiamonds (void)
 
 	switch( (int)r_bloom_diamond_size.value )
 	{
-		case 4:
-			k = 2;
-			diamond = &Diamond4x[0][0];
-			scale = r_bloom_intensity.value * 0.8f;
-			break;
-		case 6:
-			k = 3;
-			diamond = &Diamond6x[0][0];
-			scale = r_bloom_intensity.value * 0.5f;
-			break;
-		case 8:
-		default:
-			k = 4;
-			diamond = &Diamond8x[0][0];
-			scale = r_bloom_intensity.value * 0.3f;
-			break;
+	case 4:
+		k = 2;
+		diamond = &Diamond4x[0][0];
+		scale = r_bloom_intensity.value * 0.8f;
+		break;
+	case 6:
+		k = 3;
+		diamond = &Diamond6x[0][0];
+		scale = r_bloom_intensity.value * 0.5f;
+		break;
+	case 8:
+	default:
+		k = 4;
+		diamond = &Diamond8x[0][0];
+		scale = r_bloom_intensity.value * 0.3f;
+		break;
 	}
 
 	glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);

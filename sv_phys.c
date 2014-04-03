@@ -926,14 +926,14 @@ int SV_TryUnstick (edict_t *ent, vec3_t oldvel)
 // try pushing a little in an axial direction
 		switch (i)
 		{
-			case 0:	dir[0] = 2; dir[1] = 0; break;
-			case 1:	dir[0] = 0; dir[1] = 2; break;
-			case 2:	dir[0] = -2; dir[1] = 0; break;
-			case 3:	dir[0] = 0; dir[1] = -2; break;
-			case 4:	dir[0] = 2; dir[1] = 2; break;
-			case 5:	dir[0] = -2; dir[1] = 2; break;
-			case 6:	dir[0] = 2; dir[1] = -2; break;
-			case 7:	dir[0] = -2; dir[1] = -2; break;
+		case 0:	dir[0] = 2; dir[1] = 0; break;
+		case 1:	dir[0] = 0; dir[1] = 2; break;
+		case 2:	dir[0] = -2; dir[1] = 0; break;
+		case 3:	dir[0] = 0; dir[1] = -2; break;
+		case 4:	dir[0] = 2; dir[1] = 2; break;
+		case 5:	dir[0] = -2; dir[1] = 2; break;
+		case 6:	dir[0] = 2; dir[1] = -2; break;
+		case 7:	dir[0] = -2; dir[1] = -2; break;
 		}
 		
 		SV_PushEntity (ent, dir);

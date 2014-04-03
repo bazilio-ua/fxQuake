@@ -625,16 +625,16 @@ restart:
 
 	switch (plane->type)
 	{
-		case PLANE_X:
-		case PLANE_Y:
-		case PLANE_Z:
-			t1 = p1[plane->type] - plane->dist;
-			t2 = p2[plane->type] - plane->dist;
-			break;
-		default:
-			t1 = DotProduct (plane->normal, p1) - plane->dist;
-			t2 = DotProduct (plane->normal, p2) - plane->dist;
-			break;
+	case PLANE_X:
+	case PLANE_Y:
+	case PLANE_Z:
+		t1 = p1[plane->type] - plane->dist;
+		t2 = p2[plane->type] - plane->dist;
+		break;
+	default:
+		t1 = DotProduct (plane->normal, p1) - plane->dist;
+		t2 = DotProduct (plane->normal, p2) - plane->dist;
+		break;
 	}
 
 // LordHavoc: recursion optimization

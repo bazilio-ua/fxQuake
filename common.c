@@ -1474,29 +1474,29 @@ byte *COM_LoadFile (char *path, int usehunk, unsigned int *path_id)
 
 	switch (usehunk)
 	{
-		case LOADFILE_HUNK:
-			buf = Hunk_AllocName (len+1, base);
-			break;
-		case LOADFILE_TEMPHUNK:
+	case LOADFILE_HUNK:
+		buf = Hunk_AllocName (len+1, base);
+		break;
+	case LOADFILE_TEMPHUNK:
+		buf = Hunk_TempAlloc (len+1);
+		break;
+	case LOADFILE_ZONE:
+		buf = Z_Malloc (len+1);
+		break;
+	case LOADFILE_CACHE:
+		buf = Cache_Alloc (loadcache, len+1, base);
+		break;
+	case LOADFILE_STACK:
+		if (len+1 > loadsize)
 			buf = Hunk_TempAlloc (len+1);
-			break;
-		case LOADFILE_ZONE:
-			buf = Z_Malloc (len+1);
-			break;
-		case LOADFILE_CACHE:
-			buf = Cache_Alloc (loadcache, len+1, base);
-			break;
-		case LOADFILE_STACK:
-			if (len+1 > loadsize)
-				buf = Hunk_TempAlloc (len+1);
-			else
-				buf = loadbuf;
-			break;
-		case LOADFILE_MALLOC:
-			buf = malloc (len+1);
-			break;
-		default:
-			Sys_Error ("COM_LoadFile: bad usehunk %d", usehunk);
+		else
+			buf = loadbuf;
+		break;
+	case LOADFILE_MALLOC:
+		buf = malloc (len+1);
+		break;
+	default:
+		Sys_Error ("COM_LoadFile: bad usehunk %d", usehunk);
 	}
 
 	if (!buf)

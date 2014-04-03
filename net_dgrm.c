@@ -87,33 +87,33 @@ void NET_Ban_f (void)
 
 	switch (Cmd_Argc ())
 	{
-		case 1:
-			if (banAddr.s_addr != htonl(INADDR_ANY))
-			{
-				strcpy(addrStr, inet_ntoa(banAddr));
-				strcpy(maskStr, inet_ntoa(banMask));
-				print("Banning %s [%s]\n", addrStr, maskStr);
-			}
-			else
-				print("Banning not active\n");
-			break;
+	case 1:
+		if (banAddr.s_addr != htonl(INADDR_ANY))
+		{
+			strcpy(addrStr, inet_ntoa(banAddr));
+			strcpy(maskStr, inet_ntoa(banMask));
+			print("Banning %s [%s]\n", addrStr, maskStr);
+		}
+		else
+			print("Banning not active\n");
+		break;
 
-		case 2:
-			if (strcasecmp(Cmd_Argv (1), "off") == 0)
-				banAddr.s_addr = htonl(INADDR_ANY); // 0x00000000
-			else
-				banAddr.s_addr = inet_addr(Cmd_Argv (1));
-			banMask.s_addr = htonl(INADDR_NONE); // 0xffffffff
-			break;
-
-		case 3:
+	case 2:
+		if (strcasecmp(Cmd_Argv (1), "off") == 0)
+			banAddr.s_addr = htonl(INADDR_ANY); // 0x00000000
+		else
 			banAddr.s_addr = inet_addr(Cmd_Argv (1));
-			banMask.s_addr = inet_addr(Cmd_Argv (2));
-			break;
+		banMask.s_addr = htonl(INADDR_NONE); // 0xffffffff
+		break;
 
-		default:
-			print("BAN ip_address [mask]\n");
-			break;
+	case 3:
+		banAddr.s_addr = inet_addr(Cmd_Argv (1));
+		banMask.s_addr = inet_addr(Cmd_Argv (2));
+		break;
+
+	default:
+		print("BAN ip_address [mask]\n");
+		break;
 	}
 }
 

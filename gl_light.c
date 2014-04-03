@@ -264,14 +264,14 @@ restart:
 
 	switch (plane->type)
 	{
-		case PLANE_X:
-		case PLANE_Y:
-		case PLANE_Z:
-			dist = light->origin[plane->type] - plane->dist;
-			break;
-		default:
-			dist = DotProduct (light->origin, plane->normal) - plane->dist;
-			break;
+	case PLANE_X:
+	case PLANE_Y:
+	case PLANE_Z:
+		dist = light->origin[plane->type] - plane->dist;
+		break;
+	default:
+		dist = DotProduct (light->origin, plane->normal) - plane->dist;
+		break;
 	}
 
 	if (dist > light->radius)
@@ -394,16 +394,16 @@ restart:
 
 	switch (plane->type)
 	{
-		case PLANE_X:
-		case PLANE_Y:
-		case PLANE_Z:
-			front = start[plane->type] - plane->dist;
-			back = end[plane->type] - plane->dist;
-			break;
-		default:
-			front = DotProduct(start, plane->normal) - plane->dist;
-			back = DotProduct(end, plane->normal) - plane->dist;
-			break;
+	case PLANE_X:
+	case PLANE_Y:
+	case PLANE_Z:
+		front = start[plane->type] - plane->dist;
+		back = end[plane->type] - plane->dist;
+		break;
+	default:
+		front = DotProduct(start, plane->normal) - plane->dist;
+		back = DotProduct(end, plane->normal) - plane->dist;
+		break;
 	}
 
 	side = front < 0;

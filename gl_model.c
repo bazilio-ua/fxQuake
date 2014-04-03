@@ -299,17 +299,17 @@ model_t *Mod_LoadModel (model_t *mod, qboolean crash)
 	
 	switch (LittleLong(*(unsigned *)buf))
 	{
-		case IDPOLYHEADER:
-			Mod_LoadAliasModel (mod, buf);
-			break;
-			
-		case IDSPRITEHEADER:
-			Mod_LoadSpriteModel (mod, buf);
-			break;
+	case IDPOLYHEADER:
+		Mod_LoadAliasModel (mod, buf);
+		break;
 		
-		default:
-			Mod_LoadBrushModel (mod, buf);
-			break;
+	case IDSPRITEHEADER:
+		Mod_LoadSpriteModel (mod, buf);
+		break;
+	
+	default:
+		Mod_LoadBrushModel (mod, buf);
+		break;
 	}
 
 	return mod;

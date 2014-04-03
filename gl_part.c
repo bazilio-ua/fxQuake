@@ -114,15 +114,15 @@ void R_Particles (void)
 {
 	switch ((int)(r_particles.value))
 	{
-		default:
-		case 1:
-			particletexture = particletexture1;
-			texturescalefactor = 1.25;
-			break;
-		case 2:
-			particletexture = particletexture2;
-			texturescalefactor = 1.0;
-			break;
+	default:
+	case 1:
+		particletexture = particletexture1;
+		texturescalefactor = 1.25;
+		break;
+	case 2:
+		particletexture = particletexture2;
+		texturescalefactor = 1.0;
+		break;
 	}
 }
 
@@ -552,68 +552,68 @@ void R_RocketTrail (vec3_t start, vec3_t end, int type)
 
 		switch (type)
 		{
-			case RT_ROCKET:		// rocket trail
-				p->ramp = (rand()&3);
-				p->color = ramp3[(int)p->ramp];
-				p->type = pt_fire;
-				for (j=0 ; j<3 ; j++)
-					p->org[j] = start[j] + ((rand()%6)-3);
-				break;
+		case RT_ROCKET:		// rocket trail
+			p->ramp = (rand()&3);
+			p->color = ramp3[(int)p->ramp];
+			p->type = pt_fire;
+			for (j=0 ; j<3 ; j++)
+				p->org[j] = start[j] + ((rand()%6)-3);
+			break;
 
-			case RT_GRENADE:	// smoke smoke
-				p->ramp = (rand()&3) + 2;
-				p->color = ramp3[(int)p->ramp];
-				p->type = pt_fire;
-				for (j=0 ; j<3 ; j++)
-					p->org[j] = start[j] + ((rand()%6)-3);
-				break;
+		case RT_GRENADE:	// smoke smoke
+			p->ramp = (rand()&3) + 2;
+			p->color = ramp3[(int)p->ramp];
+			p->type = pt_fire;
+			for (j=0 ; j<3 ; j++)
+				p->org[j] = start[j] + ((rand()%6)-3);
+			break;
 
-			case RT_GIB:		// blood
-				p->type = pt_grav;
-				p->color = 67 + (rand()&3);
-				for (j=0 ; j<3 ; j++)
-					p->org[j] = start[j] + ((rand()%6)-3);
-				break;
+		case RT_GIB:		// blood
+			p->type = pt_grav;
+			p->color = 67 + (rand()&3);
+			for (j=0 ; j<3 ; j++)
+				p->org[j] = start[j] + ((rand()%6)-3);
+			break;
 
-			case RT_WIZARD:		// wizard tracer
-			case RT_KNIGHT:		// knight tracer
-				p->die = cl.time + 0.5;
-				p->type = pt_static;
-				if (type == 3)
-					p->color = 52 + ((tracercount&4)<<1);
-				else
-					p->color = 230 + ((tracercount&4)<<1);
-			
-				tracercount++;
+		case RT_WIZARD:		// wizard tracer
+		case RT_KNIGHT:		// knight tracer
+			p->die = cl.time + 0.5;
+			p->type = pt_static;
+			if (type == 3)
+				p->color = 52 + ((tracercount&4)<<1);
+			else
+				p->color = 230 + ((tracercount&4)<<1);
+		
+			tracercount++;
 
-				VectorCopy (start, p->org);
-				if (tracercount & 1)
-				{
-					p->vel[0] = 30*vec[1];
-					p->vel[1] = 30*-vec[0];
-				}
-				else
-				{
-					p->vel[0] = 30*-vec[1];
-					p->vel[1] = 30*vec[0];
-				}
-				break;
+			VectorCopy (start, p->org);
+			if (tracercount & 1)
+			{
+				p->vel[0] = 30*vec[1];
+				p->vel[1] = 30*-vec[0];
+			}
+			else
+			{
+				p->vel[0] = 30*-vec[1];
+				p->vel[1] = 30*vec[0];
+			}
+			break;
 
-			case RT_ZOMGIB:		// slight blood
-				p->type = pt_grav;
-				p->color = 67 + (rand()&3);
-				for (j=0 ; j<3 ; j++)
-					p->org[j] = start[j] + ((rand()%6)-3);
-				len -= 3;
-				break;
+		case RT_ZOMGIB:		// slight blood
+			p->type = pt_grav;
+			p->color = 67 + (rand()&3);
+			for (j=0 ; j<3 ; j++)
+				p->org[j] = start[j] + ((rand()%6)-3);
+			len -= 3;
+			break;
 
-			case RT_VORE:		// voor trail
-				p->color = 9*16 + 8 + (rand()&3);
-				p->type = pt_static;
-				p->die = cl.time + 0.3;
-				for (j=0 ; j<3 ; j++)
-					p->org[j] = start[j] + ((rand()&15)-8);
-				break;
+		case RT_VORE:		// voor trail
+			p->color = 9*16 + 8 + (rand()&3);
+			p->type = pt_static;
+			p->die = cl.time + 0.3;
+			for (j=0 ; j<3 ; j++)
+				p->org[j] = start[j] + ((rand()&15)-8);
+			break;
 		}
 
 		VectorAdd (start, vec, start);
@@ -679,55 +679,55 @@ void R_UpdateParticles (void)
 		
 		switch (p->type)
 		{
-			case pt_static:
-				break;
-			case pt_fire:
-				p->ramp += time1;
-				if (p->ramp >= 6)
-					p->die = -1;
-				else
-					p->color = ramp3[(int)p->ramp];
-				p->vel[2] += grav;
-				break;
-	
-			case pt_explode:
-				p->ramp += time2;
-				if (p->ramp >=8)
-					p->die = -1;
-				else
-					p->color = ramp1[(int)p->ramp];
-				for (i=0 ; i<3 ; i++)
-					p->vel[i] += p->vel[i]*dvel;
-				p->vel[2] -= grav;
-				break;
-	
-			case pt_explode2:
-				p->ramp += time3;
-				if (p->ramp >=8)
-					p->die = -1;
-				else
-					p->color = ramp2[(int)p->ramp];
-				for (i=0 ; i<3 ; i++)
-					p->vel[i] -= p->vel[i]*frametime;
-				p->vel[2] -= grav;
-				break;
-	
-			case pt_blob:
-				for (i=0 ; i<3 ; i++)
-					p->vel[i] += p->vel[i]*dvel;
-				p->vel[2] -= grav;
-				break;
-	
-			case pt_blob2:
-				for (i=0 ; i<2 ; i++)
-					p->vel[i] -= p->vel[i]*dvel;
-				p->vel[2] -= grav;
-				break;
-	
-			case pt_grav:
-			case pt_slowgrav:
-				p->vel[2] -= grav;
-				break;
+		case pt_static:
+			break;
+		case pt_fire:
+			p->ramp += time1;
+			if (p->ramp >= 6)
+				p->die = -1;
+			else
+				p->color = ramp3[(int)p->ramp];
+			p->vel[2] += grav;
+			break;
+
+		case pt_explode:
+			p->ramp += time2;
+			if (p->ramp >=8)
+				p->die = -1;
+			else
+				p->color = ramp1[(int)p->ramp];
+			for (i=0 ; i<3 ; i++)
+				p->vel[i] += p->vel[i]*dvel;
+			p->vel[2] -= grav;
+			break;
+
+		case pt_explode2:
+			p->ramp += time3;
+			if (p->ramp >=8)
+				p->die = -1;
+			else
+				p->color = ramp2[(int)p->ramp];
+			for (i=0 ; i<3 ; i++)
+				p->vel[i] -= p->vel[i]*frametime;
+			p->vel[2] -= grav;
+			break;
+
+		case pt_blob:
+			for (i=0 ; i<3 ; i++)
+				p->vel[i] += p->vel[i]*dvel;
+			p->vel[2] -= grav;
+			break;
+
+		case pt_blob2:
+			for (i=0 ; i<2 ; i++)
+				p->vel[i] -= p->vel[i]*dvel;
+			p->vel[2] -= grav;
+			break;
+
+		case pt_grav:
+		case pt_slowgrav:
+			p->vel[2] -= grav;
+			break;
 		}
 	}
 }

@@ -119,29 +119,29 @@ DWORD RequestProc (DWORD dwNichts)
 
 		switch (pBuffer[0])
 		{
-			case CCOM_WRITE_TEXT:
-			// Param1 : Text
-				pBuffer[0] = WriteText ((LPCTSTR) (pBuffer + 1));
-				break;
+		case CCOM_WRITE_TEXT:
+		// Param1 : Text
+			pBuffer[0] = WriteText ((LPCTSTR) (pBuffer + 1));
+			break;
 
-			case CCOM_GET_TEXT:
-			// Param1 : Begin line
-			// Param2 : End line
-				iBeginLine = pBuffer[1];
-				iEndLine = pBuffer[2];
-				pBuffer[0] = ReadText ((LPTSTR) (pBuffer + 1), iBeginLine, 
-									   iEndLine);
-				break;
+		case CCOM_GET_TEXT:
+		// Param1 : Begin line
+		// Param2 : End line
+			iBeginLine = pBuffer[1];
+			iEndLine = pBuffer[2];
+			pBuffer[0] = ReadText ((LPTSTR) (pBuffer + 1), iBeginLine, 
+								   iEndLine);
+			break;
 
-			case CCOM_GET_SCR_LINES:
-			// No params
-				pBuffer[0] = GetScreenBufferLines (&pBuffer[1]);
-				break;
+		case CCOM_GET_SCR_LINES:
+		// No params
+			pBuffer[0] = GetScreenBufferLines (&pBuffer[1]);
+			break;
 
-			case CCOM_SET_SCR_LINES:
-			// Param1 : Number of lines
-				pBuffer[0] = SetScreenBufferLines (pBuffer[1]);
-				break;
+		case CCOM_SET_SCR_LINES:
+		// Param1 : Number of lines
+			pBuffer[0] = SetScreenBufferLines (pBuffer[1]);
+			break;
 		}
 
 		ReleaseMappedBuffer (pBuffer);
@@ -268,11 +268,11 @@ int CharToCode (char c)
 
 	switch (c)
 	{
-		case 13:
-			return 28;
+	case 13:
+		return 28;
 
-		default:
-			break;
+	default:
+		break;
 	}
 
 	if (isalpha(c))

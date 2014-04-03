@@ -700,201 +700,201 @@ LONG WINAPI MainWndProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 	switch (uMsg)
 	{
-		case WM_KILLFOCUS:
+	case WM_KILLFOCUS:
+		break;
+
+	case WM_SETFOCUS:
+		break;
+
+	case WM_CREATE:
+		break;
+
+	case WM_MOVE:
+		window_x = (int) LOWORD(lParam);
+		window_y = (int) HIWORD(lParam);
+		VID_UpdateWindowStatus ();
+		break;
+
+	case WM_KEYDOWN:
+	case WM_SYSKEYDOWN:
+		Key_Event (MapKey(lParam), true);
+		break;
+		
+	case WM_KEYUP:
+	case WM_SYSKEYUP:
+		Key_Event (MapKey(lParam), false);
+		break;
+
+	case WM_SYSCHAR:
+		// keep Alt-Space from happening
+		break;
+
+	// this is complicated because Win32 seems to pack multiple mouse events into
+	// one update sometimes, so we always check all states and look for events
+	case WM_LBUTTONDOWN:
+	case WM_LBUTTONUP:
+	case WM_RBUTTONDOWN:
+	case WM_RBUTTONUP:
+	case WM_MBUTTONDOWN:
+	case WM_MBUTTONUP:
+	case WM_XBUTTONDOWN:
+	case WM_XBUTTONUP:
+	case WM_MOUSEMOVE:
+		button = 0;
+
+		if (wParam & MK_LBUTTON)
+			button |= 1;
+
+		if (wParam & MK_RBUTTON)
+			button |= 2;
+
+		if (wParam & MK_MBUTTON)
+			button |= 4;
+
+		// Intellimouse(c) explorer
+		if (wParam & MK_XBUTTON1)
+			button |= 8;
+
+		if (wParam & MK_XBUTTON2)
+			button |= 16;
+
+		// copied from DarkPlaces in an attempt to grab more buttons
+		if (wParam & MK_XBUTTON3)
+			button |= 32;
+
+		if (wParam & MK_XBUTTON4)
+			button |= 64;
+
+		if (wParam & MK_XBUTTON5)
+			button |= 128;
+
+		if (wParam & MK_XBUTTON6)
+			button |= 256;
+
+		if (wParam & MK_XBUTTON7)
+			button |= 512;
+
+		IN_MouseEvent (button);
+		break;
+
+	// JACK: This is the mouse wheel support
+	// Its delta is either positive or negative, and we generate the proper event
+	case WM_MOUSEWHEEL: 
+		if ((short) HIWORD(wParam) > 0) 
+		{
+			Key_Event(K_MWHEELUP, true);
+			Key_Event(K_MWHEELUP, false);
+		}
+		else 
+		{
+			Key_Event(K_MWHEELDOWN, true);
+			Key_Event(K_MWHEELDOWN, false);
+		}
+		break;
+
+	case WM_SIZE:
+		break;
+
+	case WM_CLOSE:
+		if (MessageBox (mainwindow, "Are you sure you want to quit?", "Confirm Exit",
+			MB_YESNO | MB_SETFOREGROUND | MB_ICONQUESTION) == IDYES)
+		{
+			Sys_Quit (0);
+		}
+		break;
+
+	case WM_ACTIVATE:
+		switch (LOWORD(wParam))
+		{
+		case WA_ACTIVE:
+		case WA_CLICKACTIVE:
+			vid_activewindow = true;
+			if (modestate == MS_FULLSCREEN)
+				vid_hiddenwindow = false; // because HIWORD(wParam) give us incorrect value in fullscreen
+			else if (modestate == MS_WINDOWED)
+				vid_hiddenwindow = (BOOL) HIWORD(wParam);
 			break;
 
-		case WM_SETFOCUS:
+		case WA_INACTIVE:
+			vid_activewindow = false;
+			if (modestate == MS_FULLSCREEN)
+				vid_hiddenwindow = true; // because HIWORD(wParam) give us incorrect value in fullscreen
+			else if (modestate == MS_WINDOWED)
+				vid_hiddenwindow = (BOOL) HIWORD(wParam);
 			break;
+		}
 
-		case WM_CREATE:
-			break;
-
-		case WM_MOVE:
-			window_x = (int) LOWORD(lParam);
-			window_y = (int) HIWORD(lParam);
-			VID_UpdateWindowStatus ();
-			break;
-
-		case WM_KEYDOWN:
-		case WM_SYSKEYDOWN:
-			Key_Event (MapKey(lParam), true);
-			break;
-			
-		case WM_KEYUP:
-		case WM_SYSKEYUP:
-			Key_Event (MapKey(lParam), false);
-			break;
-
-		case WM_SYSCHAR:
-			// keep Alt-Space from happening
-			break;
-
-		// this is complicated because Win32 seems to pack multiple mouse events into
-		// one update sometimes, so we always check all states and look for events
-		case WM_LBUTTONDOWN:
-		case WM_LBUTTONUP:
-		case WM_RBUTTONDOWN:
-		case WM_RBUTTONUP:
-		case WM_MBUTTONDOWN:
-		case WM_MBUTTONUP:
-		case WM_XBUTTONDOWN:
-		case WM_XBUTTONUP:
-		case WM_MOUSEMOVE:
-			button = 0;
-
-			if (wParam & MK_LBUTTON)
-				button |= 1;
-
-			if (wParam & MK_RBUTTON)
-				button |= 2;
-
-			if (wParam & MK_MBUTTON)
-				button |= 4;
-
-			// Intellimouse(c) explorer
-			if (wParam & MK_XBUTTON1)
-				button |= 8;
-
-			if (wParam & MK_XBUTTON2)
-				button |= 16;
-
-			// copied from DarkPlaces in an attempt to grab more buttons
-			if (wParam & MK_XBUTTON3)
-				button |= 32;
-
-			if (wParam & MK_XBUTTON4)
-				button |= 64;
-
-			if (wParam & MK_XBUTTON5)
-				button |= 128;
-
-			if (wParam & MK_XBUTTON6)
-				button |= 256;
-
-			if (wParam & MK_XBUTTON7)
-				button |= 512;
-
-			IN_MouseEvent (button);
-			break;
-
-		// JACK: This is the mouse wheel support
-		// Its delta is either positive or negative, and we generate the proper event
-		case WM_MOUSEWHEEL: 
-			if ((short) HIWORD(wParam) > 0) 
+		// enable/disable sound, set/restore gamma and activate/deactivate mouse
+		// on focus gain/loss
+		if (vid_activewindow && !vid_hiddenwindow && !active)
+		{
+			if (modestate == MS_FULLSCREEN)
 			{
-				Key_Event(K_MWHEELUP, true);
-				Key_Event(K_MWHEELUP, false);
-			}
-			else 
-			{
-				Key_Event(K_MWHEELDOWN, true);
-				Key_Event(K_MWHEELDOWN, false);
-			}
-			break;
-
-		case WM_SIZE:
-			break;
-
-		case WM_CLOSE:
-			if (MessageBox (mainwindow, "Are you sure you want to quit?", "Confirm Exit",
-				MB_YESNO | MB_SETFOREGROUND | MB_ICONQUESTION) == IDYES)
-			{
-				Sys_Quit (0);
-			}
-			break;
-
-		case WM_ACTIVATE:
-			switch (LOWORD(wParam))
-			{
-				case WA_ACTIVE:
-				case WA_CLICKACTIVE:
-					vid_activewindow = true;
-					if (modestate == MS_FULLSCREEN)
-						vid_hiddenwindow = false; // because HIWORD(wParam) give us incorrect value in fullscreen
-					else if (modestate == MS_WINDOWED)
-						vid_hiddenwindow = (BOOL) HIWORD(wParam);
-					break;
-
-				case WA_INACTIVE:
-					vid_activewindow = false;
-					if (modestate == MS_FULLSCREEN)
-						vid_hiddenwindow = true; // because HIWORD(wParam) give us incorrect value in fullscreen
-					else if (modestate == MS_WINDOWED)
-						vid_hiddenwindow = (BOOL) HIWORD(wParam);
-					break;
-			}
-
-			// enable/disable sound, set/restore gamma and activate/deactivate mouse
-			// on focus gain/loss
-			if (vid_activewindow && !vid_hiddenwindow && !active)
-			{
-				if (modestate == MS_FULLSCREEN)
+				IN_ActivateMouse ();
+				IN_HideMouse ();
+				if (vid_canalttab && vid_wassuspended)
 				{
-					IN_ActivateMouse ();
-					IN_HideMouse ();
-					if (vid_canalttab && vid_wassuspended)
-					{
-						ChangeDisplaySettings (&gdevmode, CDS_FULLSCREEN);
-						ShowWindow(mainwindow, SW_SHOWNORMAL);
-						MoveWindow(mainwindow, 0, 0, gdevmode.dmPelsWidth, gdevmode.dmPelsHeight, false); // Fix for alt-tab bug in NVidia drivers
-						vid_wassuspended = false;
-					}
+					ChangeDisplaySettings (&gdevmode, CDS_FULLSCREEN);
+					ShowWindow(mainwindow, SW_SHOWNORMAL);
+					MoveWindow(mainwindow, 0, 0, gdevmode.dmPelsWidth, gdevmode.dmPelsHeight, false); // Fix for alt-tab bug in NVidia drivers
+					vid_wassuspended = false;
 				}
-				else if ((modestate == MS_WINDOWED) && key_dest == key_game)
-//				else if (modestate == MS_WINDOWED)
-				{
-					IN_ActivateMouse ();
-					IN_HideMouse ();
-				}
-				S_UnblockSound ();
-				S_ClearBuffer ();
-				VID_Gamma_Set ();
-				active = true;
 			}
-			else if (active) //if (!vid_activewindow)
+			else if ((modestate == MS_WINDOWED) && key_dest == key_game)
+			//else if (modestate == MS_WINDOWED)
 			{
-				if (modestate == MS_FULLSCREEN)
-				{
-					IN_DeactivateMouse ();
-					IN_ShowMouse ();
-					if (vid_canalttab)
-					{ 
-						ChangeDisplaySettings (NULL, 0);
-						ShowWindow(mainwindow, SW_SHOWMINNOACTIVE); // moved here from WM_KILLFOCUS case
-						vid_wassuspended = true;
-					}
-				}
-				else if ((modestate == MS_WINDOWED))
-				{
-					IN_DeactivateMouse ();
-					IN_ShowMouse ();
-				}
-				S_BlockSound ();
-				S_ClearBuffer ();
-				VID_Gamma_Restore ();
-				active = false;
+				IN_ActivateMouse ();
+				IN_HideMouse ();
 			}
+			S_UnblockSound ();
+			S_ClearBuffer ();
+			VID_Gamma_Set ();
+			active = true;
+		}
+		else if (active) //if (!vid_activewindow)
+		{
+			if (modestate == MS_FULLSCREEN)
+			{
+				IN_DeactivateMouse ();
+				IN_ShowMouse ();
+				if (vid_canalttab)
+				{ 
+					ChangeDisplaySettings (NULL, 0);
+					ShowWindow(mainwindow, SW_SHOWMINNOACTIVE); // moved here from WM_KILLFOCUS case
+					vid_wassuspended = true;
+				}
+			}
+			else if ((modestate == MS_WINDOWED))
+			{
+				IN_DeactivateMouse ();
+				IN_ShowMouse ();
+			}
+			S_BlockSound ();
+			S_ClearBuffer ();
+			VID_Gamma_Restore ();
+			active = false;
+		}
 
-			// fix the leftover Alt from any Alt-Tab or the like that switched us away
-			Key_ClearStates ();
-			IN_ClearStates ();
-			break;
+		// fix the leftover Alt from any Alt-Tab or the like that switched us away
+		Key_ClearStates ();
+		IN_ClearStates ();
+		break;
 
-		case WM_DESTROY:
-			if (mainwindow)
-				DestroyWindow (mainwindow);
+	case WM_DESTROY:
+		if (mainwindow)
+			DestroyWindow (mainwindow);
 
-			PostQuitMessage (0);
-			break;
+		PostQuitMessage (0);
+		break;
 
-		case MM_MCINOTIFY:
-			lRet = CDAudio_MessageHandler (hWnd, uMsg, wParam, lParam);
-			break;
+	case MM_MCINOTIFY:
+		lRet = CDAudio_MessageHandler (hWnd, uMsg, wParam, lParam);
+		break;
 
-		default:
-			/* pass all unhandled messages to DefWindowProc */
-			lRet = DefWindowProc (hWnd, uMsg, wParam, lParam);
-			break;
+	default:
+		/* pass all unhandled messages to DefWindowProc */
+		lRet = DefWindowProc (hWnd, uMsg, wParam, lParam);
+		break;
 	}
 
 	/* return 1 if handled message, 0 if not */
@@ -1217,17 +1217,17 @@ void VID_InitFullScreen (HINSTANCE hInstance)
 		}
 		switch (bpp)
 		{
-			case 16:
-				bpp = 32;
-				break;
+		case 16:
+			bpp = 32;
+			break;
 
-			case 32:
-				bpp = 24;
-				break;
+		case 32:
+			bpp = 24;
+			break;
 
-			case 24:
-				done = true;
-				break;
+		case 24:
+			done = true;
+			break;
 		}
 	} while (!done);
 
@@ -1415,18 +1415,18 @@ void VID_Init (void)
 						{
 							switch (bpp)
 							{
-								case 15:
-									bpp = 16;
-									break;
-								case 16:
-									bpp = 32;
-									break;
-								case 32:
-									bpp = 24;
-									break;
-								case 24:
-									done = true;
-									break;
+							case 15:
+								bpp = 16;
+								break;
+							case 16:
+								bpp = 32;
+								break;
+							case 32:
+								bpp = 24;
+								break;
+							case 24:
+								done = true;
+								break;
 							}
 						}
 						else

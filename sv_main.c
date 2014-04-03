@@ -43,24 +43,24 @@ static void SV_Protocol_f (void)
 
 	switch (Cmd_Argc())
 	{
-		case 1:
-			Con_Printf ("sv_protocol is %d\n", sv_protocol);
-			break;
-		case 2:
-			i = atoi(Cmd_Argv(1));
-			if (i != PROTOCOL_NETQUAKE && i != PROTOCOL_FITZQUAKE && i != PROTOCOL_FITZQUAKE_PLUS)
-				Con_Printf ("sv_protocol must be %i, %i or %i\n", 
-					PROTOCOL_NETQUAKE, PROTOCOL_FITZQUAKE, PROTOCOL_FITZQUAKE_PLUS);
-			else
-			{
-				sv_protocol = i;
-				if (sv.active)
-					Con_Printf ("changes will not take effect until the next level load.\n");
-			}
-			break;
-		default:
-			Con_SafePrintf ("usage: sv_protocol <protocol>\n");
-			break;
+	case 1:
+		Con_Printf ("sv_protocol is %d\n", sv_protocol);
+		break;
+	case 2:
+		i = atoi(Cmd_Argv(1));
+		if (i != PROTOCOL_NETQUAKE && i != PROTOCOL_FITZQUAKE && i != PROTOCOL_FITZQUAKE_PLUS)
+			Con_Printf ("sv_protocol must be %i, %i or %i\n", 
+				PROTOCOL_NETQUAKE, PROTOCOL_FITZQUAKE, PROTOCOL_FITZQUAKE_PLUS);
+		else
+		{
+			sv_protocol = i;
+			if (sv.active)
+				Con_Printf ("changes will not take effect until the next level load.\n");
+		}
+		break;
+	default:
+		Con_SafePrintf ("usage: sv_protocol <protocol>\n");
+		break;
 	}
 }
 

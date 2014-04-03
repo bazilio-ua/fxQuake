@@ -1935,18 +1935,18 @@ gltexture_t *GL_LoadTexture (model_t *owner, char *name, int width, int height, 
 	size = width * height;
 	switch (format)
 	{
-		case SRC_INDEXED:
-			size *= indexed_bytes;
-			break;
-		case SRC_LIGHTMAP:
-			size *= lightmap_bytes;
-			break;
-		case SRC_RGBA:
-			size *= rgba_bytes;
-			break;
-		case SRC_BLOOM:
-			size *= rgba_bytes;
-			break;
+	case SRC_INDEXED:
+		size *= indexed_bytes;
+		break;
+	case SRC_LIGHTMAP:
+		size *= lightmap_bytes;
+		break;
+	case SRC_RGBA:
+		size *= rgba_bytes;
+		break;
+	case SRC_BLOOM:
+		size *= rgba_bytes;
+		break;
 	}
 
 	if (size == 0)
@@ -1986,18 +1986,18 @@ gltexture_t *GL_LoadTexture (model_t *owner, char *name, int width, int height, 
 
 	switch (glt->source_format)
 	{
-		case SRC_INDEXED:
-			GL_Upload8 (glt, data);
-			break;
-		case SRC_LIGHTMAP:
-			GL_UploadLightmap (glt, data);
-			break;
-		case SRC_RGBA:
-			GL_Upload32 (glt, (unsigned *)data);
-			break;
-		case SRC_BLOOM:
-			GL_UploadBloom (glt, (unsigned *)data);
-			break;
+	case SRC_INDEXED:
+		GL_Upload8 (glt, data);
+		break;
+	case SRC_LIGHTMAP:
+		GL_UploadLightmap (glt, data);
+		break;
+	case SRC_RGBA:
+		GL_Upload32 (glt, (unsigned *)data);
+		break;
+	case SRC_BLOOM:
+		GL_UploadBloom (glt, (unsigned *)data);
+		break;
 	}
 
 	Hunk_FreeToLowMark(mark);
@@ -2037,18 +2037,18 @@ void GL_ReloadTexture (gltexture_t *glt)
 			size = (glt->source_width * glt->source_height);
 			switch (glt->source_format)
 			{
-				case SRC_INDEXED:
-					size *= indexed_bytes;
-					break;
-				case SRC_LIGHTMAP:
-					size *= lightmap_bytes;
-					break;
-				case SRC_RGBA:
-					size *= rgba_bytes;
-					break;
-				case SRC_BLOOM:
-					size *= rgba_bytes;
-					break;
+			case SRC_INDEXED:
+				size *= indexed_bytes;
+				break;
+			case SRC_LIGHTMAP:
+				size *= lightmap_bytes;
+				break;
+			case SRC_RGBA:
+				size *= rgba_bytes;
+				break;
+			case SRC_BLOOM:
+				size *= rgba_bytes;
+				break;
 			}
 	
 			data = Hunk_Alloc (size);
@@ -2075,18 +2075,18 @@ void GL_ReloadTexture (gltexture_t *glt)
 //
 	switch (glt->source_format)
 	{
-		case SRC_INDEXED:
-			GL_Upload8 (glt, data);
-			break;
-		case SRC_LIGHTMAP:
-			GL_UploadLightmap (glt, data);
-			break;
-		case SRC_RGBA:
-			GL_Upload32 (glt, (unsigned *)data);
-			break;
-		case SRC_BLOOM:
-			GL_UploadBloom (glt, (unsigned *)data);
-			break;
+	case SRC_INDEXED:
+		GL_Upload8 (glt, data);
+		break;
+	case SRC_LIGHTMAP:
+		GL_UploadLightmap (glt, data);
+		break;
+	case SRC_RGBA:
+		GL_Upload32 (glt, (unsigned *)data);
+		break;
+	case SRC_BLOOM:
+		GL_UploadBloom (glt, (unsigned *)data);
+		break;
 	}
 
 	Hunk_FreeToLowMark(mark);

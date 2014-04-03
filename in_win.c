@@ -606,89 +606,89 @@ void IN_MouseMove (usercmd_t *cmd)
 			/* Look at the element to see what happened */
 			switch (od.dwOfs)
 			{
-				case DIMOFS_X:
-					mouse_x += (LONG) od.dwData;
-					break;
+			case DIMOFS_X:
+				mouse_x += (LONG) od.dwData;
+				break;
 
-				case DIMOFS_Y:
-					mouse_y += (LONG) od.dwData;
-					break;
+			case DIMOFS_Y:
+				mouse_y += (LONG) od.dwData;
+				break;
 
-				case DIMOFS_BUTTON0:
-					if (od.dwData & 0x80)
-						Key_Event (K_MOUSE1, true);
-					else
-						Key_Event (K_MOUSE1, false);
-					break;
+			case DIMOFS_BUTTON0:
+				if (od.dwData & 0x80)
+					Key_Event (K_MOUSE1, true);
+				else
+					Key_Event (K_MOUSE1, false);
+				break;
 
-				case DIMOFS_BUTTON1:
-					if (od.dwData & 0x80)
-						Key_Event (K_MOUSE2, true);
-					else
-						Key_Event (K_MOUSE2, false);
-					break;
-					
-				case DIMOFS_BUTTON2:
-					if (od.dwData & 0x80)
-						Key_Event (K_MOUSE3, true);
-					else
-						Key_Event (K_MOUSE3, false);
-					break;
+			case DIMOFS_BUTTON1:
+				if (od.dwData & 0x80)
+					Key_Event (K_MOUSE2, true);
+				else
+					Key_Event (K_MOUSE2, false);
+				break;
+				
+			case DIMOFS_BUTTON2:
+				if (od.dwData & 0x80)
+					Key_Event (K_MOUSE3, true);
+				else
+					Key_Event (K_MOUSE3, false);
+				break;
 
-				case DIMOFS_BUTTON3:
-					if (od.dwData & 0x80)
-						Key_Event (K_MOUSE4, true);
-					else
-						Key_Event (K_MOUSE4, false);
-					break;
+			case DIMOFS_BUTTON3:
+				if (od.dwData & 0x80)
+					Key_Event (K_MOUSE4, true);
+				else
+					Key_Event (K_MOUSE4, false);
+				break;
 
 #if (DIRECTINPUT_VERSION >= 0x0700)
-				case DIMOFS_BUTTON4:
-					if (od.dwData & 0x80)
-						Key_Event (K_MOUSE5, true);
-					else
-						Key_Event (K_MOUSE5, false);
-					break;
+			case DIMOFS_BUTTON4:
+				if (od.dwData & 0x80)
+					Key_Event (K_MOUSE5, true);
+				else
+					Key_Event (K_MOUSE5, false);
+				break;
 
-				case DIMOFS_BUTTON5:
-					if (od.dwData & 0x80)
-						Key_Event (K_MOUSE6, true);
-					else
-						Key_Event (K_MOUSE6, false);
-					break;
+			case DIMOFS_BUTTON5:
+				if (od.dwData & 0x80)
+					Key_Event (K_MOUSE6, true);
+				else
+					Key_Event (K_MOUSE6, false);
+				break;
 
-				case DIMOFS_BUTTON6:
-					if (od.dwData & 0x80)
-						Key_Event (K_MOUSE7, true);
-					else
-						Key_Event (K_MOUSE7, false);
-					break;
+			case DIMOFS_BUTTON6:
+				if (od.dwData & 0x80)
+					Key_Event (K_MOUSE7, true);
+				else
+					Key_Event (K_MOUSE7, false);
+				break;
 
-				case DIMOFS_BUTTON7:
-					if (od.dwData & 0x80)
-						Key_Event (K_MOUSE8, true);
-					else
-						Key_Event (K_MOUSE8, false);
-					break;
+			case DIMOFS_BUTTON7:
+				if (od.dwData & 0x80)
+					Key_Event (K_MOUSE8, true);
+				else
+					Key_Event (K_MOUSE8, false);
+				break;
 #endif
 
-				case DIMOFS_Z:
-					value = od.dwData;
-					if (value == 0)
-					{
-						// do nothing
-					}
-					else if (value < 0)
-					{
-						Key_Event (K_MWHEELDOWN, true);
-						Key_Event (K_MWHEELDOWN, false);
-					}
-					else
-					{
-						Key_Event (K_MWHEELUP, true);
-						Key_Event (K_MWHEELUP, false);
-					}
-					break;
+			case DIMOFS_Z:
+				value = od.dwData;
+				if (value == 0)
+				{
+					// do nothing
+				}
+				else if (value < 0)
+				{
+					Key_Event (K_MWHEELDOWN, true);
+					Key_Event (K_MWHEELDOWN, false);
+				}
+				else
+				{
+					Key_Event (K_MWHEELUP, true);
+					Key_Event (K_MWHEELUP, false);
+				}
+				break;
 			}
 		}
 	}
@@ -907,18 +907,18 @@ PDWORD RawValuePointer (int axis)
 {
 	switch (axis)
 	{
-		case JOY_AXIS_X:
-			return &ji.dwXpos;
-		case JOY_AXIS_Y:
-			return &ji.dwYpos;
-		case JOY_AXIS_Z:
-			return &ji.dwZpos;
-		case JOY_AXIS_R:
-			return &ji.dwRpos;
-		case JOY_AXIS_U:
-			return &ji.dwUpos;
-		case JOY_AXIS_V:
-			return &ji.dwVpos;
+	case JOY_AXIS_X:
+		return &ji.dwXpos;
+	case JOY_AXIS_Y:
+		return &ji.dwYpos;
+	case JOY_AXIS_Z:
+		return &ji.dwZpos;
+	case JOY_AXIS_R:
+		return &ji.dwRpos;
+	case JOY_AXIS_U:
+		return &ji.dwUpos;
+	case JOY_AXIS_V:
+		return &ji.dwVpos;
 	}
 
 	return NULL; // make compiler happy

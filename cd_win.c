@@ -384,28 +384,28 @@ LONG CDAudio_MessageHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 	switch (wParam)
 	{
-		case MCI_NOTIFY_SUCCESSFUL:
-			if (playing)
-			{
-				playing = false;
-				if (playLooping)
-					CDAudio_Play(playTrack, true);
-			}
-			break;
+	case MCI_NOTIFY_SUCCESSFUL:
+		if (playing)
+		{
+			playing = false;
+			if (playLooping)
+				CDAudio_Play(playTrack, true);
+		}
+		break;
 
-		case MCI_NOTIFY_ABORTED:
-		case MCI_NOTIFY_SUPERSEDED:
-			break;
+	case MCI_NOTIFY_ABORTED:
+	case MCI_NOTIFY_SUPERSEDED:
+		break;
 
-		case MCI_NOTIFY_FAILURE:
-			Con_DPrintf("CDAudio_MessageHandler: MCI_NOTIFY_FAILURE\n");
-			CDAudio_Stop ();
-			cdValid = false;
-			break;
+	case MCI_NOTIFY_FAILURE:
+		Con_DPrintf("CDAudio_MessageHandler: MCI_NOTIFY_FAILURE\n");
+		CDAudio_Stop ();
+		cdValid = false;
+		break;
 
-		default:
-			Con_DPrintf("CDAudio_MessageHandler: Unexpected MM_MCINOTIFY type (%Iu)\n", wParam);
-			return 1;
+	default:
+		Con_DPrintf("CDAudio_MessageHandler: Unexpected MM_MCINOTIFY type (%Iu)\n", wParam);
+		return 1;
 	}
 
 	return 0;

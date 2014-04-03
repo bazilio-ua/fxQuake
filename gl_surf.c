@@ -830,14 +830,14 @@ restart:
 
 	switch (plane->type)
 	{
-		case PLANE_X:
-		case PLANE_Y:
-		case PLANE_Z:
-			dot = modelorg[plane->type] - plane->dist;
-			break;
-		default:
-			dot = DotProduct (modelorg, plane->normal) - plane->dist;
-			break;
+	case PLANE_X:
+	case PLANE_Y:
+	case PLANE_Z:
+		dot = modelorg[plane->type] - plane->dist;
+		break;
+	default:
+		dot = DotProduct (modelorg, plane->normal) - plane->dist;
+		break;
 	}
 
 	if (dot >= 0)

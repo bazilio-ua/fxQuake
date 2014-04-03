@@ -365,19 +365,19 @@ void V_SetContentsColor (int contents)
 {
 	switch (contents)
 	{
-		case CONTENTS_EMPTY:
-		case CONTENTS_SOLID:
-		case CONTENTS_SKY: // no blend in sky
-			cl.cshifts[CSHIFT_CONTENTS] = cshift_empty;
-			break;
-		case CONTENTS_LAVA:
-			cl.cshifts[CSHIFT_CONTENTS] = cshift_lava;
-			break;
-		case CONTENTS_SLIME:
-			cl.cshifts[CSHIFT_CONTENTS] = cshift_slime;
-			break;
-		default:
-			cl.cshifts[CSHIFT_CONTENTS] = cshift_water;
+	case CONTENTS_EMPTY:
+	case CONTENTS_SOLID:
+	case CONTENTS_SKY: // no blend in sky
+		cl.cshifts[CSHIFT_CONTENTS] = cshift_empty;
+		break;
+	case CONTENTS_LAVA:
+		cl.cshifts[CSHIFT_CONTENTS] = cshift_lava;
+		break;
+	case CONTENTS_SLIME:
+		cl.cshifts[CSHIFT_CONTENTS] = cshift_slime;
+		break;
+	default:
+		cl.cshifts[CSHIFT_CONTENTS] = cshift_water;
 	}
 }
 

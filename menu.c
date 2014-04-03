@@ -1898,27 +1898,27 @@ void M_GameOptions_Draw (void)
 
 		switch((int)teamplay.value)
 		{
-			case 1: 
-				msg = "No Friendly Fire"; 
-				break;
-			case 2: 
-				msg = "Friendly Fire"; 
-				break;
-			case 3: 
-				msg = "Tag"; 
-				break;
-			case 4: 
-				msg = "Capture the Flag"; 
-				break;
-			case 5: 
-				msg = "One Flag CTF"; 
-				break;
-			case 6: 
-				msg = "Three Team CTF"; 
-				break;
-			default: 
-				msg = "Off"; 
-				break;
+		case 1: 
+			msg = "No Friendly Fire"; 
+			break;
+		case 2: 
+			msg = "Friendly Fire"; 
+			break;
+		case 3: 
+			msg = "Tag"; 
+			break;
+		case 4: 
+			msg = "Capture the Flag"; 
+			break;
+		case 5: 
+			msg = "One Flag CTF"; 
+			break;
+		case 6: 
+			msg = "Three Team CTF"; 
+			break;
+		default: 
+			msg = "Off"; 
+			break;
 		}
 		M_Print (160, 72, msg);
 	}
@@ -1928,15 +1928,15 @@ void M_GameOptions_Draw (void)
 
 		switch((int)teamplay.value)
 		{
-			case 1: 
-				msg = "No Friendly Fire"; 
-				break;
-			case 2: 
-				msg = "Friendly Fire"; 
-				break;
-			default: 
-				msg = "Off"; 
-				break;
+		case 1: 
+			msg = "No Friendly Fire"; 
+			break;
+		case 2: 
+			msg = "Friendly Fire"; 
+			break;
+		default: 
+			msg = "Off"; 
+			break;
 		}
 		M_Print (160, 72, msg);
 	}

@@ -1405,207 +1405,216 @@ void Host_Give_f (void)
 
 	switch (t[0])
 	{
-		case 'k':
-			if (t[1] && t[1] == 's')
-				sv_player->v.items = (int)sv_player->v.items | IT_KEY1;
-			else if (t[1] && t[1] == 'g')
-				sv_player->v.items = (int)sv_player->v.items | IT_KEY2;
-			break;
+	case 'k':
+		if (t[1] && t[1] == 's')
+			sv_player->v.items = (int)sv_player->v.items | IT_KEY1;
+		else if (t[1] && t[1] == 'g')
+			sv_player->v.items = (int)sv_player->v.items | IT_KEY2;
+		break;
 
-		case '0':
-		case '1':
-		case '2':
-		case '3':
-		case '4':
-		case '5':
-		case '6':
-		case '7':
-		case '8':
-		case '9':
-			// MED 01/04/97 added hipnotic give stuff
-			if (hipnotic)
+	case '0':
+	case '1':
+	case '2':
+	case '3':
+	case '4':
+	case '5':
+	case '6':
+	case '7':
+	case '8':
+	case '9':
+		// MED 01/04/97 added hipnotic give stuff
+		if (hipnotic)
+		{
+			if (t[0] == '6')
 			{
-				if (t[0] == '6')
-				{
-					if (t[1] == 'a')
-						sv_player->v.items = (int)sv_player->v.items | HIT_PROXIMITY_GUN;
-					else
-						sv_player->v.items = (int)sv_player->v.items | IT_GRENADE_LAUNCHER;
-				}
-				else if (t[0] == '9')
-					sv_player->v.items = (int)sv_player->v.items | HIT_LASER_CANNON;
-				else if (t[0] == '0')
-					sv_player->v.items = (int)sv_player->v.items | HIT_MJOLNIR;
-				else if (t[0] >= '2')
-					sv_player->v.items = (int)sv_player->v.items | (IT_SHOTGUN << (t[0] - '2'));
+				if (t[1] == 'a')
+					sv_player->v.items = (int)sv_player->v.items | HIT_PROXIMITY_GUN;
+				else
+					sv_player->v.items = (int)sv_player->v.items | IT_GRENADE_LAUNCHER;
 			}
+			else if (t[0] == '9')
+				sv_player->v.items = (int)sv_player->v.items | HIT_LASER_CANNON;
+			else if (t[0] == '0')
+				sv_player->v.items = (int)sv_player->v.items | HIT_MJOLNIR;
+			else if (t[0] >= '2')
+				sv_player->v.items = (int)sv_player->v.items | (IT_SHOTGUN << (t[0] - '2'));
+		}
+		else
+		{
+			if (t[0] >= '2')
+				sv_player->v.items = (int)sv_player->v.items | (IT_SHOTGUN << (t[0] - '2'));
+		}
+		break;
+
+	case 's':
+		if (rogue)
+		{
+			val = GetEdictFieldValue(sv_player, "ammo_shells1");
+			if (val)
+				val->_float = v;
+		}
+		sv_player->v.ammo_shells = v;
+		break;
+
+	case 'n':
+		if (rogue)
+		{
+			val = GetEdictFieldValue(sv_player, "ammo_nails1");
+			if (val)
+			{
+				val->_float = v;
+				if (sv_player->v.weapon <= IT_LIGHTNING)
+					sv_player->v.ammo_nails = v;
+			}
+		}
+		else
+		{
+			sv_player->v.ammo_nails = v;
+		}
+		break;
+
+	case 'l':
+		if (rogue)
+		{
+			val = GetEdictFieldValue(sv_player, "ammo_lava_nails");
+			if (val)
+			{
+				val->_float = v;
+				if (sv_player->v.weapon > IT_LIGHTNING)
+					sv_player->v.ammo_nails = v;
+			}
+		}
+		break;
+
+	case 'r':
+		if (rogue)
+		{
+			val = GetEdictFieldValue(sv_player, "ammo_rockets1");
+			if (val)
+			{
+				val->_float = v;
+				if (sv_player->v.weapon <= IT_LIGHTNING)
+					sv_player->v.ammo_rockets = v;
+			}
+		}
+		else
+		{
+			sv_player->v.ammo_rockets = v;
+		}
+		break;
+
+	case 'm':
+		if (rogue)
+		{
+			val = GetEdictFieldValue(sv_player, "ammo_multi_rockets");
+			if (val)
+			{
+				val->_float = v;
+				if (sv_player->v.weapon > IT_LIGHTNING)
+					sv_player->v.ammo_rockets = v;
+			}
+		}
+		break;
+
+	case 'h':
+		sv_player->v.health = v;
+		break;
+
+	case 'c':
+		if (rogue)
+		{
+			val = GetEdictFieldValue(sv_player, "ammo_cells1");
+			if (val)
+			{
+				val->_float = v;
+				if (sv_player->v.weapon <= IT_LIGHTNING)
+					sv_player->v.ammo_cells = v;
+			}
+		}
+		else
+		{
+			sv_player->v.ammo_cells = v;
+		}
+		break;
+
+	case 'p':
+		if (rogue)
+		{
+			val = GetEdictFieldValue(sv_player, "ammo_plasma");
+			if (val)
+			{
+				val->_float = v;
+				if (sv_player->v.weapon > IT_LIGHTNING)
+					sv_player->v.ammo_cells = v;
+			}
+		}
+		break;
+
+	// give armour
+	case 'a':
+		if (v > 150)
+		{
+			sv_player->v.armortype = 0.8;
+			sv_player->v.armorvalue = v;
+			if (rogue)
+				sv_player->v.items = sv_player->v.items - ((int)(sv_player->v.items) & (int)(RIT_ARMOR1 | RIT_ARMOR2 | RIT_ARMOR3)) + RIT_ARMOR3;
 			else
-			{
-				if (t[0] >= '2')
-					sv_player->v.items = (int)sv_player->v.items | (IT_SHOTGUN << (t[0] - '2'));
-			}
-			break;
-
-		case 's':
-			if (rogue)
-			{
-				val = GetEdictFieldValue(sv_player, "ammo_shells1");
-				if (val)
-					val->_float = v;
-			}
-			sv_player->v.ammo_shells = v;
-			break;
-
-		case 'n':
-			if (rogue)
-			{
-				val = GetEdictFieldValue(sv_player, "ammo_nails1");
-				if (val)
-				{
-					val->_float = v;
-					if (sv_player->v.weapon <= IT_LIGHTNING)
-						sv_player->v.ammo_nails = v;
-				}
-			}
-			else
-			{
-				sv_player->v.ammo_nails = v;
-			}
-			break;
-
-		case 'l':
-			if (rogue)
-			{
-				val = GetEdictFieldValue(sv_player, "ammo_lava_nails");
-				if (val)
-				{
-					val->_float = v;
-					if (sv_player->v.weapon > IT_LIGHTNING)
-						sv_player->v.ammo_nails = v;
-				}
-			}
-			break;
-
-		case 'r':
-			if (rogue)
-			{
-				val = GetEdictFieldValue(sv_player, "ammo_rockets1");
-				if (val)
-				{
-					val->_float = v;
-					if (sv_player->v.weapon <= IT_LIGHTNING)
-						sv_player->v.ammo_rockets = v;
-				}
-			}
-			else
-			{
-				sv_player->v.ammo_rockets = v;
-			}
-			break;
-
-		case 'm':
-			if (rogue)
-			{
-				val = GetEdictFieldValue(sv_player, "ammo_multi_rockets");
-				if (val)
-				{
-					val->_float = v;
-					if (sv_player->v.weapon > IT_LIGHTNING)
-						sv_player->v.ammo_rockets = v;
-				}
-			}
-			break;
-
-		case 'h':
-			sv_player->v.health = v;
-			break;
-
-		case 'c':
-			if (rogue)
-			{
-				val = GetEdictFieldValue(sv_player, "ammo_cells1");
-				if (val)
-				{
-					val->_float = v;
-					if (sv_player->v.weapon <= IT_LIGHTNING)
-						sv_player->v.ammo_cells = v;
-				}
-			}
-			else
-			{
-				sv_player->v.ammo_cells = v;
-			}
-			break;
-
-		case 'p':
-			if (rogue)
-			{
-				val = GetEdictFieldValue(sv_player, "ammo_plasma");
-				if (val)
-				{
-					val->_float = v;
-					if (sv_player->v.weapon > IT_LIGHTNING)
-						sv_player->v.ammo_cells = v;
-				}
-			}
-			break;
-
-		// give armour
-		case 'a':
-			if (v > 150)
-			{
-				sv_player->v.armortype = 0.8;
-				sv_player->v.armorvalue = v;
 				sv_player->v.items = sv_player->v.items - ((int)(sv_player->v.items) & (int)(IT_ARMOR1 | IT_ARMOR2 | IT_ARMOR3)) + IT_ARMOR3;
-			}
-			else if (v > 100)
-			{
-				sv_player->v.armortype = 0.6;
-				sv_player->v.armorvalue = v;
+		}
+		else if (v > 100)
+		{
+			sv_player->v.armortype = 0.6;
+			sv_player->v.armorvalue = v;
+			if (rogue)
+				sv_player->v.items = sv_player->v.items - ((int)(sv_player->v.items) & (int)(RIT_ARMOR1 | RIT_ARMOR2 | RIT_ARMOR3)) + RIT_ARMOR2;
+			else
 				sv_player->v.items = sv_player->v.items - ((int)(sv_player->v.items) & (int)(IT_ARMOR1 | IT_ARMOR2 | IT_ARMOR3)) + IT_ARMOR2;
-			}
-			else if (v >= 0)
-			{
-				sv_player->v.armortype = 0.3;
-				sv_player->v.armorvalue = v;
+		}
+		else if (v >= 0)
+		{
+			sv_player->v.armortype = 0.3;
+			sv_player->v.armorvalue = v;
+			if (rogue)
+				sv_player->v.items = sv_player->v.items - ((int)(sv_player->v.items) & (int)(RIT_ARMOR1 | RIT_ARMOR2 | RIT_ARMOR3)) + RIT_ARMOR1;
+			else
 				sv_player->v.items = sv_player->v.items - ((int)(sv_player->v.items) & (int)(IT_ARMOR1 | IT_ARMOR2 | IT_ARMOR3)) + IT_ARMOR1;
-			}
-			break;
+		}
+		break;
 	}
 
 	//johnfitz -- update currentammo to match new ammo (so statusbar updates correctly)
 	switch ((int)(sv_player->v.weapon))
 	{
-		case IT_SHOTGUN:
-		case IT_SUPER_SHOTGUN:
-			sv_player->v.currentammo = sv_player->v.ammo_shells;
-			break;
-		case IT_NAILGUN:
-		case IT_SUPER_NAILGUN:
-		case RIT_LAVA_SUPER_NAILGUN:
+	case IT_SHOTGUN:
+	case IT_SUPER_SHOTGUN:
+		sv_player->v.currentammo = sv_player->v.ammo_shells;
+		break;
+	case IT_NAILGUN:
+	case IT_SUPER_NAILGUN:
+	case RIT_LAVA_SUPER_NAILGUN:
+		sv_player->v.currentammo = sv_player->v.ammo_nails;
+		break;
+	case IT_GRENADE_LAUNCHER:
+	case IT_ROCKET_LAUNCHER:
+	case RIT_MULTI_GRENADE:
+	case RIT_MULTI_ROCKET:
+		sv_player->v.currentammo = sv_player->v.ammo_rockets;
+		break;
+	case IT_LIGHTNING:
+	case HIT_LASER_CANNON:
+	case HIT_MJOLNIR:
+		sv_player->v.currentammo = sv_player->v.ammo_cells;
+		break;
+	case RIT_LAVA_NAILGUN:	//same as IT_AXE
+		if (rogue)
 			sv_player->v.currentammo = sv_player->v.ammo_nails;
-			break;
-		case IT_GRENADE_LAUNCHER:
-		case IT_ROCKET_LAUNCHER:
-		case RIT_MULTI_GRENADE:
-		case RIT_MULTI_ROCKET:
-			sv_player->v.currentammo = sv_player->v.ammo_rockets;
-			break;
-		case IT_LIGHTNING:
-		case HIT_LASER_CANNON:
-		case HIT_MJOLNIR:
+		break;
+	case RIT_PLASMA_GUN:	//same as HIT_PROXIMITY_GUN
+		if (rogue)
 			sv_player->v.currentammo = sv_player->v.ammo_cells;
-			break;
-		case RIT_LAVA_NAILGUN: //same as IT_AXE
-			if (rogue)
-				sv_player->v.currentammo = sv_player->v.ammo_nails;
-			break;
-		case RIT_PLASMA_GUN: //same as HIT_PROXIMITY_GUN
-			if (rogue)
-				sv_player->v.currentammo = sv_player->v.ammo_cells;
-			if (hipnotic)
-				sv_player->v.currentammo = sv_player->v.ammo_rockets;
-			break;
+		if (hipnotic)
+			sv_player->v.currentammo = sv_player->v.ammo_rockets;
+		break;
 	}
 }
 
