@@ -1394,7 +1394,7 @@ void Host_Give_f (void)
 	{
 		// show usage
 		Con_Printf ("usage: give <item> <quantity>\n");
-		Con_Printf ("   1-%s = weapon, a = armor\n", hipnotic ? "9" : "8");
+		Con_Printf ("   1-%s = weapon, a = armor\n", hipnotic ? "9,6a,0" : "8");
 		Con_Printf ("   h = health, ks or kg = key\n");
 		Con_Printf ("   s,n,r,c%s = ammo\n", rogue ? ",l,m,p" : "");
 		return;
@@ -1552,23 +1552,23 @@ void Host_Give_f (void)
 
 		// give armour
 		case 'a':
-			if (v >= 0 && v <= 100)
+			if (v > 150)
 			{
-				sv_player->v.armortype = 0.3;
+				sv_player->v.armortype = 0.8;
 				sv_player->v.armorvalue = v;
-				sv_player->v.items = sv_player->v.items - ((int)(sv_player->v.items) & (int)(IT_ARMOR1 | IT_ARMOR2 | IT_ARMOR3)) + IT_ARMOR1;
+				sv_player->v.items = sv_player->v.items - ((int)(sv_player->v.items) & (int)(IT_ARMOR1 | IT_ARMOR2 | IT_ARMOR3)) + IT_ARMOR3;
 			}
-			else if (v > 100 && v <= 150)
+			else if (v > 100)
 			{
 				sv_player->v.armortype = 0.6;
 				sv_player->v.armorvalue = v;
 				sv_player->v.items = sv_player->v.items - ((int)(sv_player->v.items) & (int)(IT_ARMOR1 | IT_ARMOR2 | IT_ARMOR3)) + IT_ARMOR2;
 			}
-			else if (v > 150 && v <= 200)
+			else if (v >= 0)
 			{
-				sv_player->v.armortype = 0.8;
+				sv_player->v.armortype = 0.3;
 				sv_player->v.armorvalue = v;
-				sv_player->v.items = sv_player->v.items - ((int)(sv_player->v.items) & (int)(IT_ARMOR1 | IT_ARMOR2 | IT_ARMOR3)) + IT_ARMOR3;
+				sv_player->v.items = sv_player->v.items - ((int)(sv_player->v.items) & (int)(IT_ARMOR1 | IT_ARMOR2 | IT_ARMOR3)) + IT_ARMOR1;
 			}
 			break;
 	}
