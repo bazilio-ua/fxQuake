@@ -515,7 +515,6 @@ void CL_RelinkEntities (void)
 			
 			R_EntityParticles (ent);
 		}
-		
 		if (ent->effects & EF_MUZZLEFLASH)
 		{
 			vec3_t		fv, rv, uv;
@@ -539,17 +538,17 @@ void CL_RelinkEntities (void)
 				else if (rogue && cl.stats[STAT_ACTIVEWEAPON] == RIT_PLASMA_GUN)
 				{
 					CL_ColorDlight (dl, DL_COLOR_CYAN);
-					Con_Printf("plasma here.\n");//eer1 DBG
+					Con_Printf("plasma weapon\n");//eer1 DBG
 				}
 				else if (hipnotic && cl.stats[STAT_ACTIVEWEAPON] == HIT_MJOLNIR)
 				{
 					CL_ColorDlight (dl, DL_COLOR_CYAN);
-					Con_Printf("mjolnir here.\n");//eer1 DBG
+					Con_Printf("mjolnir weapon\n");//eer1 DBG
 				}
 				else if (hipnotic && cl.stats[STAT_ACTIVEWEAPON] == HIT_LASER_CANNON)
 				{
 					CL_ColorDlight (dl, DL_COLOR_RED);
-					Con_Printf("laser here.\n");//eer1 DBG
+					Con_Printf("laser weapon\n");//eer1 DBG
 				}
 				//else if (TODO: add more weapons)
 				else
@@ -582,7 +581,24 @@ void CL_RelinkEntities (void)
 			
 			Con_Printf("catch EF_BRIGHTLIGHT\n");//eer1 DBG
 			
-			CL_ColorDlight (dl, DL_COLOR_WHITE);
+			if (!strcmp (ent->model->name, "progs/plasma.mdl")) // rogue plasma
+			{
+				CL_ColorDlight (dl, DL_COLOR_CYAN);
+				Con_Printf("plasma model\n");//eer1 DBG
+			}
+			else if (!strcmp (ent->model->name, "progs/eel2.mdl")) // rogue eel
+			{
+				CL_ColorDlight (dl, DL_COLOR_CYAN);
+				Con_Printf("BRIGHT eel model\n");//eer1 DBG
+			}
+			else if (!strcmp (ent->model->name, "progs/lasrspik.mdl")) // EER1 (laser for extended hipnotic prog)
+			{
+				CL_ColorDlight (dl, DL_COLOR_YELLOW);
+				Con_Printf("BRIGHT lasrspik model\n");//eer1 DBG
+			}
+			//else if (TODO: add more models)
+			else
+				CL_ColorDlight (dl, DL_COLOR_WHITE);
 		}
 		if (ent->effects & EF_DIMLIGHT) // powerup(s) glows and laser 
 		{
@@ -609,16 +625,22 @@ void CL_RelinkEntities (void)
 			}
 			else
 			{
-				if (!strcmp (ent->model->name, "progs/laser.mdl"))
+				if (!strcmp (ent->model->name, "progs/laser.mdl")) // id
 				{
 					CL_ColorDlight (dl, DL_COLOR_RED);
 					Con_Printf("laser model\n");//eer1 DBG
 				}
-				else if (!strcmp (ent->model->name, "progs/lasrspik.mdl")) // hipnotic
+				else if (!strcmp (ent->model->name, "progs/eel2.mdl")) // rogue eel
+				{
+					CL_ColorDlight (dl, DL_COLOR_BLUE);
+					Con_Printf("DIM eel model\n");//eer1 DBG
+				}
+				else if (!strcmp (ent->model->name, "progs/lasrspik.mdl")) // hipnotic laser
 				{
 					CL_ColorDlight (dl, DL_COLOR_RED);
-					Con_Printf("lasrspik model\n");//eer1 DBG
+					Con_Printf("DIM lasrspik model\n");//eer1 DBG
 				}
+				//else if (TODO: add more models)
 				else
 					CL_ColorDlight (dl, DL_COLOR_WHITE);
 			}
