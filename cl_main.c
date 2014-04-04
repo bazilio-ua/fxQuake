@@ -525,7 +525,7 @@ void CL_RelinkEntities (void)
 			dl->die = cl.time + 0.1;
 			
 			Con_Printf("catch EF_MUZZLEFLASH\n");//eer1 DBG
-			Con_Printf("model: %s\n", ent->model->name);//eer1 DBG
+			Con_Printf("MUZZLEFLASH model: %s\n", ent->model->name);//eer1 DBG
 			
 			if (i == cl.viewentity)
 			{
@@ -568,7 +568,7 @@ void CL_RelinkEntities (void)
 			dl->die = cl.time + 0.001;
 			
 			Con_Printf("catch EF_BRIGHTLIGHT\n");//eer1 DBG
-			Con_Printf("model: %s\n", ent->model->name);//eer1 DBG
+			Con_Printf("BRIGHTLIGHT model: %s\n", ent->model->name);//eer1 DBG
 			
 			if (!strcmp (ent->model->name, "progs/plasma.mdl")) // rogue plasma
 				CL_ColorDlight (dl, DL_COLOR_CYAN);
@@ -589,7 +589,7 @@ void CL_RelinkEntities (void)
 			dl->die = cl.time + 0.001;
 			
 			Con_Printf("catch EF_DIMLIGHT\n");//eer1 DBG
-			Con_Printf("model: %s\n", ent->model->name);//eer1 DBG
+			Con_Printf("DIMLIGHT model: %s\n", ent->model->name);//eer1 DBG
 			
 			if (i == cl.viewentity)
 			{
@@ -651,6 +651,9 @@ void CL_RelinkEntities (void)
 				dl->radius = 200;
 				dl->die = cl.time + 0.01;
 				
+				Con_Printf("catch EF_TRACER\n");//eer1 DBG
+				Con_Printf("model: %s\n", ent->model->name);//eer1 DBG
+				
 				CL_ColorDlight (dl, DL_COLOR_GREEN);
 			}
 		}
@@ -665,6 +668,9 @@ void CL_RelinkEntities (void)
 				VectorCopy (ent->origin, dl->origin);
 				dl->radius = 200;
 				dl->die = cl.time + 0.01;
+				
+				Con_Printf("catch EF_TRACER2\n");//eer1 DBG
+				Con_Printf("model: %s\n", ent->model->name);//eer1 DBG
 				
 				CL_ColorDlight (dl, DL_COLOR_ORANGE);
 			}
@@ -681,6 +687,9 @@ void CL_RelinkEntities (void)
 				dl->radius = 200;
 				dl->die = cl.time + 0.01;
 				
+				Con_Printf("catch EF_TRACER3\n");//eer1 DBG
+				Con_Printf("model: %s\n", ent->model->name);//eer1 DBG
+				
 				CL_ColorDlight (dl, DL_COLOR_PURPLE);
 			}
 		}
@@ -693,6 +702,9 @@ void CL_RelinkEntities (void)
 			dl->radius = 200;
 			dl->die = cl.time + 0.01;
 			
+			Con_Printf("catch EF_ROCKET\n");//eer1 DBG
+			Con_Printf("model: %s\n", ent->model->name);//eer1 DBG
+			
 			CL_ColorDlight (dl, DL_COLOR_ORANGE);
 		}
 		else if (ent->model->flags & EF_GRENADE)
@@ -702,6 +714,9 @@ void CL_RelinkEntities (void)
 		
 		if (i == cl.viewentity && !chase_active.value)
 			continue;
+		
+		if (!strcmp (ent->model->name, "progs/w_ball.mdl"))//eer1 DBG: wrath's fireball
+			Con_Printf("model without any flag and effects: %s\n", ent->model->name);//eer1 DBG
 		
 // Nehahra
 // LordHavoc: enabled EF_NODRAW
