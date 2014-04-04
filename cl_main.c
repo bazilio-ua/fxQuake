@@ -524,6 +524,9 @@ void CL_RelinkEntities (void)
 			dl->minlight = 32;
 			dl->die = cl.time + 0.1;
 			
+			Con_Printf("catch EF_MUZZLEFLASH\n");//eer1 DBG
+			Con_Printf("model: %s\n", ent->model->name);//eer1 DBG
+			
 			if (i == cl.viewentity)
 			{
 				// switch the flash colour for the current weapon
@@ -564,6 +567,9 @@ void CL_RelinkEntities (void)
 			dl->radius = 400 + (rand()&31);
 			dl->die = cl.time + 0.001;
 			
+			Con_Printf("catch EF_BRIGHTLIGHT\n");//eer1 DBG
+			Con_Printf("model: %s\n", ent->model->name);//eer1 DBG
+			
 			if (!strcmp (ent->model->name, "progs/plasma.mdl")) // rogue plasma
 				CL_ColorDlight (dl, DL_COLOR_CYAN);
 			else if (!strcmp (ent->model->name, "progs/eel2.mdl")) // rogue eel
@@ -581,6 +587,9 @@ void CL_RelinkEntities (void)
 			VectorCopy (ent->origin,  dl->origin);
 			dl->radius = 200 + (rand()&31);
 			dl->die = cl.time + 0.001;
+			
+			Con_Printf("catch EF_DIMLIGHT\n");//eer1 DBG
+			Con_Printf("model: %s\n", ent->model->name);//eer1 DBG
 			
 			if (i == cl.viewentity)
 			{
