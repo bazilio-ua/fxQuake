@@ -510,15 +510,11 @@ void CL_RelinkEntities (void)
 			ent->angles[1] = objrotate;
 		
 		if (ent->effects & EF_BRIGHTFIELD)
-		{
-			Con_Printf("catch EF_BRIGHTFIELD\n");//eer1 DBG
-			
 			R_EntityParticles (ent);
-		}
 		if (ent->effects & EF_MUZZLEFLASH)
 		{
 			vec3_t		fv, rv, uv;
-
+			
 			dl = CL_AllocDlight (i);
 			VectorCopy (ent->origin,  dl->origin);
 			dl->origin[2] += 16;
@@ -528,28 +524,17 @@ void CL_RelinkEntities (void)
 			dl->minlight = 32;
 			dl->die = cl.time + 0.1;
 			
-			Con_Printf("catch EF_MUZZLEFLASH\n");//eer1 DBG
-			
 			if (i == cl.viewentity)
 			{
 				// switch the flash colour for the current weapon
 				if (cl.stats[STAT_ACTIVEWEAPON] == IT_LIGHTNING || cl.stats[STAT_ACTIVEWEAPON] == IT_SUPER_LIGHTNING)
 					CL_ColorDlight (dl, DL_COLOR_CYAN);
 				else if (rogue && cl.stats[STAT_ACTIVEWEAPON] == RIT_PLASMA_GUN)
-				{
 					CL_ColorDlight (dl, DL_COLOR_CYAN);
-					Con_Printf("plasma weapon\n");//eer1 DBG
-				}
 				else if (hipnotic && cl.stats[STAT_ACTIVEWEAPON] == HIT_MJOLNIR)
-				{
 					CL_ColorDlight (dl, DL_COLOR_CYAN);
-					Con_Printf("mjolnir weapon\n");//eer1 DBG
-				}
 				else if (hipnotic && cl.stats[STAT_ACTIVEWEAPON] == HIT_LASER_CANNON)
-				{
 					CL_ColorDlight (dl, DL_COLOR_RED);
-					Con_Printf("laser weapon\n");//eer1 DBG
-				}
 				//else if (TODO: add more weapons)
 				else
 					CL_ColorDlight (dl, DL_COLOR_ORANGE);
@@ -579,23 +564,12 @@ void CL_RelinkEntities (void)
 			dl->radius = 400 + (rand()&31);
 			dl->die = cl.time + 0.001;
 			
-			Con_Printf("catch EF_BRIGHTLIGHT\n");//eer1 DBG
-			
 			if (!strcmp (ent->model->name, "progs/plasma.mdl")) // rogue plasma
-			{
 				CL_ColorDlight (dl, DL_COLOR_CYAN);
-				Con_Printf("plasma model\n");//eer1 DBG
-			}
 			else if (!strcmp (ent->model->name, "progs/eel2.mdl")) // rogue eel
-			{
 				CL_ColorDlight (dl, DL_COLOR_CYAN);
-				Con_Printf("BRIGHT eel model\n");//eer1 DBG
-			}
 			else if (!strcmp (ent->model->name, "progs/lasrspik.mdl")) // EER1 (laser for extended hipnotic prog)
-			{
 				CL_ColorDlight (dl, DL_COLOR_YELLOW);
-				Con_Printf("BRIGHT lasrspik model\n");//eer1 DBG
-			}
 			//else if (TODO: add more models)
 			else
 				CL_ColorDlight (dl, DL_COLOR_WHITE);
@@ -607,8 +581,6 @@ void CL_RelinkEntities (void)
 			VectorCopy (ent->origin,  dl->origin);
 			dl->radius = 200 + (rand()&31);
 			dl->die = cl.time + 0.001;
-			
-			Con_Printf("catch EF_DIMLIGHT\n");//eer1 DBG
 			
 			if (i == cl.viewentity)
 			{
@@ -626,26 +598,17 @@ void CL_RelinkEntities (void)
 			else
 			{
 				if (!strcmp (ent->model->name, "progs/laser.mdl")) // id
-				{
 					CL_ColorDlight (dl, DL_COLOR_RED);
-					Con_Printf("laser model\n");//eer1 DBG
-				}
 				else if (!strcmp (ent->model->name, "progs/eel2.mdl")) // rogue eel
-				{
 					CL_ColorDlight (dl, DL_COLOR_BLUE);
-					Con_Printf("DIM eel model\n");//eer1 DBG
-				}
 				else if (!strcmp (ent->model->name, "progs/lasrspik.mdl")) // hipnotic laser
-				{
 					CL_ColorDlight (dl, DL_COLOR_RED);
-					Con_Printf("DIM lasrspik model\n");//eer1 DBG
-				}
 				//else if (TODO: add more models)
 				else
 					CL_ColorDlight (dl, DL_COLOR_WHITE);
 			}
 		}
-
+		
 // Nehahra
 		if ((ent->effects & EF_RED) || (ent->effects & EF_BLUE))
 		{
@@ -658,14 +621,11 @@ void CL_RelinkEntities (void)
 			if ((ent->effects & EF_RED) && (ent->effects & EF_BLUE))
 				CL_ColorDlight (dl, DL_COLOR_PURPLE);
 			else if (ent->effects & EF_RED)
-			{
-				Con_Printf("catch EF_RED\n");//eer1 DBG
 				CL_ColorDlight (dl, DL_COLOR_RED);
-			}
 			else if (ent->effects & EF_BLUE)
 				CL_ColorDlight (dl, DL_COLOR_BLUE);
 		}
-
+		
 		if (ent->model->flags & EF_GIB)
 			R_RocketTrail (oldorg, ent->origin, RT_GIB);
 		else if (ent->model->flags & EF_ZOMGIB)
@@ -723,22 +683,22 @@ void CL_RelinkEntities (void)
 			VectorCopy (ent->origin, dl->origin);
 			dl->radius = 200;
 			dl->die = cl.time + 0.01;
-
+			
 			CL_ColorDlight (dl, DL_COLOR_ORANGE);
 		}
 		else if (ent->model->flags & EF_GRENADE)
 			R_RocketTrail (oldorg, ent->origin, RT_GRENADE);
-
+		
 		ent->forcelink = false;
-
+		
 		if (i == cl.viewentity && !chase_active.value)
 			continue;
-
+		
 // Nehahra
 // LordHavoc: enabled EF_NODRAW
 		if (ent->effects & EF_NODRAW)
 			continue;
-
+		
 		if (cl_numvisedicts < MAX_VISEDICTS)
 		{
 			cl_visedicts[cl_numvisedicts] = ent;

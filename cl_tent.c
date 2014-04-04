@@ -105,7 +105,7 @@ void CL_ParseTEnt (void)
 	vec3_t	start, end;
 	char	*name;
 	static float	lastmsg = 0;
-
+	
 	type = MSG_ReadByte (net_message);
 	switch (type)
 	{
@@ -113,7 +113,7 @@ void CL_ParseTEnt (void)
 		pos[0] = MSG_ReadCoord (net_message);
 		pos[1] = MSG_ReadCoord (net_message);
 		pos[2] = MSG_ReadCoord (net_message);
-
+		
 		if (cl_extradlight.value)
 		{
 			dl = CL_AllocDlight (0);
@@ -154,8 +154,6 @@ void CL_ParseTEnt (void)
 		pos[1] = MSG_ReadCoord (net_message);
 		pos[2] = MSG_ReadCoord (net_message);
 		
-		Con_Printf("catch TE_SPIKE\n");//eer1 DBG
-		
 		R_RunParticleEffect (pos, vec3_origin, 0, 10);
 		if ( rand() % 5 )
 			S_StartSound (-1, 0, cl_sfx_tink1, pos, 1, 1);
@@ -175,8 +173,6 @@ void CL_ParseTEnt (void)
 		pos[0] = MSG_ReadCoord (net_message);
 		pos[1] = MSG_ReadCoord (net_message);
 		pos[2] = MSG_ReadCoord (net_message);
-		
-		Con_Printf("catch TE_SUPERSPIKE\n");//eer1 DBG
 		
 		R_RunParticleEffect (pos, vec3_origin, 0, 20);
 		if ( rand() % 5 )
@@ -249,8 +245,6 @@ void CL_ParseTEnt (void)
 		end[1] = MSG_ReadCoord (net_message);
 		end[2] = MSG_ReadCoord (net_message);
 		
-		Con_Printf("catch TE_LIGHTNING1\n");//eer1 DBG
-		
 		if (cl_extradlight.value)
 		{
 			dl = CL_AllocDlight (0);
@@ -272,7 +266,7 @@ void CL_ParseTEnt (void)
 		
 		CL_ParseBeam (Mod_ForName("progs/bolt.mdl", true), ent, start, end);
 		break;
-	
+		
 	case TE_LIGHTNING2:				// lightning bolts
 		ent = MSG_ReadShort (net_message);
 		
@@ -283,8 +277,6 @@ void CL_ParseTEnt (void)
 		end[0] = MSG_ReadCoord (net_message);
 		end[1] = MSG_ReadCoord (net_message);
 		end[2] = MSG_ReadCoord (net_message);
-		
-		Con_Printf("catch TE_LIGHTNING2\n");//eer1 DBG
 		
 		if (cl_extradlight.value)
 		{
@@ -318,8 +310,6 @@ void CL_ParseTEnt (void)
 		end[0] = MSG_ReadCoord (net_message);
 		end[1] = MSG_ReadCoord (net_message);
 		end[2] = MSG_ReadCoord (net_message);
-		
-		Con_Printf("catch TE_LIGHTNING3\n");//eer1 DBG
 		
 		if (cl_extradlight.value)
 		{
@@ -358,8 +348,6 @@ void CL_ParseTEnt (void)
 		end[1] = MSG_ReadCoord (net_message);
 		end[2] = MSG_ReadCoord (net_message);
 		
-		Con_Printf("catch TE_LIGHTNING4\n");//eer1 DBG
-		
 		if (cl_extradlight.value)
 		{
 			dl = CL_AllocDlight (0);
@@ -393,7 +381,7 @@ void CL_ParseTEnt (void)
 		end[0] = MSG_ReadCoord (net_message);
 		end[1] = MSG_ReadCoord (net_message);
 		end[2] = MSG_ReadCoord (net_message);
-
+		
 		if (cl_extradlight.value)
 		{
 			dl = CL_AllocDlight (0);
@@ -460,8 +448,6 @@ void CL_ParseTEnt (void)
 		pos[1] = MSG_ReadCoord (net_message);
 		pos[2] = MSG_ReadCoord (net_message);
 		
-		Con_Printf("catch TE_EXPLOSION2 (color mapped)\n");//eer1 DBG
-		
 		colorStart = MSG_ReadByte (net_message);
 		colorLength = MSG_ReadByte (net_message);
 		
@@ -495,8 +481,6 @@ void CL_ParseTEnt (void)
 		pos[0] = MSG_ReadCoord (net_message);
 		pos[1] = MSG_ReadCoord (net_message);
 		pos[2] = MSG_ReadCoord (net_message);
-		
-		Con_Printf("catch TE_EXPLOSION3 (colored)\n");//eer1 DBG
 		
 		dl = CL_AllocDlight (0);
 		VectorCopy (pos, dl->origin);
