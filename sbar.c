@@ -1016,7 +1016,7 @@ void Sbar_DrawFace (void)
         (teamplay.value<7))
 	{
 		int				top, bottom;
-		int				xofs;
+//		int				xofs;
 		char			num[12];
 		scoreboard_t	*s;
 		
@@ -1027,14 +1027,14 @@ void Sbar_DrawFace (void)
 		top = Sbar_ColorForMap (top);
 		bottom = Sbar_ColorForMap (bottom);
 
-		if (cl.gametype == GAME_DEATHMATCH)
+/*		if (cl.gametype == GAME_DEATHMATCH)
 			xofs = 113;
 		else
 			xofs = ((vid.width - 320)>>1) + 113;
-
+*/
 		Sbar_DrawPic (112, 0, rsb_teambord);
-		Draw_Fill (xofs, vid.height-SBAR_HEIGHT+3, 22, 9, top);
-		Draw_Fill (xofs, vid.height-SBAR_HEIGHT+12, 22, 9, bottom);
+		Draw_Fill (sbar_xofs+113 /* xofs */, vid.height-SBAR_HEIGHT+3, 22, 9, top);
+		Draw_Fill (sbar_xofs+113 /* xofs */, vid.height-SBAR_HEIGHT+12, 22, 9, bottom);
 
 		// draw number
 		f = s->frags;

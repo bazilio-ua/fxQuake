@@ -188,8 +188,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define HIT_PROXIMITY_GUN   (1<<HIT_PROXIMITY_GUN_BIT)
 #define HIT_MJOLNIR         (1<<HIT_MJOLNIR_BIT)
 #define HIT_LASER_CANNON    (1<<HIT_LASER_CANNON_BIT)
-#define HIT_WETSUIT         (1<<(23+2))
-#define HIT_EMPATHY_SHIELDS (1<<(23+3))
+#define HIT_WETSUIT         (1<<(23+1)) // corrected wetsuit define, was (1<<(23+2))
+#define HIT_EMPATHY_SHIELDS (1<<(23+2)) // corrected empathy shield define, was (1<<(23+3))
 
 //===========================================
 
