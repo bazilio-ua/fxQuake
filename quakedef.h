@@ -135,7 +135,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define	IT_GRENADE_LAUNCHER		16
 #define	IT_ROCKET_LAUNCHER		32
 #define	IT_LIGHTNING			64
-#define IT_SUPER_LIGHTNING      128
+#define IT_EXTRA_WEAPON         128 // was IT_SUPER_LIGHTNING, unused at id
 #define IT_SHELLS               256
 #define IT_NAILS                512
 #define IT_ROCKETS              1024
@@ -190,6 +190,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define HIT_LASER_CANNON    (1<<HIT_LASER_CANNON_BIT)
 #define HIT_WETSUIT         (1<<(23+1)) // corrected wetsuit define, was (1<<(23+2))
 #define HIT_EMPATHY_SHIELDS (1<<(23+2)) // corrected empathy shield define, was (1<<(23+3))
+
+//===========================================
+// Nehahra defines
+#define NIT_SPROCKET				128 // same as IT_EXTRA_WEAPON/IT_SUPER_LIGHTNING
+#define NIT_AUTO_SHOTGUN			8388608
 
 //===========================================
 

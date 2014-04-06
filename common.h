@@ -211,4 +211,4 @@ void COM_CreatePath (char *path);
 
 extern	struct cvar_s	registered;
 
-extern qboolean		standard_quake, rogue, hipnotic, nehahra;
+extern qboolean		standard_quake, rogue, hipnotic, nehahra, quoth;

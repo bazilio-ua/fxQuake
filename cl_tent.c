@@ -249,7 +249,7 @@ void CL_ParseTEnt (void)
 		end[1] = MSG_ReadCoord (net_message);
 		end[2] = MSG_ReadCoord (net_message);
 		
-//		Con_Printf("catch TE_LIGHTNING1\n");//eer1 DBG
+		Con_Printf("catch TE_LIGHTNING1\n");//eer1 DBG
 		
 		if (cl_extradlight.value)
 		{
@@ -284,7 +284,7 @@ void CL_ParseTEnt (void)
 		end[1] = MSG_ReadCoord (net_message);
 		end[2] = MSG_ReadCoord (net_message);
 		
-//		Con_Printf("catch TE_LIGHTNING2\n");//eer1 DBG
+		Con_Printf("catch TE_LIGHTNING2\n");//eer1 DBG
 		
 		if (cl_extradlight.value)
 		{
@@ -319,7 +319,7 @@ void CL_ParseTEnt (void)
 		end[1] = MSG_ReadCoord (net_message);
 		end[2] = MSG_ReadCoord (net_message);
 		
-//		Con_Printf("catch TE_LIGHTNING3\n");//eer1 DBG
+		Con_Printf("catch TE_LIGHTNING3\n");//eer1 DBG
 		
 		if (cl_extradlight.value)
 		{
@@ -358,7 +358,7 @@ void CL_ParseTEnt (void)
 		end[1] = MSG_ReadCoord (net_message);
 		end[2] = MSG_ReadCoord (net_message);
 		
-//		Con_Printf("catch TE_LIGHTNING4\n");//eer1 DBG
+		Con_Printf("catch TE_LIGHTNING4\n");//eer1 DBG
 		
 		if (cl_extradlight.value)
 		{

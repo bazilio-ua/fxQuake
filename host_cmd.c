@@ -1394,7 +1394,7 @@ void Host_Give_f (void)
 	{
 		// show usage
 		Con_Printf ("usage: give <item> <quantity>\n");
-		Con_Printf ("   1-%s = weapon, a = armor\n", hipnotic ? "9,6a,0" : "8");
+		Con_Printf ("   1-%s = weapon, a = armor\n", hipnotic ? "9,6a,0" : nehahra ? "9,100" : "8");
 		Con_Printf ("   h = health, ks or kg = key\n");
 		Con_Printf ("   s,n,r,c%s = ammo\n", rogue ? ",l,m,p" : "");
 		return;
@@ -1436,6 +1436,19 @@ void Host_Give_f (void)
 				sv_player->v.items = (int)sv_player->v.items | HIT_LASER_CANNON;
 			else if (t[0] == '0')
 				sv_player->v.items = (int)sv_player->v.items | HIT_MJOLNIR;
+			else if (t[0] >= '2')
+				sv_player->v.items = (int)sv_player->v.items | (IT_SHOTGUN << (t[0] - '2'));
+		}
+		else if (nehahra)
+		{
+/*			if (t[0] == '9')
+				sv_player->v.items = (int)sv_player->v.items | NIT_SPROCKET;
+			else */ 
+			if (t[0] == '1' && t[1] == '0' && t[2] == '0')
+			{
+				sv_player->v.items = (int)sv_player->v.items | NIT_AUTO_SHOTGUN;
+				Con_Printf("please\n");
+			}
 			else if (t[0] >= '2')
 				sv_player->v.items = (int)sv_player->v.items | (IT_SHOTGUN << (t[0] - '2'));
 		}
@@ -1590,6 +1603,7 @@ void Host_Give_f (void)
 	{
 	case IT_SHOTGUN:
 	case IT_SUPER_SHOTGUN:
+//	case NIT_AUTO_SHOTGUN: // Nehahra
 		sv_player->v.currentammo = sv_player->v.ammo_shells;
 		break;
 	case IT_NAILGUN:
@@ -1601,12 +1615,24 @@ void Host_Give_f (void)
 	case IT_ROCKET_LAUNCHER:
 	case RIT_MULTI_GRENADE:
 	case RIT_MULTI_ROCKET:
+//	case NIT_SPROCKET: // Nehahra
 		sv_player->v.currentammo = sv_player->v.ammo_rockets;
 		break;
 	case IT_LIGHTNING:
-	case HIT_LASER_CANNON:
-	case HIT_MJOLNIR:
+//	case HIT_MJOLNIR:
 		sv_player->v.currentammo = sv_player->v.ammo_cells;
+		break;
+	case HIT_MJOLNIR: //same as NIT_SPROCKET (Nehahra)
+		if (hipnotic)
+			sv_player->v.currentammo = sv_player->v.ammo_cells;
+		if (nehahra)
+			sv_player->v.currentammo = sv_player->v.ammo_rockets;
+		break;
+	case HIT_LASER_CANNON: //same as NIT_AUTO_SHOTGUN (Nehahra)
+		if (hipnotic)
+			sv_player->v.currentammo = sv_player->v.ammo_cells;
+		if (nehahra)
+			sv_player->v.currentammo = sv_player->v.ammo_shells;
 		break;
 	case RIT_LAVA_NAILGUN:	//same as IT_AXE
 		if (rogue)

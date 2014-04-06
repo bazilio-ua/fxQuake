@@ -530,11 +530,13 @@ void CL_RelinkEntities (void)
 			if (i == cl.viewentity)
 			{
 				// switch the flash colour for the current weapon
-				if (cl.stats[STAT_ACTIVEWEAPON] == IT_LIGHTNING || cl.stats[STAT_ACTIVEWEAPON] == IT_SUPER_LIGHTNING)
+				if (cl.stats[STAT_ACTIVEWEAPON] == IT_LIGHTNING /* || cl.stats[STAT_ACTIVEWEAPON] == IT_SUPER_LIGHTNING */ )
 					CL_ColorDlight (dl, DL_COLOR_CYAN);
 				else if (rogue && cl.stats[STAT_ACTIVEWEAPON] == RIT_PLASMA_GUN)
 					CL_ColorDlight (dl, DL_COLOR_CYAN);
-				else if (hipnotic && cl.stats[STAT_ACTIVEWEAPON] == HIT_MJOLNIR)
+/*				else if (hipnotic && cl.stats[STAT_ACTIVEWEAPON] == HIT_MJOLNIR) // fixme: no muzzleflash?
+					CL_ColorDlight (dl, DL_COLOR_CYAN);	*/
+				else if (quoth && cl.stats[STAT_ACTIVEWEAPON] == HIT_LASER_CANNON) // quoth plasma gun
 					CL_ColorDlight (dl, DL_COLOR_CYAN);
 				else if (hipnotic && cl.stats[STAT_ACTIVEWEAPON] == HIT_LASER_CANNON)
 					CL_ColorDlight (dl, DL_COLOR_RED);
