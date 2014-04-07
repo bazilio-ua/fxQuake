@@ -1160,15 +1160,14 @@ void R_RenderView (void)
 	R_Clear ();
 	R_SetupGL ();
 
-	R_SetupTransEntities ();
-	R_SetupParticles ();
-
 	S_ExtraUpdateTime ();	// don't let sound get messed up if going slow
 
 	R_FogEnableGFog ();
 	R_DrawSky (); // handle worldspawn and bmodels
 	R_DrawWorld (); // adds static entities to the list
 	R_DrawEntities ();
+	R_SetupTransEntities ();
+	R_SetupParticles ();
 	R_DrawTransEntities (r_viewleaf->contents == CONTENTS_EMPTY);
 	R_DrawParticles (r_viewleaf->contents == CONTENTS_EMPTY);
 	R_DrawTextureChainsWater (); // drawn here since they might have transparency
