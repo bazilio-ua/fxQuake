@@ -870,6 +870,7 @@ void R_InitMapGlobals (void)
 
 	// set up global fog
 	glFogi(GL_FOG_MODE, GL_EXP2);
+	glHint(GL_FOG_HINT, GL_NICEST);
 }
 
 float globalwateralpha = 0.0;
