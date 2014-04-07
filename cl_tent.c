@@ -259,7 +259,7 @@ void CL_ParseTEnt (void)
 			dl->die = cl.time + 0.1;
 			dl->decay = 300;
 			
-			CL_ColorDlight (dl, DL_COLOR_CYAN);
+			CL_ColorDlight (dl, DL_COLOR_LIGHTBLUE);
 			
 			dl = CL_AllocDlight (0);
 			VectorCopy (end, dl->origin);
@@ -267,7 +267,7 @@ void CL_ParseTEnt (void)
 			dl->die = cl.time + 0.1;
 			dl->decay = 300;
 			
-			CL_ColorDlight (dl, DL_COLOR_CYAN);
+			CL_ColorDlight (dl, DL_COLOR_LIGHTBLUE);
 		}
 		
 		CL_ParseBeam (Mod_ForName("progs/bolt.mdl", true), ent, start, end);
@@ -294,7 +294,7 @@ void CL_ParseTEnt (void)
 			dl->die = cl.time + 0.1;
 			dl->decay = 300;
 			
-			CL_ColorDlight (dl, DL_COLOR_CYAN);
+			CL_ColorDlight (dl, DL_COLOR_LIGHTBLUE);
 			
 			dl = CL_AllocDlight (0);
 			VectorCopy (end, dl->origin);
@@ -302,7 +302,7 @@ void CL_ParseTEnt (void)
 			dl->die = cl.time + 0.1;
 			dl->decay = 300;
 			
-			CL_ColorDlight (dl, DL_COLOR_CYAN);
+			CL_ColorDlight (dl, DL_COLOR_LIGHTBLUE);
 		}
 		
 		CL_ParseBeam (Mod_ForName("progs/bolt2.mdl", true), ent, start, end);
@@ -329,7 +329,7 @@ void CL_ParseTEnt (void)
 			dl->die = cl.time + 0.1;
 			dl->decay = 300;
 			
-			CL_ColorDlight (dl, DL_COLOR_CYAN);
+			CL_ColorDlight (dl, DL_COLOR_LIGHTBLUE);
 			
 			dl = CL_AllocDlight (0);
 			VectorCopy (end, dl->origin);
@@ -337,7 +337,7 @@ void CL_ParseTEnt (void)
 			dl->die = cl.time + 0.1;
 			dl->decay = 300;
 			
-			CL_ColorDlight (dl, DL_COLOR_CYAN);
+			CL_ColorDlight (dl, DL_COLOR_LIGHTBLUE);
 		}
 		
 		CL_ParseBeam (Mod_ForName("progs/bolt3.mdl", true), ent, start, end);
@@ -368,7 +368,7 @@ void CL_ParseTEnt (void)
 			dl->die = cl.time + 0.1;
 			dl->decay = 300;
 			
-			CL_ColorDlight (dl, DL_COLOR_CYAN);
+			CL_ColorDlight (dl, DL_COLOR_LIGHTBLUE);
 			
 			dl = CL_AllocDlight (0);
 			VectorCopy (end, dl->origin);
@@ -376,7 +376,7 @@ void CL_ParseTEnt (void)
 			dl->die = cl.time + 0.1;
 			dl->decay = 300;
 			
-			CL_ColorDlight (dl, DL_COLOR_CYAN);
+			CL_ColorDlight (dl, DL_COLOR_LIGHTBLUE);
 		}
 		
 		CL_ParseBeam (Mod_ForName(name, true), ent, start, end);

@@ -531,13 +531,13 @@ void CL_RelinkEntities (void)
 			{
 				// switch the flash colour for the current weapon
 				if (cl.stats[STAT_ACTIVEWEAPON] == IT_LIGHTNING /* || cl.stats[STAT_ACTIVEWEAPON] == IT_SUPER_LIGHTNING */ )
-					CL_ColorDlight (dl, DL_COLOR_CYAN);
+					CL_ColorDlight (dl, DL_COLOR_LIGHTBLUE);
 				else if (rogue && cl.stats[STAT_ACTIVEWEAPON] == RIT_PLASMA_GUN)
-					CL_ColorDlight (dl, DL_COLOR_CYAN);
+					CL_ColorDlight (dl, DL_COLOR_LIGHTBLUE);
 /*				else if (hipnotic && cl.stats[STAT_ACTIVEWEAPON] == HIT_MJOLNIR) // fixme: no muzzleflash?
-					CL_ColorDlight (dl, DL_COLOR_CYAN);	*/
+					CL_ColorDlight (dl, DL_COLOR_LIGHTBLUE);	*/
 				else if (quoth && cl.stats[STAT_ACTIVEWEAPON] == HIT_LASER_CANNON) // quoth plasma gun uses the same bit as hipnotic laser cannon, so check it first
-					CL_ColorDlight (dl, DL_COLOR_CYAN);
+					CL_ColorDlight (dl, DL_COLOR_LIGHTBLUE);
 				else if (hipnotic && cl.stats[STAT_ACTIVEWEAPON] == HIT_LASER_CANNON)
 					CL_ColorDlight (dl, DL_COLOR_RED);
 				//else if (TODO: add more weapons)
@@ -552,14 +552,14 @@ void CL_RelinkEntities (void)
 				else if (!strcmp (ent->model->name, "progs/shalrath.mdl"))
 					CL_ColorDlight (dl, DL_COLOR_PURPLE);
 				else if (!strcmp (ent->model->name, "progs/shambler.mdl"))
-					CL_ColorDlight (dl, DL_COLOR_CYAN);
+					CL_ColorDlight (dl, DL_COLOR_LIGHTBLUE);
 				else if (!strcmp (ent->model->name, "progs/enforcer.mdl"))
 					CL_ColorDlight (dl, DL_COLOR_ORANGE);
 				else if (!strcmp (ent->model->name, "progs/wrath.mdl") ||
 						 !strcmp (ent->model->name, "progs/s_wrath.mdl")) // rogue wrath
 					CL_ColorDlight (dl, DL_COLOR_RED);
 				else if (!strcmp (ent->model->name, "progs/dragon.mdl"))
-					CL_ColorDlight (dl, DL_COLOR_YELLOW);
+					CL_ColorDlight (dl, DL_COLOR_GOLD); // DL_COLOR_YELLOW
 				//else if (TODO: add more models)
 				else
 					CL_ColorDlight (dl, DL_COLOR_ORANGE);
@@ -578,9 +578,9 @@ void CL_RelinkEntities (void)
 //			Con_Printf("BRIGHTLIGHT model: %s\n", ent->model->name);//eer1 DBG
 			
 			if (!strcmp (ent->model->name, "progs/plasma.mdl")) // rogue plasma
-				CL_ColorDlight (dl, DL_COLOR_CYAN);
+				CL_ColorDlight (dl, DL_COLOR_LIGHTBLUE);
 			else if (!strcmp (ent->model->name, "progs/eel2.mdl")) // rogue eel
-				CL_ColorDlight (dl, DL_COLOR_CYAN);
+				CL_ColorDlight (dl, DL_COLOR_LIGHTBLUE);
 			else if (!strcmp (ent->model->name, "progs/lasrspik.mdl")) // EER1 (laser for extended hipnotic prog)
 				CL_ColorDlight (dl, DL_COLOR_ORANGE);
 			//else if (TODO: add more models)
@@ -608,7 +608,7 @@ void CL_RelinkEntities (void)
 				else if (cl.items & IT_INVULNERABILITY)
 					CL_ColorDlight (dl, DL_COLOR_RED);
 				else if (hipnotic && (cl.items & HIT_EMPATHY_SHIELDS)) // hipnotic empathy shield
-					CL_ColorDlight (dl, DL_COLOR_YELLOW);
+					CL_ColorDlight (dl, DL_COLOR_GOLD); // DL_COLOR_YELLOW
 				//else if (TODO: add more powerups)
 				else
 					CL_ColorDlight (dl, DL_COLOR_WHITE);
@@ -618,7 +618,7 @@ void CL_RelinkEntities (void)
 				if (!strcmp (ent->model->name, "progs/laser.mdl")) // id enforcer and rogue morph sometime
 				{
 					if (rogue)
-						CL_ColorDlight (dl, DL_COLOR_YELLOW);
+						CL_ColorDlight (dl, DL_COLOR_YELLOW); // morph laser
 					else
 						CL_ColorDlight (dl, DL_COLOR_ORANGE);
 				}
@@ -627,7 +627,7 @@ void CL_RelinkEntities (void)
 						 !strcmp (ent->model->name, "progs/morph_gr.mdl")) // rogue morph
 					CL_ColorDlight (dl, DL_COLOR_YELLOW);
 				else if (!strcmp (ent->model->name, "progs/eel2.mdl")) // rogue eel
-					CL_ColorDlight (dl, DL_COLOR_CYAN);
+					CL_ColorDlight (dl, DL_COLOR_LIGHTBLUE);
 				else if (!strcmp (ent->model->name, "progs/sword.mdl")) // rogue invisible swordsman
 					CL_ColorDlight (dl, DL_COLOR_YELLOW);
 				else if (!strcmp (ent->model->name, "progs/lasrspik.mdl")) // hipnotic laser
