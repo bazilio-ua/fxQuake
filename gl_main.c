@@ -1166,7 +1166,7 @@ void R_RenderView (void)
 	R_DrawSky (); // handle worldspawn and bmodels
 	R_DrawWorld (); // adds static entities to the list
 	R_DrawEntities ();
-	R_SetupTransEntities (); // do this after R_DrawWorld so egrafs updated correctly
+	R_SetupTransEntities (); // do this after R_DrawWorld so efrags updated correctly
 	R_SetupParticles ();
 	R_DrawTransEntities (r_viewleaf->contents == CONTENTS_EMPTY);
 	R_DrawParticles (r_viewleaf->contents == CONTENTS_EMPTY);
