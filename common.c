@@ -904,7 +904,6 @@ void COM_InitArgv (int argc, char **argv)
 		hipnotic = true;
 		standard_quake = false;
 	}
-	
 	if (COM_CheckParm ("-quoth"))
 		quoth = true;
 

@@ -447,7 +447,7 @@ void CL_ParseTEnt (void)
 		{
 			dl = CL_AllocDlight (0);
 			VectorCopy (pos, dl->origin);
-			dl->radius = 200; // 250
+			dl->radius = 250;
 			dl->die = cl.time + 0.2;
 			dl->decay = 300;
 			

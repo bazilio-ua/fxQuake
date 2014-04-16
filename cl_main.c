@@ -565,9 +565,8 @@ void CL_RelinkEntities (void)
 					CL_ColorDlight (dl, DL_COLOR_ORANGE);
 			}
 		}
-		if (ent->effects & EF_BRIGHTLIGHT) // rogue mp plasma and eel
+		if (ent->effects & EF_BRIGHTLIGHT) // rogue plasma and eel
 		{
-			// uncoloured
 			dl = CL_AllocDlight (i);
 			VectorCopy (ent->origin,  dl->origin);
 			dl->origin[2] += 16;
@@ -582,14 +581,13 @@ void CL_RelinkEntities (void)
 			else if (!strcmp (ent->model->name, "progs/eel2.mdl")) // rogue eel
 				CL_ColorDlight (dl, DL_COLOR_LIGHTBLUE);
 			else if (!strcmp (ent->model->name, "progs/lasrspik.mdl")) // EER1 (laser for extended hipnotic prog)
-				CL_ColorDlight (dl, DL_COLOR_ORANGE);
+				CL_ColorDlight (dl, DL_COLOR_RED);
 			//else if (TODO: add more models)
 			else
-				CL_ColorDlight (dl, DL_COLOR_WHITE);
+				CL_ColorDlight (dl, DL_COLOR_WHITE); // uncoloured
 		}
 		if (ent->effects & EF_DIMLIGHT) // powerup(s) glows and laser 
 		{
-			// powerup dynamic lights
 			dl = CL_AllocDlight (i);
 			VectorCopy (ent->origin,  dl->origin);
 			dl->radius = 200 + (rand()&31);
@@ -598,6 +596,7 @@ void CL_RelinkEntities (void)
 //			Con_Printf("catch EF_DIMLIGHT\n");//eer1 DBG
 //			Con_Printf("DIMLIGHT model: %s\n", ent->model->name);//eer1 DBG
 			
+			// powerup dynamic lights
 			if (i == cl.viewentity)
 			{
 				// set the appropriate colour depending on the current powerup(s)
@@ -611,7 +610,7 @@ void CL_RelinkEntities (void)
 					CL_ColorDlight (dl, DL_COLOR_GOLD); // DL_COLOR_YELLOW
 				//else if (TODO: add more powerups)
 				else
-					CL_ColorDlight (dl, DL_COLOR_WHITE);
+					CL_ColorDlight (dl, DL_COLOR_WHITE); // uncoloured
 			}
 			else
 			{
@@ -634,7 +633,7 @@ void CL_RelinkEntities (void)
 					CL_ColorDlight (dl, DL_COLOR_RED);
 				//else if (TODO: add more models)
 				else
-					CL_ColorDlight (dl, DL_COLOR_WHITE);
+					CL_ColorDlight (dl, DL_COLOR_WHITE); // uncoloured
 			}
 		}
 		
