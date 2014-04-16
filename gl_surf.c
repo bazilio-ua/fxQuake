@@ -289,7 +289,7 @@ void R_RenderDynamicLightmaps (msurface_t *s)
 		|| s->cached_dlight)			// dynamic previously
 	{
 dynamic:
-		if ( /* r_dynamic.value && */ !r_fullbright.value) // EER1
+		if (!r_fullbright.value) // EER1
 		{
 			lightmap_modified[s->lightmaptexture] = true;
 			rect = &lightmap_rectchange[s->lightmaptexture];
@@ -673,7 +673,6 @@ void R_DrawGLPoly56 (glpoly_t *p)
 }
 
 
-
 /*
 =================
 R_DrawBrushModel
@@ -708,7 +707,7 @@ void R_DrawBrushModel (entity_t *e, qboolean water)
 	psurf = &clmodel->surfaces[clmodel->firstmodelsurface];
 
 	// calculate dynamic lighting for bmodel if it's not an instanced model
-	if (clmodel->firstmodelsurface != 0 /* && !gl_flashblend.value */) //FX -- commented out
+	if (clmodel->firstmodelsurface != 0) // EER1
 	{
 		for (k=0 ; k<MAX_DLIGHTS ; k++)
 		{

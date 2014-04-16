@@ -339,9 +339,6 @@ void R_PushDlights (void)
 	if (!r_dynamic.value) // EER1
 		return;
 	
-//	if (gl_flashblend.value) //FX -- commented out
-//		return;
-
 	r_dlightframecount = r_framecount + 1;	// because the count hasn't
 											//  advanced yet for this frame
 	l = cl_dlights;

@@ -524,23 +524,17 @@ void CL_RelinkEntities (void)
 			dl->minlight = 32;
 			dl->die = cl.time + 0.1;
 			
-//			Con_Printf("catch EF_MUZZLEFLASH\n");//eer1 DBG
-//			Con_Printf("MUZZLEFLASH model: %s\n", ent->model->name);//eer1 DBG
-			
 			if (i == cl.viewentity)
 			{
 				// switch the flash colour for the current weapon
-				if (cl.stats[STAT_ACTIVEWEAPON] == IT_LIGHTNING /* || cl.stats[STAT_ACTIVEWEAPON] == IT_SUPER_LIGHTNING */ )
+				if (cl.stats[STAT_ACTIVEWEAPON] == IT_LIGHTNING)
 					CL_ColorDlight (dl, DL_COLOR_LIGHTBLUE);
 				else if (rogue && cl.stats[STAT_ACTIVEWEAPON] == RIT_PLASMA_GUN)
 					CL_ColorDlight (dl, DL_COLOR_LIGHTBLUE);
-/*				else if (hipnotic && cl.stats[STAT_ACTIVEWEAPON] == HIT_MJOLNIR) // fixme: no muzzleflash?
-					CL_ColorDlight (dl, DL_COLOR_LIGHTBLUE);	*/
 				else if (quoth && cl.stats[STAT_ACTIVEWEAPON] == HIT_LASER_CANNON) // quoth plasma gun uses the same bit as hipnotic laser cannon, so check it first
 					CL_ColorDlight (dl, DL_COLOR_LIGHTBLUE);
 				else if (hipnotic && cl.stats[STAT_ACTIVEWEAPON] == HIT_LASER_CANNON)
 					CL_ColorDlight (dl, DL_COLOR_RED);
-				//else if (TODO: add more weapons)
 				else
 					CL_ColorDlight (dl, DL_COLOR_ORANGE);
 			}
@@ -559,8 +553,7 @@ void CL_RelinkEntities (void)
 						 !strcmp (ent->model->name, "progs/s_wrath.mdl")) // rogue wrath
 					CL_ColorDlight (dl, DL_COLOR_RED);
 				else if (!strcmp (ent->model->name, "progs/dragon.mdl"))
-					CL_ColorDlight (dl, DL_COLOR_GOLD); // DL_COLOR_YELLOW
-				//else if (TODO: add more models)
+					CL_ColorDlight (dl, DL_COLOR_GOLD);
 				else
 					CL_ColorDlight (dl, DL_COLOR_ORANGE);
 			}
@@ -573,16 +566,12 @@ void CL_RelinkEntities (void)
 			dl->radius = 400 + (rand()&31);
 			dl->die = cl.time + 0.001;
 			
-//			Con_Printf("catch EF_BRIGHTLIGHT\n");//eer1 DBG
-//			Con_Printf("BRIGHTLIGHT model: %s\n", ent->model->name);//eer1 DBG
-			
 			if (!strcmp (ent->model->name, "progs/plasma.mdl")) // rogue plasma
 				CL_ColorDlight (dl, DL_COLOR_LIGHTBLUE);
 			else if (!strcmp (ent->model->name, "progs/eel2.mdl")) // rogue eel
 				CL_ColorDlight (dl, DL_COLOR_LIGHTBLUE);
 			else if (!strcmp (ent->model->name, "progs/lasrspik.mdl")) // EER1 (laser for extended hipnotic prog)
 				CL_ColorDlight (dl, DL_COLOR_RED);
-			//else if (TODO: add more models)
 			else
 				CL_ColorDlight (dl, DL_COLOR_WHITE); // uncoloured
 		}
@@ -592,9 +581,6 @@ void CL_RelinkEntities (void)
 			VectorCopy (ent->origin,  dl->origin);
 			dl->radius = 200 + (rand()&31);
 			dl->die = cl.time + 0.001;
-			
-//			Con_Printf("catch EF_DIMLIGHT\n");//eer1 DBG
-//			Con_Printf("DIMLIGHT model: %s\n", ent->model->name);//eer1 DBG
 			
 			// powerup dynamic lights
 			if (i == cl.viewentity)
@@ -607,8 +593,7 @@ void CL_RelinkEntities (void)
 				else if (cl.items & IT_INVULNERABILITY)
 					CL_ColorDlight (dl, DL_COLOR_RED);
 				else if (hipnotic && (cl.items & HIT_EMPATHY_SHIELDS)) // hipnotic empathy shield
-					CL_ColorDlight (dl, DL_COLOR_GOLD); // DL_COLOR_YELLOW
-				//else if (TODO: add more powerups)
+					CL_ColorDlight (dl, DL_COLOR_GOLD);
 				else
 					CL_ColorDlight (dl, DL_COLOR_WHITE); // uncoloured
 			}
@@ -631,7 +616,6 @@ void CL_RelinkEntities (void)
 					CL_ColorDlight (dl, DL_COLOR_YELLOW);
 				else if (!strcmp (ent->model->name, "progs/lasrspik.mdl")) // hipnotic laser
 					CL_ColorDlight (dl, DL_COLOR_RED);
-				//else if (TODO: add more models)
 				else
 					CL_ColorDlight (dl, DL_COLOR_WHITE); // uncoloured
 			}
@@ -670,9 +654,6 @@ void CL_RelinkEntities (void)
 				dl->radius = 200;
 				dl->die = cl.time + 0.01;
 				
-//				Con_Printf("catch EF_TRACER\n");//eer1 DBG
-//				Con_Printf("model: %s\n", ent->model->name);//eer1 DBG
-				
 				CL_ColorDlight (dl, DL_COLOR_GREEN);
 			}
 		}
@@ -687,9 +668,6 @@ void CL_RelinkEntities (void)
 				VectorCopy (ent->origin, dl->origin);
 				dl->radius = 200;
 				dl->die = cl.time + 0.01;
-				
-//				Con_Printf("catch EF_TRACER2\n");//eer1 DBG
-//				Con_Printf("model: %s\n", ent->model->name);//eer1 DBG
 				
 				CL_ColorDlight (dl, DL_COLOR_ORANGE);
 			}
@@ -706,9 +684,6 @@ void CL_RelinkEntities (void)
 				dl->radius = 200;
 				dl->die = cl.time + 0.01;
 				
-//				Con_Printf("catch EF_TRACER3\n");//eer1 DBG
-//				Con_Printf("model: %s\n", ent->model->name);//eer1 DBG
-				
 				CL_ColorDlight (dl, DL_COLOR_PURPLE);
 			}
 		}
@@ -721,9 +696,6 @@ void CL_RelinkEntities (void)
 			dl->radius = 200;
 			dl->die = cl.time + 0.01;
 			
-//			Con_Printf("catch EF_ROCKET\n");//eer1 DBG
-//			Con_Printf("model: %s\n", ent->model->name);//eer1 DBG
-			
 			CL_ColorDlight (dl, DL_COLOR_ORANGE);
 		}
 		else if (ent->model->flags & EF_GRENADE)
@@ -734,11 +706,6 @@ void CL_RelinkEntities (void)
 		if (i == cl.viewentity && !chase_active.value)
 			continue;
 		
-/*		if (!strcmp (ent->model->name, "progs/w_ball.mdl") || 
-			!strcmp (ent->model->name, "progs/fireball.mdl") ||
-			!strcmp (ent->model->name, "progs/sphere.mdl"))//eer1 DBG
-			Con_Printf("model without any flag and effects: %s\n", ent->model->name);//eer1 DBG
-*/		
 // Nehahra
 // LordHavoc: enabled EF_NODRAW
 		if (ent->effects & EF_NODRAW)

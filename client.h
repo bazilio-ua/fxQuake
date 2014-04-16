@@ -89,32 +89,13 @@ typedef struct
 } dlight_t;
 
 // keep dlight colours in the one place so that if i need to change them i only need to do it once
-/*
-#define DL_COLOR_GREEN		0.196078, 0.803922, 0.196078 // limegreen rgb 0.196078 0.803922 0.196078
-#define DL_COLOR_BLUE		0.482353, 0.407843, 0.933333 // mediumslateblue rgb 0.482353 0.407843 0.933333
-#define DL_COLOR_ORANGE		1.000000, 0.647059, 0.000000 // orange rgb 1 0.647059 0
-#define DL_COLOR_RED		1.000000, 0.270588, 0.000000 // orangered rgb 1 0.270588 0
-#define DL_COLOR_GOLD		1.000000, 0.843137, 0.000000 // gold rgb 1 0.843137 0
-#define DL_COLOR_YELLOW		0.933333, 0.866667, 0.509804 // lightgoldenrod rgb 0.933333 0.866667 0.509804
-#define DL_COLOR_WHITE		1.000000, 1.000000, 1.000000 // full white
-*/
-//#define DL_COLOR_GREEN		0.196078, 0.803922, 0.196078 // limegreen rgb 0.196078 0.803922 0.196078
-//#define DL_COLOR_GREEN		0.133333, 0.545098, 0.133333 // forestgreen	rgb 0.133333 0.545098 0.133333
 #define DL_COLOR_GREEN		0.419608, 0.556863, 0.137255 // olivedrab	rgb 0.419608 0.556863 0.137255
-//#define DL_COLOR_PURPLE		0.627451, 0.125490, 0.941176 // purple rgb 0.627451 0.12549 0.941176
-//#define DL_COLOR_PURPLE		0.866667, 0.627451, 0.866667 // plum	rgb 0.866667 0.627451 0.866667
 #define DL_COLOR_PURPLE		0.854902, 0.439216, 0.839216 // orchid	rgb 0.854902 0.439216 0.839216
-//#define DL_COLOR_BLUE		0.482353, 0.407843, 0.933333 // mediumslateblue	rgb 0.482353 0.407843 0.933333
-//#define DL_COLOR_BLUE		0.443137, 0.443137, 0.776471 // sgislateblue	rgb 0.443137 0.443137 0.776471
-//#define DL_COLOR_BLUE		0.517647, 0.439216, 1.000000 // lightslateblue	rgb 0.517647 0.439216 1 (!)
-//#define DL_COLOR_BLUE		0.415686, 0.352941, 0.803922 // slateblue	rgb 0.415686 0.352941 0.803922
 #define DL_COLOR_BLUE		0.254902, 0.411765, 0.882353 // royalblue	rgb 0.254902 0.411765 0.882353
-//#define DL_COLOR_LIGHTBLUE		0.000000, 0.749020, 1.000000 // deepskyblue rgb 0 0.74902 1
 #define DL_COLOR_LIGHTBLUE	0.529412, 0.807843, 0.921569 // skyblue	rgb 0.529412 0.807843 0.921569
 #define DL_COLOR_ORANGE		1.000000, 0.647059, 0.000000 // orange rgb 1 0.647059 0
 #define DL_COLOR_RED		1.000000, 0.270588, 0.000000 // orangered rgb 1 0.270588 0
 #define DL_COLOR_GOLD		1.000000, 0.843137, 0.000000 // gold rgb 1 0.843137 0
-//#define DL_COLOR_YELLOW		0.980392, 0.980392, 0.823529 // lightgoldenrodyellow	rgb 0.980392 0.980392 0.823529
 #define DL_COLOR_YELLOW		0.933333, 0.866667, 0.509804 // lightgoldenrod rgb 0.933333 0.866667 0.509804
 #define DL_COLOR_WHITE		1.000000, 1.000000, 1.000000 // full white
 
