@@ -928,7 +928,24 @@ PF_dprint
 */
 void PF_dprint (void)
 {
-	Con_DPrintf ("%s",PF_VarString(0));
+	char	        *str, isempty;
+	static qboolean wasempty = false;
+
+	str = PF_VarString(0);
+
+	isempty = str[0] == '\n' && str[1] == '\0';
+
+	if (!isempty)
+		wasempty = false;
+	else
+	{
+		if (wasempty)
+			return; // Prevent QC from flooding console with newlines (e.g. neh1m8)
+
+		wasempty = true;
+	}
+
+	Con_DPrintf ("%s", str);
 }
 
 char	pr_string_temp[128];
@@ -941,7 +958,21 @@ void PF_ftos (void)
 	if (v == (int)v)
 		sprintf (pr_string_temp, "%d",(int)v);
 	else
-		sprintf (pr_string_temp, "%5.1f",v);
+	{
+		if ((int)(v * 100) % 10 == 0)
+			sprintf (pr_string_temp, "%5.1f",v);
+		else
+		{
+			int i;
+
+			// Higher precision than 1/10
+			sprintf (pr_string_temp, "%f", v);
+
+			for (i = (int)strlen(pr_string_temp) - 1; i > 0 && pr_string_temp[i] == '0'; i--)
+				pr_string_temp[i] = 0;
+		}
+	}
+
 	G_INT(OFS_RETURN) = pr_string_temp - pr_strings;
 }
 
@@ -955,6 +986,12 @@ void PF_fabs (void)
 void PF_vtos (void)
 {
 	sprintf (pr_string_temp, "'%5.1f %5.1f %5.1f'", G_VECTOR(OFS_PARM0)[0], G_VECTOR(OFS_PARM0)[1], G_VECTOR(OFS_PARM0)[2]);
+	G_INT(OFS_RETURN) = pr_string_temp - pr_strings;
+}
+
+void PF_etos (void)
+{
+	sprintf (pr_string_temp, "entity %i", G_EDICTNUM(OFS_PARM0));
 	G_INT(OFS_RETURN) = pr_string_temp - pr_strings;
 }
 
@@ -1401,6 +1438,65 @@ void PF_changeyaw (void)
 }
 
 /*
+==============
+PF_changepitch
+==============
+*/
+void PF_changepitch (void)
+{
+	edict_t	*ent;
+	float	ideal, current, move, speed;
+	eval_t	*val;
+
+	ent = G_EDICT(OFS_PARM0);
+
+	if (ent == sv.edicts)
+		return; // just fail silently
+
+	current = anglemod( ent->v.angles[0] );
+	if (val = GetEdictFieldValue(ent, "idealpitch"))
+		ideal = val->_float;
+	else
+	{
+		PR_RunError ("PF_changepitch: idealpitch and pitch_speed must be defined to use changepitch");
+		return;
+	}
+	if (val = GetEdictFieldValue(ent, "pitch_speed"))
+		speed = val->_float;
+	else
+	{
+		PR_RunError ("PF_changepitch: idealpitch and pitch_speed must be defined to use changepitch");
+		return;
+	}
+
+	if (current == ideal)
+		return;
+	move = ideal - current;
+	if (ideal > current)
+	{
+		if (move >= 180)
+			move = move - 360;
+	}
+	else
+	{
+		if (move <= -180)
+			move = move + 360;
+	}
+	if (move > 0)
+	{
+		if (move > speed)
+			move = speed;
+	}
+	else
+	{
+		if (move < -speed)
+			move = -speed;
+	}
+
+	ent->v.angles[0] = anglemod (current + move);
+}
+
+/*
 ===============================================================================
 
 MESSAGE WRITING
@@ -1700,12 +1796,12 @@ builtin_t pr_builtin[] =
 	PF_WriteString,		// void(float to, string s) WriteString = #58; // direct client message generation
 	PF_WriteEntity,		// void(float to, entity s) WriteEntity = #59; // direct client message generation
 	
-	PF_Fixme,			// #60 not used
-	PF_Fixme,			// #61 not used
-	PF_Fixme,			// #62 not used
-	PF_Fixme,			// #63 not used
+	PF_sin,			// #60
+	PF_cos,			// #61
+	PF_sqrt,			// #62
+	PF_changepitch,			// #63
 	PF_TraceToss,		// #64 Nehahra
-	PF_Fixme,			// #65 not used
+	PF_etos,			// #65
 	PF_Fixme,			// #66 not used
 	
 	SV_MoveToGoal,		// void(float step) movetogoal = #67;
