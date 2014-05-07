@@ -227,7 +227,7 @@ void SV_WaterMove (void)
 {
 	int		i;
 	vec3_t	wishvel;
-	float	speed, newspeed, wishspeed, addspeed, accelspeed;
+	float	speed, newspeed, addspeed, accelspeed;
 
 //
 // user intentions

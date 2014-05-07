@@ -135,12 +135,12 @@ hull_t *SV_HullForEntity (edict_t *ent, vec3_t mins, vec3_t maxs, vec3_t offset)
 	if (ent->v.solid == SOLID_BSP)
 	{	// explicit hulls in the BSP model
 		if (ent->v.movetype != MOVETYPE_PUSH)
-			Sys_Error ("SOLID_BSP without MOVETYPE_PUSH");
+			Host_Error ("SOLID_BSP without MOVETYPE_PUSH");
 
 		model = sv.models[ (int)ent->v.modelindex ];
 
 		if (!model || model->type != mod_brush)
-			Sys_Error ("MOVETYPE_PUSH with a non bsp model");
+			Host_Error ("MOVETYPE_PUSH with a non bsp model");
 
 		VectorSubtract (maxs, mins, size);
 		if (size[0] < 3)
@@ -508,7 +508,7 @@ int SV_HullPointContents (hull_t *hull, int num, vec3_t p)
 	while (num >= 0)
 	{
 		if (num < hull->firstclipnode || num > hull->lastclipnode)
-			Sys_Error ("SV_HullPointContents: node number %d outside %d - %d", num, hull->firstclipnode, hull->lastclipnode);
+			Host_Error ("SV_HullPointContents: node number %d outside %d - %d", num, hull->firstclipnode, hull->lastclipnode);
 	
 		node = hull->clipnodes + num;
 		plane = hull->planes + node->planenum;
@@ -615,7 +615,7 @@ restart:
 	}
 
 	if (num < hull->firstclipnode || num > hull->lastclipnode)
-		Sys_Error ("SV_RecursiveHullCheck: bad node number");
+		Host_Error ("SV_RecursiveHullCheck: bad node number");
 
 //
 // find the point distances
@@ -842,7 +842,7 @@ void SV_ClipToLinks ( areanode_t *node, moveclip_t *clip )
 			continue;
 
 		if (touch->v.solid == SOLID_TRIGGER)
-			Sys_Error ("Trigger in clipping list");
+			Host_Error ("Trigger in clipping list");
 
 		if (clip->type == MOVE_NOMONSTERS && touch->v.solid != SOLID_BSP)
 			continue;

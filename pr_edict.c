@@ -683,17 +683,17 @@ void ED_ParseGlobals (char *data)
 		if (com_token[0] == '}')
 			break;
 		if (!data)
-			Sys_Error ("ED_ParseGlobals: EOF without closing brace");
+			Host_Error ("ED_ParseGlobals: EOF without closing brace");
 
 		strcpy (keyname, com_token);
 
 	// parse value
 		data = COM_Parse (data);
 		if (!data)
-			Sys_Error ("ED_ParseGlobals: EOF without closing brace");
+			Host_Error ("ED_ParseGlobals: EOF without closing brace");
 
 		if (com_token[0] == '}')
-			Sys_Error ("ED_ParseGlobals: closing brace without data");
+			Host_Error ("ED_ParseGlobals: closing brace without data");
 
 		key = ED_FindGlobal (keyname);
 		if (!key)
@@ -853,7 +853,7 @@ char *ED_ParseEdict (char *data, edict_t *ent)
 		if (com_token[0] == '}')
 			break;
 		if (!data)
-			Sys_Error ("ED_ParseEdict: EOF without closing brace");
+			Host_Error ("ED_ParseEdict: EOF without closing brace");
 
 		// anglehack is to allow QuakeEd to write single scalar angles
 		// and allow them to be turned into vectors. (FIXME...)
@@ -882,10 +882,10 @@ char *ED_ParseEdict (char *data, edict_t *ent)
 		// parse value
 		data = COM_Parse (data);
 		if (!data)
-			Sys_Error ("ED_ParseEdict: EOF without closing brace");
+			Host_Error ("ED_ParseEdict: EOF without closing brace");
 
 		if (com_token[0] == '}')
-			Sys_Error ("ED_ParseEdict: closing brace without data");
+			Host_Error ("ED_ParseEdict: closing brace without data");
 
 		init = true;
 
@@ -965,7 +965,7 @@ void ED_LoadFromFile (char *data)
 		if (!data)
 			break;
 		if (com_token[0] != '{')
-			Sys_Error ("ED_LoadFromFile: found '%s' when expecting '{'", com_token);
+			Host_Error ("ED_LoadFromFile: found '%s' when expecting '{'", com_token);
 
 		if (!ent)
 			ent = EDICT_NUM(0);
@@ -1039,7 +1039,7 @@ void PR_LoadProgs (void)
 
 	progs = (dprograms_t *)COM_LoadHunkFile ("progs.dat", NULL);
 	if (!progs)
-		Sys_Error ("PR_LoadProgs: couldn't load progs.dat");
+		Host_Error ("PR_LoadProgs: couldn't load progs.dat");
 
 	Con_DPrintf ("Programs occupy %iK, %d statements, %d globals\n", com_filesize/1024, progs->numstatements, progs->numglobals);
 
@@ -1051,9 +1051,9 @@ void PR_LoadProgs (void)
 		((int *)progs)[i] = LittleLong ( ((int *)progs)[i] );
 
 	if (progs->version != PROG_VERSION)
-		Sys_Error ("progs.dat has wrong version number (%i should be %i)", progs->version, PROG_VERSION);
+		Host_Error ("progs.dat has wrong version number (%i should be %i)", progs->version, PROG_VERSION);
 	if (progs->crc != PROGHEADER_CRC)
-		Sys_Error ("progs.dat system vars have been modified, progdefs.h is out of date");
+		Host_Error ("progs.dat system vars have been modified, progdefs.h is out of date");
 
 	pr_functions = (dfunction_t *)((byte *)progs + progs->ofs_functions);
 	pr_strings = (char *)progs + progs->ofs_strings;
@@ -1099,7 +1099,7 @@ void PR_LoadProgs (void)
 	{
 		pr_fielddefs[i].type = LittleShort (pr_fielddefs[i].type);
 		if (pr_fielddefs[i].type & DEF_SAVEGLOBAL)
-			Sys_Error ("PR_LoadProgs: pr_fielddefs[i].type & DEF_SAVEGLOBAL");
+			Host_Error ("PR_LoadProgs: pr_fielddefs[i].type & DEF_SAVEGLOBAL");
 		pr_fielddefs[i].ofs = LittleShort (pr_fielddefs[i].ofs);
 		pr_fielddefs[i].s_name = LittleLong (pr_fielddefs[i].s_name);
 
