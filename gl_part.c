@@ -167,18 +167,6 @@ R_AllocParticle
 */
 static inline particle_t *R_AllocParticle (void)
 {
-/*	particle_t *p;
-
-	if(!free_particles)
-	{
-		return NULL;
-	}
-	p = free_particles;
-	free_particles = p->next;
-	p->next = active_particles;
-	active_particles = p;
-	return p;
-*/
 	particle_t *p;
 	
 	if (!free_particles)
@@ -238,13 +226,6 @@ void R_EntityParticles (entity_t *ent)
 		forward[1] = cp*sy;
 		forward[2] = -sp;
 
-/*		if (!free_particles)
-			return;
-		p = free_particles;
-		free_particles = p->next;
-		p->next = active_particles;
-		active_particles = p;
-*/
 		p = R_AllocParticle ();
 		if (!p)
 			return;
@@ -298,13 +279,6 @@ void R_ParticleExplosion (vec3_t org)
 	
 	for (i=0 ; i<1024 ; i++)
 	{
-/*		if (!free_particles)
-			return;
-		p = free_particles;
-		free_particles = p->next;
-		p->next = active_particles;
-		active_particles = p;
-*/
 		p = R_AllocParticle ();
 		if (!p)
 			return;
@@ -346,13 +320,6 @@ void R_ParticleExplosion2 (vec3_t org, int colorStart, int colorLength)
 
 	for (i=0; i<512; i++)
 	{
-/*		if (!free_particles)
-			return;
-		p = free_particles;
-		free_particles = p->next;
-		p->next = active_particles;
-		active_particles = p;
-*/
 		p = R_AllocParticle ();
 		if (!p)
 			return;
@@ -382,13 +349,6 @@ void R_BlobExplosion (vec3_t org)
 	
 	for (i=0 ; i<1024 ; i++)
 	{
-/*		if (!free_particles)
-			return;
-		p = free_particles;
-		free_particles = p->next;
-		p->next = active_particles;
-		active_particles = p;
-*/
 		p = R_AllocParticle ();
 		if (!p)
 			return;
@@ -430,13 +390,6 @@ void R_RunParticleEffect (vec3_t org, vec3_t dir, int color, int count)
 	
 	for (i=0 ; i<count ; i++)
 	{
-/*		if (!free_particles)
-			return;
-		p = free_particles;
-		free_particles = p->next;
-		p->next = active_particles;
-		active_particles = p;
-*/
 		p = R_AllocParticle ();
 		if (!p)
 			return;
@@ -495,13 +448,6 @@ void R_LavaSplash (vec3_t org)
 		for (j=-16 ; j<16 ; j++)
 			for (k=0 ; k<1 ; k++)
 			{
-/*				if (!free_particles)
-					return;
-				p = free_particles;
-				free_particles = p->next;
-				p->next = active_particles;
-				active_particles = p;
-*/
 				p = R_AllocParticle ();
 				if (!p)
 					return;
@@ -540,13 +486,6 @@ void R_TeleportSplash (vec3_t org)
 		for (j=-16 ; j<16 ; j+=4)
 			for (k=-24 ; k<32 ; k+=4)
 			{
-/*				if (!free_particles)
-					return;
-				p = free_particles;
-				free_particles = p->next;
-				p->next = active_particles;
-				active_particles = p;
-*/
 				p = R_AllocParticle ();
 				if (!p)
 					return;
@@ -598,13 +537,6 @@ void R_RocketTrail (vec3_t start, vec3_t end, int type)
 	{
 		len -= dec;
 
-/*		if (!free_particles)
-			return;
-		p = free_particles;
-		free_particles = p->next;
-		p->next = active_particles;
-		active_particles = p;
-*/
 		p = R_AllocParticle ();
 		if (!p)
 			return;
@@ -948,16 +880,6 @@ void R_ReadPointFile_f (void)
 			break;
 		c++;
 		
-/*		if (!free_particles)
-		{
-			Con_Printf ("Not enough free particles\n");
-			break;
-		}
-		p = free_particles;
-		free_particles = p->next;
-		p->next = active_particles;
-		active_particles = p;
-*/
 		p = R_AllocParticle ();
 		if (!p)
 		{
