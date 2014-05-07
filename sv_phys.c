@@ -1112,12 +1112,14 @@ void SV_Physics_Client (edict_t	*ent, int num)
 	case MOVETYPE_FLY:
 		if (!SV_RunThink (ent))
 			return;
+		SV_CheckWater (ent);
 		SV_FlyMove (ent, host_frametime, NULL);
 		break;
 		
 	case MOVETYPE_NOCLIP:
 		if (!SV_RunThink (ent))
 			return;
+		ent->v.waterlevel = 0; // Avoid annoying waterjumps in noclip
 		VectorMA (ent->v.origin, host_frametime, ent->v.velocity, ent->v.origin);
 		break;
 		

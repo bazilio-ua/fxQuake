@@ -385,7 +385,7 @@ void SV_ClientThink (void)
 	if (sv_player->v.movetype == MOVETYPE_NONE)
 		return;
 	
-	onground = (int)sv_player->v.flags & FL_ONGROUND;
+	onground = ((int)sv_player->v.flags & FL_ONGROUND) ? true : false;
 
 	origin = sv_player->v.origin;
 	velocity = sv_player->v.velocity;
@@ -412,9 +412,9 @@ void SV_ClientThink (void)
 		angles[YAW] = v_angle[YAW];
 	}
 
-	if (sv_player->v.movetype == MOVETYPE_NOCLIP)
+/*	if (sv_player->v.movetype == MOVETYPE_NOCLIP)
 		sv_player->v.waterlevel = 0; // Avoid annoying waterjumps in noclip
-
+*/
 	if ( (int)sv_player->v.flags & FL_WATERJUMP )
 	{
 		SV_WaterJump ();
