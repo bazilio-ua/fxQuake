@@ -385,7 +385,7 @@ void SV_ClientThink (void)
 	if (sv_player->v.movetype == MOVETYPE_NONE)
 		return;
 	
-	onground = ((int)sv_player->v.flags & FL_ONGROUND) ? true : false;
+	onground = (int)sv_player->v.flags & FL_ONGROUND;
 
 	origin = sv_player->v.origin;
 	velocity = sv_player->v.velocity;
