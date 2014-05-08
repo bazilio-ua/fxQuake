@@ -1094,7 +1094,7 @@ void SV_Physics_Client (edict_t	*ent, int num)
 		if (!SV_RunThink (ent))
 			return;
 		break;
-
+		
 	case MOVETYPE_WALK:
 		if (!SV_RunThink (ent))
 			return;
@@ -1108,7 +1108,7 @@ void SV_Physics_Client (edict_t	*ent, int num)
 	case MOVETYPE_BOUNCE:
 		SV_Physics_Toss (ent);
 		break;
-
+		
 	case MOVETYPE_FLY:
 		if (!SV_RunThink (ent))
 			return;
@@ -1119,7 +1119,7 @@ void SV_Physics_Client (edict_t	*ent, int num)
 	case MOVETYPE_NOCLIP:
 		if (!SV_RunThink (ent))
 			return;
-		ent->v.waterlevel = 0;				// Avoid annoying waterjumps in noclip
+		ent->v.waterlevel = 0;	// Avoid annoying waterjumps in noclip
 		ent->v.watertype = CONTENTS_EMPTY;	// Avoid annoying waterjumps in noclip
 		VectorMA (ent->v.origin, host_frametime, ent->v.velocity, ent->v.origin);
 		break;
