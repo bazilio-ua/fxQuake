@@ -1119,7 +1119,8 @@ void SV_Physics_Client (edict_t	*ent, int num)
 	case MOVETYPE_NOCLIP:
 		if (!SV_RunThink (ent))
 			return;
-		ent->v.waterlevel = 0; // Avoid annoying waterjumps in noclip
+		ent->v.waterlevel = 0;				// Avoid annoying waterjumps in noclip
+		ent->v.watertype = CONTENTS_EMPTY;	// Avoid annoying waterjumps in noclip
 		VectorMA (ent->v.origin, host_frametime, ent->v.velocity, ent->v.origin);
 		break;
 		
@@ -1238,13 +1239,13 @@ void SV_CheckWaterTransition (edict_t *ent)
 
 	cont = SV_PointContents (ent->v.origin);
 
-	if (!ent->v.watertype)
+/*	if (!ent->v.watertype)
 	{	// just spawned here
 		ent->v.watertype = cont;
 		ent->v.waterlevel = 1;
 		return;
 	}
-	
+*/
 	if (cont == CONTENTS_WATER || cont == CONTENTS_SLIME || cont == CONTENTS_LAVA)		
 	{
 		if (ent->v.watertype == CONTENTS_EMPTY)
@@ -1256,12 +1257,14 @@ void SV_CheckWaterTransition (edict_t *ent)
 	}
 	else
 	{
-		if (ent->v.watertype != CONTENTS_EMPTY)
+//		if (ent->v.watertype != CONTENTS_EMPTY)
+		if (ent->v.watertype == CONTENTS_WATER || ent->v.watertype == CONTENTS_SLIME || ent->v.watertype == CONTENTS_LAVA)
 		{	// just crossed into water
 			SV_StartSound (ent, 0, "misc/h2ohit1.wav", 255, 1);
 		}		
 		ent->v.watertype = CONTENTS_EMPTY;
-		ent->v.waterlevel = cont;
+//		ent->v.waterlevel = cont;
+		ent->v.waterlevel = 0; // EER1 fix
 	}
 }
 
