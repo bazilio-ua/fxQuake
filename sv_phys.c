@@ -1259,7 +1259,7 @@ void SV_CheckWaterTransition (edict_t *ent)
 	{
 //		if (ent->v.watertype != CONTENTS_EMPTY)
 		if (ent->v.watertype == CONTENTS_WATER || ent->v.watertype == CONTENTS_SLIME || ent->v.watertype == CONTENTS_LAVA)
-		{	// just crossed into water
+		{	// just crossed out of water
 			SV_StartSound (ent, 0, "misc/h2ohit1.wav", 255, 1);
 		}		
 		ent->v.watertype = CONTENTS_EMPTY;
