@@ -372,7 +372,13 @@ int SV_FlyMove (edict_t *ent, float time, trace_t *steptrace)
 			return blocked;
 		}
 	}
-
+	
+	// lordhavoc: this came from QW and allows you to get out of water more easily
+	if ( (int)ent->v.flags & FL_WATERJUMP )
+	{
+		VectorCopy (primal_velocity, ent->v.velocity);
+	}
+	
 	return blocked;
 }
 
