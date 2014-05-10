@@ -44,7 +44,7 @@ cvar_t	sv_maxspeed = {"sv_maxspeed", "320", false, true};
 cvar_t	sv_maxairspeed = {"sv_maxairspeed", "30"};
 cvar_t	sv_accelerate = {"sv_accelerate", "10"};
 cvar_t	sv_airaccelerate = {"sv_airaccelerate", "10"};
-cvar_t	sv_q2airaccelerate = {"sv_q2airaccelerate", "0"}; // Quake2-style air acceleration [on/off]
+cvar_t	sv_q2airaccelerate = {"sv_q2airaccelerate", "0"}; // Quake2-style air acceleration
 cvar_t	sv_wateraccelerate = {"sv_wateraccelerate", "10"};
 
 /*
