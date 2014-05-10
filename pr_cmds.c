@@ -1454,14 +1454,16 @@ void PF_changepitch (void)
 		return; // just fail silently
 
 	current = anglemod( ent->v.angles[0] );
-	if (val = GetEdictFieldValue(ent, "idealpitch"))
+	val = GetEdictFieldValue(ent, "idealpitch");
+	if (val)
 		ideal = val->_float;
 	else
 	{
 		PR_RunError ("PF_changepitch: idealpitch and pitch_speed must be defined to use changepitch");
 		return;
 	}
-	if (val = GetEdictFieldValue(ent, "pitch_speed"))
+	val = GetEdictFieldValue(ent, "pitch_speed");
+	if (val)
 		speed = val->_float;
 	else
 	{
