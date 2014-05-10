@@ -23,10 +23,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 edict_t	*sv_player;
 
-extern	cvar_t	sv_friction;
-cvar_t	sv_edgefriction = {"edgefriction", "2"};
-extern	cvar_t	sv_stopspeed;
-
 static	vec3_t		forward, right, up;
 
 vec3_t	wishdir;
@@ -41,8 +37,15 @@ qboolean	onground;
 
 usercmd_t	cmd;
 
-cvar_t	sv_idealpitchscale = {"sv_idealpitchscale","0.8"};
+cvar_t	sv_edgefriction = {"sv_edgefriction", "2"};
+cvar_t	sv_idealpitchscale = {"sv_idealpitchscale", "0.8"};
 cvar_t	sv_altnoclip = {"sv_altnoclip", "0"};
+cvar_t	sv_maxspeed = {"sv_maxspeed", "320", false, true};
+cvar_t	sv_maxairspeed = {"sv_maxairspeed", "30"};
+cvar_t	sv_accelerate = {"sv_accelerate", "10"};
+cvar_t	sv_airaccelerate = {"sv_airaccelerate", "10"};
+cvar_t	sv_q2airaccelerate = {"sv_q2airaccelerate", "0"}; // Quake2-style air acceleration [on/off]
+cvar_t	sv_wateraccelerate = {"sv_wateraccelerate", "10"};
 
 /*
 ===============
@@ -164,13 +167,11 @@ void SV_UserFriction (void)
 SV_Accelerate
 ==============
 */
-cvar_t	sv_maxspeed = {"sv_maxspeed", "320", false, true};
-cvar_t	sv_accelerate = {"sv_accelerate", "10"};
 void SV_Accelerate (void)
 {
 	int			i;
 	float		addspeed, accelspeed, currentspeed;
-
+	
 	currentspeed = DotProduct (velocity, wishdir);
 	addspeed = wishspeed - currentspeed;
 	if (addspeed <= 0)
@@ -187,16 +188,16 @@ void SV_AirAccelerate (vec3_t wishveloc)
 {
 	int			i;
 	float		addspeed, wishspd, accelspeed, currentspeed;
-		
+	
 	wishspd = VectorNormalize (wishveloc);
-	if (wishspd > 30)
-		wishspd = 30;
+	if (wishspd > sv_maxairspeed.value) // added cvar, was 30
+		wishspd = sv_maxairspeed.value; // added cvar, was 30
 	currentspeed = DotProduct (velocity, wishveloc);
 	addspeed = wishspd - currentspeed;
 	if (addspeed <= 0)
 		return;
-//	accelspeed = sv_accelerate.value * host_frametime;
-	accelspeed = sv_accelerate.value*wishspeed * host_frametime;
+//	accelspeed = sv_airaccelerate.value*wishspeed * host_frametime; // separate different types of acceleration, was sv_accelerate
+	accelspeed = sv_airaccelerate.value * (sv_q2airaccelerate.value ? wishspd : wishspeed) * host_frametime; // separate different types of acceleration, was sv_accelerate
 	if (accelspeed > addspeed)
 		accelspeed = addspeed;
 	
@@ -256,7 +257,7 @@ void SV_WaterMove (void)
 	speed = VectorLength (velocity);
 	if (speed)
 	{
-		newspeed = speed - host_frametime * speed * sv_friction.value;
+		newspeed = speed - host_frametime * speed * sv_waterfriction.value; // separate different types of friction, was sv_friction
 		if (newspeed < 0)
 			newspeed = 0;	
 		VectorScale (velocity, newspeed/speed, velocity);
@@ -275,7 +276,7 @@ void SV_WaterMove (void)
 		return;
 
 	VectorNormalize (wishvel);
-	accelspeed = sv_accelerate.value * wishspeed * host_frametime;
+	accelspeed = sv_wateraccelerate.value * wishspeed * host_frametime; // separate different types of acceleration, was sv_accelerate
 	if (accelspeed > addspeed)
 		accelspeed = addspeed;
 
