@@ -23,7 +23,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifdef _WIN32
 /* windows includes and compatibility macros */
 
-#include <windows.h>
+// TODO: add winsock2 here
+#include <winsock.h>
 
 /* there is no in_addr_t on windows: define it as the type of the S_addr of in_addr structure */
 typedef u_long	in_addr_t; /* uint32_t */

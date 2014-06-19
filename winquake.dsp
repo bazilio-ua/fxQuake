@@ -70,14 +70,14 @@ LINK32=link.exe
 # PROP Intermediate_Dir ".\Release"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
-# ADD BASE CPP /nologo /G5 /GX /Ox /Ot /Ow /D "RELEASE" /YX /c
+# ADD BASE CPP /nologo /G5 /GX /Ox /Ot /Ow /D "NDEBUG" /YX /c
 # SUBTRACT BASE CPP /Oa /Og
-# ADD CPP /nologo /G6 /W3 /GX /O2 /D "RELEASE" /YX /FD /c
+# ADD CPP /nologo /G6 /W3 /GX /O2 /D "NDEBUG" /YX /FD /c
 # SUBTRACT CPP /Fr
-# ADD BASE MTL /nologo /D "RELEASE" /win32
-# ADD MTL /nologo /D "RELEASE" /mktyplib203 /win32
-# ADD BASE RSC /l 0x409 /d "RELEASE"
-# ADD RSC /l 0x409 /d "RELEASE"
+# ADD BASE MTL /nologo /D "NDEBUG" /win32
+# ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
+# ADD BASE RSC /l 0x409 /d "NDEBUG"
+# ADD RSC /l 0x409 /d "NDEBUG"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo

@@ -4,7 +4,6 @@
 #
 
 DEBUG?=N
-RELEASE?=Y
 
 MOUNT_DIR=.
 BUILD_DIR=build_mingw
@@ -30,13 +29,11 @@ ifeq ($(DEBUG),Y)
 CFLAGS=$(BASE_CFLAGS) -DDEBUG -g
 do_strip=
 else
-ifeq ($(RELEASE),Y)
-CFLAGS=$(BASE_CFLAGS) -DRELEASE -O2 -ffast-math -frename-registers -fweb
+CFLAGS=$(BASE_CFLAGS) -DNDEBUG -O2 -ffast-math -frename-registers -fweb
 cmd_strip=$(STRIP) $(1)
 define do_strip
 	$(call cmd_strip,$(1))
 endef
-endif
 endif
 
 DO_OBJ_CC=$(CC) $(CFLAGS) -o $@ -c $<

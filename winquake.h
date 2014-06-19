@@ -32,18 +32,28 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef WM_MOUSEWHEEL
 #define WM_MOUSEWHEEL		0x020A
 #endif
+
+// LordHavoc: thanks to backslash for this support for mouse buttons 4 and 5
+/* These are #ifdefed out for non-Win2K in the February 2001 version of
+   MS's platform SDK, but we need them for compilation... */
+#ifndef WM_XBUTTONDOWN
 #define WM_XBUTTONDOWN		0x020B
 #define WM_XBUTTONUP		0x020C
+#endif
 
+#ifndef MK_XBUTTON1
 #define MK_XBUTTON1			0x0020
 #define MK_XBUTTON2			0x0040
+#endif
 
+#ifndef MK_XBUTTON3
 // copied from DarkPlaces in an attempt to grab more buttons
 #define MK_XBUTTON3         0x0080
 #define MK_XBUTTON4         0x0100
 #define MK_XBUTTON5         0x0200
 #define MK_XBUTTON6         0x0400
 #define MK_XBUTTON7         0x0800
+#endif
 
 extern	HINSTANCE	global_hInstance;
 extern	int			global_nCmdShow;
