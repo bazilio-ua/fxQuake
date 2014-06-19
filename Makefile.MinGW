@@ -6,7 +6,11 @@
 DEBUG?=N
 
 MOUNT_DIR=.
-BUILD_DIR=build_mingw
+ifeq ($(DEBUG),Y)
+BUILD_DIR=build_mingw_debug
+else
+BUILD_DIR=build_mingw_release
+endif
 
 #
 # SETUP ENVIRONMENT

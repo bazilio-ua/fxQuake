@@ -6,7 +6,11 @@
 DEBUG?=N
 
 MOUNT_DIR=.
-BUILD_DIR=build
+ifeq ($(DEBUG),Y)
+BUILD_DIR=build_debug
+else
+BUILD_DIR=build_release
+endif
 QBASE_DIR?=.
 
 #
