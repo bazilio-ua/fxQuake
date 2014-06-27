@@ -806,6 +806,7 @@ void R_DrawParticles (qboolean inwater)
 		scale = (p->org[0] - r_origin[0])*vpn[0] 
 			  + (p->org[1] - r_origin[1])*vpn[1]
 			  + (p->org[2] - r_origin[2])*vpn[2];
+			  
 		if (scale < 20)
 			scale = 1 + 0.08; // added .08 to be consistent
 		else
