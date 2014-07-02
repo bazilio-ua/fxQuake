@@ -252,14 +252,9 @@ void R_DrawWorld (void);
 void R_DrawTextureChainsWater (void);
 void R_DrawSequentialPoly (entity_t *e, msurface_t *s);
 void R_DrawSequentialWaterPoly (entity_t *e, msurface_t *s);
-//void R_DrawGLPoly34 (glpoly_t *p);
-//void R_DrawGLPoly56 (glpoly_t *p);
+void R_BuildLightmaps (void);
+void R_UploadLightmaps (void);
 
-/*
-================
-R_DrawGLPoly34
-================
-*/
 static inline void R_DrawGLPoly34 (glpoly_t *p)
 {
 	float	*v;
@@ -275,11 +270,6 @@ static inline void R_DrawGLPoly34 (glpoly_t *p)
 	glEnd ();
 }
 
-/*
-================
-R_DrawGLPoly56
-================
-*/
 static inline void R_DrawGLPoly56 (glpoly_t *p)
 {
 	float	*v;
@@ -294,9 +284,6 @@ static inline void R_DrawGLPoly56 (glpoly_t *p)
 	}
 	glEnd ();
 }
-
-void R_BuildLightmaps (void);
-void R_UploadLightmaps (void);
 
 // gl_screen.c
 void SCR_TileClear (void);
