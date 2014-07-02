@@ -787,7 +787,7 @@ void R_DrawParticles (qboolean inwater)
 	VectorScale (vup, 1.5, up);
 	VectorScale (vright, 1.5, right);
 
-	GL_Bind(particletexture);
+	GL_Bind (particletexture);
 
 	glEnable (GL_BLEND);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);

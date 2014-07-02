@@ -556,7 +556,9 @@ void GL_SelectTexture (GLenum target)
 
 /*
 ================
-GL_DisableMultitexture -- selects texture unit 0
+GL_DisableMultitexture
+
+selects texture unit 0
 ================
 */
 void GL_DisableMultitexture (void) 
@@ -571,7 +573,9 @@ void GL_DisableMultitexture (void)
 
 /*
 ================
-GL_EnableMultitexture -- selects texture unit 1
+GL_EnableMultitexture
+
+selects texture unit 1
 ================
 */
 void GL_EnableMultitexture (void) 

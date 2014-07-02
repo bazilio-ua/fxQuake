@@ -1158,7 +1158,7 @@ void R_SkyDrawFaceQuad (glpoly_t *p)
 	skyalpha = CLAMP(0.0, r_skyalpha.value, 1.0);
 	if (gl_mtexable && skyalpha >= 1.0)
 	{
-		GL_Bind(solidskytexture);
+		GL_Bind (solidskytexture);
 		GL_EnableMultitexture (); // selects TEXTURE1
 		GL_Bind (alphaskytexture);
 		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
@@ -1174,7 +1174,7 @@ void R_SkyDrawFaceQuad (glpoly_t *p)
 		}
 		glEnd ();
 
-		GL_DisableMultitexture();
+		GL_DisableMultitexture (); // selects TEXTURE0
 
 		// r_speeds
 		rs_c_sky_polys++;
@@ -1182,7 +1182,7 @@ void R_SkyDrawFaceQuad (glpoly_t *p)
 	}
 	else
 	{
-		GL_Bind(solidskytexture);
+		GL_Bind (solidskytexture);
 
 		if (skyalpha < 1.0)
 			glColor3f (1, 1, 1);
