@@ -252,8 +252,49 @@ void R_DrawWorld (void);
 void R_DrawTextureChainsWater (void);
 void R_DrawSequentialPoly (entity_t *e, msurface_t *s);
 void R_DrawSequentialWaterPoly (entity_t *e, msurface_t *s);
-void R_DrawGLPoly34 (glpoly_t *p);
-void R_DrawGLPoly56 (glpoly_t *p);
+//void R_DrawGLPoly34 (glpoly_t *p);
+//void R_DrawGLPoly56 (glpoly_t *p);
+
+/*
+================
+R_DrawGLPoly34
+================
+*/
+static inline void R_DrawGLPoly34 (glpoly_t *p)
+{
+	float	*v;
+	int		i;
+
+	glBegin (GL_POLYGON);
+	v = p->verts[0];
+	for (i=0 ; i<p->numverts ; i++, v+= VERTEXSIZE)
+	{
+		glTexCoord2f (v[3], v[4]);
+		glVertex3fv (v);
+	}
+	glEnd ();
+}
+
+/*
+================
+R_DrawGLPoly56
+================
+*/
+static inline void R_DrawGLPoly56 (glpoly_t *p)
+{
+	float	*v;
+	int		i;
+
+	glBegin (GL_POLYGON);
+	v = p->verts[0];
+	for (i=0 ; i<p->numverts ; i++, v+= VERTEXSIZE)
+	{
+		glTexCoord2f (v[5], v[6]);
+		glVertex3fv (v);
+	}
+	glEnd ();
+}
+
 void R_BuildLightmaps (void);
 void R_UploadLightmaps (void);
 
