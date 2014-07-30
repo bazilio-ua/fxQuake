@@ -41,7 +41,8 @@ extern	float		scr_conlines;		// lines of console to display
 extern	int			sb_lines;
 
 extern	qboolean	scr_disabled_for_loading;
-extern float		scr_centertime_off;
+extern	char		scr_centerstring[1024];
+extern	float		scr_centertime_off;
 
 extern	cvar_t		scr_viewsize;
 extern	cvar_t		scr_weaponsize;

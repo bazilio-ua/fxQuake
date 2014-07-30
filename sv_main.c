@@ -1503,6 +1503,7 @@ void SV_SpawnServer (char *server)
 
 	// remove all center prints
 	con_lastcenterstring[0] = 0;
+	scr_centerstring[0] = 0;
 	scr_centertime_off = 0;
 
 	Con_DPrintf ("SpawnServer: %s\n",server);

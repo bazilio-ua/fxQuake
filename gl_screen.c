@@ -807,6 +807,7 @@ void SCR_BeginLoadingPlaque (void)
 	Con_ClearNotify ();
 	// remove all center prints
 	con_lastcenterstring[0] = 0;
+	scr_centerstring[0] = 0;
 	scr_centertime_off = 0;
 	scr_con_current = 0;
 
