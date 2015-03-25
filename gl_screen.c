@@ -240,24 +240,46 @@ void SCR_CheckDrawCenterString (void)
 
 /*
 ====================
-CalcFov
+AdaptFovx
+Adapt a 4:3 horizontal FOV to the current screen size using the "Hor+" scaling:
+2.0 * atan(width / height * 3.0 / 4.0 * tan(fov_x / 2.0))
 ====================
 */
-float CalcFov (float fov_x, float width, float height)
+#define FOV_ASPECT 0.75
+float AdaptFovx (float fov_x, float width, float height)
 {
-        float   a, x;
+	float	a, x;
 
-        if (fov_x < 1 || fov_x > 179)
-                Host_Error ("Bad fov: %f", fov_x);
+	if (fov_x < 1 || fov_x > 179)
+		Host_Error ("Bad fov: %f", fov_x);
 
-        x = width/tan(fov_x/360*M_PI);
-        a = atan (height/x);
-        a = a*360/M_PI;
+	if ((x = height / width) == FOV_ASPECT)
+		return fov_x;
+	a = atan(FOV_ASPECT / x * tan(fov_x / 360 * M_PI));
+	a = a * 360 / M_PI;
 
-        return a;
+	return a;
 }
 
-#define SCREEN_CORRECTION_ASPECT 4/3
+/*
+====================
+CalcFovy
+====================
+*/
+float CalcFovy (float fov_x, float width, float height)
+{
+	float	a, x;
+
+	if (fov_x < 1 || fov_x > 179)
+		Host_Error ("Bad fov: %f", fov_x);
+
+	x = width / tan(fov_x / 360 * M_PI);
+	a = atan(height / x);
+	a = a * 360 / M_PI;
+
+	return a;
+}
+
 /*
 =================
 SCR_CalcRefdef
@@ -271,7 +293,6 @@ static void SCR_CalcRefdef (void)
 	float		size;
 	int		h;
 	qboolean		full = false;
-	float		fov_base;
 
 	vid.recalc_refdef = false;
 
@@ -369,10 +390,8 @@ static void SCR_CalcRefdef (void)
 	else 
 		r_refdef.vrect.y = (h - r_refdef.vrect.height)/2;
 
-	fov_base = scr_fov.value;
-
-	r_refdef.fov_y = CalcFov (fov_base, r_refdef.vrect.height * SCREEN_CORRECTION_ASPECT, r_refdef.vrect.height);
-	r_refdef.fov_x = CalcFov (r_refdef.fov_y, r_refdef.vrect.height, r_refdef.vrect.width);
+	r_refdef.fov_x = AdaptFovx (scr_fov.value, vid.width, vid.height);
+	r_refdef.fov_y = CalcFovy (r_refdef.fov_x, r_refdef.vrect.width, r_refdef.vrect.height);
 /*
 	r_refdef.fov_x = scr_fov.value;
 	r_refdef.fov_y = CalcFov (r_refdef.fov_x, r_refdef.vrect.width, r_refdef.vrect.height);
