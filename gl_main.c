@@ -485,7 +485,7 @@ void R_DrawAliasModel (entity_t *e)
 
 	// special handling of view model to keep FOV from altering look.
 	if (e == &cl.viewent)
-		scale = 1.0f / tan( DEG2RAD (r_fovx / 2.0f) ) * scr_weaponfov.value / 90.0f; // reverse out fov and do fov we want
+		scale = 1.0f / tan( DEG2RAD (r_fovx / 2.0f) ) * r_refdef.weaponfov_x / 90.0f; // reverse out fov and do fov we want
 	else
 		scale = 1.0f;
 

@@ -419,8 +419,6 @@ extern	msurface_t *waterchain;
 //
 //
 //
-extern	cvar_t	scr_weaponfov;
-
 extern	cvar_t	r_norefresh;
 extern	cvar_t	r_drawentities;
 extern	cvar_t	r_drawworld;

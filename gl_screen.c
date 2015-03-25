@@ -392,10 +392,9 @@ static void SCR_CalcRefdef (void)
 
 	r_refdef.fov_x = AdaptFovx (scr_fov.value, vid.width, vid.height);
 	r_refdef.fov_y = CalcFovy (r_refdef.fov_x, r_refdef.vrect.width, r_refdef.vrect.height);
-/*
-	r_refdef.fov_x = scr_fov.value;
-	r_refdef.fov_y = CalcFov (r_refdef.fov_x, r_refdef.vrect.width, r_refdef.vrect.height);
-*/
+	
+	r_refdef.weaponfov_x = AdaptFovx (scr_weaponfov.value, vid.width, vid.height);
+
 	scr_vrect = r_refdef.vrect;
 }
 

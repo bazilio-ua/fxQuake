@@ -108,6 +108,7 @@ typedef struct
 	vec3_t		viewangles;
 	
 	float		fov_x, fov_y;
+	float		weaponfov_x;		// weaponfov
 } refdef_t;
 
 
