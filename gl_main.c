@@ -1163,8 +1163,10 @@ void R_RenderView (void)
 	S_ExtraUpdateTime ();	// don't let sound get messed up if going slow
 
 	R_FogEnableGFog ();
-	R_DrawSky (); // handle worldspawn and bmodels
+//	R_DrawSky (); // handle worldspawn and bmodels
 	R_DrawWorld (); // adds static entities to the list
+	R_DrawSky (); // handle worldspawn and bmodels
+	R_DrawSolid ();
 	R_DrawEntities ();
 	R_SetupTransEntities (); // do this after R_DrawWorld so efrags updated correctly
 	R_SetupParticles ();

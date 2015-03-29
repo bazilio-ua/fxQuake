@@ -845,7 +845,10 @@ restart:
 			}
 			else
 			{
-				R_DrawSequentialPoly (NULL, surf); // draw solid world (worldspawn)
+//				R_DrawSequentialPoly (NULL, surf); // draw solid world (worldspawn)
+
+				surf->texturechain = surf->texinfo->texture->texturechain;
+				surf->texinfo->texture->texturechain = surf;
 			}
 			
 			rs_c_brush_polys++; // r_speeds (count wpolys here)
@@ -857,6 +860,32 @@ restart:
 // optimize tail recursion
 	node = node->children[!side];
 	goto restart;
+}
+
+void R_DrawSolid (void)
+{
+	int			i;
+	msurface_t	*s;
+	texture_t	*t; 
+	
+	if (!r_drawworld.value)
+		return;
+
+	for (i=0 ; i<cl.worldmodel->numtextures ; i++)
+	{
+		t = cl.worldmodel->textures[i];
+		if (!t)
+			continue;
+		
+		s = t->texturechain;
+		if (!s)
+			continue;
+
+		for ( ; s ; s=s->texturechain)
+			R_DrawSequentialPoly (NULL, s); // draw solid world (worldspawn)
+		
+		t->texturechain = NULL;
+	} 
 }
 
 /*

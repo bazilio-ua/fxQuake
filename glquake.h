@@ -249,6 +249,7 @@ void R_RenderDlights (void);
 void R_MarkLeaves (void);
 void R_DrawBrushModel (entity_t *e, qboolean water);
 void R_DrawWorld (void);
+void R_DrawSolid (void);
 void R_DrawTextureChainsWater (void);
 void R_DrawSequentialPoly (entity_t *e, msurface_t *s);
 void R_DrawSequentialWaterPoly (entity_t *e, msurface_t *s);
