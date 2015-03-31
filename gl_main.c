@@ -746,6 +746,9 @@ void R_DrawEntities (void)
 
 		e = cl_visedicts[i];
 
+		if (ENTALPHA_DECODE(e->alpha) < 1)
+			continue;
+
 		switch (e->model->type)
 		{
 		case mod_brush:
@@ -756,8 +759,6 @@ void R_DrawEntities (void)
 			break;
 		}
 	}
-
-
 }
 
 //==================================================================================
@@ -873,6 +874,25 @@ void R_DrawTransEntities (qboolean inwater)
 
 		case mod_sprite:
 			R_DrawSpriteModel (e);
+			break;
+
+		default:
+			break;
+		}
+	}
+
+	// special case to draw transparent *liquid entities
+	for (i=0 ; i<num_transents ; i++)
+	{
+		if ((i + 1) % 100 == 0)
+			S_ExtraUpdateTime (); // don't let sound get messed up if going slow
+
+		e = transents[i].e;
+
+		switch (e->model->type)
+		{
+		case mod_brush:
+			R_DrawBrushModel (e, true);
 			break;
 
 		default:

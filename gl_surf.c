@@ -560,7 +560,7 @@ void R_DrawSequentialWaterPoly (entity_t *e, msurface_t *s)
 	//
 	if (s->flags & SURF_DRAWTURB)
 	{
-		if (e == NULL) // avoid entities with water surfaces from having transparency
+		if (e == NULL) // worldspawn
 		{
 			if (!r_lockalpha.value) // override water alpha for certain surface types
 			{
@@ -579,6 +579,10 @@ void R_DrawSequentialWaterPoly (entity_t *e, msurface_t *s)
 				else
 					wateralpha = CLAMP(0.0, r_wateralpha.value, 1.0);
 			}
+		}
+		else // entities
+		{
+			wateralpha = ENTALPHA_DECODE(e->alpha);
 		}
 
 		if (wateralpha < 1.0)
@@ -889,7 +893,7 @@ void R_DrawSolid (void)
 			continue;
 
 		for ( ; s ; s=s->texturechain)
-			R_DrawSequentialPoly (NULL, s); // draw solid world (worldspawn)
+			R_DrawSequentialPoly (NULL, s); // draw solid (worldspawn)
 		
 		t->texturechain = NULL;
 	} 
@@ -996,7 +1000,7 @@ void R_DrawTextureChainsWater (void)
 	{
 		for (s = waterchain; s; s = s->texturechain)
 		{
-			R_DrawSequentialWaterPoly (NULL, s);
+			R_DrawSequentialWaterPoly (NULL, s); // draw liquid (worldspawn)
 		}
 
 		waterchain = NULL;
