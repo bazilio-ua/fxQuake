@@ -739,6 +739,8 @@ int recursivecount;
 /*
 ================
 R_RecursiveWorldNode
+
+this now only builds a surface chains and leafs
 ================
 */
 void R_RecursiveWorldNode (mnode_t *node)
@@ -847,6 +849,7 @@ restart:
 			{
 //				R_DrawSequentialPoly (NULL, surf); // draw solid world (worldspawn)
 
+				// sort by texture
 				surf->texturechain = surf->texinfo->texture->texturechain;
 				surf->texinfo->texture->texturechain = surf;
 			}
@@ -856,12 +859,16 @@ restart:
 	}
 
 // recurse down the back side
-
 // optimize tail recursion
 	node = node->children[!side];
 	goto restart;
 }
 
+/*
+=============
+R_DrawSolid
+=============
+*/
 void R_DrawSolid (void)
 {
 	int			i;
