@@ -855,111 +855,6 @@ void R_LoadSkyBox (char *skybox)
 
 /*
 =================
-R_InitMapGlobals
-
-called when quake initializes
-=================
-*/
-void R_InitMapGlobals (void)
-{
-	int i;
-
-	// clear skyboxtextures pointers
-	for (i=0; i<6; i++)
-		skyboxtextures[i] = NULL;
-
-	// set up global fog
-	glFogi(GL_FOG_MODE, GL_EXP2);
-	glHint(GL_FOG_HINT, GL_NICEST); /*  per pixel  */
-}
-
-float globalwateralpha = 0.0;
-
-/*
-=================
-R_ParseWorldspawn
-=================
-*/
-void R_ParseWorldspawn (void)
-{
-	char  key[MAX_KEY], value[MAX_VALUE];
-	char  *data;
-	int i;
-
-	// initially no skybox
-	oldsky = true;
-	strcpy (skybox_name, "");
-	for (i=0; i<6; i++)
-		skyboxtextures[i] = NULL;
-
-	// initially no fog enabled
-	Cvar_SetValue ("gl_fogenable", 0);
-
-	// initially no wateralpha
-	globalwateralpha = 0.0;
-
-	data = cl.worldmodel->entities;
-	if (!data)
-		return;
-
-	data = COM_Parse(data);
-	if (!data) // should never happen
-		return; // error
-
-	if (com_token[0] != '{') // should never happen
-		return; // error
-
-	while (1)
-	{
-		data = COM_Parse(data);
-		if (!data)
-			return; // error
-
-		if (com_token[0] == '}')
-			break; // end of worldspawn
-
-		if (com_token[0] == '_')
-			strcpy(key, com_token + 1); // Support "_sky" and "_fog" also
-		else
-			strcpy(key, com_token);
-
-		while (key[strlen(key)-1] == ' ') // remove trailing spaces
-			key[strlen(key)-1] = 0;
-
-		data = COM_Parse(data);
-		if (!data)
-			return; // error
-
-		strcpy(value, com_token);
-
-		if (!strcmp("sky", key) && value[0])
-			R_LoadSkyBox(value);
-		// also accept non-standard keys
-		else if (!strcmp("skyname", key) && value[0]) // half-life
-			R_LoadSkyBox(value);
-		else if (!strcmp("qlsky", key) && value[0]) // quake lives
-			R_LoadSkyBox(value);
-		else if (!strcmp("fog", key) && value[0])
-		{
-			float density, red, green, blue;
-
-			sscanf(value, "%f %f %f %f", &density, &red, &green, &blue);
-
-			R_FogUpdate (density, red, green, blue, 0.0);
-		}
-		else if (!strcmp("wateralpha", key) && value[0])
-		{
-			globalwateralpha = atof (value);
-		}
-		else if (!strcmp("mapversion", key) && value[0])
-		{
-			Con_DPrintf("mapversion is %i\n", atoi(value));
-		}
-	}
-}
-
-/*
-=================
 R_Sky_f
 =================
 */
@@ -1770,6 +1665,115 @@ void R_InitSky (texture_t *mt)
 	skyflatcolor[1] = (float)g/(count*255);
 	skyflatcolor[2] = (float)b/(count*255);
 }
+
+
+//==================================================================================================================
+
+/*
+=================
+R_InitMapGlobals
+
+called when quake initializes
+=================
+*/
+void R_InitMapGlobals (void)
+{
+	int i;
+
+	// clear skyboxtextures pointers
+	for (i=0; i<6; i++)
+		skyboxtextures[i] = NULL;
+
+	// set up global fog
+	glFogi(GL_FOG_MODE, GL_EXP2);
+	glHint(GL_FOG_HINT, GL_NICEST); /*  per pixel  */
+}
+
+float globalwateralpha = 0.0;
+
+/*
+=================
+R_ParseWorldspawn
+=================
+*/
+void R_ParseWorldspawn (void)
+{
+	char  key[MAX_KEY], value[MAX_VALUE];
+	char  *data;
+	int i;
+
+	// initially no skybox
+	oldsky = true;
+	strcpy (skybox_name, "");
+	for (i=0; i<6; i++)
+		skyboxtextures[i] = NULL;
+
+	// initially no fog enabled
+	Cvar_SetValue ("gl_fogenable", 0);
+
+	// initially no wateralpha
+	globalwateralpha = 0.0;
+
+	data = cl.worldmodel->entities;
+	if (!data)
+		return;
+
+	data = COM_Parse(data);
+	if (!data) // should never happen
+		return; // error
+
+	if (com_token[0] != '{') // should never happen
+		return; // error
+
+	while (1)
+	{
+		data = COM_Parse(data);
+		if (!data)
+			return; // error
+
+		if (com_token[0] == '}')
+			break; // end of worldspawn
+
+		if (com_token[0] == '_')
+			strcpy(key, com_token + 1); // Support "_sky" and "_fog" also
+		else
+			strcpy(key, com_token);
+
+		while (key[strlen(key)-1] == ' ') // remove trailing spaces
+			key[strlen(key)-1] = 0;
+
+		data = COM_Parse(data);
+		if (!data)
+			return; // error
+
+		strcpy(value, com_token);
+
+		if (!strcmp("sky", key) && value[0])
+			R_LoadSkyBox(value);
+		// also accept non-standard keys
+		else if (!strcmp("skyname", key) && value[0]) // half-life
+			R_LoadSkyBox(value);
+		else if (!strcmp("qlsky", key) && value[0]) // quake lives
+			R_LoadSkyBox(value);
+		else if (!strcmp("fog", key) && value[0])
+		{
+			float density, red, green, blue;
+
+			sscanf(value, "%f %f %f %f", &density, &red, &green, &blue);
+
+			R_FogUpdate (density, red, green, blue, 0.0);
+		}
+		else if (!strcmp("wateralpha", key) && value[0])
+		{
+			globalwateralpha = atof (value);
+		}
+		else if (!strcmp("mapversion", key) && value[0])
+		{
+			Con_DPrintf("mapversion is %i\n", atoi(value));
+		}
+	}
+}
+
 
 //==================================================================================================================
 
