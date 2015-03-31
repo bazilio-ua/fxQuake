@@ -376,10 +376,6 @@ void R_DrawSequentialPoly (entity_t *e, msurface_t *s)
 	float		brushalpha;
 	int			i;
 
-	p = s->polys;
-	t = R_TextureAnimation (s->texinfo->texture, e ? e->frame : 0);
-	brushalpha = e ? ENTALPHA_DECODE(e->alpha) : 1.0;
-
 	//
 	// sky poly
 	//
@@ -391,6 +387,10 @@ void R_DrawSequentialPoly (entity_t *e, msurface_t *s)
 	//
 	if (s->flags & SURF_DRAWTURB)
 		return; // skip it, render it later because wateralpha
+
+	p = s->polys;
+	t = R_TextureAnimation (s->texinfo->texture, e ? e->frame : 0);
+	brushalpha = e ? ENTALPHA_DECODE(e->alpha) : 1.0;
 
 	//
 	// missing texture
@@ -708,9 +708,9 @@ void R_DrawBrushModel (entity_t *e, qboolean water)
 			(!(psurf->flags & SURF_PLANEBACK) && (dot > BACKFACE_EPSILON)))
 		{
 			if (water)
-				R_DrawSequentialWaterPoly (e, psurf); // draw liquid entities
+				R_DrawSequentialWaterPoly (e, psurf); // draw *liquid entities
 			else
-				R_DrawSequentialPoly (e, psurf); // draw standard entities
+				R_DrawSequentialPoly (e, psurf); // draw entities
 			
 			rs_c_brush_polys++; // r_speeds
 		}

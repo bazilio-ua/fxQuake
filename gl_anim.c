@@ -1542,11 +1542,11 @@ void R_DrawSky (void)
 		skymaxs[0][i] = skymaxs[1][i] = -9999;
 	}
 
+	R_FogDisableGFog ();
+	
 	//
 	// process world and bmodels: draw flat-shaded sky surfs, and update skybounds
 	//
-	R_FogDisableGFog ();
-
 	glDisable (GL_TEXTURE_2D);
 	if (R_FogGetDensity() > 0)
 		glColor3fv (R_FogGetColor());
