@@ -738,7 +738,7 @@ void R_DrawEntities (void)
 		}
 	}
 
-	// special case to draw water entities
+	// special case to draw *liquid entities
 	for (i=0 ; i<cl_numvisedicts ; i++)
 	{
 		if ((i + 1) % 100 == 0)
@@ -820,7 +820,7 @@ void R_SetupTransEntities (void)
 	}
 }
 
-int transdistcomp (const void *arg1, const void *arg2) 
+int transdistcmp (const void *arg1, const void *arg2) 
 {
 	return ((distent_t *)arg2)->dist - ((distent_t *)arg1)->dist; // Sorted in reverse order
 }
@@ -846,7 +846,7 @@ void R_DrawTransEntities (qboolean inwater)
 	num_transents = (inwater) ? cl_num_transwater_visedicts : cl_num_transair_visedicts;
 
 	// Sort in descending dist order, i.e. back to front
-	qsort((void *) transents, num_transents, sizeof(distent_t), transdistcomp);
+	qsort((void *) transents, num_transents, sizeof(distent_t), transdistcmp);
 	// Add in BETTER sorting here
 
 	// draw transparent entities

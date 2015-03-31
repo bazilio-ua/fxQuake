@@ -708,9 +708,9 @@ void R_DrawBrushModel (entity_t *e, qboolean water)
 			(!(psurf->flags & SURF_PLANEBACK) && (dot > BACKFACE_EPSILON)))
 		{
 			if (water)
-				R_DrawSequentialWaterPoly (e, psurf); // draw water entities
+				R_DrawSequentialWaterPoly (e, psurf); // draw liquid entities
 			else
-				R_DrawSequentialPoly (e, psurf); // draw entities
+				R_DrawSequentialPoly (e, psurf); // draw standard entities
 			
 			rs_c_brush_polys++; // r_speeds
 		}
