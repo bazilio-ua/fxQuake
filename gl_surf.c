@@ -405,7 +405,7 @@ void R_DrawSequentialPoly (entity_t *e, msurface_t *s)
 	//
 	if (s->flags & SURF_DRAWTURB)
 	{
-		if (e == NULL) // worldspawn
+		if (e == NULL /* || (e && brushalpha == 1.0) */) // worldspawn, or entity with no alpha (uncomment this condition, only when alpha drawing will be controlled with alphapass)
 		{
 			if (!r_lockalpha.value) // override water alpha for certain surface types
 			{
@@ -430,7 +430,7 @@ void R_DrawSequentialPoly (entity_t *e, msurface_t *s)
 			brushalpha = ENTALPHA_DECODE(e->alpha);
 		}
 */
-		if (brushalpha < 1.0)
+		if (brushalpha < 1.0) // FIXME: there should be a deal brushalpha with alphapass
 		{
 			glDepthMask(GL_FALSE);
 			glEnable(GL_BLEND);
@@ -471,7 +471,7 @@ void R_DrawSequentialPoly (entity_t *e, msurface_t *s)
 			}
 		}
 
-		if (brushalpha < 1.0)
+		if (brushalpha < 1.0) // FIXME: there should be a deal brushalpha with alphapass
 		{
 			glDepthMask(GL_TRUE);
 			glDisable(GL_BLEND);
@@ -564,7 +564,7 @@ void R_DrawSequentialPoly (entity_t *e, msurface_t *s)
 			GL_DisableMultitexture (); // selects TEXTURE0
 			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);//FX
 		} 
-		else if (brushalpha < 1.0) // case 2: can't do multipass if entity has alpha, so just draw the texture
+		else if (brushalpha < 1.0) // case 2: can't do multipass if brush has alpha, so just draw the texture
 		{
 			GL_Bind (t->gltexture);
 			R_DrawGLPoly34 (p);
