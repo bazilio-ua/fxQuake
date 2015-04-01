@@ -378,7 +378,7 @@ void R_DrawSequentialPoly (entity_t *e, msurface_t *s)
 
 //	glpoly_t	*p;
 //	float		wateralpha = 1.0;
-	float		lavafog = 0; // keep compiler happy
+	float		lfog = 0; // keep compiler happy
 
 	p = s->polys;
 	t = R_TextureAnimation (s->texinfo->texture, e ? e->frame : 0);
@@ -454,16 +454,16 @@ void R_DrawSequentialPoly (entity_t *e, msurface_t *s)
 			R_FogEnableGFog ();
 
 			if (s->flags & SURF_DRAWLAVA)
-				lavafog = CLAMP(0.0, r_lavafog.value, 1.0);
+				lfog = CLAMP(0.0, r_lavafog.value, 1.0);
 			else if (s->flags & SURF_DRAWSLIME)
-				lavafog = CLAMP(0.0, r_slimefog.value, 1.0);
+				lfog = CLAMP(0.0, r_slimefog.value, 1.0);
 
-			if (R_FogGetDensity() > 0 && lavafog > 0)
+			if (R_FogGetDensity() > 0 && lfog > 0)
 			{
 				float *c = R_FogGetColor();
 
 				glEnable (GL_BLEND);
-				glColor4f (c[0],c[1],c[2], lavafog);
+				glColor4f (c[0],c[1],c[2], lfog);
 				R_DrawGLPoly34 (p);
 				rs_c_brush_passes++; // r_speeds
 				glColor3f (1, 1, 1);
