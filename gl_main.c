@@ -730,7 +730,8 @@ void R_DrawEntities (void)
 			break;
 
 		case mod_brush:
-			R_DrawBrushModel (e, false);
+//			R_DrawBrushModel (e, false);
+			R_DrawBrushModel (e);
 			break;
 
 		default:
@@ -870,7 +871,8 @@ void R_DrawTransEntities (qboolean inwater)
 			break;
 
 		case mod_brush:
-			R_DrawBrushModel (e, false);
+//			R_DrawBrushModel (e, false);
+			R_DrawBrushModel (e);
 			break;
 
 		case mod_sprite:

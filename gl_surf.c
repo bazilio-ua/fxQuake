@@ -377,9 +377,12 @@ void R_DrawSequentialPoly (entity_t *e, msurface_t *s)
 	int			i;
 
 //	glpoly_t	*p;
-	float		wateralpha = 1.0;
+//	float		wateralpha = 1.0;
 	float		lavafog = 0; // keep compiler happy
 
+	p = s->polys;
+	t = R_TextureAnimation (s->texinfo->texture, e ? e->frame : 0);
+	brushalpha = e ? ENTALPHA_DECODE(e->alpha) : 1.0;
 	
 	//
 	// sky poly
@@ -394,7 +397,8 @@ void R_DrawSequentialPoly (entity_t *e, msurface_t *s)
 //		return; // skip it, render it later because wateralpha
 
 //-
-	p = s->polys;
+//	p = s->polys;
+//	brushalpha = e ? ENTALPHA_DECODE(e->alpha) : 1.0;
 
 	//
 	// water poly
@@ -406,32 +410,32 @@ void R_DrawSequentialPoly (entity_t *e, msurface_t *s)
 			if (!r_lockalpha.value) // override water alpha for certain surface types
 			{
 				if (s->flags & SURF_DRAWLAVA)
-					wateralpha = CLAMP(0.0, r_lavaalpha.value, 1.0);
+					brushalpha = CLAMP(0.0, r_lavaalpha.value, 1.0);
 				else if (s->flags & SURF_DRAWSLIME)
-					wateralpha = CLAMP(0.0, r_slimealpha.value, 1.0);
+					brushalpha = CLAMP(0.0, r_slimealpha.value, 1.0);
 				else if (s->flags & SURF_DRAWTELEPORT)
-					wateralpha = CLAMP(0.0, r_teleportalpha.value, 1.0);
+					brushalpha = CLAMP(0.0, r_teleportalpha.value, 1.0);
 			}
 
 			if (s->flags & SURF_DRAWWATER)
 			{
 				if (globalwateralpha > 0)
-					wateralpha = globalwateralpha;
+					brushalpha = globalwateralpha;
 				else
-					wateralpha = CLAMP(0.0, r_wateralpha.value, 1.0);
+					brushalpha = CLAMP(0.0, r_wateralpha.value, 1.0);
 			}
 		}
-		else // entities
+/*		else // entities
 		{
-			wateralpha = ENTALPHA_DECODE(e->alpha);
+			brushalpha = ENTALPHA_DECODE(e->alpha);
 		}
-
-		if (wateralpha < 1.0)
+*/
+		if (brushalpha < 1.0)
 		{
 			glDepthMask(GL_FALSE);
 			glEnable(GL_BLEND);
 			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-			glColor4f(1, 1, 1, wateralpha);
+			glColor4f(1, 1, 1, brushalpha);
 		}
 
 		GL_Bind (s->texinfo->texture->warpimage);
@@ -467,7 +471,7 @@ void R_DrawSequentialPoly (entity_t *e, msurface_t *s)
 			}
 		}
 
-		if (wateralpha < 1.0)
+		if (brushalpha < 1.0)
 		{
 			glDepthMask(GL_TRUE);
 			glDisable(GL_BLEND);
@@ -480,8 +484,8 @@ void R_DrawSequentialPoly (entity_t *e, msurface_t *s)
 //-
 
 //	p = s->polys;
-	t = R_TextureAnimation (s->texinfo->texture, e ? e->frame : 0);
-	brushalpha = e ? ENTALPHA_DECODE(e->alpha) : 1.0;
+//	t = R_TextureAnimation (s->texinfo->texture, e ? e->frame : 0);
+//	brushalpha = e ? ENTALPHA_DECODE(e->alpha) : 1.0;
 
 	//
 	// missing texture
@@ -638,6 +642,7 @@ void R_DrawSequentialPoly (entity_t *e, msurface_t *s)
 R_DrawSequentialWaterPoly
 ================
 */
+/*
 void R_DrawSequentialWaterPoly (entity_t *e, msurface_t *s)
 {
 	glpoly_t	*p;
@@ -726,14 +731,15 @@ void R_DrawSequentialWaterPoly (entity_t *e, msurface_t *s)
 		}
 	}
 }
-
+*/
 
 /*
 =================
 R_DrawBrushModel
 =================
 */
-void R_DrawBrushModel (entity_t *e, qboolean water)
+//void R_DrawBrushModel (entity_t *e, qboolean water)
+void R_DrawBrushModel (entity_t *e)
 {
 	int			k, i;
 	msurface_t	*psurf;
