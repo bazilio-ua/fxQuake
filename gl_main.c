@@ -416,7 +416,7 @@ float	*shadedots = r_avertexnormal_dots[0];
 
 qboolean shading = true; // if false, disable vertex shading for various reasons (fullbright, etc)
 
-float	modelalpha;
+float	aliasalpha;
 
 
 /*
@@ -505,12 +505,12 @@ void R_DrawAliasModel (entity_t *e)
 	//
 	// set up for alpha blending
 	//
-	modelalpha = ENTALPHA_DECODE(e->alpha);
+	aliasalpha = ENTALPHA_DECODE(e->alpha);
 
-	if (modelalpha == 0)
+	if (aliasalpha == 0)
 		goto cleanup;
 
-	if (modelalpha < 1.0)
+	if (aliasalpha < 1.0)
 	{
 		glDepthMask (GL_FALSE);
 		glEnable (GL_BLEND);
@@ -634,7 +634,7 @@ void R_DrawAliasModel (entity_t *e)
 			glBlendFunc (GL_ONE, GL_ONE);
 			glDepthMask (GL_FALSE);
 			shading = false;
-			glColor3f (modelalpha, modelalpha, modelalpha);
+			glColor3f (aliasalpha, aliasalpha, aliasalpha);
 			R_FogStartAdditive ();
 			GL_DrawAliasFrame (paliashdr, lerpdata); // FX
 			R_FogStopAdditive ();
@@ -672,7 +672,7 @@ void R_DrawAliasModel (entity_t *e)
 			glBlendFunc (GL_ONE, GL_ONE);
 			glDepthMask (GL_FALSE);
 			shading = false;
-			glColor3f (modelalpha, modelalpha, modelalpha);
+			glColor3f (aliasalpha, aliasalpha, aliasalpha);
 			R_FogStartAdditive ();
 			GL_DrawAliasFrame (paliashdr, lerpdata); // FX
 			R_FogStopAdditive ();
@@ -1284,7 +1284,7 @@ void GL_DrawAliasFrame (aliashdr_t *paliashdr, lerpdata_t lerpdata)
 
 	commands = (int *)((byte *)paliashdr + paliashdr->commands);
 
-	vertcolor[3] = modelalpha; // never changes, so there's no need to put this inside the loop
+	vertcolor[3] = aliasalpha; // never changes, so there's no need to put this inside the loop
 
 	while (1)
 	{
