@@ -737,7 +737,7 @@ void R_DrawEntities (void)
 			break;
 		}
 	}
-
+/*
 	// special case to draw *liquid entities
 	for (i=0 ; i<cl_numvisedicts ; i++)
 	{
@@ -759,6 +759,7 @@ void R_DrawEntities (void)
 			break;
 		}
 	}
+*/
 }
 
 //==================================================================================
@@ -880,7 +881,7 @@ void R_DrawTransEntities (qboolean inwater)
 			break;
 		}
 	}
-
+/*
 	// special case to draw transparent *liquid entities
 	for (i=0 ; i<num_transents ; i++)
 	{
@@ -899,6 +900,7 @@ void R_DrawTransEntities (qboolean inwater)
 			break;
 		}
 	}
+*/
 }
 
 //==================================================================================
