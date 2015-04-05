@@ -1749,7 +1749,7 @@ void GL_Upload8 (gltexture_t *glt, byte *data)
 
 	size = glt->width * glt->height;
 	if (size & 3)
-		Con_Warning ("GL_Upload8: size %d is not a multiple of 4 in '%s'\n", size, glt->name);
+		Con_DWarning ("GL_Upload8: size %d is not a multiple of 4 in '%s'\n", size, glt->name);
 
 	// allocate dynamic memory
 //	trans = malloc (size * sizeof(unsigned)); // 4
