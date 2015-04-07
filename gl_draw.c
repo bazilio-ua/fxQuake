@@ -78,7 +78,9 @@ qboolean mtexenabled = false;
 
 unsigned int d_8to24table[256];
 unsigned int d_8to24table_fbright[256];
+unsigned int d_8to24table_fbright_fence[256];
 unsigned int d_8to24table_nobright[256];
+unsigned int d_8to24table_nobright_fence[256];
 unsigned int d_8to24table_conchars[256];
 
 const char *gl_vendor;
@@ -1737,6 +1739,7 @@ void GL_Upload8 (gltexture_t *glt, byte *data)
 	int			i, size;
 	int			p;
 	unsigned	*trans = NULL;
+	unsigned int	*pal;
 
 	// HACK HACK HACK -- taken from fitzquake
 	if (strstr(glt->name, "shot1sid") && glt->width==32 && glt->height==32 && CRC_Block(data, 1024) == 65393)
@@ -1769,38 +1772,55 @@ void GL_Upload8 (gltexture_t *glt, byte *data)
 			glt->flags &= ~TEXPREF_ALPHA;
 	}
 
-	// choose palette and convert to 32bit
+	// choose palette /* and convert to 32bit */
 	if (glt->flags & TEXPREF_FULLBRIGHT)
 	{
-		for (i=0 ; i<size ; ++i)
+		if (glt->flags & TEXPREF_ALPHA)
+			pal = d_8to24table_fbright_fence;
+		else
+			pal = d_8to24table_fbright;
+/*		for (i=0 ; i<size ; ++i)
 		{
 			p = data[i];
 			trans[i] = d_8to24table_fbright[p];
 		}
-	}
+*/	}
 	else if (glt->flags & TEXPREF_NOBRIGHT)
 	{
-		for (i=0 ; i<size ; ++i)
+		if (glt->flags & TEXPREF_ALPHA)
+			pal = d_8to24table_nobright_fence;
+		else
+			pal = d_8to24table_nobright;
+/*		for (i=0 ; i<size ; ++i)
 		{
 			p = data[i];
 			trans[i] = d_8to24table_nobright[p];
 		}
-	}
+*/	}
 	else if (glt->flags & TEXPREF_CONCHARS)
 	{
-		for (i=0 ; i<size ; ++i)
+		pal = d_8to24table_conchars;
+/*		for (i=0 ; i<size ; ++i)
 		{
 			p = data[i];
 			trans[i] = d_8to24table_conchars[p];
 		}
-	}
+*/	}
 	else
 	{
-		for (i=0 ; i<size ; ++i)
+		pal = d_8to24table;
+/*		for (i=0 ; i<size ; ++i)
 		{
 			p = data[i];
 			trans[i] = d_8to24table[p];
 		}
+*/	}
+
+	// convert to 32bit
+	for (i=0 ; i<size ; ++i)
+	{
+		p = data[i];
+		trans[i] = pal[p];
 	}
 
 	// fix edges

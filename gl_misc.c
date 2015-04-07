@@ -123,6 +123,18 @@ void R_LoadPalette (void)
 	}
 
 	//
+	//fullbright palette, for fence textures
+	//
+	memcpy(d_8to24table_fbright_fence, d_8to24table_fbright, 256*4);
+	d_8to24table_fbright_fence[255] = 0; // alpha of zero
+
+	//
+	//nobright palette, for fence textures
+	//
+	memcpy(d_8to24table_nobright_fence, d_8to24table_nobright, 256*4);
+	d_8to24table_nobright_fence[255] = 0; // alpha of zero	
+	
+	//
 	//conchars palette, 0 and 255 are transparent
 	//
 	memcpy(d_8to24table_conchars, d_8to24table, 256*4);

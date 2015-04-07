@@ -530,6 +530,9 @@ void R_DrawSequentialPoly (entity_t *e, msurface_t *s)
 		else
 			glColor3f (1, 1, 1);
 
+		if (s->flags & SURF_DRAWFENCE)
+			glEnable (GL_ALPHA_TEST); // Flip on alpha test
+
 		if (gl_mtexable && gl_texture_env_combine) // case 1: texture and lightmap in one pass, overbright using texture combiners
 		{
 			// Binds world to texture env 0
@@ -564,7 +567,7 @@ void R_DrawSequentialPoly (entity_t *e, msurface_t *s)
 			GL_DisableMultitexture (); // selects TEXTURE0
 			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);//FX
 		} 
-		else if (brushalpha < 1.0) // case 2: can't do multipass if brush has alpha, so just draw the texture
+		else if (brushalpha < 1.0 || (s->flags & SURF_DRAWFENCE)) // case 2: can't do multipass if brush has alpha, so just draw the texture
 		{
 			GL_Bind (t->gltexture);
 			R_DrawGLPoly34 (p);
@@ -615,6 +618,9 @@ void R_DrawSequentialPoly (entity_t *e, msurface_t *s)
 			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 			glColor3f(1, 1, 1);
 		}
+
+		if (s->flags & SURF_DRAWFENCE)
+			glDisable (GL_ALPHA_TEST); // Flip alpha test back off
 
 		if (t->fullbright)
 		{

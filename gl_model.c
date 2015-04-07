@@ -467,18 +467,23 @@ void Mod_LoadTextures (lump_t *l)
 			}
 			else // regular texture
 			{
+				int	extraflags = TEXPREF_NONE;
+
+				if (tx->name[0] == '{') // fence texture
+					extraflags |= TEXPREF_ALPHA;
+
 				offset = (unsigned)(mt+1) - (unsigned)mod_base;
 				if (IsFullbright ((byte *)(tx+1), pixels))
 				{
 					sprintf (texturename, "%s:%s", loadmodel->name, tx->name);
-					tx->gltexture = GL_LoadTexture (loadmodel, texturename, tx->width, tx->height, SRC_INDEXED, (byte *)(tx+1), loadmodel->name, offset, TEXPREF_MIPMAP | TEXPREF_NOBRIGHT);
+					tx->gltexture = GL_LoadTexture (loadmodel, texturename, tx->width, tx->height, SRC_INDEXED, (byte *)(tx+1), loadmodel->name, offset, TEXPREF_MIPMAP | TEXPREF_NOBRIGHT | extraflags);
 					sprintf (texturename, "%s:%s_glow", loadmodel->name, tx->name);
-					tx->fullbright = GL_LoadTexture (loadmodel, texturename, tx->width, tx->height, SRC_INDEXED, (byte *)(tx+1), loadmodel->name, offset, TEXPREF_MIPMAP | TEXPREF_FULLBRIGHT);
+					tx->fullbright = GL_LoadTexture (loadmodel, texturename, tx->width, tx->height, SRC_INDEXED, (byte *)(tx+1), loadmodel->name, offset, TEXPREF_MIPMAP | TEXPREF_FULLBRIGHT | extraflags);
 				}
 				else
 				{
 					sprintf (texturename, "%s:%s", loadmodel->name, tx->name);
-					tx->gltexture = GL_LoadTexture (loadmodel, texturename, tx->width, tx->height, SRC_INDEXED, (byte *)(tx+1), loadmodel->name, offset, TEXPREF_MIPMAP);
+					tx->gltexture = GL_LoadTexture (loadmodel, texturename, tx->width, tx->height, SRC_INDEXED, (byte *)(tx+1), loadmodel->name, offset, TEXPREF_MIPMAP | extraflags);
 				}
 			}
 		}
@@ -1222,6 +1227,10 @@ void Mod_LoadFaces (lump_t *l)
 
 			Mod_PolyForUnlitSurface (out);
 			// no more subdivision 
+		}
+		else if (out->texinfo->texture->name[0] == '{') // surface with fence texture
+		{
+			out->flags |= SURF_DRAWFENCE;
 		}
 		else if (out->texinfo->flags & TEX_MISSING) // texture is missing from bsp
 		{
