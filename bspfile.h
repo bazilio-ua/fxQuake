@@ -31,10 +31,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define	MAX_MAP_PLANES		32767
 #define	MAX_MAP_NODES		32767		// because negative shorts are contents
 #define	MAX_MAP_CLIPNODES	32767		//
-#define	MAX_MAP_LEAFS		32767 //8192
+#define	MAX_MAP_LEAFS		65535		// bsp2 support, was 32767 // orig. was 8192
 #define	MAX_MAP_VERTS		65535
 #define	MAX_MAP_FACES		65535
-#define	MAX_MAP_MARKSURFACES 65535
+#define	MAX_MAP_MARKSURFACES	65535
 #define	MAX_MAP_TEXINFO		4096
 #define	MAX_MAP_EDGES		256000
 #define	MAX_MAP_SURFEDGES	512000
@@ -54,7 +54,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 
 #define BSPVERSION	29
-#define	TOOLVERSION	2
+
+// RMQ support (2PSB). 32bits instead of shorts for all but bbox sizes (which still use shorts)
+#define BSP2VERSION_2PSB (('B' << 24) | ('S' << 16) | ('P' << 8) | '2')
+// BSP2 support. 32bits instead of shorts for everything (bboxes use floats)
+#define BSP2VERSION_BSP2 (('B' << 0) | ('S' << 8) | ('P' << 16) | ('2'<<24))
+
+//#define	TOOLVERSION	2
 
 typedef struct
 {
@@ -159,21 +165,14 @@ typedef struct
 	short		maxs[3];
 	unsigned short	firstface;
 	unsigned short	numfaces;	// counting both sides
-} dnode_t;
+} dsnode_t;
 
 typedef struct
 {
 	int			planenum;
 	short		children[2];	// negative numbers are contents
-} dclipnode_t;
+} dsclipnode_t;
 
-//johnfitz -- for clipnodes>32k
-typedef struct mclipnode_s
-{
-	int			planenum;
-	int			children[2];	// negative numbers are contents
-} mclipnode_t;
-//johnfitz
 
 typedef struct texinfo_s
 {
@@ -189,7 +188,7 @@ typedef struct texinfo_s
 typedef struct
 {
 	unsigned short	v[2];		// vertex numbers
-} dedge_t;
+} dsedge_t;
 
 #define	MAXLIGHTMAPS	4
 typedef struct
@@ -204,7 +203,7 @@ typedef struct
 // lighting info
 	byte		styles[MAXLIGHTMAPS];
 	int			lightofs;		// start of [numstyles*surfsize] samples
-} dface_t;
+} dsface_t;
 
 
 
@@ -229,11 +228,11 @@ typedef struct
 	unsigned short		nummarksurfaces;
 
 	byte		ambient_level[NUM_AMBIENTS];
-} dleaf_t;
+} dsleaf_t;
 
 
 //============================================================================
-
+/*
 #ifndef QUAKE_GAME
 
 #define	ANGLE_UP	-1
@@ -329,3 +328,4 @@ void 	GetVectorForKey (entity_t *ent, char *key, vec3_t vec);
 epair_t *ParseEpair (void);
 
 #endif
+*/

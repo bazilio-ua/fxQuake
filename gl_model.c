@@ -658,8 +658,9 @@ void Mod_LoadLighting (lump_t *l)
 } 
 
 // store external leaf data
-dleaf_t 	*extleafdata;
-int 		extleaflen;
+//dsleaf_t 	*extleafdata;
+void	*extleafdata;
+int		extleaflen;
 
 /*
 =================
@@ -915,7 +916,7 @@ Mod_LoadEdges
 */
 void Mod_LoadEdges (lump_t *l)
 {
-	dedge_t *in;
+	dsedge_t *in;
 	medge_t *out;
 	int 	i, count;
 
@@ -1157,7 +1158,7 @@ Mod_LoadFaces
 */
 void Mod_LoadFaces (lump_t *l)
 {
-	dface_t		*in;
+	dsface_t	*in;
 	msurface_t 	*out;
 	int		i, count, surfnum;
 	int			planenum, side;
@@ -1270,7 +1271,7 @@ Mod_LoadNodes
 void Mod_LoadNodes (lump_t *l)
 {
 	int	i, j, count, p;
-	dnode_t		*in;
+	dsnode_t		*in;
 	mnode_t 	*out;
 
 	in = (void *)(mod_base + l->fileofs);
@@ -1329,7 +1330,7 @@ Mod_LoadLeafs
 */
 void Mod_LoadLeafs (lump_t *l)
 {
-	dleaf_t 	*in;
+	dsleaf_t 	*in;
 	mleaf_t 	*out;
 	int	i, j, count, p;
 	int filelen;
@@ -1340,7 +1341,8 @@ void Mod_LoadLeafs (lump_t *l)
 	if (extleafdata) // load external leaf data, if exist
 	{
 		Con_DPrintf ("load external leaf data\n");
-		in = extleafdata;
+//		in = extleafdata;
+		in = (dsleaf_t *)extleafdata;
 		filelen = extleaflen;
 	}
 	else // load standard leaf
@@ -1392,7 +1394,7 @@ Mod_LoadClipnodes
 */
 void Mod_LoadClipnodes (lump_t *l)
 {
-	dclipnode_t *in;
+	dsclipnode_t *in;
 	mclipnode_t *out; //johnfitz -- was dclipnode_t
 	int			i, count;
 	hull_t		*hull;

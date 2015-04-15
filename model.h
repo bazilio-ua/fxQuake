@@ -204,6 +204,13 @@ typedef struct mleaf_s
 	byte		ambient_sound_level[NUM_AMBIENTS];
 } mleaf_t;
 
+typedef struct mclipnode_s
+{
+//johnfitz -- for clipnodes>32k
+	int			planenum;
+	int			children[2];	// negative numbers are contents
+} mclipnode_t;
+
 typedef struct
 {
 	mclipnode_t	*clipnodes; //johnfitz -- was dclipnode_t
