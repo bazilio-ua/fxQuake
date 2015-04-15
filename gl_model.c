@@ -659,8 +659,8 @@ void Mod_LoadLighting (lump_t *l)
 
 // store external leaf data
 //dsleaf_t 	*extleafdata;
-void	*extleafdata;
-int		extleaflen;
+void 	*extleafdata;
+int 	extleaflen;
 
 /*
 =================
