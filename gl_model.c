@@ -914,7 +914,7 @@ void Mod_LoadSubmodels (lump_t *l)
 Mod_LoadEdges
 =================
 */
-void Mod_LoadEdges (lump_t *l)
+void Mod_LoadEdges (lump_t *l, int bsp2)
 {
 	dsedge_t *in;
 	medge_t *out;
@@ -1156,7 +1156,7 @@ void Mod_CalcSurfaceBounds (msurface_t *s)
 Mod_LoadFaces
 =================
 */
-void Mod_LoadFaces (lump_t *l)
+void Mod_LoadFaces (lump_t *l, int bsp2)
 {
 	dsface_t	*in;
 	msurface_t 	*out;
@@ -1268,7 +1268,7 @@ void Mod_SetParent (mnode_t *node, mnode_t *parent)
 Mod_LoadNodes
 =================
 */
-void Mod_LoadNodes (lump_t *l)
+void Mod_LoadNodes (lump_t *l, int bsp2)
 {
 	int	i, j, count, p;
 	dsnode_t		*in;
@@ -1328,7 +1328,7 @@ void Mod_LoadNodes (lump_t *l)
 Mod_LoadLeafs
 =================
 */
-void Mod_LoadLeafs (lump_t *l)
+void Mod_LoadLeafs (lump_t *l, int bsp2)
 {
 	dsleaf_t 	*in;
 	mleaf_t 	*out;
@@ -1392,7 +1392,7 @@ void Mod_LoadLeafs (lump_t *l)
 Mod_LoadClipnodes
 =================
 */
-void Mod_LoadClipnodes (lump_t *l)
+void Mod_LoadClipnodes (lump_t *l, int bsp2)
 {
 	dsclipnode_t *in;
 	mclipnode_t *out; //johnfitz -- was dclipnode_t
@@ -1495,7 +1495,7 @@ void Mod_MakeHull0 (void)
 Mod_LoadMarksurfaces
 =================
 */
-void Mod_LoadMarksurfaces (lump_t *l)
+void Mod_LoadMarksurfaces (lump_t *l, int bsp2)
 {	
 	int		i, j, count;
 	short		*in;
@@ -1611,6 +1611,7 @@ Mod_LoadBrushModel
 void Mod_LoadBrushModel (model_t *mod, void *buffer)
 {
 	int			i, j;
+	int			bsp2; // bsp2 support
 	dheader_t	*header;
 	dmodel_t 	*bm;
 	float		radius;
@@ -1620,8 +1621,24 @@ void Mod_LoadBrushModel (model_t *mod, void *buffer)
 	header = (dheader_t *)buffer;
 
 	mod->bspversion = LittleLong (header->version);
-	if (mod->bspversion != BSPVERSION)
-		Host_Error ("Mod_LoadBrushModel: %s has wrong version number (%i should be %i (Quake))", mod->name, mod->bspversion, BSPVERSION); // was Sys_Error
+
+	switch(mod->bspversion)
+	{
+	case BSPVERSION:
+		bsp2 = 0;
+		break;
+	case BSP2VERSION_2PSB:
+		bsp2 = 1;	// first iteration (RMQ)
+		break;
+	case BSP2VERSION_BSP2:
+		bsp2 = 2;	// sanitised revision
+		break;
+	default:
+		Host_Error ("Mod_LoadBrushModel: %s has wrong version number (%i should be %i (Quake), %i or %i (BSP2))", mod->name, mod->bspversion, BSPVERSION, BSP2VERSION_2PSB, BSP2VERSION_BSP2); // was Sys_Error
+		break;
+	}
+//	if (mod->bspversion != BSPVERSION)
+//		Host_Error ("Mod_LoadBrushModel: %s has wrong version number (%i should be %i (Quake))", mod->name, mod->bspversion, BSPVERSION); // was Sys_Error
 
 	{
 	// isworldmodel check
@@ -1644,18 +1661,18 @@ void Mod_LoadBrushModel (model_t *mod, void *buffer)
 // load into heap
 
 	Mod_LoadVertexes (&header->lumps[LUMP_VERTEXES]);
-	Mod_LoadEdges (&header->lumps[LUMP_EDGES]);
+	Mod_LoadEdges (&header->lumps[LUMP_EDGES], bsp2);
 	Mod_LoadSurfedges (&header->lumps[LUMP_SURFEDGES]);
 	Mod_LoadTextures (&header->lumps[LUMP_TEXTURES]);
 	Mod_LoadLighting (&header->lumps[LUMP_LIGHTING]);
 	Mod_LoadPlanes (&header->lumps[LUMP_PLANES]);
 	Mod_LoadTexinfo (&header->lumps[LUMP_TEXINFO]);
-	Mod_LoadFaces (&header->lumps[LUMP_FACES]);
-	Mod_LoadMarksurfaces (&header->lumps[LUMP_MARKSURFACES]);
+	Mod_LoadFaces (&header->lumps[LUMP_FACES], bsp2);
+	Mod_LoadMarksurfaces (&header->lumps[LUMP_MARKSURFACES], bsp2);
 	Mod_LoadVisibility (&header->lumps[LUMP_VISIBILITY]);
-	Mod_LoadLeafs (&header->lumps[LUMP_LEAFS]);
-	Mod_LoadNodes (&header->lumps[LUMP_NODES]);
-	Mod_LoadClipnodes (&header->lumps[LUMP_CLIPNODES]);
+	Mod_LoadLeafs (&header->lumps[LUMP_LEAFS], bsp2);
+	Mod_LoadNodes (&header->lumps[LUMP_NODES], bsp2);
+	Mod_LoadClipnodes (&header->lumps[LUMP_CLIPNODES], bsp2);
 	Mod_LoadEntities (&header->lumps[LUMP_ENTITIES]);
 	Mod_LoadSubmodels (&header->lumps[LUMP_MODELS]);
 
