@@ -1611,7 +1611,7 @@ Mod_LoadBrushModel
 void Mod_LoadBrushModel (model_t *mod, void *buffer)
 {
 	int			i, j;
-	int			bsp2; // bsp2 support
+	int			bsp2 = 0; // bsp2 support
 	dheader_t	*header;
 	dmodel_t 	*bm;
 	float		radius;
