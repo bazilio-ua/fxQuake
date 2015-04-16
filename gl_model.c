@@ -916,23 +916,50 @@ Mod_LoadEdges
 */
 void Mod_LoadEdges (lump_t *l, int bsp2)
 {
-	dsedge_t *in;
+//	dsedge_t *in;
 	medge_t *out;
 	int 	i, count;
 
-	in = (void *)(mod_base + l->fileofs);
-	if (l->filelen % sizeof(*in))
-		Con_Warning ("Mod_LoadEdges: funny lump size in %s",loadmodel->name); // should be an error but ... (EER1) 
-	count = l->filelen / sizeof(*in);
-	out = Hunk_AllocName ( (count + 1) * sizeof(*out), loadname);
-
-	loadmodel->edges = out;
-	loadmodel->numedges = count;
-
-	for ( i=0 ; i<count ; i++, in++, out++)
+	if (bsp2)
 	{
-		out->v[0] = (unsigned short)LittleShort(in->v[0]);
-		out->v[1] = (unsigned short)LittleShort(in->v[1]);
+	//	in = (void *)(mod_base + l->fileofs);
+//		dsedge_t *in = (dsedge_t *)(mod_base + l->fileofs);
+		dledge_t *in = (dledge_t *)(mod_base + l->fileofs);
+		
+		if (l->filelen % sizeof(*in))
+			Con_Warning ("Mod_LoadEdges: funny lump size in %s",loadmodel->name); // should be an error but ... (EER1) 
+		count = l->filelen / sizeof(*in);
+		out = Hunk_AllocName ( (count + 1) * sizeof(*out), loadname);
+	
+		loadmodel->edges = out;
+		loadmodel->numedges = count;
+	
+		for ( i=0 ; i<count ; i++, in++, out++)
+		{
+//			out->v[0] = (unsigned short)LittleShort(in->v[0]);
+//			out->v[1] = (unsigned short)LittleShort(in->v[1]);
+			out->v[0] = LittleLong(in->v[0]);
+			out->v[1] = LittleLong(in->v[1]);
+		}
+	}
+	else
+	{
+	//	in = (void *)(mod_base + l->fileofs);
+		dsedge_t *in = (dsedge_t *)(mod_base + l->fileofs);
+		
+		if (l->filelen % sizeof(*in))
+			Con_Warning ("Mod_LoadEdges: funny lump size in %s",loadmodel->name); // should be an error but ... (EER1) 
+		count = l->filelen / sizeof(*in);
+		out = Hunk_AllocName ( (count + 1) * sizeof(*out), loadname);
+	
+		loadmodel->edges = out;
+		loadmodel->numedges = count;
+	
+		for ( i=0 ; i<count ; i++, in++, out++)
+		{
+			out->v[0] = (unsigned short)LittleShort(in->v[0]);
+			out->v[1] = (unsigned short)LittleShort(in->v[1]);
+		}
 	}
 }
 
@@ -1158,91 +1185,189 @@ Mod_LoadFaces
 */
 void Mod_LoadFaces (lump_t *l, int bsp2)
 {
-	dsface_t	*in;
+//	dsface_t	*in;
 	msurface_t 	*out;
 	int		i, count, surfnum;
 	int			planenum, side;
 
-	in = (void *)(mod_base + l->fileofs);
-	if (l->filelen % sizeof(*in))
-		Con_Warning ("Mod_LoadFaces: funny lump size in %s",loadmodel->name); // should be an error but ... (EER1)
-	count = l->filelen / sizeof(*in);
-	if (count > 32767) // old limit warning
-		Con_DWarning ("Mod_LoadFaces: faces exceeds standard limit (%d, normal max = %d) in %s\n", count, 32767, loadmodel->name);
-	out = Hunk_AllocName ( count*sizeof(*out), loadname);
-
-	loadmodel->surfaces = out;
-	loadmodel->numsurfaces = count;
-
-	for ( surfnum=0 ; surfnum<count ; surfnum++, in++, out++)
+	if (bsp2)
 	{
-		out->firstedge = LittleLong (in->firstedge);
-		out->numedges = LittleShort (in->numedges);
-		out->flags = 0;
-
-		planenum = LittleShort (in->planenum);
-		side = LittleShort (in->side);
-		if (side)
-			out->flags |= SURF_PLANEBACK;			
-
-		out->plane = loadmodel->planes + planenum;
-
-		out->texinfo = loadmodel->texinfo + LittleShort (in->texinfo);
-
-		CalcSurfaceExtents (out);
-
-		Mod_CalcSurfaceBounds (out); // for per-surface frustum culling
-
-		// lighting info
-		for (i=0 ; i<MAXLIGHTMAPS ; i++)
-			out->styles[i] = in->styles[i];
-		i = LittleLong(in->lightofs);
-		if (i == -1)
-			out->samples = NULL;
-		else
-			out->samples = loadmodel->lightdata + (i * 3); // lit support via lordhavoc (was "+ i") 
+	//	in = (void *)(mod_base + l->fileofs);
+//		dsface_t *in = (dsface_t *)(mod_base + l->fileofs);
+		dlface_t *in = (dlface_t *)(mod_base + l->fileofs);
 		
-		// set the drawing flags flag
-		if (!strncasecmp(out->texinfo->texture->name, "sky", 3)) // sky surface (also note: was strncmp, changed to match qbsp)
+		if (l->filelen % sizeof(*in))
+			Con_Warning ("Mod_LoadFaces: funny lump size in %s",loadmodel->name); // should be an error but ... (EER1)
+		count = l->filelen / sizeof(*in);
+//		if (count > 32767) // old limit warning
+//			Con_DWarning ("Mod_LoadFaces: faces exceeds standard limit (%d, normal max = %d) in %s\n", count, 32767, loadmodel->name);
+		out = Hunk_AllocName ( count*sizeof(*out), loadname);
+	
+		loadmodel->surfaces = out;
+		loadmodel->numsurfaces = count;
+	
+		for ( surfnum=0 ; surfnum<count ; surfnum++, in++, out++)
 		{
-			out->flags |= (SURF_DRAWSKY | SURF_DRAWTILED);
-			Mod_PolyForUnlitSurface (out);
-			// no more subdivision 
-		}
-		else if (out->texinfo->texture->name[0] == '*') // warp surface
-		{
-			out->flags |= (SURF_DRAWTURB | SURF_DRAWTILED);
-
-			// detect special liquid types
-			if (!strncasecmp(out->texinfo->texture->name, "*lava", 5)
-			|| !strncasecmp(out->texinfo->texture->name, "*brim", 5))
-				out->flags |= SURF_DRAWLAVA;
-			else if (!strncasecmp(out->texinfo->texture->name, "*slime", 6))
-				out->flags |= SURF_DRAWSLIME;
-			else if (!strncasecmp(out->texinfo->texture->name, "*tele", 5)
-			|| !strncasecmp(out->texinfo->texture->name, "*rift", 5)
-			|| !strncasecmp(out->texinfo->texture->name, "*gate", 5))
-				out->flags |= SURF_DRAWTELEPORT;
+			out->firstedge = LittleLong (in->firstedge);
+//			out->numedges = LittleShort (in->numedges);
+			out->numedges = LittleLong (in->numedges);
+			out->flags = 0;
+	
+//			planenum = LittleShort (in->planenum);
+			planenum = LittleLong (in->planenum);
+//			side = LittleShort (in->side);
+			side = LittleLong (in->side);
+			if (side)
+				out->flags |= SURF_PLANEBACK;			
+	
+			out->plane = loadmodel->planes + planenum;
+	
+//			out->texinfo = loadmodel->texinfo + LittleShort (in->texinfo);
+			out->texinfo = loadmodel->texinfo + LittleLong (in->texinfo);
+	
+			CalcSurfaceExtents (out);
+	
+			Mod_CalcSurfaceBounds (out); // for per-surface frustum culling
+	
+			// lighting info
+			for (i=0 ; i<MAXLIGHTMAPS ; i++)
+				out->styles[i] = in->styles[i];
+			i = LittleLong(in->lightofs);
+			if (i == -1)
+				out->samples = NULL;
 			else
-				out->flags |= SURF_DRAWWATER; 
-
-			Mod_PolyForUnlitSurface (out);
-			// no more subdivision 
-		}
-		else if (out->texinfo->texture->name[0] == '{') // surface with fence texture
-		{
-			out->flags |= SURF_DRAWFENCE;
-		}
-		else if (out->texinfo->flags & TEX_MISSING) // texture is missing from bsp
-		{
-			if (out->samples) // lightmapped
+				out->samples = loadmodel->lightdata + (i * 3); // lit support via lordhavoc (was "+ i") 
+			
+			// set the drawing flags flag
+			if (!strncasecmp(out->texinfo->texture->name, "sky", 3)) // sky surface (also note: was strncmp, changed to match qbsp)
 			{
-				out->flags |= SURF_NOTEXTURE;
-			}
-			else // not lightmapped
-			{
-				out->flags |= (SURF_NOTEXTURE | SURF_DRAWTILED);
+				out->flags |= (SURF_DRAWSKY | SURF_DRAWTILED);
 				Mod_PolyForUnlitSurface (out);
+				// no more subdivision 
+			}
+			else if (out->texinfo->texture->name[0] == '*') // warp surface
+			{
+				out->flags |= (SURF_DRAWTURB | SURF_DRAWTILED);
+	
+				// detect special liquid types
+				if (!strncasecmp(out->texinfo->texture->name, "*lava", 5)
+				|| !strncasecmp(out->texinfo->texture->name, "*brim", 5))
+					out->flags |= SURF_DRAWLAVA;
+				else if (!strncasecmp(out->texinfo->texture->name, "*slime", 6))
+					out->flags |= SURF_DRAWSLIME;
+				else if (!strncasecmp(out->texinfo->texture->name, "*tele", 5)
+				|| !strncasecmp(out->texinfo->texture->name, "*rift", 5)
+				|| !strncasecmp(out->texinfo->texture->name, "*gate", 5))
+					out->flags |= SURF_DRAWTELEPORT;
+				else
+					out->flags |= SURF_DRAWWATER; 
+	
+				Mod_PolyForUnlitSurface (out);
+				// no more subdivision 
+			}
+			else if (out->texinfo->texture->name[0] == '{') // surface with fence texture
+			{
+				out->flags |= SURF_DRAWFENCE;
+			}
+			else if (out->texinfo->flags & TEX_MISSING) // texture is missing from bsp
+			{
+				if (out->samples) // lightmapped
+				{
+					out->flags |= SURF_NOTEXTURE;
+				}
+				else // not lightmapped
+				{
+					out->flags |= (SURF_NOTEXTURE | SURF_DRAWTILED);
+					Mod_PolyForUnlitSurface (out);
+				}
+			}
+		}
+	}
+	else
+	{
+	//	in = (void *)(mod_base + l->fileofs);
+		dsface_t *in = (dsface_t *)(mod_base + l->fileofs);
+		
+		if (l->filelen % sizeof(*in))
+			Con_Warning ("Mod_LoadFaces: funny lump size in %s",loadmodel->name); // should be an error but ... (EER1)
+		count = l->filelen / sizeof(*in);
+		if (count > 32767) // old limit warning
+			Con_DWarning ("Mod_LoadFaces: faces exceeds standard limit (%d, normal max = %d) in %s\n", count, 32767, loadmodel->name);
+		out = Hunk_AllocName ( count*sizeof(*out), loadname);
+	
+		loadmodel->surfaces = out;
+		loadmodel->numsurfaces = count;
+	
+		for ( surfnum=0 ; surfnum<count ; surfnum++, in++, out++)
+		{
+			out->firstedge = LittleLong (in->firstedge);
+			out->numedges = LittleShort (in->numedges);
+			out->flags = 0;
+	
+			planenum = LittleShort (in->planenum);
+			side = LittleShort (in->side);
+			if (side)
+				out->flags |= SURF_PLANEBACK;			
+	
+			out->plane = loadmodel->planes + planenum;
+	
+			out->texinfo = loadmodel->texinfo + LittleShort (in->texinfo);
+	
+			CalcSurfaceExtents (out);
+	
+			Mod_CalcSurfaceBounds (out); // for per-surface frustum culling
+	
+			// lighting info
+			for (i=0 ; i<MAXLIGHTMAPS ; i++)
+				out->styles[i] = in->styles[i];
+			i = LittleLong(in->lightofs);
+			if (i == -1)
+				out->samples = NULL;
+			else
+				out->samples = loadmodel->lightdata + (i * 3); // lit support via lordhavoc (was "+ i") 
+			
+			// set the drawing flags flag
+			if (!strncasecmp(out->texinfo->texture->name, "sky", 3)) // sky surface (also note: was strncmp, changed to match qbsp)
+			{
+				out->flags |= (SURF_DRAWSKY | SURF_DRAWTILED);
+				Mod_PolyForUnlitSurface (out);
+				// no more subdivision 
+			}
+			else if (out->texinfo->texture->name[0] == '*') // warp surface
+			{
+				out->flags |= (SURF_DRAWTURB | SURF_DRAWTILED);
+	
+				// detect special liquid types
+				if (!strncasecmp(out->texinfo->texture->name, "*lava", 5)
+				|| !strncasecmp(out->texinfo->texture->name, "*brim", 5))
+					out->flags |= SURF_DRAWLAVA;
+				else if (!strncasecmp(out->texinfo->texture->name, "*slime", 6))
+					out->flags |= SURF_DRAWSLIME;
+				else if (!strncasecmp(out->texinfo->texture->name, "*tele", 5)
+				|| !strncasecmp(out->texinfo->texture->name, "*rift", 5)
+				|| !strncasecmp(out->texinfo->texture->name, "*gate", 5))
+					out->flags |= SURF_DRAWTELEPORT;
+				else
+					out->flags |= SURF_DRAWWATER; 
+	
+				Mod_PolyForUnlitSurface (out);
+				// no more subdivision 
+			}
+			else if (out->texinfo->texture->name[0] == '{') // surface with fence texture
+			{
+				out->flags |= SURF_DRAWFENCE;
+			}
+			else if (out->texinfo->flags & TEX_MISSING) // texture is missing from bsp
+			{
+				if (out->samples) // lightmapped
+				{
+					out->flags |= SURF_NOTEXTURE;
+				}
+				else // not lightmapped
+				{
+					out->flags |= (SURF_NOTEXTURE | SURF_DRAWTILED);
+					Mod_PolyForUnlitSurface (out);
+				}
 			}
 		}
 	}
@@ -1271,50 +1396,170 @@ Mod_LoadNodes
 void Mod_LoadNodes (lump_t *l, int bsp2)
 {
 	int	i, j, count, p;
-	dsnode_t		*in;
+//	dsnode_t		*in;
 	mnode_t 	*out;
 
-	in = (void *)(mod_base + l->fileofs);
-	if (l->filelen % sizeof(*in))
-		Con_Warning ("Mod_LoadNodes: funny lump size in %s",loadmodel->name); // should be an error but ... (EER1)
-	count = l->filelen / sizeof(*in);
-	if (count > 32767) // old limit warning
-		Con_DWarning ("Mod_LoadNodes: nodes exceeds standard limit (%d, normal max = %d) in %s\n", count, 32767, loadmodel->name);
-	out = Hunk_AllocName ( count*sizeof(*out), loadname);
-
-	loadmodel->nodes = out;
-	loadmodel->numnodes = count;
-
-	for ( i=0 ; i<count ; i++, in++, out++)
+	if (bsp2 == 2)
 	{
-		for (j=0 ; j<3 ; j++)
-		{
-			out->minmaxs[j] = LittleShort (in->mins[j]);
-			out->minmaxs[3+j] = LittleShort (in->maxs[j]);
-		}
+	//	in = (void *)(mod_base + l->fileofs);
+		dl2node_t *in = (dl2node_t *)(mod_base + l->fileofs);
+		
+		if (l->filelen % sizeof(*in))
+			Con_Warning ("Mod_LoadNodes: funny lump size in %s",loadmodel->name); // should be an error but ... (EER1)
+		count = l->filelen / sizeof(*in);
+//		if (count > 32767) // old limit warning
+//			Con_DWarning ("Mod_LoadNodes: nodes exceeds standard limit (%d, normal max = %d) in %s\n", count, 32767, loadmodel->name);
+		out = Hunk_AllocName ( count*sizeof(*out), loadname);
 	
-		p = LittleLong (in->planenum);
-		out->plane = loadmodel->planes + p;
-
-		out->firstsurface = (unsigned short)LittleShort (in->firstface);
-		out->numsurfaces = (unsigned short)LittleShort (in->numfaces);
-
-		for (j=0 ; j<2 ; j++)
+		loadmodel->nodes = out;
+		loadmodel->numnodes = count;
+	
+		for ( i=0 ; i<count ; i++, in++, out++)
 		{
-			//johnfitz -- hack to handle nodes > 32k, adapted from darkplaces
-			p = (unsigned short)LittleShort (in->children[j]);
-
-			if (p < count)
-				out->children[j] = loadmodel->nodes + p;
-			else
+			for (j=0 ; j<3 ; j++)
 			{
-				p = 65535 - p; //note this uses 65535 intentionally, -1 is leaf 0
-				if (p < loadmodel->numleafs)
-					out->children[j] = (mnode_t *)(loadmodel->leafs + p);
+//				out->minmaxs[j] = LittleShort (in->mins[j]);
+//				out->minmaxs[3+j] = LittleShort (in->maxs[j]);
+				out->minmaxs[j] = LittleFloat (in->mins[j]);
+				out->minmaxs[3+j] = LittleFloat (in->maxs[j]);
+			}
+		
+			p = LittleLong (in->planenum);
+			out->plane = loadmodel->planes + p;
+	
+//			out->firstsurface = (unsigned short)LittleShort (in->firstface);
+//			out->numsurfaces = (unsigned short)LittleShort (in->numfaces);
+			out->firstsurface = LittleLong (in->firstface);
+			out->numsurfaces = LittleLong (in->numfaces);
+	
+			for (j=0 ; j<2 ; j++)
+			{
+				//johnfitz -- hack to handle nodes > 32k, adapted from darkplaces
+//				p = (unsigned short)LittleShort (in->children[j]);
+				p = LittleLong (in->children[j]);
+	
+//				if (p < count)
+				if (p > 0 && p < count)
+					out->children[j] = loadmodel->nodes + p;
 				else
 				{
-					Con_Warning ("Mod_LoadNodes: invalid leaf index %i (file has only %i leafs)\n", p, loadmodel->numleafs);
-					out->children[j] = (mnode_t *)(loadmodel->leafs); //map it to the solid leaf
+//					p = 65535 - p; //note this uses 65535 intentionally, -1 is leaf 0
+					p = 0xffffffff - p; //note this uses 65535 intentionally, -1 is leaf 0
+//					if (p < loadmodel->numleafs)
+					if (p >= 0 && p < loadmodel->numleafs)
+						out->children[j] = (mnode_t *)(loadmodel->leafs + p);
+					else
+					{
+						Con_Warning ("Mod_LoadNodes: invalid leaf index %i (file has only %i leafs)\n", p, loadmodel->numleafs);
+						out->children[j] = (mnode_t *)(loadmodel->leafs); //map it to the solid leaf
+					}
+				}
+			}
+		}
+	}
+	else if (bsp2)
+	{
+	//	in = (void *)(mod_base + l->fileofs);
+		dl1node_t *in = (dl1node_t *)(mod_base + l->fileofs);
+		
+		if (l->filelen % sizeof(*in))
+			Con_Warning ("Mod_LoadNodes: funny lump size in %s",loadmodel->name); // should be an error but ... (EER1)
+		count = l->filelen / sizeof(*in);
+//		if (count > 32767) // old limit warning
+//			Con_DWarning ("Mod_LoadNodes: nodes exceeds standard limit (%d, normal max = %d) in %s\n", count, 32767, loadmodel->name);
+		out = Hunk_AllocName ( count*sizeof(*out), loadname);
+	
+		loadmodel->nodes = out;
+		loadmodel->numnodes = count;
+	
+		for ( i=0 ; i<count ; i++, in++, out++)
+		{
+			for (j=0 ; j<3 ; j++)
+			{
+				out->minmaxs[j] = LittleShort (in->mins[j]);
+				out->minmaxs[3+j] = LittleShort (in->maxs[j]);
+			}
+		
+			p = LittleLong (in->planenum);
+			out->plane = loadmodel->planes + p;
+	
+//			out->firstsurface = (unsigned short)LittleShort (in->firstface);
+//			out->numsurfaces = (unsigned short)LittleShort (in->numfaces);
+			out->firstsurface = LittleLong (in->firstface);
+			out->numsurfaces = LittleLong (in->numfaces);
+	
+			for (j=0 ; j<2 ; j++)
+			{
+				//johnfitz -- hack to handle nodes > 32k, adapted from darkplaces
+//				p = (unsigned short)LittleShort (in->children[j]);
+				p = LittleLong (in->children[j]);
+	
+//				if (p < count)
+//				if (p >= 0 && p < count)
+				if (p >= 0 && p < count)
+					out->children[j] = loadmodel->nodes + p;
+				else
+				{
+//					p = 65535 - p; //note this uses 65535 intentionally, -1 is leaf 0
+					p = 0xffffffff - p; //note this uses 65535 intentionally, -1 is leaf 0
+//					if (p < loadmodel->numleafs)
+					if (p >= 0 && p < loadmodel->numleafs)
+						out->children[j] = (mnode_t *)(loadmodel->leafs + p);
+					else
+					{
+						Con_Warning ("Mod_LoadNodes: invalid leaf index %i (file has only %i leafs)\n", p, loadmodel->numleafs);
+						out->children[j] = (mnode_t *)(loadmodel->leafs); //map it to the solid leaf
+					}
+				}
+			}
+		}
+	}
+	else
+	{
+	//	in = (void *)(mod_base + l->fileofs);
+		dsnode_t *in = (dsnode_t *)(mod_base + l->fileofs);
+		
+		if (l->filelen % sizeof(*in))
+			Con_Warning ("Mod_LoadNodes: funny lump size in %s",loadmodel->name); // should be an error but ... (EER1)
+		count = l->filelen / sizeof(*in);
+		if (count > 32767) // old limit warning
+			Con_DWarning ("Mod_LoadNodes: nodes exceeds standard limit (%d, normal max = %d) in %s\n", count, 32767, loadmodel->name);
+		out = Hunk_AllocName ( count*sizeof(*out), loadname);
+	
+		loadmodel->nodes = out;
+		loadmodel->numnodes = count;
+	
+		for ( i=0 ; i<count ; i++, in++, out++)
+		{
+			for (j=0 ; j<3 ; j++)
+			{
+				out->minmaxs[j] = LittleShort (in->mins[j]);
+				out->minmaxs[3+j] = LittleShort (in->maxs[j]);
+			}
+		
+			p = LittleLong (in->planenum);
+			out->plane = loadmodel->planes + p;
+	
+			out->firstsurface = (unsigned short)LittleShort (in->firstface);
+			out->numsurfaces = (unsigned short)LittleShort (in->numfaces);
+	
+			for (j=0 ; j<2 ; j++)
+			{
+				//johnfitz -- hack to handle nodes > 32k, adapted from darkplaces
+				p = (unsigned short)LittleShort (in->children[j]);
+	
+				if (p < count)
+					out->children[j] = loadmodel->nodes + p;
+				else
+				{
+					p = 65535 - p; //note this uses 65535 intentionally, -1 is leaf 0
+					if (p < loadmodel->numleafs)
+						out->children[j] = (mnode_t *)(loadmodel->leafs + p);
+					else
+					{
+						Con_Warning ("Mod_LoadNodes: invalid leaf index %i (file has only %i leafs)\n", p, loadmodel->numleafs);
+						out->children[j] = (mnode_t *)(loadmodel->leafs); //map it to the solid leaf
+					}
 				}
 			}
 		}
@@ -1330,7 +1575,7 @@ Mod_LoadLeafs
 */
 void Mod_LoadLeafs (lump_t *l, int bsp2)
 {
-	dsleaf_t 	*in;
+//	dsleaf_t 	*in;
 	mleaf_t 	*out;
 	int	i, j, count, p;
 	int filelen;
@@ -1338,53 +1583,171 @@ void Mod_LoadLeafs (lump_t *l, int bsp2)
 	loadmodel->leafs = NULL;
 	loadmodel->numleafs = 0;
 
-	if (extleafdata) // load external leaf data, if exist
+	if (bsp2 == 2)
 	{
-		Con_DPrintf ("load external leaf data\n");
-//		in = extleafdata;
-		in = (dsleaf_t *)extleafdata;
-		filelen = extleaflen;
-	}
-	else // load standard leaf
-	{
-		in = (void *)(mod_base + l->fileofs);
-		filelen = l->filelen;
-	}
-
-	if (filelen % sizeof(*in)) /* l->filelen */
-		Con_Warning ("Mod_LoadLeafs: funny lump size in %s",loadmodel->name); // should be an error but ... (EER1)
-	count = filelen / sizeof(*in); /* l->filelen */
-	if (count > 32767) // old limit warning (was Host_Error)
-		Con_DWarning ("Mod_LoadLeafs: leafs exceeds standard limit (%d, max = %d) in %s", count, 32767, loadmodel->name);
-	out = (mleaf_t *) Hunk_AllocName ( count*sizeof(*out), loadname);
-
-	loadmodel->leafs = out;
-	loadmodel->numleafs = count;
-
-	for ( i=0 ; i<count ; i++, in++, out++)
-	{
-		for (j=0 ; j<3 ; j++)
-		{
-			out->minmaxs[j] = LittleShort (in->mins[j]);
-			out->minmaxs[3+j] = LittleShort (in->maxs[j]);
-		}
-
-		p = LittleLong(in->contents);
-		out->contents = p;
-
-		out->firstmarksurface = loadmodel->marksurfaces + (unsigned short)LittleShort (in->firstmarksurface);
-		out->nummarksurfaces = (unsigned short)LittleShort (in->nummarksurfaces);
-
-		p = LittleLong(in->visofs);
-		if (p == -1)
-			out->compressed_vis = NULL;
-		else
-			out->compressed_vis = loadmodel->visdata + p;
-		out->efrags = NULL;
+		dl2leaf_t 	*in;
 		
-		for (j=0 ; j<4 ; j++)
-			out->ambient_sound_level[j] = in->ambient_level[j];
-	}	
+		if (extleafdata) // load external leaf data, if exist
+		{
+			Con_DPrintf ("load external leaf data\n");
+	//		in = extleafdata;
+			in = (dl2leaf_t *)extleafdata;
+			filelen = extleaflen;
+		}
+		else // load standard leaf
+		{
+//			in = (void *)(mod_base + l->fileofs);
+			in = (dl2leaf_t *)(mod_base + l->fileofs);
+			filelen = l->filelen;
+		}
+	
+		if (filelen % sizeof(*in)) /* l->filelen */
+			Con_Warning ("Mod_LoadLeafs: funny lump size in %s",loadmodel->name); // should be an error but ... (EER1)
+		count = filelen / sizeof(*in); /* l->filelen */
+		if (count > MAX_MAP_LEAFS) // (was Host_Error)
+			Con_DWarning ("Mod_LoadLeafs: leafs exceeds limit (%d, max = %d) in %s", count, MAX_MAP_LEAFS, loadmodel->name);
+		out = (mleaf_t *) Hunk_AllocName ( count*sizeof(*out), loadname);
+	
+		loadmodel->leafs = out;
+		loadmodel->numleafs = count;
+	
+		for ( i=0 ; i<count ; i++, in++, out++)
+		{
+			for (j=0 ; j<3 ; j++)
+			{
+//				out->minmaxs[j] = LittleShort (in->mins[j]);
+//				out->minmaxs[3+j] = LittleShort (in->maxs[j]);
+				out->minmaxs[j] = LittleFloat (in->mins[j]);
+				out->minmaxs[3+j] = LittleFloat (in->maxs[j]);
+			}
+	
+			p = LittleLong(in->contents);
+			out->contents = p;
+	
+//			out->firstmarksurface = loadmodel->marksurfaces + (unsigned short)LittleShort (in->firstmarksurface);
+//			out->nummarksurfaces = (unsigned short)LittleShort (in->nummarksurfaces);
+			out->firstmarksurface = loadmodel->marksurfaces + LittleLong (in->firstmarksurface);
+			out->nummarksurfaces = LittleLong (in->nummarksurfaces);
+	
+			p = LittleLong(in->visofs);
+			if (p == -1)
+				out->compressed_vis = NULL;
+			else
+				out->compressed_vis = loadmodel->visdata + p;
+			out->efrags = NULL;
+			
+			for (j=0 ; j<4 ; j++)
+				out->ambient_sound_level[j] = in->ambient_level[j];
+		}
+	}
+	else if (bsp2)
+	{
+		dl1leaf_t 	*in;
+		
+		if (extleafdata) // load external leaf data, if exist
+		{
+			Con_DPrintf ("load external leaf data\n");
+	//		in = extleafdata;
+			in = (dl1leaf_t *)extleafdata;
+			filelen = extleaflen;
+		}
+		else // load standard leaf
+		{
+//			in = (void *)(mod_base + l->fileofs);
+			in = (dl1leaf_t *)(mod_base + l->fileofs);
+			filelen = l->filelen;
+		}
+	
+		if (filelen % sizeof(*in)) /* l->filelen */
+			Con_Warning ("Mod_LoadLeafs: funny lump size in %s",loadmodel->name); // should be an error but ... (EER1)
+		count = filelen / sizeof(*in); /* l->filelen */
+		if (count > MAX_MAP_LEAFS) // (was Host_Error)
+			Con_DWarning ("Mod_LoadLeafs: leafs exceeds limit (%d, max = %d) in %s", count, MAX_MAP_LEAFS, loadmodel->name);
+		out = (mleaf_t *) Hunk_AllocName ( count*sizeof(*out), loadname);
+	
+		loadmodel->leafs = out;
+		loadmodel->numleafs = count;
+	
+		for ( i=0 ; i<count ; i++, in++, out++)
+		{
+			for (j=0 ; j<3 ; j++)
+			{
+				out->minmaxs[j] = LittleShort (in->mins[j]);
+				out->minmaxs[3+j] = LittleShort (in->maxs[j]);
+			}
+	
+			p = LittleLong(in->contents);
+			out->contents = p;
+	
+//			out->firstmarksurface = loadmodel->marksurfaces + (unsigned short)LittleShort (in->firstmarksurface);
+//			out->nummarksurfaces = (unsigned short)LittleShort (in->nummarksurfaces);
+			out->firstmarksurface = loadmodel->marksurfaces + LittleLong (in->firstmarksurface);
+			out->nummarksurfaces = LittleLong (in->nummarksurfaces);
+	
+			p = LittleLong(in->visofs);
+			if (p == -1)
+				out->compressed_vis = NULL;
+			else
+				out->compressed_vis = loadmodel->visdata + p;
+			out->efrags = NULL;
+			
+			for (j=0 ; j<4 ; j++)
+				out->ambient_sound_level[j] = in->ambient_level[j];
+		}
+	}
+	else
+	{
+		dsleaf_t 	*in;
+		
+		if (extleafdata) // load external leaf data, if exist
+		{
+			Con_DPrintf ("load external leaf data\n");
+	//		in = extleafdata;
+			in = (dsleaf_t *)extleafdata;
+			filelen = extleaflen;
+		}
+		else // load standard leaf
+		{
+//			in = (void *)(mod_base + l->fileofs);
+			in = (dsleaf_t *)(mod_base + l->fileofs);
+			filelen = l->filelen;
+		}
+	
+		if (filelen % sizeof(*in)) /* l->filelen */
+			Con_Warning ("Mod_LoadLeafs: funny lump size in %s",loadmodel->name); // should be an error but ... (EER1)
+		count = filelen / sizeof(*in); /* l->filelen */
+		if (count > 32767) // old limit warning (was Host_Error)
+			Con_DWarning ("Mod_LoadLeafs: leafs exceeds standard limit (%d, max = %d) in %s", count, 32767, loadmodel->name);
+		out = (mleaf_t *) Hunk_AllocName ( count*sizeof(*out), loadname);
+	
+		loadmodel->leafs = out;
+		loadmodel->numleafs = count;
+	
+		for ( i=0 ; i<count ; i++, in++, out++)
+		{
+			for (j=0 ; j<3 ; j++)
+			{
+				out->minmaxs[j] = LittleShort (in->mins[j]);
+				out->minmaxs[3+j] = LittleShort (in->maxs[j]);
+			}
+	
+			p = LittleLong(in->contents);
+			out->contents = p;
+	
+			out->firstmarksurface = loadmodel->marksurfaces + (unsigned short)LittleShort (in->firstmarksurface);
+			out->nummarksurfaces = (unsigned short)LittleShort (in->nummarksurfaces);
+	
+			p = LittleLong(in->visofs);
+			if (p == -1)
+				out->compressed_vis = NULL;
+			else
+				out->compressed_vis = loadmodel->visdata + p;
+			out->efrags = NULL;
+			
+			for (j=0 ; j<4 ; j++)
+				out->ambient_sound_level[j] = in->ambient_level[j];
+		}
+	}
 }
 
 /*
@@ -1394,61 +1757,126 @@ Mod_LoadClipnodes
 */
 void Mod_LoadClipnodes (lump_t *l, int bsp2)
 {
-	dsclipnode_t *in;
+//	dsclipnode_t *in;
 	mclipnode_t *out; //johnfitz -- was dclipnode_t
 	int			i, count;
 	hull_t		*hull;
 
-	in = (void *)(mod_base + l->fileofs);
-	if (l->filelen % sizeof(*in))
-		Con_Warning ("Mod_LoadClipnodes: funny lump size in %s",loadmodel->name); // should be an error but ... (EER1)
-	count = l->filelen / sizeof(*in);
-	if (count > 32767) // old limit warning
-		Con_DWarning ("Mod_LoadClipnodes: clipnodes exceeds standard limit (%d, normal max = %d) in %s\n", count, 32767, loadmodel->name);
-	out = Hunk_AllocName ( count*sizeof(*out), loadname);
-
-	loadmodel->clipnodes = out;
-	loadmodel->numclipnodes = count;
-
-	// Player Hull
-	hull = &loadmodel->hulls[1];
-	hull->clipnodes = out;
-	hull->firstclipnode = 0;
-	hull->lastclipnode = count-1;
-	hull->planes = loadmodel->planes;
-
-	VectorSet (hull->clip_mins, -16, -16, -24);
-	VectorSet (hull->clip_maxs,  16,  16,  32);
-	hull->available = true;
-
-	// Monster hull
-	hull = &loadmodel->hulls[2];
-	hull->clipnodes = out;
-	hull->firstclipnode = 0;
-	hull->lastclipnode = count-1;
-	hull->planes = loadmodel->planes;
-
-	VectorSet (hull->clip_mins, -32, -32, -24);
-	VectorSet (hull->clip_maxs,  32,  32,  64);
-	hull->available = true;
-
-	for (i=0 ; i<count ; i++, out++, in++)
+	if (bsp2)
 	{
-		out->planenum = LittleLong(in->planenum);
+	//	in = (void *)(mod_base + l->fileofs);
+		dlclipnode_t *in = (dlclipnode_t *)(mod_base + l->fileofs);
+		
+		if (l->filelen % sizeof(*in))
+			Con_Warning ("Mod_LoadClipnodes: funny lump size in %s",loadmodel->name); // should be an error but ... (EER1)
+		count = l->filelen / sizeof(*in);
+//		if (count > 32767) // old limit warning
+//			Con_DWarning ("Mod_LoadClipnodes: clipnodes exceeds standard limit (%d, normal max = %d) in %s\n", count, 32767, loadmodel->name);
+		out = Hunk_AllocName ( count*sizeof(*out), loadname);
+	
+		loadmodel->clipnodes = out;
+		loadmodel->numclipnodes = count;
+	
+		// Player Hull
+		hull = &loadmodel->hulls[1];
+		hull->clipnodes = out;
+		hull->firstclipnode = 0;
+		hull->lastclipnode = count-1;
+		hull->planes = loadmodel->planes;
+	
+		VectorSet (hull->clip_mins, -16, -16, -24);
+		VectorSet (hull->clip_maxs,  16,  16,  32);
+		hull->available = true;
+	
+		// Monster hull
+		hull = &loadmodel->hulls[2];
+		hull->clipnodes = out;
+		hull->firstclipnode = 0;
+		hull->lastclipnode = count-1;
+		hull->planes = loadmodel->planes;
+	
+		VectorSet (hull->clip_mins, -32, -32, -24);
+		VectorSet (hull->clip_maxs,  32,  32,  64);
+		hull->available = true;
+	
+		for (i=0 ; i<count ; i++, out++, in++)
+		{
+			out->planenum = LittleLong(in->planenum);
+	
+			// bounds check
+			if (out->planenum < 0 || out->planenum >= loadmodel->numplanes)
+				Host_Error ("Mod_LoadClipnodes: planenum in clipnode %d out of bounds (%d, max = %d) in %s", i, out->planenum, loadmodel->numplanes, loadmodel->name);
+	
+			//johnfitz -- support clipnodes > 32k
+/*			out->children[0] = (unsigned short)LittleShort(in->children[0]);
+			out->children[1] = (unsigned short)LittleShort(in->children[1]);
+			if (out->children[0] >= count)
+				out->children[0] -= 65536;
+			if (out->children[1] >= count)
+				out->children[1] -= 65536;
+*/			//johnfitz
 
-		// bounds check
-		if (out->planenum < 0 || out->planenum >= loadmodel->numplanes)
-			Host_Error ("Mod_LoadClipnodes: planenum in clipnode %d out of bounds (%d, max = %d) in %s", i, out->planenum, loadmodel->numplanes, loadmodel->name);
-
-		//johnfitz -- support clipnodes > 32k
-		out->children[0] = (unsigned short)LittleShort(in->children[0]);
-		out->children[1] = (unsigned short)LittleShort(in->children[1]);
-		if (out->children[0] >= count)
-			out->children[0] -= 65536;
-		if (out->children[1] >= count)
-			out->children[1] -= 65536;
-		//johnfitz
+			out->children[0] = LittleLong(in->children[0]);
+			out->children[1] = LittleLong(in->children[1]);
+			//Spike: FIXME: bounds check
+		}
 	}
+	else
+	{
+	//	in = (void *)(mod_base + l->fileofs);
+		dsclipnode_t *in = (dsclipnode_t *)(mod_base + l->fileofs);
+		
+		if (l->filelen % sizeof(*in))
+			Con_Warning ("Mod_LoadClipnodes: funny lump size in %s",loadmodel->name); // should be an error but ... (EER1)
+		count = l->filelen / sizeof(*in);
+		if (count > 32767) // old limit warning
+			Con_DWarning ("Mod_LoadClipnodes: clipnodes exceeds standard limit (%d, normal max = %d) in %s\n", count, 32767, loadmodel->name);
+		out = Hunk_AllocName ( count*sizeof(*out), loadname);
+	
+		loadmodel->clipnodes = out;
+		loadmodel->numclipnodes = count;
+	
+		// Player Hull
+		hull = &loadmodel->hulls[1];
+		hull->clipnodes = out;
+		hull->firstclipnode = 0;
+		hull->lastclipnode = count-1;
+		hull->planes = loadmodel->planes;
+	
+		VectorSet (hull->clip_mins, -16, -16, -24);
+		VectorSet (hull->clip_maxs,  16,  16,  32);
+		hull->available = true;
+	
+		// Monster hull
+		hull = &loadmodel->hulls[2];
+		hull->clipnodes = out;
+		hull->firstclipnode = 0;
+		hull->lastclipnode = count-1;
+		hull->planes = loadmodel->planes;
+	
+		VectorSet (hull->clip_mins, -32, -32, -24);
+		VectorSet (hull->clip_maxs,  32,  32,  64);
+		hull->available = true;
+	
+		for (i=0 ; i<count ; i++, out++, in++)
+		{
+			out->planenum = LittleLong(in->planenum);
+	
+			// bounds check
+			if (out->planenum < 0 || out->planenum >= loadmodel->numplanes)
+				Host_Error ("Mod_LoadClipnodes: planenum in clipnode %d out of bounds (%d, max = %d) in %s", i, out->planenum, loadmodel->numplanes, loadmodel->name);
+	
+			//johnfitz -- support clipnodes > 32k
+			out->children[0] = (unsigned short)LittleShort(in->children[0]);
+			out->children[1] = (unsigned short)LittleShort(in->children[1]);
+			if (out->children[0] >= count)
+				out->children[0] -= 65536;
+			if (out->children[1] >= count)
+				out->children[1] -= 65536;
+			//johnfitz
+		}
+	}
+
 }
 
 /*
@@ -1498,26 +1926,56 @@ Mod_LoadMarksurfaces
 void Mod_LoadMarksurfaces (lump_t *l, int bsp2)
 {	
 	int		i, j, count;
-	short		*in;
+//	short		*in;
 	msurface_t **out;
 	
-	in = (void *)(mod_base + l->fileofs);
-	if (l->filelen % sizeof(*in))
-		Con_Warning ("Mod_LoadMarksurfaces: funny lump size in %s",loadmodel->name); // should be an error but ... (EER1)
-	count = l->filelen / sizeof(*in);
-	if (count > 32767) // old limit warning
-		Con_DWarning ("Mod_LoadMarksurfaces: marksurfaces exceeds standard limit (%d, normal max = %d) in %s\n", count, 32767, loadmodel->name);
-	out = Hunk_AllocName ( count*sizeof(*out), loadname);
-
-	loadmodel->marksurfaces = out;
-	loadmodel->nummarksurfaces = count;
-
-	for ( i=0 ; i<count ; i++)
+	if (bsp2)
 	{
-		j = (unsigned short)LittleShort(in[i]); //johnfitz -- explicit cast as unsigned short
-		if (j >= loadmodel->numsurfaces)
-			Con_Warning ("Mod_ParseMarksurfaces: bad surface number (%d, max = %d) in %s\n", j, loadmodel->numsurfaces, loadmodel->name);
-		out[i] = loadmodel->surfaces + j;
+	//	in = (void *)(mod_base + l->fileofs);
+//		short *in = (short *)(mod_base + l->fileofs);
+		unsigned int *in = (unsigned int *)(mod_base + l->fileofs);
+		
+		if (l->filelen % sizeof(*in))
+			Con_Warning ("Mod_LoadMarksurfaces: funny lump size in %s",loadmodel->name); // should be an error but ... (EER1)
+		count = l->filelen / sizeof(*in);
+//		if (count > 32767) // old limit warning
+//			Con_DWarning ("Mod_LoadMarksurfaces: marksurfaces exceeds standard limit (%d, normal max = %d) in %s\n", count, 32767, loadmodel->name);
+		out = Hunk_AllocName ( count*sizeof(*out), loadname);
+	
+		loadmodel->marksurfaces = out;
+		loadmodel->nummarksurfaces = count;
+	
+		for ( i=0 ; i<count ; i++)
+		{
+//			j = (unsigned short)LittleShort(in[i]); //johnfitz -- explicit cast as unsigned short
+			j = LittleLong(in[i]);
+			if (j >= loadmodel->numsurfaces)
+				Con_Warning ("Mod_ParseMarksurfaces: bad surface number (%d, max = %d) in %s\n", j, loadmodel->numsurfaces, loadmodel->name);
+			out[i] = loadmodel->surfaces + j;
+		}
+	}
+	else
+	{
+	//	in = (void *)(mod_base + l->fileofs);
+		short *in = (short *)(mod_base + l->fileofs);
+		
+		if (l->filelen % sizeof(*in))
+			Con_Warning ("Mod_LoadMarksurfaces: funny lump size in %s",loadmodel->name); // should be an error but ... (EER1)
+		count = l->filelen / sizeof(*in);
+		if (count > 32767) // old limit warning
+			Con_DWarning ("Mod_LoadMarksurfaces: marksurfaces exceeds standard limit (%d, normal max = %d) in %s\n", count, 32767, loadmodel->name);
+		out = Hunk_AllocName ( count*sizeof(*out), loadname);
+	
+		loadmodel->marksurfaces = out;
+		loadmodel->nummarksurfaces = count;
+	
+		for ( i=0 ; i<count ; i++)
+		{
+			j = (unsigned short)LittleShort(in[i]); //johnfitz -- explicit cast as unsigned short
+			if (j >= loadmodel->numsurfaces)
+				Con_Warning ("Mod_ParseMarksurfaces: bad surface number (%d, max = %d) in %s\n", j, loadmodel->numsurfaces, loadmodel->name);
+			out[i] = loadmodel->surfaces + j;
+		}
 	}
 }
 
