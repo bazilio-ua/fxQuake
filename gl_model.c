@@ -383,7 +383,7 @@ void Mod_LoadTextures (lump_t *l)
 	{
 		Con_Warning ("Mod_LoadTextures: no textures in bsp file %s\n", loadmodel->name);
 
-		m = NULL;
+		m = NULL; // keep compiler happy
 		nummiptex = 0;
 	}
 	else
@@ -845,7 +845,7 @@ void Mod_LoadVertexes (lump_t *l)
 
 	in = (void *)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
-		Con_Warning ("Mod_LoadVertexes: funny lump size in %s",loadmodel->name);
+		Con_Warning ("Mod_LoadVertexes: funny lump size in %s",loadmodel->name); // should be an error but ... (EER1)
 	count = l->filelen / sizeof(*in);
 	if (count > 65535) // old limit warning
 		Con_DWarning ("Mod_LoadVertexes: vertexes exceeds standard limit (%d, normal max = %d) in %s\n", count, 65535, loadmodel->name);
@@ -875,7 +875,7 @@ void Mod_LoadSubmodels (lump_t *l)
 
 	in = (void *)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
-		Con_Warning ("Mod_LoadSubmodels: funny lump size in %s",loadmodel->name);
+		Con_Warning ("Mod_LoadSubmodels: funny lump size in %s",loadmodel->name); // should be an error but ... (EER1)
 	count = l->filelen / sizeof(*in);
 	if (count > 256) // old limit warning
 		Con_DWarning ("Mod_LoadSubmodels: models exceeds standard limit (%d, normal max = %d) in %s\n", count, 256, loadmodel->name);
@@ -922,7 +922,7 @@ void Mod_LoadEdges (lump_t *l, int bsp2)
 
 	in = (void *)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
-		Con_Warning ("Mod_LoadEdges: funny lump size in %s",loadmodel->name);
+		Con_Warning ("Mod_LoadEdges: funny lump size in %s",loadmodel->name); // should be an error but ... (EER1) 
 	count = l->filelen / sizeof(*in);
 	out = Hunk_AllocName ( (count + 1) * sizeof(*out), loadname);
 
@@ -950,7 +950,7 @@ void Mod_LoadTexinfo (lump_t *l)
 
 	in = (void *)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
-		Con_Warning ("Mod_LoadTexinfo: funny lump size in %s",loadmodel->name);
+		Con_Warning ("Mod_LoadTexinfo: funny lump size in %s",loadmodel->name); // should be an error but ... (EER1)
 	count = l->filelen / sizeof(*in);
 	if (count > 32767) // old limit warning
 		Con_DWarning ("Mod_LoadTexinfo: texinfo exceeds standard limit (%d, normal max = %d) in %s\n", count, 32767, loadmodel->name);
@@ -1165,7 +1165,7 @@ void Mod_LoadFaces (lump_t *l, int bsp2)
 
 	in = (void *)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
-		Con_Warning ("Mod_LoadFaces: funny lump size in %s",loadmodel->name);
+		Con_Warning ("Mod_LoadFaces: funny lump size in %s",loadmodel->name); // should be an error but ... (EER1)
 	count = l->filelen / sizeof(*in);
 	if (count > 32767) // old limit warning
 		Con_DWarning ("Mod_LoadFaces: faces exceeds standard limit (%d, normal max = %d) in %s\n", count, 32767, loadmodel->name);
@@ -1276,7 +1276,7 @@ void Mod_LoadNodes (lump_t *l, int bsp2)
 
 	in = (void *)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
-		Con_Warning ("Mod_LoadNodes: funny lump size in %s",loadmodel->name);
+		Con_Warning ("Mod_LoadNodes: funny lump size in %s",loadmodel->name); // should be an error but ... (EER1)
 	count = l->filelen / sizeof(*in);
 	if (count > 32767) // old limit warning
 		Con_DWarning ("Mod_LoadNodes: nodes exceeds standard limit (%d, normal max = %d) in %s\n", count, 32767, loadmodel->name);
@@ -1352,7 +1352,7 @@ void Mod_LoadLeafs (lump_t *l, int bsp2)
 	}
 
 	if (filelen % sizeof(*in)) /* l->filelen */
-		Con_Warning ("Mod_LoadLeafs: funny lump size in %s",loadmodel->name);
+		Con_Warning ("Mod_LoadLeafs: funny lump size in %s",loadmodel->name); // should be an error but ... (EER1)
 	count = filelen / sizeof(*in); /* l->filelen */
 	if (count > 32767) // old limit warning (was Host_Error)
 		Con_DWarning ("Mod_LoadLeafs: leafs exceeds standard limit (%d, max = %d) in %s", count, 32767, loadmodel->name);
@@ -1401,7 +1401,7 @@ void Mod_LoadClipnodes (lump_t *l, int bsp2)
 
 	in = (void *)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
-		Con_Warning ("Mod_LoadClipnodes: funny lump size in %s",loadmodel->name);
+		Con_Warning ("Mod_LoadClipnodes: funny lump size in %s",loadmodel->name); // should be an error but ... (EER1)
 	count = l->filelen / sizeof(*in);
 	if (count > 32767) // old limit warning
 		Con_DWarning ("Mod_LoadClipnodes: clipnodes exceeds standard limit (%d, normal max = %d) in %s\n", count, 32767, loadmodel->name);
@@ -1503,7 +1503,7 @@ void Mod_LoadMarksurfaces (lump_t *l, int bsp2)
 	
 	in = (void *)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
-		Con_Warning ("Mod_LoadMarksurfaces: funny lump size in %s",loadmodel->name);
+		Con_Warning ("Mod_LoadMarksurfaces: funny lump size in %s",loadmodel->name); // should be an error but ... (EER1)
 	count = l->filelen / sizeof(*in);
 	if (count > 32767) // old limit warning
 		Con_DWarning ("Mod_LoadMarksurfaces: marksurfaces exceeds standard limit (%d, normal max = %d) in %s\n", count, 32767, loadmodel->name);
@@ -1533,7 +1533,7 @@ void Mod_LoadSurfedges (lump_t *l)
 	
 	in = (void *)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
-		Con_Warning ("Mod_LoadSurfedges: funny lump size in %s",loadmodel->name);
+		Con_Warning ("Mod_LoadSurfedges: funny lump size in %s",loadmodel->name); // should be an error but ... (EER1)
 	count = l->filelen / sizeof(*in);
 	out = Hunk_AllocName ( count*sizeof(*out), loadname);
 
@@ -1560,7 +1560,7 @@ void Mod_LoadPlanes (lump_t *l)
 	
 	in = (void *)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
-		Con_Warning ("Mod_LoadPlanes: funny lump size in %s",loadmodel->name);
+		Con_Warning ("Mod_LoadPlanes: funny lump size in %s",loadmodel->name); // should be an error but ... (EER1)
 	count = l->filelen / sizeof(*in);
 	if (count > 32767) // old limit warning
 		Con_DWarning ("Mod_LoadPlanes: planes exceeds standard limit (%d, normal max = %d) in %s\n", count, 32767, loadmodel->name);
@@ -1611,7 +1611,7 @@ Mod_LoadBrushModel
 void Mod_LoadBrushModel (model_t *mod, void *buffer)
 {
 	int			i, j;
-	int			bsp2 = 0; // bsp2 support
+	int			bsp2 = 0; // keep compiler happy
 	dheader_t	*header;
 	dmodel_t 	*bm;
 	float		radius;
