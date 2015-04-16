@@ -56,9 +56,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define BSPVERSION	29
 
 // RMQ support (2PSB). 32bits instead of shorts for all but bbox sizes (which still use shorts)
-#define BSP2VERSION_2PSB (('B' << 24) | ('S' << 16) | ('P' << 8) | '2')
+#define BSP2VERSION_2PSB (('B'<<24) | ('S'<<16) | ('P'<<8) | '2')
 // BSP2 support. 32bits instead of shorts for everything (bboxes use floats)
-#define BSP2VERSION_BSP2 (('B' << 0) | ('S' << 8) | ('P' << 16) | ('2'<<24))
+#define BSP2VERSION_BSP2 (('B'<<0) | ('S'<<8) | ('P'<<16) | ('2'<<24))
 
 //#define	TOOLVERSION	2
 
@@ -170,8 +170,34 @@ typedef struct
 typedef struct
 {
 	int			planenum;
+	int			children[2];	// negative numbers are -(leafs+1), not nodes
+	short		mins[3];		// for sphere culling
+	short		maxs[3];
+	unsigned int	firstface;
+	unsigned int	numfaces;	// counting both sides
+} dl1node_t;
+
+typedef struct
+{
+	int			planenum;
+	int			children[2];	// negative numbers are -(leafs+1), not nodes
+	float		mins[3];		// for sphere culling
+	float		maxs[3];
+	unsigned int	firstface;
+	unsigned int	numfaces;	// counting both sides
+} dl2node_t;
+
+typedef struct
+{
+	int			planenum;
 	short		children[2];	// negative numbers are contents
 } dsclipnode_t;
+
+typedef struct
+{
+	int			planenum;
+	int			children[2];	// negative numbers are contents
+} dlclipnode_t;
 
 
 typedef struct texinfo_s
@@ -190,6 +216,11 @@ typedef struct
 	unsigned short	v[2];		// vertex numbers
 } dsedge_t;
 
+typedef struct
+{
+	unsigned int	v[2];		// vertex numbers
+} dledge_t;
+
 #define	MAXLIGHTMAPS	4
 typedef struct
 {
@@ -205,7 +236,19 @@ typedef struct
 	int			lightofs;		// start of [numstyles*surfsize] samples
 } dsface_t;
 
+typedef struct
+{
+	int			planenum;
+	int			side;
 
+	int			firstedge;		// we must support > 64k edges
+	int			numedges;
+	int			texinfo;
+
+// lighting info
+	byte		styles[MAXLIGHTMAPS];
+	int			lightofs;		// start of [numstyles*surfsize] samples
+} dlface_t;
 
 #define	AMBIENT_WATER	0
 #define	AMBIENT_SKY		1
@@ -229,6 +272,34 @@ typedef struct
 
 	byte		ambient_level[NUM_AMBIENTS];
 } dsleaf_t;
+
+typedef struct
+{
+	int			contents;
+	int			visofs;				// -1 = no visibility info
+
+	short		mins[3];			// for frustum culling
+	short		maxs[3];
+
+	unsigned int		firstmarksurface;
+	unsigned int		nummarksurfaces;
+
+	byte		ambient_level[NUM_AMBIENTS];
+} dl1leaf_t;
+
+typedef struct
+{
+	int			contents;
+	int			visofs;				// -1 = no visibility info
+
+	float		mins[3];			// for frustum culling
+	float		maxs[3];
+
+	unsigned int		firstmarksurface;
+	unsigned int		nummarksurfaces;
+
+	byte		ambient_level[NUM_AMBIENTS];
+} dl2leaf_t;
 
 
 //============================================================================

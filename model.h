@@ -108,7 +108,7 @@ typedef struct texture_s
 
 typedef struct
 {
-	unsigned short	v[2];
+	unsigned int	v[2]; // bsp2 support. was (short)
 	unsigned int	cachededgeoffset;
 } medge_t;
 
@@ -179,8 +179,8 @@ typedef struct mnode_s
 	mplane_t	*plane;
 	struct mnode_s	*children[2];	
 
-	unsigned short		firstsurface;
-	unsigned short		numsurfaces;
+	unsigned int		firstsurface; // bsp2 support. was (short)
+	unsigned int		numsurfaces; // bsp2 support. was (short)
 } mnode_t;
 
 
