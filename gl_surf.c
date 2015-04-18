@@ -1140,6 +1140,7 @@ int Lightmap_AllocBlock (int w, int h, int *x, int *y)
 	// of load time on a level with 180 lightmaps), at a cost of not quite packing
 	// lightmaps as tightly vs. not doing this (uses ~5% more lightmaps)
 	for (texnum=last_lightmap_allocated ; texnum<MAX_LIGHTMAPS ; texnum++, last_lightmap_allocated++)
+//	for (texnum=0 ; texnum<MAX_LIGHTMAPS ; texnum++)
 	{
 		best = BLOCK_HEIGHT;
 
