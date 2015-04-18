@@ -114,7 +114,7 @@ void R_SplitEntityOnNode (mnode_t *node)
 		if (!ef)
 		{
 			if (IsTimeout (&lastmsg, 2))
-				Con_Printf ("Too many efrags! (max = %d)\n", MAX_EFRAGS);
+				Con_DWarning ("R_SplitEntityOnNode: Too many efrags! (max = %d)\n", MAX_EFRAGS);
 
 			return;		// no free fragments...
 		}
@@ -151,11 +151,9 @@ void R_SplitEntityOnNode (mnode_t *node)
 // recurse down the contacted sides
 	if (sides & 1)
 		R_SplitEntityOnNode (node->children[0]);
-		
 	if (sides & 2)
 		R_SplitEntityOnNode (node->children[1]);
 }
-
 
 
 /*

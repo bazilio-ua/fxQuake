@@ -40,6 +40,7 @@ qboolean	lightmap_modified[MAX_LIGHTMAPS];
 glRect_t	lightmap_rectchange[MAX_LIGHTMAPS];
 
 int			allocated[MAX_LIGHTMAPS][BLOCK_WIDTH];
+int			last_lightmap_allocated; //ericw -- optimization: remember the index of the last lightmap Lightmap_AllocBlock stored a surf in
 
 // the lightmap texture data needs to be kept in
 // main memory so texsubimage can update properly
@@ -1120,14 +1121,25 @@ void R_DrawTextureChainsWater (void)
 =============================================================================
 */
 
-// returns a texture number and the position inside it
+/*
+========================
+Lightmap_AllocBlock
+
+returns a texture number and the position inside it
+========================
+*/
 int Lightmap_AllocBlock (int w, int h, int *x, int *y)
 {
 	int		i, j;
 	int		best, best2;
 	int		texnum;
 
-	for (texnum=0 ; texnum<MAX_LIGHTMAPS ; texnum++)
+	// ericw -- rather than searching starting at lightmap 0 every time,
+	// start at the last lightmap we allocated a surface in.
+	// This makes Lightmap_AllocBlock much faster on large levels (can shave off 3+ seconds
+	// of load time on a level with 180 lightmaps), at a cost of not quite packing
+	// lightmaps as tightly vs. not doing this (uses ~5% more lightmaps)
+	for (texnum=last_lightmap_allocated ; texnum<MAX_LIGHTMAPS ; texnum++, last_lightmap_allocated++)
 	{
 		best = BLOCK_HEIGHT;
 
@@ -1277,6 +1289,7 @@ void R_BuildLightmaps (void)
 	model_t	*m;
 
 	memset (allocated, 0, sizeof(allocated));
+	last_lightmap_allocated = 0;
 
 	r_framecount = 1;		// no dlightcache
 
