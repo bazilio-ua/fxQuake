@@ -380,7 +380,7 @@ void Cmd_Alias_f (void)
 		s = Cmd_Argv(1);
 		if (strlen(s) >= MAX_ALIAS_NAME)
 		{
-			Con_Printf ("Alias name is too long\n");
+			Con_Warning ("Alias name is too long\n");
 			return;
 		}
 

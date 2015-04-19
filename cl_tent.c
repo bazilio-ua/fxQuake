@@ -534,14 +534,14 @@ entity_t *CL_NewTempEntity (void)
 	if (cl_numvisedicts == MAX_VISEDICTS)
 	{
 		if (IsTimeout (&lastmsg1, 2))
-			Con_DPrintf ("CL_NewTempEntity: too many visedicts (max = %d)\n", MAX_VISEDICTS);
+			Con_DWarning ("CL_NewTempEntity: too many visedicts (max = %d)\n", MAX_VISEDICTS);
 
 		return NULL;
 	}
 	if (num_temp_entities == MAX_TEMP_ENTITIES)
 	{
 		if (IsTimeout (&lastmsg2, 2))
-			Con_DPrintf ("CL_NewTempEntity: too many temp_entities (max = %d)\n", MAX_TEMP_ENTITIES);
+			Con_DWarning ("CL_NewTempEntity: too many temp_entities (max = %d)\n", MAX_TEMP_ENTITIES);
 
 		return NULL;
 	}

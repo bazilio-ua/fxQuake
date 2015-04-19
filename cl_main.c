@@ -718,7 +718,7 @@ void CL_RelinkEntities (void)
 			cl_numvisedicts++;
 		}
 		else if (IsTimeout (&lastmsg, 2))
-			Con_DPrintf ("CL_RelinkEntities: too many visedicts (max = %d)\n", MAX_VISEDICTS);
+			Con_DWarning ("CL_RelinkEntities: too many visedicts (max = %d)\n", MAX_VISEDICTS);
 	}
 }
 
