@@ -658,7 +658,7 @@ void Mod_LoadLighting (lump_t *l)
 } 
 
 // store external leaf data
-//dsleaf_t 	*extleafdata;
+//dleaf_s_t 	*extleafdata;
 void 	*extleafdata;
 int 	extleaflen;
 
@@ -918,11 +918,11 @@ short version
 */
 void Mod_LoadEdges_S (lump_t *l)
 {
-	dsedge_t *in;
+	dedge_s_t *in;
 	medge_t *out;
 	int 	i, count;
 
-	in = (dsedge_t *)(mod_base + l->fileofs);
+	in = (dedge_s_t *)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 		Host_Error ("Mod_LoadEdges_S: funny lump size in %s",loadmodel->name);
 	count = l->filelen / sizeof(*in);
@@ -947,11 +947,11 @@ long version (bsp2)
 */
 void Mod_LoadEdges_L (lump_t *l)
 {
-	dledge_t *in;
+	dedge_l_t *in;
 	medge_t *out;
 	int 	i, count;
 
-	in = (dledge_t *)(mod_base + l->fileofs);
+	in = (dedge_l_t *)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 		Host_Error ("Mod_LoadEdges_L: funny lump size in %s",loadmodel->name);
 	count = l->filelen / sizeof(*in);
@@ -1204,12 +1204,12 @@ short version
 */
 void Mod_LoadFaces_S (lump_t *l)
 {
-	dsface_t	*in;
+	dface_s_t	*in;
 	msurface_t 	*out;
 	int		i, count, surfnum;
 	int			planenum, side;
 
-	in = (dsface_t *)(mod_base + l->fileofs);
+	in = (dface_s_t *)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 		Host_Error ("Mod_LoadFaces_S: funny lump size in %s",loadmodel->name);
 	count = l->filelen / sizeof(*in);
@@ -1303,12 +1303,12 @@ long version (bsp2)
 */
 void Mod_LoadFaces_L (lump_t *l)
 {
-	dlface_t	*in;
+	dface_l_t	*in;
 	msurface_t 	*out;
 	int		i, count, surfnum;
 	int			planenum, side;
 
-	in = (dlface_t *)(mod_base + l->fileofs);
+	in = (dface_l_t *)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 		Host_Error ("Mod_LoadFaces_L: funny lump size in %s",loadmodel->name);
 	count = l->filelen / sizeof(*in);
@@ -1430,10 +1430,10 @@ short version
 void Mod_LoadNodes_S (lump_t *l)
 {
 	int	i, j, count, p;
-	dsnode_t		*in;
+	dnode_s_t		*in;
 	mnode_t 	*out;
 
-	in = (dsnode_t *)(mod_base + l->fileofs);
+	in = (dnode_s_t *)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 		Host_Error ("Mod_LoadNodes_S: funny lump size in %s",loadmodel->name);
 	count = l->filelen / sizeof(*in);
@@ -1491,10 +1491,10 @@ long version (bsp2 v1)
 void Mod_LoadNodes_L1 (lump_t *l)
 {
 	int	i, j, count, p;
-	dl1node_t		*in;
+	dnode_l1_t		*in;
 	mnode_t 	*out;
 
-	in = (dl1node_t *)(mod_base + l->fileofs);
+	in = (dnode_l1_t *)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 		Host_Error ("Mod_LoadNodes_L1: funny lump size in %s",loadmodel->name);
 	count = l->filelen / sizeof(*in);
@@ -1552,10 +1552,10 @@ long version (bsp2 v2)
 void Mod_LoadNodes_L2 (lump_t *l)
 {
 	int	i, j, count, p;
-	dl2node_t		*in;
+	dnode_l2_t		*in;
 	mnode_t 	*out;
 
-	in = (dl2node_t *)(mod_base + l->fileofs);
+	in = (dnode_l2_t *)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 		Host_Error ("Mod_LoadNodes_L2: funny lump size in %s",loadmodel->name);
 	count = l->filelen / sizeof(*in);
@@ -1627,7 +1627,7 @@ short version
 */
 void Mod_LoadLeafs_S (lump_t *l)
 {
-	dsleaf_t 	*in;
+	dleaf_s_t 	*in;
 	mleaf_t 	*out;
 	int	i, j, count, p;
 	int filelen;
@@ -1639,12 +1639,12 @@ void Mod_LoadLeafs_S (lump_t *l)
 	{
 		Con_DPrintf ("load external leaf data\n");
 //		in = extleafdata;
-		in = (dsleaf_t *)extleafdata;
+		in = (dleaf_s_t *)extleafdata;
 		filelen = extleaflen;
 	}
 	else // load standard leaf
 	{
-		in = (dsleaf_t *)(mod_base + l->fileofs);
+		in = (dleaf_s_t *)(mod_base + l->fileofs);
 		filelen = l->filelen;
 	}
 
@@ -1693,7 +1693,7 @@ long version (bsp2 v1)
 */
 void Mod_LoadLeafs_L1 (lump_t *l)
 {
-	dl1leaf_t 	*in;
+	dleaf_l1_t 	*in;
 	mleaf_t 	*out;
 	int	i, j, count, p;
 	int filelen;
@@ -1705,12 +1705,12 @@ void Mod_LoadLeafs_L1 (lump_t *l)
 	{
 		Con_DPrintf ("load external leaf data\n");
 //		in = extleafdata;
-		in = (dl1leaf_t *)extleafdata;
+		in = (dleaf_l1_t *)extleafdata;
 		filelen = extleaflen;
 	}
 	else // load standard leaf
 	{
-		in = (dl1leaf_t *)(mod_base + l->fileofs);
+		in = (dleaf_l1_t *)(mod_base + l->fileofs);
 		filelen = l->filelen;
 	}
 
@@ -1759,7 +1759,7 @@ long version (bsp2 v2)
 */
 void Mod_LoadLeafs_L2 (lump_t *l)
 {
-	dl2leaf_t 	*in;
+	dleaf_l2_t 	*in;
 	mleaf_t 	*out;
 	int	i, j, count, p;
 	int filelen;
@@ -1771,12 +1771,12 @@ void Mod_LoadLeafs_L2 (lump_t *l)
 	{
 		Con_DPrintf ("load external leaf data\n");
 //		in = extleafdata;
-		in = (dl2leaf_t *)extleafdata;
+		in = (dleaf_l2_t *)extleafdata;
 		filelen = extleaflen;
 	}
 	else // load standard leaf
 	{
-		in = (dl2leaf_t *)(mod_base + l->fileofs);
+		in = (dleaf_l2_t *)(mod_base + l->fileofs);
 		filelen = l->filelen;
 	}
 
@@ -1840,12 +1840,12 @@ short version
 */
 void Mod_LoadClipnodes_S (lump_t *l)
 {
-	dsclipnode_t *in;
+	dclipnode_s_t *in;
 	mclipnode_t *out; //johnfitz -- was dclipnode_t
 	int			i, count;
 	hull_t		*hull;
 
-	in = (dsclipnode_t *)(mod_base + l->fileofs);
+	in = (dclipnode_s_t *)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 		Host_Error ("Mod_LoadClipnodes_S: funny lump size in %s",loadmodel->name);
 	count = l->filelen / sizeof(*in);
@@ -1907,12 +1907,12 @@ long version (bsp2)
 */
 void Mod_LoadClipnodes_L (lump_t *l)
 {
-	dlclipnode_t *in;
+	dclipnode_l_t *in;
 	mclipnode_t *out; //johnfitz -- was dclipnode_t
 	int			i, count;
 	hull_t		*hull;
 
-	in = (dlclipnode_t *)(mod_base + l->fileofs);
+	in = (dclipnode_l_t *)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 		Host_Error ("Mod_LoadClipnodes_L: funny lump size in %s",loadmodel->name);
 	count = l->filelen / sizeof(*in);
