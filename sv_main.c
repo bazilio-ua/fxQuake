@@ -36,7 +36,8 @@ cvar_t sv_cullentities = {"sv_cullentities", "0", false, true}; // OFF
 SV_Protocol_f
 ===============
 */
-static int sv_protocol = PROTOCOL_FITZQUAKE;
+//static int sv_protocol = PROTOCOL_FITZQUAKE;
+static int sv_protocol = PROTOCOL_FITZQUAKE_PLUS;
 static void SV_Protocol_f (void)
 {
 	int i;
