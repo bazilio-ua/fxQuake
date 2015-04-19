@@ -1974,7 +1974,7 @@ gltexture_t *GL_LoadTexture (model_t *owner, char *name, int width, int height, 
 	}
 
 	if (size == 0)
-		Con_DPrintf ("GL_LoadTexture: texture '%s' has size 0\n", name);
+		Con_DWarning ("GL_LoadTexture: texture '%s' has zero size\n", name);
 
 	// Sanity check, max = 32kx32k
 	if (width < 0 || height < 0 || size > 0x40000000)

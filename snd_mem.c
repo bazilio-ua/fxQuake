@@ -150,7 +150,7 @@ sfxcache_t *S_LoadSound (sfx_t *s)
 
 	if (info.samples == 0 || len == 0)
 	{
-		Con_DPrintf("Sound %s has zero samples\n", s->name);
+		Con_DWarning("Sound %s has zero samples\n", s->name);
 		return NULL;
 	}
 

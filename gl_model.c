@@ -2198,14 +2198,14 @@ void Mod_LoadBrushModel (model_t *mod, void *buffer)
 	case BSPVERSION:
 		bsp2 = 0;
 		break;
-	case BSP2VERSION_2PSB:
+	case BSP2RMQVERSION:
 		bsp2 = 1;	// first iteration (RMQ)
 		break;
-	case BSP2VERSION_BSP2:
+	case BSP2VERSION:
 		bsp2 = 2;	// sanitised revision
 		break;
 	default:
-		Host_Error ("Mod_LoadBrushModel: %s has wrong version number (%i should be %i (Quake), %i or %i (BSP2))", mod->name, mod->bspversion, BSPVERSION, BSP2VERSION_2PSB, BSP2VERSION_BSP2); // was Sys_Error
+		Host_Error ("Mod_LoadBrushModel: %s has wrong version number (%i should be %i (Quake), %i (RMQ) or %i (BSP2))", mod->name, mod->bspversion, BSPVERSION, BSP2RMQVERSION, BSP2VERSION); // was Sys_Error
 		break;
 	}
 //	if (mod->bspversion != BSPVERSION)

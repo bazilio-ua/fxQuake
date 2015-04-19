@@ -213,7 +213,7 @@ mspriteframe_t *R_GetSpriteFrame (entity_t *e)
 	{
 		if (IsTimeout (&lastmsg, 2))
 		{
-			Con_DPrintf ("R_GetSpriteFrame: no such frame %d (%d frames) in %s\n", frame, psprite->numframes, e->model->name);
+			Con_DWarning ("R_GetSpriteFrame: no such frame %d (%d frames) in %s\n", frame, psprite->numframes, e->model->name);
 		}
 		frame = 0;
 	}
@@ -471,7 +471,7 @@ void R_DrawAliasModel (entity_t *e)
 	{
 		if (IsTimeout (&lastmsg, 2))
 		{
-			Con_DPrintf ("R_DrawAliasModel: no such skin %d (%d skins) in %s\n", skinnum, paliashdr->numskins, clmodel->name);
+			Con_DWarning ("R_DrawAliasModel: no such skin %d (%d skins) in %s\n", skinnum, paliashdr->numskins, clmodel->name);
 		}
 		skinnum = 0;
 	}
@@ -1388,7 +1388,7 @@ void R_SetupAliasFrame (entity_t *e, aliashdr_t *paliashdr, lerpdata_t *lerpdata
 	{
 		if (IsTimeout (&lastmsg, 2))
 		{
-			Con_DPrintf ("R_SetupAliasFrame: no such frame ");
+			Con_DWarning ("R_SetupAliasFrame: no such frame ");
 			// Single frame?
 			if (paliashdr->frames[0].name[0])
 				Con_DPrintf ("%d ('%s', %d frames)", frame, paliashdr->frames[0].name, paliashdr->numframes);

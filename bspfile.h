@@ -56,9 +56,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define BSPVERSION	29
 
 // RMQ support (2PSB). 32bits instead of shorts for all but bbox sizes (which still use shorts)
-#define BSP2VERSION_2PSB (('B'<<24) | ('S'<<16) | ('P'<<8) | '2')
+#define BSP2RMQVERSION	(('B'<<24) | ('S'<<16) | ('P'<<8) | '2')
 // BSP2 support. 32bits instead of shorts for everything (bboxes use floats)
-#define BSP2VERSION_BSP2 (('B'<<0) | ('S'<<8) | ('P'<<16) | ('2'<<24))
+#define BSP2VERSION		('B' | ('S'<<8) | ('P'<<16) | ('2'<<24))
 
 //#define	TOOLVERSION	2
 

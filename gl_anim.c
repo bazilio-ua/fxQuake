@@ -1601,7 +1601,7 @@ void R_InitSky (texture_t *mt)
 
 	if (mt->width * mt->height != sizeof(fixedsky))
 	{
-		Con_DPrintf ("R_InitSky: non-standard sky texture '%s' (%dx%d, should be 256x128)\n", mt->name, mt->width, mt->height);
+		Con_DWarning ("R_InitSky: non-standard sky texture '%s' (%dx%d, should be 256x128)\n", mt->name, mt->width, mt->height);
 
 		// Resize sky texture to correct size
 		memset (fixedsky, 0, sizeof(fixedsky));
