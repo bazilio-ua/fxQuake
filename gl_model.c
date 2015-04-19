@@ -2211,6 +2211,14 @@ void Mod_LoadBrushModel (model_t *mod, void *buffer)
 //	if (mod->bspversion != BSPVERSION)
 //		Host_Error ("Mod_LoadBrushModel: %s has wrong version number (%i should be %i (Quake))", mod->name, mod->bspversion, BSPVERSION); // was Sys_Error
 
+	Con_DPrintf ("bspversion: %i", mod->bspversion);
+	if (bsp2 == 2)
+		Con_DPrintf (" (BSP2 v2)\n");
+	else if (bsp2)
+		Con_DPrintf (" (BSP2 v1 RMQ)\n");
+	else
+		Con_DPrintf (" (Quake)\n");
+
 	{
 	// isworldmodel check
 		qboolean servermatch = sv.modelname[0] && !strcasecmp (loadname, sv.name);
