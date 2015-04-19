@@ -28,9 +28,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define	MAX_MAP_ENTITIES	1024
 #define	MAX_MAP_ENTSTRING	65536
 
-#define	MAX_MAP_PLANES		32767
-#define	MAX_MAP_NODES		32767		// because negative shorts are contents
-#define	MAX_MAP_CLIPNODES	32767		//
+#define	MAX_MAP_PLANES		65535		// orig. was 32767
+#define	MAX_MAP_NODES		65535		// orig. was 32767		// because negative shorts are contents
+#define	MAX_MAP_CLIPNODES	65535		// orig. was 32767
 #define	MAX_MAP_LEAFS		65535		// bsp2 support, was 32767 // orig. was 8192
 #define	MAX_MAP_VERTS		65535
 #define	MAX_MAP_FACES		65535

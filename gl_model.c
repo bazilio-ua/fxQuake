@@ -1312,8 +1312,8 @@ void Mod_LoadFaces_L (lump_t *l)
 	if (l->filelen % sizeof(*in))
 		Host_Error ("Mod_LoadFaces_L: funny lump size in %s",loadmodel->name);
 	count = l->filelen / sizeof(*in);
-	if (count > 32767) // old limit warning (FIXME: bsp2 warning?)
-		Con_DWarning ("Mod_LoadFaces_L: faces exceeds standard limit (%d, normal max = %d) in %s\n", count, 32767, loadmodel->name);
+	if (count > MAX_MAP_FACES) // bsp2 excessive count warning
+		Con_DWarning ("Mod_LoadFaces_L: bsp2 faces excessive count (%d, normal max = %d) in %s\n", count, MAX_MAP_FACES, loadmodel->name);
 	out = Hunk_AllocName ( count*sizeof(*out), loadname);
 
 	loadmodel->surfaces = out;
@@ -1498,8 +1498,8 @@ void Mod_LoadNodes_L1 (lump_t *l)
 	if (l->filelen % sizeof(*in))
 		Host_Error ("Mod_LoadNodes_L1: funny lump size in %s",loadmodel->name);
 	count = l->filelen / sizeof(*in);
-	if (count > 32767) // old limit warning (FIXME: bsp2 warning?)
-		Con_DWarning ("Mod_LoadNodes_L1: nodes exceeds standard limit (%d, normal max = %d) in %s\n", count, 32767, loadmodel->name);
+	if (count > MAX_MAP_NODES) // bsp2 excessive count warning
+		Con_DWarning ("Mod_LoadNodes_L1: bsp2 nodes excessive count (%d, normal max = %d) in %s\n", count, MAX_MAP_NODES, loadmodel->name);
 	out = Hunk_AllocName ( count*sizeof(*out), loadname);
 
 	loadmodel->nodes = out;
@@ -1559,8 +1559,8 @@ void Mod_LoadNodes_L2 (lump_t *l)
 	if (l->filelen % sizeof(*in))
 		Host_Error ("Mod_LoadNodes_L2: funny lump size in %s",loadmodel->name);
 	count = l->filelen / sizeof(*in);
-	if (count > 32767) // old limit warning (FIXME: bsp2 warning?)
-		Con_DWarning ("Mod_LoadNodes_L2: nodes exceeds standard limit (%d, normal max = %d) in %s\n", count, 32767, loadmodel->name);
+	if (count > MAX_MAP_NODES) // bsp2 excessive count warning
+		Con_DWarning ("Mod_LoadNodes_L2: bsp2 nodes excessive count (%d, normal max = %d) in %s\n", count, MAX_MAP_NODES, loadmodel->name);
 	out = Hunk_AllocName ( count*sizeof(*out), loadname);
 
 	loadmodel->nodes = out;
@@ -1916,8 +1916,8 @@ void Mod_LoadClipnodes_L (lump_t *l)
 	if (l->filelen % sizeof(*in))
 		Host_Error ("Mod_LoadClipnodes_L: funny lump size in %s",loadmodel->name);
 	count = l->filelen / sizeof(*in);
-	if (count > 32767) // old limit warning (FIXME: bsp2 warning?)
-		Con_DWarning ("Mod_LoadClipnodes_L: clipnodes exceeds standard limit (%d, normal max = %d) in %s\n", count, 32767, loadmodel->name);
+	if (count > MAX_MAP_CLIPNODES) // bsp2 excessive count warning
+		Con_DWarning ("Mod_LoadClipnodes_L: bsp2 clipnodes excessive count (%d, normal max = %d) in %s\n", count, MAX_MAP_CLIPNODES, loadmodel->name);
 	out = Hunk_AllocName ( count*sizeof(*out), loadname);
 
 	loadmodel->clipnodes = out;
@@ -2063,8 +2063,8 @@ void Mod_LoadMarksurfaces_L (lump_t *l)
 	if (l->filelen % sizeof(*in))
 		Host_Error ("Mod_LoadMarksurfaces_L: funny lump size in %s",loadmodel->name);
 	count = l->filelen / sizeof(*in);
-	if (count > 32767) // old limit warning (FIXME: bsp2 warning?)
-		Con_DWarning ("Mod_LoadMarksurfaces_L: marksurfaces exceeds standard limit (%d, normal max = %d) in %s\n", count, 32767, loadmodel->name);
+	if (count > MAX_MAP_MARKSURFACES) // bsp2 excessive count warning
+		Con_DWarning ("Mod_LoadMarksurfaces_L: bsp2 marksurfaces excessive count (%d, normal max = %d) in %s\n", count, MAX_MAP_MARKSURFACES, loadmodel->name);
 	out = Hunk_AllocName ( count*sizeof(*out), loadname);
 
 	loadmodel->marksurfaces = out;
