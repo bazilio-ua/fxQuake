@@ -1717,7 +1717,7 @@ void Mod_LoadLeafs_L1 (lump_t *l)
 	if (filelen % sizeof(*in)) /* l->filelen */
 		Host_Error ("Mod_LoadLeafs_L1: funny lump size in %s",loadmodel->name);
 	count = filelen / sizeof(*in); /* l->filelen */
-	if (count > MAX_MAP_LEAFS) // old limit exceed
+	if (count > MAX_MAP_LEAFS) // bsp2 limit exceed
 		Host_Error ("Mod_LoadLeafs_L1: leafs exceeds bsp2 limit (%d, max = %d) in %s", count, MAX_MAP_LEAFS, loadmodel->name);
 	out = (mleaf_t *) Hunk_AllocName ( count*sizeof(*out), loadname);
 
@@ -1783,7 +1783,7 @@ void Mod_LoadLeafs_L2 (lump_t *l)
 	if (filelen % sizeof(*in)) /* l->filelen */
 		Host_Error ("Mod_LoadLeafs_L2: funny lump size in %s",loadmodel->name);
 	count = filelen / sizeof(*in); /* l->filelen */
-	if (count > MAX_MAP_LEAFS) // old limit exceed
+	if (count > MAX_MAP_LEAFS) // bsp2 limit exceed
 		Host_Error ("Mod_LoadLeafs_L2: leafs exceeds bsp2 limit (%d, max = %d) in %s", count, MAX_MAP_LEAFS, loadmodel->name);
 	out = (mleaf_t *) Hunk_AllocName ( count*sizeof(*out), loadname);
 
