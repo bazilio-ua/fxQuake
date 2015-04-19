@@ -1527,7 +1527,7 @@ void Mod_LoadNodes_L1 (lump_t *l)
 				out->children[j] = loadmodel->nodes + p;
 			else
 			{
-				p = 0xffffffff - p; //note this uses 65535 intentionally, -1 is leaf 0
+				p = 0xffffffff - p; //note this uses 65535^2 intentionally, -1 is leaf 0
 				if (p >= 0 && p < loadmodel->numleafs)
 					out->children[j] = (mnode_t *)(loadmodel->leafs + p);
 				else
@@ -1588,7 +1588,7 @@ void Mod_LoadNodes_L2 (lump_t *l)
 				out->children[j] = loadmodel->nodes + p;
 			else
 			{
-				p = 0xffffffff - p; //note this uses 65535 intentionally, -1 is leaf 0
+				p = 0xffffffff - p; //note this uses 65535^2 intentionally, -1 is leaf 0
 				if (p >= 0 && p < loadmodel->numleafs)
 					out->children[j] = (mnode_t *)(loadmodel->leafs + p);
 				else
