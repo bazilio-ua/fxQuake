@@ -459,7 +459,7 @@ int VID_SetMode (int modenum)
 		(!windowed && (modenum < 1)) ||
 		(!windowed && (modenum >= nummodes)))
 	{
-		Sys_Error ("Bad video mode");
+		Sys_Error ("VID_SetMode: Bad video mode");
 	}
 
 // so Con_Printfs don't mess us up by forcing vid and snd updates
