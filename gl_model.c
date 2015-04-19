@@ -1584,7 +1584,7 @@ void Mod_LoadNodes_L2 (lump_t *l)
 		{
 			//johnfitz -- hack to handle nodes > 32k, adapted from darkplaces
 			p = LittleLong (in->children[j]);
-			if (p > 0 && p < count)
+			if (p >= 0 && p < count)
 				out->children[j] = loadmodel->nodes + p;
 			else
 			{
