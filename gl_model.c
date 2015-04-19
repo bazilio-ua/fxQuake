@@ -1651,8 +1651,8 @@ void Mod_LoadLeafs_S (lump_t *l)
 	if (filelen % sizeof(*in)) /* l->filelen */
 		Host_Error ("Mod_LoadLeafs_S: funny lump size in %s",loadmodel->name);
 	count = filelen / sizeof(*in); /* l->filelen */
-	if (count > 32767) // old limit warning (was Host_Error)
-		Con_DWarning ("Mod_LoadLeafs_S: leafs exceeds standard limit (%d, max = %d) in %s", count, 32767, loadmodel->name);
+	if (count > 32767) // old limit exceed
+		Host_Error ("Mod_LoadLeafs_S: leafs exceeds standard limit (%d, max = %d) in %s", count, 32767, loadmodel->name);
 	out = (mleaf_t *) Hunk_AllocName ( count*sizeof(*out), loadname);
 
 	loadmodel->leafs = out;
@@ -1717,8 +1717,8 @@ void Mod_LoadLeafs_L1 (lump_t *l)
 	if (filelen % sizeof(*in)) /* l->filelen */
 		Host_Error ("Mod_LoadLeafs_L1: funny lump size in %s",loadmodel->name);
 	count = filelen / sizeof(*in); /* l->filelen */
-	if (count > MAX_MAP_LEAFS) // old limit warning (was Host_Error) (FIXME: bsp2 warning?)
-		Con_DWarning ("Mod_LoadLeafs_L1: leafs exceeds standard limit (%d, max = %d) in %s", count, MAX_MAP_LEAFS, loadmodel->name);
+	if (count > MAX_MAP_LEAFS) // old limit exceed
+		Host_Error ("Mod_LoadLeafs_L1: leafs exceeds bsp2 limit (%d, max = %d) in %s", count, MAX_MAP_LEAFS, loadmodel->name);
 	out = (mleaf_t *) Hunk_AllocName ( count*sizeof(*out), loadname);
 
 	loadmodel->leafs = out;
@@ -1783,8 +1783,8 @@ void Mod_LoadLeafs_L2 (lump_t *l)
 	if (filelen % sizeof(*in)) /* l->filelen */
 		Host_Error ("Mod_LoadLeafs_L2: funny lump size in %s",loadmodel->name);
 	count = filelen / sizeof(*in); /* l->filelen */
-	if (count > MAX_MAP_LEAFS) // old limit warning (was Host_Error) (FIXME: bsp2 warning?)
-		Con_DWarning ("Mod_LoadLeafs_L2: leafs exceeds standard limit (%d, max = %d) in %s", count, MAX_MAP_LEAFS, loadmodel->name);
+	if (count > MAX_MAP_LEAFS) // old limit exceed
+		Host_Error ("Mod_LoadLeafs_L2: leafs exceeds bsp2 limit (%d, max = %d) in %s", count, MAX_MAP_LEAFS, loadmodel->name);
 	out = (mleaf_t *) Hunk_AllocName ( count*sizeof(*out), loadname);
 
 	loadmodel->leafs = out;
@@ -2041,7 +2041,7 @@ void Mod_LoadMarksurfaces_S (lump_t *l)
 	{
 		j = (unsigned short)LittleShort(in[i]); //johnfitz -- explicit cast as unsigned short
 		if (j >= loadmodel->numsurfaces)
-			Con_Warning ("Mod_LoadMarksurfaces_S: bad surface number (%d, max = %d) in %s\n", j, loadmodel->numsurfaces, loadmodel->name);
+			Host_Error ("Mod_LoadMarksurfaces_S: bad surface number (%d, max = %d) in %s\n", j, loadmodel->numsurfaces, loadmodel->name);
 		out[i] = loadmodel->surfaces + j;
 	}
 }
@@ -2074,7 +2074,7 @@ void Mod_LoadMarksurfaces_L (lump_t *l)
 	{
 		j = LittleLong(in[i]);
 		if (j >= loadmodel->numsurfaces)
-			Con_Warning ("Mod_LoadMarksurfaces_L: bad surface number (%d, max = %d) in %s\n", j, loadmodel->numsurfaces, loadmodel->name);
+			Host_Error ("Mod_LoadMarksurfaces_L: bad surface number (%d, max = %d) in %s\n", j, loadmodel->numsurfaces, loadmodel->name);
 		out[i] = loadmodel->surfaces + j;
 	}
 }
@@ -2211,13 +2211,13 @@ void Mod_LoadBrushModel (model_t *mod, void *buffer)
 //	if (mod->bspversion != BSPVERSION)
 //		Host_Error ("Mod_LoadBrushModel: %s has wrong version number (%i should be %i (Quake))", mod->name, mod->bspversion, BSPVERSION); // was Sys_Error
 
-	Con_DPrintf ("bspversion: %i", mod->bspversion);
+	Con_DPrintf ("bspversion: %i ", mod->bspversion);
 	if (bsp2 == 2)
-		Con_DPrintf (" (BSP2 v2)\n");
+		Con_DPrintf ("(BSP2 v2)\n");
 	else if (bsp2)
-		Con_DPrintf (" (BSP2 v1 RMQ)\n");
+		Con_DPrintf ("(BSP2 v1 RMQ)\n");
 	else
-		Con_DPrintf (" (Quake)\n");
+		Con_DPrintf ("(Quake)\n");
 
 	{
 	// isworldmodel check
