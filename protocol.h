@@ -243,3 +243,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define TE_SMOKE                18
 #define TE_NEW1                 19
 #define TE_NEW2                 20
+
+// moved from quakedef.h
+typedef struct
+{
+	vec3_t		origin;
+	vec3_t		angles;
+	unsigned short		modelindex;	// was int
+	unsigned short		frame;		// was int
+	byte		colormap;	// was int
+	byte		skin;		// was int
+	byte		alpha;		//johnfitz -- added
+	int			effects;
+} entity_state_t;

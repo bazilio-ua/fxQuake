@@ -1459,6 +1459,9 @@ void R_SkyProcessEntities (void)
 		else
 			rotated = false;
 
+		//
+		// draw it
+		//
 		s = &e->model->surfaces[e->model->firstmodelsurface];
 
 		for (j=0 ; j<e->model->nummodelsurfaces ; j++, s++)

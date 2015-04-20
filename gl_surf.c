@@ -772,8 +772,6 @@ void R_DrawBrushModel (entity_t *e)
 		modelorg[2] = DotProduct (temp, up);
 	}
 
-	psurf = &clmodel->surfaces[clmodel->firstmodelsurface];
-
 	// calculate dynamic lighting for bmodel if it's not an instanced model
 	if (clmodel->firstmodelsurface != 0) // EER1
 	{
@@ -805,6 +803,9 @@ void R_DrawBrushModel (entity_t *e)
 	//
 	// draw it
 	//
+	psurf = &clmodel->surfaces[clmodel->firstmodelsurface];
+//	psurf = &clmodel->surfaces[clmodel->firstmodelsurface];
+
 	for (i=0 ; i<clmodel->nummodelsurfaces ; i++, psurf++)
 	{
 		// find which side of the node we are on

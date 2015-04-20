@@ -80,7 +80,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define	MAX_OSPATH		1024		// max length of a filesystem pathname
 
 #define	ON_EPSILON		0.1			// point on plane side epsilon
-#define	DIST_EPSILON		(0.03125)	// 1/32 epsilon to keep floating point happy
+#define	DIST_EPSILON		(0.03125)	// 1/32 epsilon to keep floating point happy (moved from world.c)
 
 #define	MAX_MSGLEN			65528 // NETFLAG_DATA - NET_HEADERSIZE // (orig. 8000) // max length of a reliable message
 #define	MAX_DATAGRAM		65528 // NETFLAG_DATA - NET_HEADERSIZE // (orig. 1024) // max length of unreliable message
@@ -210,18 +210,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "vid.h"
 #include "sys.h"
 #include "zone.h"
-
-typedef struct
-{
-	vec3_t		origin;
-	vec3_t		angles;
-	unsigned short		modelindex; // was int
-	unsigned short		frame; // was int
-	byte		colormap; // was int
-	byte		skin; // was int
-	byte		alpha; //johnfitz -- added
-	int			effects;
-} entity_state_t;
 
 #include "bspfile.h"
 #include "wad.h"
