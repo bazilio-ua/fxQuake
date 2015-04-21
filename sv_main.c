@@ -585,6 +585,7 @@ SV_VisibleToClient -- johnfitz
 PVS test encapsulated in a nice function
 =============
 */
+/*
 qboolean SV_VisibleToClient (edict_t *client, edict_t *test, model_t *worldmodel)
 {
 	byte	*pvs;
@@ -600,7 +601,7 @@ qboolean SV_VisibleToClient (edict_t *client, edict_t *test, model_t *worldmodel
 
 	return false;
 }
-
+*/
 //=============================================================================
 
 
