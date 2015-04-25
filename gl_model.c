@@ -1046,13 +1046,13 @@ void Mod_LoadTexinfo (lump_t *l)
 
 /*
 ================
-CalcSurfaceExtents
+Mod_CalcSurfaceExtents
 
 Fills in s->texturemins[] and s->extents[]
 ================
 */
 #define MAX_SURF_EXTENTS 2048 // was 512 in glquake, 256 in winquake, fitzquake has 2000
-void CalcSurfaceExtents (msurface_t *s)
+void Mod_CalcSurfaceExtents (msurface_t *s)
 {
 	float	mins[2], maxs[2], val;
 	int		i,j, e;
@@ -1095,10 +1095,10 @@ void CalcSurfaceExtents (msurface_t *s)
 		s->extents[i] = (bmaxs[i] - bmins[i]) * 16;
 
 		if ( !(tex->flags & TEX_SPECIAL) && s->extents[i] > MAX_SURF_EXTENTS )
-			Host_Error ("CalcSurfaceExtents: bad surface extents (%d, max = %d), texture %s in %s", s->extents[i], MAX_SURF_EXTENTS, tex->texture->name, loadmodel->name);
+			Host_Error ("Mod_CalcSurfaceExtents: bad surface extents (%d, max = %d), texture %s in %s", s->extents[i], MAX_SURF_EXTENTS, tex->texture->name, loadmodel->name);
 		
 		if ( !(tex->flags & TEX_SPECIAL) && s->extents[i] > 512 ) // old limit warning
-			Con_DWarning ("CalcSurfaceExtents: surface extents exceeds standard limit (%d, normal max = %d), texture %s in %s\n", s->extents[i], 512, tex->texture->name, loadmodel->name);
+			Con_DWarning ("Mod_CalcSurfaceExtents: surface extents exceeds standard limit (%d, normal max = %d), texture %s in %s\n", s->extents[i], 512, tex->texture->name, loadmodel->name);
 	}
 }
 
@@ -1235,7 +1235,7 @@ void Mod_LoadFaces_S (lump_t *l)
 
 		out->texinfo = loadmodel->texinfo + LittleShort (in->texinfo);
 
-		CalcSurfaceExtents (out);
+		Mod_CalcSurfaceExtents (out);
 
 		Mod_CalcSurfaceBounds (out); // for per-surface frustum culling
 
@@ -1334,7 +1334,7 @@ void Mod_LoadFaces_L (lump_t *l)
 
 		out->texinfo = loadmodel->texinfo + LittleLong (in->texinfo);
 
-		CalcSurfaceExtents (out);
+		Mod_CalcSurfaceExtents (out);
 
 		Mod_CalcSurfaceBounds (out); // for per-surface frustum culling
 
