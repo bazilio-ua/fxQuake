@@ -1,0 +1,5 @@
+*.obj
+*.sbr
+winquake.ncb
+winquake.opt
+winquake.plg
