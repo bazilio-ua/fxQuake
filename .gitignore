@@ -3,3 +3,4 @@
 winquake.ncb
 winquake.opt
 winquake.plg
+Debug/*.*

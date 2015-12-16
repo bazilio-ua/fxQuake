@@ -730,7 +730,6 @@ void R_DrawEntities (void)
 			break;
 
 		case mod_brush:
-//			R_DrawBrushModel (e, false);
 			R_DrawBrushModel (e);
 			break;
 
@@ -738,29 +737,6 @@ void R_DrawEntities (void)
 			break;
 		}
 	}
-/*
-	// special case to draw *liquid entities
-	for (i=0 ; i<cl_numvisedicts ; i++)
-	{
-		if ((i + 1) % 100 == 0)
-			S_ExtraUpdateTime (); // don't let sound get messed up if going slow
-
-		e = cl_visedicts[i];
-
-		if (ENTALPHA_DECODE(e->alpha) < 1)
-			continue;
-
-		switch (e->model->type)
-		{
-		case mod_brush:
-			R_DrawBrushModel (e, true);
-			break;
-
-		default:
-			break;
-		}
-	}
-*/
 }
 
 //==================================================================================
@@ -871,7 +847,6 @@ void R_DrawTransEntities (qboolean inwater)
 			break;
 
 		case mod_brush:
-//			R_DrawBrushModel (e, false);
 			R_DrawBrushModel (e);
 			break;
 
@@ -883,26 +858,6 @@ void R_DrawTransEntities (qboolean inwater)
 			break;
 		}
 	}
-/*
-	// special case to draw transparent *liquid entities
-	for (i=0 ; i<num_transents ; i++)
-	{
-		if ((i + 1) % 100 == 0)
-			S_ExtraUpdateTime (); // don't let sound get messed up if going slow
-
-		e = transents[i].e;
-
-		switch (e->model->type)
-		{
-		case mod_brush:
-			R_DrawBrushModel (e, true);
-			break;
-
-		default:
-			break;
-		}
-	}
-*/
 }
 
 //==================================================================================
