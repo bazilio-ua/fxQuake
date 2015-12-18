@@ -61,8 +61,8 @@ float r_fovx, r_fovy;
 // interpolation
 void R_SetupAliasFrame (entity_t *e, aliashdr_t *paliashdr, lerpdata_t *lerpdata);
 void R_SetupEntityTransform (entity_t *e, lerpdata_t *lerpdata);
-void GL_DrawEntityTransform (lerpdata_t lerpdata);
 void GL_DrawAliasFrame (aliashdr_t *paliashdr, lerpdata_t lerpdata);
+void GL_DrawEntityTransform (lerpdata_t lerpdata);
 
 
 cvar_t	r_norefresh = {"r_norefresh","0"};
@@ -1196,10 +1196,9 @@ R_RotateForEntity renamed and modified to take lerpdata instead of pointer to en
 void GL_DrawEntityTransform (lerpdata_t lerpdata)
 {
 	glTranslatef (lerpdata.origin[0], lerpdata.origin[1], lerpdata.origin[2]);
-
-	glRotatef ( lerpdata.angles[1],  0, 0, 1);
-	glRotatef (-lerpdata.angles[0],  0, 1, 0);
-	glRotatef ( lerpdata.angles[2],  1, 0, 0);
+	glRotatef (lerpdata.angles[1],  0, 0, 1);
+	glRotatef (lerpdata.angles[0],  0, 1, 0);
+	glRotatef (lerpdata.angles[2],  1, 0, 0);
 }
 
 /*
@@ -1435,6 +1434,9 @@ void R_SetupEntityTransform (entity_t *e, lerpdata_t *lerpdata)
 	}
 
 	// set up values
+	if (e == &cl.viewent)
+		e->angles[0] = -e->angles[0]; // stupid quake bug
+
 	if (e != &cl.viewent && e->lerpflags & LERP_MOVESTEP)
 	{
 		if (e->lerpflags & LERP_FINISH)
