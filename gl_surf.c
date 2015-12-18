@@ -672,13 +672,6 @@ void R_DrawBrushModel (entity_t *e)
 		}
 	}
 
-	// mh -- z-fighting is really a mapping problem, and it should be fixed in the map and not by the engine
-	if (gl_zfix.value) // z-fighting fix
-	{
-		glPolygonOffset (DIST_EPSILON, 0);
-		glEnable (GL_POLYGON_OFFSET_FILL);
-	}
-
 	glPushMatrix ();
 
 	glTranslatef (e->origin[0],  e->origin[1],  e->origin[2]);
@@ -710,12 +703,6 @@ void R_DrawBrushModel (entity_t *e)
 	GL_DisableMultitexture (); // selects TEXTURE0
 
 	glPopMatrix ();
-
-	if (gl_zfix.value) // z-fighting fix
-	{
-		glPolygonOffset (0, 0);
-		glDisable (GL_POLYGON_OFFSET_FILL);
-	}
 }
 
 /*

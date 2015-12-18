@@ -95,7 +95,6 @@ cvar_t	gl_polyblend = {"gl_polyblend","1", true};
 cvar_t	gl_flashblend = {"gl_flashblend","1", true};
 cvar_t	gl_flashblendview = {"gl_flashblendview","1", true};
 cvar_t	gl_overbright = {"gl_overbright", "1", true};
-cvar_t	gl_zfix = {"gl_zfix","0"}; // z-fighting fix
 cvar_t  gl_oldspr = {"gl_oldspr", "0"}; // Old opaque sprite
 
 /*

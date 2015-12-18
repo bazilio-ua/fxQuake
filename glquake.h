@@ -458,7 +458,6 @@ extern	cvar_t	gl_polyblend;
 extern	cvar_t	gl_flashblend;
 extern	cvar_t	gl_flashblendview;
 extern	cvar_t	gl_overbright;
-extern	cvar_t	gl_zfix; // z-fighting fix
 extern	cvar_t  gl_oldspr;
 
 // Nehahra
