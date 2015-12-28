@@ -56,8 +56,6 @@ typedef struct entity_s
 {
 	qboolean				forcelink;		// model changed
 
-	int						update_type;
-
 	entity_state_t			baseline;		// to fill in defaults in updates
 
 	double					msgtime;		// time of last update
@@ -72,13 +70,7 @@ typedef struct entity_s
 	byte					*colormap;
 	int						effects;		// light, particles, etc
 	int						skinnum;		// for Alias models
-	int						visframe;		// last frame this entity was
-											//  found in an active leaf
-
-// FIXME: could turn these into a union
-	int						trivial_accept;
-	struct mnode_s			*topnode;		// for bmodels, first world node
-											//  that splits bmodel, or NULL if not split
+	int						visframe;		// last frame this entity was found in an active leaf
 
 	// Nehahra - Model Transparency
 	byte					alpha;			// alpha
