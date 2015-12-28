@@ -438,9 +438,9 @@ void PF_vectoangles (void)
 	{
 		yaw = 0;
 		if (value1[2] > 0)
-			pitch = 270; // was 90 (attempt to fix 'stupid quake bug') from HL2 SDK reference
+			pitch = 90;
 		else
-			pitch = 90; // was 270
+			pitch = 270;
 	}
 	else
 	{
