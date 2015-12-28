@@ -454,7 +454,7 @@ void PF_vectoangles (void)
 			pitch += 360;
 	}
 
-	G_FLOAT(OFS_RETURN+0) = pitch;
+	G_FLOAT(OFS_RETURN+0) = -pitch;
 	G_FLOAT(OFS_RETURN+1) = yaw;
 	G_FLOAT(OFS_RETURN+2) = 0;
 }
