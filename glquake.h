@@ -391,7 +391,7 @@ extern	mleaf_t		*r_viewleaf, *r_oldviewleaf;
 extern	int		d_lightstyle[256];	// 8.8 fraction of base light value
 
 //
-//
+// texture stuff
 //
 extern int	indexed_bytes;
 extern int	rgba_bytes;
@@ -415,8 +415,9 @@ extern	float	d_overbrightscale;
 
 extern	msurface_t *skychain;
 extern	msurface_t *waterchain;
+
 //
-//
+// cvars
 //
 extern	cvar_t	r_norefresh;
 extern	cvar_t	r_drawentities;
