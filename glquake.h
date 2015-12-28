@@ -391,11 +391,8 @@ extern	mleaf_t		*r_viewleaf, *r_oldviewleaf;
 extern	int		d_lightstyle[256];	// 8.8 fraction of base light value
 
 //
-// world matrix
 //
-extern	float	r_world_matrix[16];
-extern	float	r_base_world_matrix[16];
-
+//
 extern int	indexed_bytes;
 extern int	rgba_bytes;
 extern int	lightmap_bytes;

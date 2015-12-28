@@ -966,7 +966,7 @@ void R_DrawTextureChainsWater (void)
 	//
 	// go back to the world matrix
 	//
-	glLoadMatrixf (r_world_matrix);
+	glLoadMatrixf (r_worldentity.matrix);
 
 	if (waterchain)
 	{

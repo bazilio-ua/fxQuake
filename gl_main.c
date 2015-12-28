@@ -44,9 +44,6 @@ vec3_t	vpn;
 vec3_t	vright;
 vec3_t	r_origin;
 
-float	r_world_matrix[16];
-float	r_base_world_matrix[16];
-
 //
 // screen size info
 //
@@ -1077,7 +1074,10 @@ void R_SetupGL (void)
 	glRotatef (-r_refdef.viewangles[1],  0, 0, 1);
 	glTranslatef (-r_refdef.vieworg[0],  -r_refdef.vieworg[1],  -r_refdef.vieworg[2]);
 
-	glGetFloatv (GL_MODELVIEW_MATRIX, r_world_matrix);
+	//
+	// get world matrix
+	//
+	glGetFloatv (GL_MODELVIEW_MATRIX, r_worldentity.matrix);
 
 	//
 	// set drawing parms
@@ -1141,7 +1141,6 @@ void R_RenderView (void)
 	S_ExtraUpdateTime ();	// don't let sound get messed up if going slow
 
 	R_FogEnableGFog ();
-//	R_DrawSky (); // handle worldspawn and bmodels
 	R_DrawWorld (); // adds static entities to the list
 	R_DrawSky (); // handle worldspawn and bmodels
 	R_DrawSolid ();
@@ -1153,7 +1152,6 @@ void R_RenderView (void)
 	R_DrawTextureChainsWater (); // drawn here since they might have transparency
 	R_DrawTransEntities (r_viewleaf->contents != CONTENTS_EMPTY);
 	R_DrawParticles (r_viewleaf->contents != CONTENTS_EMPTY);
-//	R_DrawTextureChainsWater (); // drawn here since they might have transparency (2)
 	R_DrawViewModel ();
 	R_RenderDlights (); // flash blend dlights
 	R_FogDisableGFog ();

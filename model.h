@@ -133,6 +133,8 @@ typedef struct glpoly_s
 
 typedef struct msurface_s
 {
+	mtexinfo_t	*texinfo;
+	
 	int			visframe;		// should be drawn when node is crossed
 	float		mins[3];		// for frustum culling
 	float		maxs[3];		// for frustum culling
@@ -151,8 +153,8 @@ typedef struct msurface_s
 	glpoly_t	*polys;				// multiple if warped
 	struct	msurface_s	*texturechain;
 
-	mtexinfo_t	*texinfo;
-
+	float		midpoint[3];	// for alpha sorting
+	
 // lighting info
 	int			dlightframe;
 	unsigned int		dlightbits[(MAX_DLIGHTS + 31) >> 5];

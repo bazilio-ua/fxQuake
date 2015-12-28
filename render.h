@@ -72,6 +72,10 @@ typedef struct entity_s
 	int						skinnum;		// for Alias models
 	int						visframe;		// last frame this entity was found in an active leaf
 
+	float					matrix[16];		// the matrix used for transforming this entity
+	
+	float					dist;			// distance from client (for depth sorting)
+	
 	// Nehahra - Model Transparency
 	byte					alpha;			// alpha
 	float					fullbright;		// fullbright
