@@ -30,8 +30,6 @@ typedef vec_t vec5_t[5];
 #define M_PI_DIV_180 (M_PI / 180.0F)
 #define DEG2RAD( a ) ( (a) * M_PI_DIV_180 )
 
-struct mplane_s;
-
 extern vec3_t vec3_origin;
 
 #define	NANMASK		(255 << 23)	/* 7F800000 */
@@ -279,9 +277,9 @@ static inline void VectorNormalizeFast(vec3_t v)
 
 /*-----------------------------------------------------------------*/
 
-int SignbitsForPlane (struct mplane_s *out);
+struct mplane_s;
 
-int BoxOnPlaneSide (vec3_t emins, vec3_t emaxs, struct mplane_s *p);
+extern inline int BoxOnPlaneSide (vec3_t emins, vec3_t emaxs, struct mplane_s *p);
 
 #define BOX_ON_PLANE_SIDE(emins, emaxs, p)	\
 	(((p)->type < 3)?						\

@@ -570,7 +570,7 @@ GL_BeginRendering
 sets values of glx, gly, glwidth, glheight
 =================
 */
-void GL_BeginRendering (int *x, int *y, int *width, int *height)
+inline void GL_BeginRendering (int *x, int *y, int *width, int *height)
 {
 	*x = *y = 0;
 
@@ -583,7 +583,7 @@ void GL_BeginRendering (int *x, int *y, int *width, int *height)
 GL_EndRendering
 =================
 */
-void GL_EndRendering (void)
+inline void GL_EndRendering (void)
 {
 	// swap on each frame
 	SwapBuffers(maindc);

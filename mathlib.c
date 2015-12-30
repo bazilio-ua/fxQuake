@@ -23,17 +23,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 vec3_t vec3_origin = {0,0,0};
 
-/*
-==================
-BOPS_Error
-
-Split out like this for ASM to call.
-==================
-*/
-void BOPS_Error (void)
-{
-	Sys_Error ("BoxOnPlaneSide: Bad signbits");
-}
 
 /*
 ==================
@@ -42,7 +31,7 @@ BoxOnPlaneSide
 Returns 1, 2, or 1 + 2
 ==================
 */
-int BoxOnPlaneSide (vec3_t emins, vec3_t emaxs, mplane_t *p)
+inline int BoxOnPlaneSide (vec3_t emins, vec3_t emaxs, mplane_t *p)
 {
 	float	dist1, dist2;
 	int		sides;
@@ -84,7 +73,7 @@ int BoxOnPlaneSide (vec3_t emins, vec3_t emaxs, mplane_t *p)
 		break;
 	default:
 		dist1 = dist2 = 0;		// make compiler happy
-		BOPS_Error ();
+		Sys_Error ("BoxOnPlaneSide: Bad signbits");
 		break;
 	}
 
@@ -95,25 +84,5 @@ int BoxOnPlaneSide (vec3_t emins, vec3_t emaxs, mplane_t *p)
 		sides |= 2;
 
 	return sides;
-}
-
-/*
-===============
-SignbitsForPlane
-===============
-*/
-int SignbitsForPlane (mplane_t *out)
-{
-	int	bits, j;
-
-	// for fast box on planeside test
-
-	bits = 0;
-	for (j=0 ; j<3 ; j++)
-	{
-		if (out->normal[j] < 0)
-			bits |= 1<<j;
-	}
-	return bits;
 }
 

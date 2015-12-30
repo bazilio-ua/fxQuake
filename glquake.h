@@ -197,11 +197,11 @@ typedef struct
 extern	model_t	*loadmodel;
 
 // vid_*gl*.c
-void GL_BeginRendering (int *x, int *y, int *width, int *height);
-void GL_EndRendering (void);
+extern inline void GL_BeginRendering (int *x, int *y, int *width, int *height);
+extern inline void GL_EndRendering (void);
 
 // gl_main.c
-qboolean R_CullBox (vec3_t mins, vec3_t maxs);
+extern inline qboolean R_CullBox (vec3_t mins, vec3_t maxs);
 qboolean R_CullModelForEntity (entity_t *e);
 
 // gl_draw.c

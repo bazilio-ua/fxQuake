@@ -94,60 +94,24 @@ cvar_t	gl_flashblendview = {"gl_flashblendview","1", true};
 cvar_t	gl_overbright = {"gl_overbright", "1", true};
 cvar_t  gl_oldspr = {"gl_oldspr", "0"}; // Old opaque sprite
 
+
 /*
 =================
 R_CullBox
-replaced with new function from lordhavoc
 
 Returns true if the box is completely outside the frustum
 =================
 */
-qboolean R_CullBox (vec3_t emins, vec3_t emaxs)
+inline qboolean R_CullBox (vec3_t mins, vec3_t maxs)
 {
-	int i;
-	mplane_t *p;
-	for (i = 0;i < 4;i++)
-	{
-		p = frustum + i;
-		switch(p->signbits)
-		{
-		default:
-		case 0:
-			if (p->normal[0]*emaxs[0] + p->normal[1]*emaxs[1] + p->normal[2]*emaxs[2] < p->dist)
-				return true;
-			break;
-		case 1:
-			if (p->normal[0]*emins[0] + p->normal[1]*emaxs[1] + p->normal[2]*emaxs[2] < p->dist)
-				return true;
-			break;
-		case 2:
-			if (p->normal[0]*emaxs[0] + p->normal[1]*emins[1] + p->normal[2]*emaxs[2] < p->dist)
-				return true;
-			break;
-		case 3:
-			if (p->normal[0]*emins[0] + p->normal[1]*emins[1] + p->normal[2]*emaxs[2] < p->dist)
-				return true;
-			break;
-		case 4:
-			if (p->normal[0]*emaxs[0] + p->normal[1]*emaxs[1] + p->normal[2]*emins[2] < p->dist)
-				return true;
-			break;
-		case 5:
-			if (p->normal[0]*emins[0] + p->normal[1]*emaxs[1] + p->normal[2]*emins[2] < p->dist)
-				return true;
-			break;
-		case 6:
-			if (p->normal[0]*emaxs[0] + p->normal[1]*emins[1] + p->normal[2]*emins[2] < p->dist)
-				return true;
-			break;
-		case 7:
-			if (p->normal[0]*emins[0] + p->normal[1]*emins[1] + p->normal[2]*emins[2] < p->dist)
-				return true;
-			break;
-		}
-	}
+	int		i;
+
+	for (i=0 ; i<4 ; i++)
+		if ( BOX_ON_PLANE_SIDE(mins, maxs, &frustum[i]) == 2)
+			return true;
 	return false;
 }
+
 
 /*
 ===============
@@ -942,6 +906,28 @@ void R_PolyBlend (void)
 //	glEnable (GL_ALPHA_TEST); //FX
 }
 
+
+//==================================================================================
+
+/*
+===============
+SignbitsForPlane
+===============
+*/
+static inline int SignbitsForPlane (mplane_t *out)
+{
+	int	bits, j;
+
+	// for fast box on planeside test
+
+	bits = 0;
+	for (j=0 ; j<3 ; j++)
+	{
+		if (out->normal[j] < 0)
+			bits |= 1<<j;
+	}
+	return bits;
+}
 
 /*
 ===============
