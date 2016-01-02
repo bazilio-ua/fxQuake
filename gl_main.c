@@ -120,7 +120,7 @@ R_CullModelForEntity
 uses correct bounds based on rotation
 ===============
 */
-qboolean R_CullModelForEntity (entity_t *e)
+inline qboolean R_CullModelForEntity (entity_t *e)
 {
 	vec3_t mins, maxs;
 

@@ -202,7 +202,7 @@ extern inline void GL_EndRendering (void);
 
 // gl_main.c
 extern inline qboolean R_CullBox (vec3_t mins, vec3_t maxs);
-qboolean R_CullModelForEntity (entity_t *e);
+extern inline qboolean R_CullModelForEntity (entity_t *e);
 
 // gl_draw.c
 void GL_Upload8 (gltexture_t *glt, byte *data);
@@ -215,11 +215,11 @@ void GL_ReloadTexture (gltexture_t *glt);
 void GL_ReloadTextures_f (void);
 gltexture_t *GL_LoadTexture (model_t *owner, char *name, int width, int height, enum srcformat format, byte *data, char *source_file, unsigned source_offset, unsigned flags);
 gltexture_t *GL_FindTexture (model_t *owner, char *name);
-void GL_Set2D (void);
-void GL_SelectTexture (GLenum target);
-void GL_Bind (gltexture_t *texture);
-void GL_DisableMultitexture (void);
-void GL_EnableMultitexture (void);
+extern inline void GL_Set2D (void);
+extern inline void GL_SelectTexture (GLenum target);
+extern inline void GL_Bind (gltexture_t *texture);
+extern inline void GL_DisableMultitexture (void);
+extern inline void GL_EnableMultitexture (void);
 void GL_Init (void);
 void GL_SetupState (void);
 void GL_SwapInterval (void);
@@ -253,39 +253,11 @@ void R_DrawBrushModel (entity_t *e);
 void R_DrawWorld (void);
 void R_DrawSolid (void);
 void R_DrawTextureChainsWater (void);
+extern inline void R_DrawGLPoly34 (glpoly_t *p);
+extern inline void R_DrawGLPoly56 (glpoly_t *p);
 void R_DrawSequentialPoly (entity_t *e, msurface_t *s);
 void R_BuildLightmaps (void);
 void R_UploadLightmaps (void);
-
-static inline void R_DrawGLPoly34 (glpoly_t *p)
-{
-	float	*v;
-	int		i;
-
-	glBegin (GL_POLYGON);
-	v = p->verts[0];
-	for (i=0 ; i<p->numverts ; i++, v+= VERTEXSIZE)
-	{
-		glTexCoord2f (v[3], v[4]);
-		glVertex3fv (v);
-	}
-	glEnd ();
-}
-
-static inline void R_DrawGLPoly56 (glpoly_t *p)
-{
-	float	*v;
-	int		i;
-
-	glBegin (GL_POLYGON);
-	v = p->verts[0];
-	for (i=0 ; i<p->numverts ; i++, v+= VERTEXSIZE)
-	{
-		glTexCoord2f (v[5], v[6]);
-		glVertex3fv (v);
-	}
-	glEnd ();
-}
 
 // gl_screen.c
 void SCR_TileClear (void);

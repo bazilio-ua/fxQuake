@@ -363,6 +363,46 @@ void R_UploadLightmaps (void)
 
 /*
 ================
+R_DrawGLPoly34
+================
+*/
+inline void R_DrawGLPoly34 (glpoly_t *p)
+{
+	float	*v;
+	int		i;
+
+	glBegin (GL_POLYGON);
+	v = p->verts[0];
+	for (i=0 ; i<p->numverts ; i++, v+= VERTEXSIZE)
+	{
+		glTexCoord2f (v[3], v[4]);
+		glVertex3fv (v);
+	}
+	glEnd ();
+}
+
+/*
+================
+R_DrawGLPoly56
+================
+*/
+inline void R_DrawGLPoly56 (glpoly_t *p)
+{
+	float	*v;
+	int		i;
+
+	glBegin (GL_POLYGON);
+	v = p->verts[0];
+	for (i=0 ; i<p->numverts ; i++, v+= VERTEXSIZE)
+	{
+		glTexCoord2f (v[5], v[6]);
+		glVertex3fv (v);
+	}
+	glEnd ();
+}
+
+/*
+================
 R_DrawSequentialPoly
 
 Systems that have fast state and texture changes can
