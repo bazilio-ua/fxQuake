@@ -1,0 +1,372 @@
+# depslib dependency file v1.0
+1396520560 source:c:\projects\fxquake\cd_win.c
+	"quakedef.h"
+	"winquake.h"
+
+1429538690 c:\projects\fxquake\quakedef.h
+	<math.h>
+	<string.h>
+	<stdarg.h>
+	<stdio.h>
+	<stdlib.h>
+	<setjmp.h>
+	<ctype.h>
+	<limits.h>
+	<time.h>
+	<errno.h>
+	"common.h"
+	"mathlib.h"
+	"cvar.h"
+	"vid.h"
+	"sys.h"
+	"zone.h"
+	"bspfile.h"
+	"wad.h"
+	"draw.h"
+	"screen.h"
+	"net.h"
+	"protocol.h"
+	"cmd.h"
+	"sbar.h"
+	"sound.h"
+	"render.h"
+	"client.h"
+	"progs.h"
+	"server.h"
+	"model.h"
+	"input.h"
+	"world.h"
+	"keys.h"
+	"console.h"
+	"view.h"
+	"menu.h"
+	"crc.h"
+	"cdaudio.h"
+	"glquake.h"
+
+1396777284 c:\projects\fxquake\common.h
+
+1451488990 c:\projects\fxquake\mathlib.h
+
+1367744972 c:\projects\fxquake\cvar.h
+
+1380813232 c:\projects\fxquake\vid.h
+
+1378127492 c:\projects\fxquake\sys.h
+
+1381733332 c:\projects\fxquake\zone.h
+
+1429467924 c:\projects\fxquake\bspfile.h
+
+1367744973 c:\projects\fxquake\wad.h
+
+1381733354 c:\projects\fxquake\draw.h
+
+1406717322 c:\projects\fxquake\screen.h
+
+1403160546 c:\projects\fxquake\net.h
+	<winsock.h>
+
+1429538835 c:\projects\fxquake\protocol.h
+
+1381733428 c:\projects\fxquake\cmd.h
+
+1381733458 c:\projects\fxquake\sbar.h
+
+1429392848 c:\projects\fxquake\sound.h
+
+1451299934 c:\projects\fxquake\render.h
+
+1429378144 c:\projects\fxquake\client.h
+
+1427772241 c:\projects\fxquake\progs.h
+	"pr_comp.h"
+	"progdefs.h"
+
+1381733198 c:\projects\fxquake\pr_comp.h
+
+1381733223 c:\projects\fxquake\progdefs.h
+	"progdefs.q1"
+
+1367744972 c:\projects\fxquake\progdefs.q1
+
+1399729720 c:\projects\fxquake\server.h
+
+1451299182 c:\projects\fxquake\model.h
+	"modelgen.h"
+	"spritegn.h"
+
+1381733281 c:\projects\fxquake\modelgen.h
+
+1381733296 c:\projects\fxquake\spritegn.h
+
+1375001591 c:\projects\fxquake\input.h
+
+1367744973 c:\projects\fxquake\world.h
+
+1395693262 c:\projects\fxquake\keys.h
+
+1381733480 c:\projects\fxquake\console.h
+
+1380813234 c:\projects\fxquake\view.h
+
+1367744972 c:\projects\fxquake\menu.h
+
+1381733119 c:\projects\fxquake\crc.h
+
+1381643479 c:\projects\fxquake\cdaudio.h
+
+1451710076 c:\projects\fxquake\glquake.h
+	<GL/gl.h>
+	<GL/glx.h>
+
+1403160118 c:\projects\fxquake\winquake.h
+	<windows.h>
+	<dsound.h>
+	<dinput.h>
+	<direct.h>
+
+1021712392 c:\mingw\include\w32api\dsound.h
+	<d3dtypes.h>
+	<objbase.h>
+
+988085083 c:\mingw\include\w32api\d3dtypes.h
+	<windows.h>
+	<float.h>
+	<ddraw.h>
+	"d3dvec.inl"
+
+988085083 c:\mingw\include\w32api\ddraw.h
+	<objbase.h>
+
+988085083 c:\mingw\include\w32api\dinput.h
+	<objbase.h>
+
+1367744972 source:c:\projects\fxquake\chase.c
+	"quakedef.h"
+
+1381733880 source:c:\projects\fxquake\cl_demo.c
+	"quakedef.h"
+
+1381733388 source:c:\projects\fxquake\cl_input.c
+	"quakedef.h"
+
+1429453158 source:c:\projects\fxquake\cl_main.c
+	"quakedef.h"
+
+1381650816 source:c:\projects\fxquake\cl_parse.c
+	"quakedef.h"
+
+1429453200 source:c:\projects\fxquake\cl_tent.c
+	"quakedef.h"
+
+1429453275 source:c:\projects\fxquake\cmd.c
+	"quakedef.h"
+
+1397673650 source:c:\projects\fxquake\common.c
+	"quakedef.h"
+
+1396520464 source:c:\projects\fxquake\conproc.c
+	"quakedef.h"
+	"winquake.h"
+	"conproc.h"
+
+1367744972 c:\projects\fxquake\conproc.h
+
+1381644944 source:c:\projects\fxquake\console.c
+	"quakedef.h"
+
+1381733131 source:c:\projects\fxquake\crc.c
+	"quakedef.h"
+	"crc.h"
+
+1378133430 source:c:\projects\fxquake\cvar.c
+	"quakedef.h"
+
+1429539549 source:c:\projects\fxquake\gl_anim.c
+	"quakedef.h"
+	"gl_warp_sin.h"
+
+1381733162 c:\projects\fxquake\gl_warp_sin.h
+
+1451710067 source:c:\projects\fxquake\gl_draw.c
+	"quakedef.h"
+
+1451298090 source:c:\projects\fxquake\gl_efrag.c
+	"quakedef.h"
+
+1397682771 source:c:\projects\fxquake\gl_light.c
+	"quakedef.h"
+
+1451709589 source:c:\projects\fxquake\gl_main.c
+	"quakedef.h"
+	"anorms.h"
+	"anorm_dots.h"
+
+1381731829 c:\projects\fxquake\anorms.h
+
+1381731781 c:\projects\fxquake\anorm_dots.h
+
+1381737224 source:c:\projects\fxquake\gl_mesh.c
+	"quakedef.h"
+
+1450476804 source:c:\projects\fxquake\gl_misc.c
+	"quakedef.h"
+
+1429958560 source:c:\projects\fxquake\gl_model.c
+	"quakedef.h"
+
+1404323858 source:c:\projects\fxquake\gl_part.c
+	"quakedef.h"
+
+1427297794 source:c:\projects\fxquake\gl_screen.c
+	"quakedef.h"
+
+1451709456 source:c:\projects\fxquake\gl_surf.c
+	"quakedef.h"
+
+1381574758 source:c:\projects\fxquake\host.c
+	"quakedef.h"
+
+1397682538 source:c:\projects\fxquake\host_cmd.c
+	"quakedef.h"
+
+1396520411 source:c:\projects\fxquake\in_win.c
+	"quakedef.h"
+	"winquake.h"
+
+1395397191 source:c:\projects\fxquake\keys.c
+	"quakedef.h"
+
+1451488990 source:c:\projects\fxquake\mathlib.c
+	"quakedef.h"
+
+1396520659 source:c:\projects\fxquake\menu.c
+	"quakedef.h"
+
+1396520528 source:c:\projects\fxquake\net_dgrm.c
+	"quakedef.h"
+	"winquake.h"
+	"xquake.h"
+	"net_dgrm.h"
+
+1381739785 c:\projects\fxquake\xquake.h
+	<unistd.h>
+	<fcntl.h>
+	<paths.h>
+	<sys/ioctl.h>
+	<sys/stat.h>
+	<sys/mman.h>
+	<sys/file.h>
+	<sys/param.h>
+	<sys/socket.h>
+	<sys/vt.h>
+	<linux/cdrom.h>
+	<linux/soundcard.h>
+	<sys/cdio.h>
+	<sys/soundcard.h>
+	<util.h>
+	<arpa/inet.h>
+	<netinet/in.h>
+	<net/if.h>
+	<netdb.h>
+	<X11/Xlib.h>
+	<X11/Xutil.h>
+	<X11/Xatom.h>
+	<X11/keysym.h>
+	<X11/cursorfont.h>
+	<X11/xpm.h>
+	<X11/extensions/XShm.h>
+	<X11/extensions/Xxf86dga.h>
+	<X11/extensions/xf86vmode.h>
+
+1381645537 c:\projects\fxquake\net_dgrm.h
+
+1378223667 source:c:\projects\fxquake\net_loop.c
+	"quakedef.h"
+	"net_loop.h"
+
+1374599757 c:\projects\fxquake\net_loop.h
+
+1378224027 source:c:\projects\fxquake\net_main.c
+	"quakedef.h"
+
+1381645511 source:c:\projects\fxquake\net_win.c
+	"quakedef.h"
+	"net_wins.h"
+	"net_loop.h"
+	"net_dgrm.h"
+
+1381645542 c:\projects\fxquake\net_wins.h
+
+1381645447 source:c:\projects\fxquake\net_wins.c
+	"quakedef.h"
+	"winquake.h"
+	"net_wins.h"
+
+1451322340 source:c:\projects\fxquake\pr_cmds.c
+	"quakedef.h"
+
+1399490449 source:c:\projects\fxquake\pr_edict.c
+	"quakedef.h"
+
+1381733847 source:c:\projects\fxquake\pr_exec.c
+	"quakedef.h"
+
+1397682640 source:c:\projects\fxquake\sbar.c
+	"quakedef.h"
+
+1429453422 source:c:\projects\fxquake\snd_dma.c
+	"quakedef.h"
+
+1429467420 source:c:\projects\fxquake\snd_mem.c
+	"quakedef.h"
+
+1395873521 source:c:\projects\fxquake\snd_mix.c
+	"quakedef.h"
+
+1378742774 source:c:\projects\fxquake\snd_win.c
+	"quakedef.h"
+	"winquake.h"
+
+1429606830 source:c:\projects\fxquake\sv_main.c
+	"quakedef.h"
+
+1367744972 source:c:\projects\fxquake\sv_move.c
+	"quakedef.h"
+
+1399731952 source:c:\projects\fxquake\sv_phys.c
+	"quakedef.h"
+
+1399739542 source:c:\projects\fxquake\sv_user.c
+	"quakedef.h"
+
+1396520490 source:c:\projects\fxquake\sys_win.c
+	"quakedef.h"
+	"winquake.h"
+	"resource.h"
+	"conproc.h"
+
+1367744972 c:\projects\fxquake\resource.h
+
+1451488990 source:c:\projects\fxquake\vid_wgl.c
+	"quakedef.h"
+	"winquake.h"
+	"resource.h"
+
+1396520513 source:c:\projects\fxquake\view.c
+	"quakedef.h"
+
+1378223728 source:c:\projects\fxquake\wad.c
+	"quakedef.h"
+
+1378652498 source:c:\projects\fxquake\winquake.rc
+	"resource.h"
+	"afxres.h"
+
+1399490629 source:c:\projects\fxquake\world.c
+	"quakedef.h"
+
+1383770529 source:c:\projects\fxquake\zone.c
+	"quakedef.h"
+

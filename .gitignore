@@ -3,4 +3,5 @@
 winquake.ncb
 winquake.opt
 winquake.plg
-Debug/*.*
+Debug
+Release
