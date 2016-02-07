@@ -334,6 +334,34 @@ typedef struct particle_s
 } particle_t;
 
 //====================================================
+// GL Alpha Sorting
+
+#define ALPHA_SURFACE 				2
+#define ALPHA_WATERWARP 			3
+#define ALPHA_FENCE 				4
+#define ALPHA_BRUSH 				5
+#define ALPHA_ALIAS 				6
+#define ALPHA_SPRITE 				7
+#define ALPHA_PARTICLE 				8
+#define ALPHA_DLIGHTS 				9
+
+#define MAX_ALPHA_ITEMS			65535
+typedef struct gl_alphalist_s {
+	int		type;
+	float	dist;
+	entity_t	*surfentity;
+	union {
+		entity_t	*entity;
+		particle_t	*particle;
+		msurface_t	*surface;
+		void 		*data; // access to union fields
+	};
+} gl_alphalist_t;
+
+extern gl_alphalist_t	*gl_alphalist[MAX_ALPHA_ITEMS];
+extern int				gl_alphalist_num;
+
+//====================================================
 
 extern	entity_t	r_worldentity;
 extern	vec3_t		modelorg, r_entorigin;

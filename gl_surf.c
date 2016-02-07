@@ -53,6 +53,37 @@ msurface_t  *skychain = NULL;
 msurface_t  *waterchain = NULL;
 
 /*
+============================================================================================================
+
+		ALPHA SORTING
+
+============================================================================================================
+*/
+
+gl_alphalist_t	*gl_alphalist[MAX_ALPHA_ITEMS];
+int				gl_alphalist_num = 0;
+
+/*
+===============
+GL_Alpha_GetDist
+===============
+*/
+float GL_Alpha_GetDist (float *origin)
+{
+	// no need to sqrt these as all we're concerned about is relative distances
+	// (if x < y then sqrt (x) is also < sqrt (y))
+	return (
+		(origin[0] - r_refdef.vieworg[0]) * (origin[0] - r_refdef.vieworg[0]) +
+		(origin[1] - r_refdef.vieworg[1]) * (origin[1] - r_refdef.vieworg[1]) +
+		(origin[2] - r_refdef.vieworg[2]) * (origin[2] - r_refdef.vieworg[2])
+	);
+}
+
+
+
+// ----------------------------------------------------
+
+/*
 ===============
 R_AddDynamicLights
 ===============
@@ -679,6 +710,9 @@ void R_DrawBrushModel (entity_t *e)
 	float		dot;
 	mplane_t	*pplane;
 	model_t		*clmodel;
+	
+	// dbg
+	float midpoint[3];
 
 	if (R_CullModelForEntity(e))
 		return;
@@ -713,17 +747,27 @@ void R_DrawBrushModel (entity_t *e)
 	}
 
 	glPushMatrix ();
-
+	
 	glTranslatef (e->origin[0],  e->origin[1],  e->origin[2]);
 	glRotatef (e->angles[1],  0, 0, 1);
 	glRotatef (e->angles[0],  0, 1, 0);
 	glRotatef (e->angles[2],  1, 0, 0);
+	
+	glGetFloatv (GL_MODELVIEW_MATRIX, e->matrix); // get entity matrix and save it
+	
+	// dbg
+//	for (i=0;i<16;i++)
+//		Con_Printf("e->matrix[%d]: %f\n", i, e->matrix[i]);
+//	Con_Printf("---\n");
 
+	Con_Printf("origin: %f %f %f\n", e->origin[0],  e->origin[1],  e->origin[2]);
+	Con_Printf("angles: %f %f %f\n", e->angles[0],  e->angles[1],  e->angles[2]);
+	
 	//
 	// draw it
 	//
 	psurf = &clmodel->surfaces[clmodel->firstmodelsurface];
-
+	
 	for (i=0 ; i<clmodel->nummodelsurfaces ; i++, psurf++)
 	{
 		// find which side of the node we are on
@@ -735,6 +779,23 @@ void R_DrawBrushModel (entity_t *e)
 			(!(psurf->flags & SURF_PLANEBACK) && (dot > BACKFACE_EPSILON)))
 		{
 			R_DrawSequentialPoly (e, psurf); // draw entities
+			
+			
+			// dbg
+//			Con_Printf("psurf midpoint: %f %f %f\n", psurf->midpoint[0], psurf->midpoint[1], psurf->midpoint[2]);
+
+			// transform the surface midpoint by the modelsurf matrix so that it goes into the proper place
+			// (we kept the entity matrix in local space so that we can do this correctly)
+			midpoint[0] = psurf->midpoint[0] + e->origin[0];
+			midpoint[1] = psurf->midpoint[1] + e->origin[1];
+			midpoint[2] = psurf->midpoint[2] + e->origin[2];
+
+//	midpoint[0] = e->matrix[0]*psurf->midpoint[0] + e->matrix[4+0]*psurf->midpoint[1] + e->matrix[8+0]*psurf->midpoint[2] + e->matrix[12+0];
+//	midpoint[1] = e->matrix[1]*psurf->midpoint[0] + e->matrix[4+1]*psurf->midpoint[1] + e->matrix[8+1]*psurf->midpoint[2] + e->matrix[12+1];
+//	midpoint[2] = e->matrix[2]*psurf->midpoint[0] + e->matrix[4+2]*psurf->midpoint[1] + e->matrix[8+2]*psurf->midpoint[2] + e->matrix[12+2];
+			
+//			Con_Printf("final midpoint: %f %f %f\n", midpoint[0],  midpoint[1],  midpoint[2]);
+			
 			
 			rs_c_brush_polys++; // r_speeds
 		}
