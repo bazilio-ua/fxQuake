@@ -713,8 +713,6 @@ void R_DrawBrushModel (entity_t *e)
 	qboolean	rotated = false;
 	float		midpoint[3]; 	// alpha sorting
 
-//	float		transformed_origin[3]; 	// dbg
-
 	if (R_CullModelForEntity(e))
 		return;
 
@@ -760,27 +758,6 @@ void R_DrawBrushModel (entity_t *e)
 	
 	glGetFloatv (GL_MODELVIEW_MATRIX, e->matrix); // get entity matrix and save it
 	
-	
-	// dbg
-//	Con_Printf("origin: %f %f %f\n", e->origin[0], e->origin[1], e->origin[2]);
-//	Con_Printf("angles: %f %f %f\n", e->angles[0], e->angles[1], e->angles[2]);
-//
-//
-//			VectorCopy (e->origin, transformed_origin);
-//			if (e->angles[0] || e->angles[1] || e->angles[2])
-//			{
-//				vec3_t	temp;
-//				vec3_t	forward, right, up;
-//				
-//				VectorCopy (transformed_origin, temp);
-//				AngleVectors (e->angles, forward, right, up);
-//				transformed_origin[0] = DotProduct (temp, forward);
-//				transformed_origin[1] = -DotProduct (temp, right);
-//				transformed_origin[2] = DotProduct (temp, up);
-//			}
-//	Con_Printf("transformed_origin: %f %f %f\n", transformed_origin[0], transformed_origin[1], transformed_origin[2]);
-	
-	
 	//
 	// draw it
 	//
@@ -796,15 +773,8 @@ void R_DrawBrushModel (entity_t *e)
 		if (((psurf->flags & SURF_PLANEBACK) && (dot < -BACKFACE_EPSILON)) ||
 			(!(psurf->flags & SURF_PLANEBACK) && (dot > BACKFACE_EPSILON)))
 		{
-			R_DrawSequentialPoly (e, psurf); // draw entities
-			
-			
-			// dbg
-			Con_Printf("psurf#: %d, psurf midpoint: %f %f %f\n", i, psurf->midpoint[0], psurf->midpoint[1], psurf->midpoint[2]);
-			
 			// transform the surface midpoint
 			VectorAdd (psurf->midpoint, e->origin, midpoint);
-//			if (e->angles[0] || e->angles[1] || e->angles[2])
 			if (rotated)
 			{
 				vec3_t	temp;
@@ -816,10 +786,9 @@ void R_DrawBrushModel (entity_t *e)
 				midpoint[1] = -DotProduct (temp, right);
 				midpoint[2] = DotProduct (temp, up);
 			}
+			// TODO: add to alpha here
 			
-			// dbg
-			Con_Printf("psurf#: %d, final midpoint: %f %f %f\n", i, midpoint[0],  midpoint[1],  midpoint[2]);
-			
+			R_DrawSequentialPoly (e, psurf); // draw entities
 			
 			rs_c_brush_polys++; // r_speeds
 		}
