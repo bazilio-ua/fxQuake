@@ -710,9 +710,10 @@ void R_DrawBrushModel (entity_t *e)
 	float		dot;
 	mplane_t	*pplane;
 	model_t		*clmodel;
-	
-	// dbg
-	float midpoint[3];
+	qboolean	rotated = false;
+	float		midpoint[3]; 	// alpha sorting
+
+//	float		transformed_origin[3]; 	// dbg
 
 	if (R_CullModelForEntity(e))
 		return;
@@ -724,7 +725,8 @@ void R_DrawBrushModel (entity_t *e)
 	{
 		vec3_t	temp;
 		vec3_t	forward, right, up;
-
+		
+		rotated = true;
 		VectorCopy (modelorg, temp);
 		AngleVectors (e->angles, forward, right, up);
 		modelorg[0] = DotProduct (temp, forward);
@@ -749,19 +751,35 @@ void R_DrawBrushModel (entity_t *e)
 	glPushMatrix ();
 	
 	glTranslatef (e->origin[0],  e->origin[1],  e->origin[2]);
-	glRotatef (e->angles[1],  0, 0, 1);
-	glRotatef (e->angles[0],  0, 1, 0);
-	glRotatef (e->angles[2],  1, 0, 0);
+	if (rotated) 
+	{
+		glRotatef (e->angles[1],  0, 0, 1);
+		glRotatef (e->angles[0],  0, 1, 0);
+		glRotatef (e->angles[2],  1, 0, 0);
+	}
 	
 	glGetFloatv (GL_MODELVIEW_MATRIX, e->matrix); // get entity matrix and save it
 	
+	
 	// dbg
-//	for (i=0;i<16;i++)
-//		Con_Printf("e->matrix[%d]: %f\n", i, e->matrix[i]);
-//	Con_Printf("---\n");
-
-	Con_Printf("origin: %f %f %f\n", e->origin[0],  e->origin[1],  e->origin[2]);
-	Con_Printf("angles: %f %f %f\n", e->angles[0],  e->angles[1],  e->angles[2]);
+//	Con_Printf("origin: %f %f %f\n", e->origin[0], e->origin[1], e->origin[2]);
+//	Con_Printf("angles: %f %f %f\n", e->angles[0], e->angles[1], e->angles[2]);
+//
+//
+//			VectorCopy (e->origin, transformed_origin);
+//			if (e->angles[0] || e->angles[1] || e->angles[2])
+//			{
+//				vec3_t	temp;
+//				vec3_t	forward, right, up;
+//				
+//				VectorCopy (transformed_origin, temp);
+//				AngleVectors (e->angles, forward, right, up);
+//				transformed_origin[0] = DotProduct (temp, forward);
+//				transformed_origin[1] = -DotProduct (temp, right);
+//				transformed_origin[2] = DotProduct (temp, up);
+//			}
+//	Con_Printf("transformed_origin: %f %f %f\n", transformed_origin[0], transformed_origin[1], transformed_origin[2]);
+	
 	
 	//
 	// draw it
@@ -782,19 +800,25 @@ void R_DrawBrushModel (entity_t *e)
 			
 			
 			// dbg
-//			Con_Printf("psurf midpoint: %f %f %f\n", psurf->midpoint[0], psurf->midpoint[1], psurf->midpoint[2]);
-
-			// transform the surface midpoint by the modelsurf matrix so that it goes into the proper place
-			// (we kept the entity matrix in local space so that we can do this correctly)
-			midpoint[0] = psurf->midpoint[0] + e->origin[0];
-			midpoint[1] = psurf->midpoint[1] + e->origin[1];
-			midpoint[2] = psurf->midpoint[2] + e->origin[2];
-
-//	midpoint[0] = e->matrix[0]*psurf->midpoint[0] + e->matrix[4+0]*psurf->midpoint[1] + e->matrix[8+0]*psurf->midpoint[2] + e->matrix[12+0];
-//	midpoint[1] = e->matrix[1]*psurf->midpoint[0] + e->matrix[4+1]*psurf->midpoint[1] + e->matrix[8+1]*psurf->midpoint[2] + e->matrix[12+1];
-//	midpoint[2] = e->matrix[2]*psurf->midpoint[0] + e->matrix[4+2]*psurf->midpoint[1] + e->matrix[8+2]*psurf->midpoint[2] + e->matrix[12+2];
+			Con_Printf("psurf#: %d, psurf midpoint: %f %f %f\n", i, psurf->midpoint[0], psurf->midpoint[1], psurf->midpoint[2]);
 			
-//			Con_Printf("final midpoint: %f %f %f\n", midpoint[0],  midpoint[1],  midpoint[2]);
+			// transform the surface midpoint
+			VectorAdd (psurf->midpoint, e->origin, midpoint);
+//			if (e->angles[0] || e->angles[1] || e->angles[2])
+			if (rotated)
+			{
+				vec3_t	temp;
+				vec3_t	forward, right, up;
+				
+				VectorCopy (midpoint, temp);
+				AngleVectors (e->angles, forward, right, up);
+				midpoint[0] = DotProduct (temp, forward);
+				midpoint[1] = -DotProduct (temp, right);
+				midpoint[2] = DotProduct (temp, up);
+			}
+			
+			// dbg
+			Con_Printf("psurf#: %d, final midpoint: %f %f %f\n", i, midpoint[0],  midpoint[1],  midpoint[2]);
 			
 			
 			rs_c_brush_polys++; // r_speeds
