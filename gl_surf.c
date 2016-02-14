@@ -70,6 +70,13 @@ R_AlphaGetDist
 */
 inline vec_t R_AlphaGetDist (vec3_t origin)
 {
+/*	vec3_t	result;
+	
+	VectorSubtract (origin, r_origin, result);
+
+	return VectorLength (result);
+*/	
+	
 	// no need to sqrt these as all we're concerned about is relative distances
 	// (if x < y then sqrt (x) is also < sqrt (y))
 	return (
@@ -909,7 +916,7 @@ void R_DrawBrushModel (entity_t *e)
 		{
 			
 			
-			
+/*			
 			// transform the surface midpoint
 			VectorAdd (psurf->midpoint, e->origin, midpoint);
 			if (rotated)
@@ -924,8 +931,21 @@ void R_DrawBrushModel (entity_t *e)
 				midpoint[2] = DotProduct (temp, up);
 			}
 			// TODO: add to alpha here
+*/	
+	
+		vec3_t  vf, vr, vu;	
+	
+		AngleVectors (e->angles, vf, vr, vu);
+		midpoint[0] = psurf->midpoint[0] * vf[0] + psurf->midpoint[1] * vf[1] + psurf->midpoint[2] * vf[2] + e->origin[0];
+		midpoint[1] = psurf->midpoint[0] * vr[0] + psurf->midpoint[1] * vr[1] + psurf->midpoint[2] * vr[2] + e->origin[1];
+		midpoint[2] = psurf->midpoint[0] * vu[0] + psurf->midpoint[1] * vu[1] + psurf->midpoint[2] * vu[2] + e->origin[2];
+	
+	
+	
 			
-			
+			Con_Printf("psurf final midpoint: %f %f %f\n", midpoint[0],  midpoint[1],  midpoint[2]);
+			Con_Printf("psurf dist: %f \n", R_AlphaGetDist(midpoint));
+
 			
 			if (psurf->flags & SURF_DRAWTURB)
 				R_AddToAlpha (ALPHA_WATERWARP, R_AlphaGetDist(midpoint), e, psurf);
@@ -1062,6 +1082,10 @@ restart:
 			} 
 			else if (surf->flags & SURF_DRAWTURB)
 			{
+			Con_Printf("water final midpoint: %f %f %f\n", surf->midpoint[0],  surf->midpoint[1],  surf->midpoint[2]);
+			Con_Printf("water dist: %f \n", R_AlphaGetDist(surf->midpoint));
+				
+				
 				R_AddToAlpha (ALPHA_WATERWARP, R_AlphaGetDist(surf->midpoint), NULL, surf);
 //				surf->texturechain = waterchain;
 //				waterchain = surf;
