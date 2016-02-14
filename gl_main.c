@@ -676,8 +676,8 @@ void R_DrawEntities (void)
 
 		e = cl_visedicts[i];
 
-		if (ENTALPHA_DECODE(e->alpha) < 1)
-			continue;
+//		if (ENTALPHA_DECODE(e->alpha) < 1)
+//			continue;
 
 		// chase_active
 		if (e == &cl_entities[cl.viewentity])
@@ -685,14 +685,22 @@ void R_DrawEntities (void)
 
 		switch (e->model->type)
 		{
-		case mod_alias:
-			R_DrawAliasModel (e);
-			break;
-
 		case mod_brush:
 			R_DrawBrushModel (e);
 			break;
-
+			
+		case mod_alias:
+			if (ENTALPHA_DECODE(e->alpha) < 1)
+				R_AddToAlpha (ALPHA_ALIAS, R_AlphaGetDist(e->origin), NULL, e);
+			else	
+				R_DrawAliasModel (e);
+			break;
+			
+		case mod_sprite:
+			R_AddToAlpha (ALPHA_SPRITE, R_AlphaGetDist(e->origin), NULL, e);
+//			R_DrawSpriteModel (e);
+			break;
+			
 		default:
 			break;
 		}
@@ -1131,12 +1139,13 @@ void R_RenderView (void)
 	R_DrawSky (); // handle worldspawn and bmodels
 	R_DrawSolid ();
 	R_DrawEntities ();
-	R_SetupTransEntities (); // do this after R_DrawWorld so efrags updated correctly
+	R_DrawAlpha ();
+//	R_SetupTransEntities (); // do this after R_DrawWorld so efrags updated correctly
 	R_SetupParticles ();
-	R_DrawTransEntities (r_viewleaf->contents == CONTENTS_EMPTY);
+//	R_DrawTransEntities (r_viewleaf->contents == CONTENTS_EMPTY);
 	R_DrawParticles (r_viewleaf->contents == CONTENTS_EMPTY);
-	R_DrawTextureChainsWater (); // drawn here since they might have transparency
-	R_DrawTransEntities (r_viewleaf->contents != CONTENTS_EMPTY);
+//	R_DrawTextureChainsWater (); // drawn here since they might have transparency
+//	R_DrawTransEntities (r_viewleaf->contents != CONTENTS_EMPTY);
 	R_DrawParticles (r_viewleaf->contents != CONTENTS_EMPTY);
 	R_DrawViewModel ();
 	R_RenderDlights (); // flash blend dlights

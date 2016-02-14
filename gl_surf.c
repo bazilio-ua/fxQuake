@@ -60,25 +60,155 @@ msurface_t  *waterchain = NULL;
 ============================================================================================================
 */
 
-gl_alphalist_t	*gl_alphalist[MAX_ALPHA_ITEMS];
+gl_alphalist_t	gl_alphalist[MAX_ALPHA_ITEMS];
 int				gl_alphalist_num = 0;
 
 /*
 ===============
-GL_Alpha_GetDist
+R_AlphaGetDist
 ===============
 */
-float GL_Alpha_GetDist (float *origin)
+inline vec_t R_AlphaGetDist (vec3_t origin)
 {
 	// no need to sqrt these as all we're concerned about is relative distances
 	// (if x < y then sqrt (x) is also < sqrt (y))
 	return (
-		(origin[0] - r_refdef.vieworg[0]) * (origin[0] - r_refdef.vieworg[0]) +
-		(origin[1] - r_refdef.vieworg[1]) * (origin[1] - r_refdef.vieworg[1]) +
-		(origin[2] - r_refdef.vieworg[2]) * (origin[2] - r_refdef.vieworg[2])
+		(origin[0] - r_origin[0]) * (origin[0] - r_origin[0]) +
+		(origin[1] - r_origin[1]) * (origin[1] - r_origin[1]) +
+		(origin[2] - r_origin[2]) * (origin[2] - r_origin[2])
 	);
 }
 
+/*
+===============
+R_AddToAlpha
+===============
+*/
+inline void R_AddToAlpha (int type, vec_t dist, entity_t *surfentity, void *data)
+{
+	if (gl_alphalist_num == MAX_ALPHA_ITEMS)
+		return;
+	
+	gl_alphalist[gl_alphalist_num].type = type;
+	gl_alphalist[gl_alphalist_num].dist = dist;
+	gl_alphalist[gl_alphalist_num].surfentity = surfentity;
+	gl_alphalist[gl_alphalist_num].data = data;
+	
+	gl_alphalist_num++;
+}
+
+static inline int alphadistcompare (const void *arg1, const void *arg2) 
+{
+	// Sort in descending dist order, i.e. back to front
+//	return ((gl_alphalist_t *)arg2)->dist - ((gl_alphalist_t *)arg1)->dist; // Sorted in reverse order
+	
+	const gl_alphalist_t *a1 = (gl_alphalist_t *)arg1;
+	const gl_alphalist_t *a2 = (gl_alphalist_t *)arg2;
+	
+	// back to front ordering
+	// this is more correct as it will order surfs properly if less than 1 unit separated
+	if (a2->dist > a1->dist)
+		return 1;
+	else if (a2->dist < a1->dist)
+		return -1;
+	else
+		return 0;
+}
+
+/*
+=============
+R_DrawAlpha
+=============
+*/
+void R_DrawAlpha (void)
+{
+	int			i;
+	entity_t	*e;
+	msurface_t	*s;
+	gl_alphalist_t	alpha;
+	
+	if (gl_alphalist_num == 0)
+		return;
+		
+	//
+	// sort
+	//
+	if (gl_alphalist_num == 1)
+	{
+		// do nothing, no need to sort
+	}
+	else if (gl_alphalist_num == 2)
+	{
+		// exchange if necessary
+		if (gl_alphalist[1].dist > gl_alphalist[0].dist)
+		{
+			gl_alphalist_t temp = gl_alphalist[0];
+			gl_alphalist[0] = gl_alphalist[1];
+			gl_alphalist[1] = temp;
+		}
+	}
+	else
+	{
+		// sort fully
+		qsort((void *)gl_alphalist, gl_alphalist_num, sizeof(gl_alphalist_t), alphadistcompare);
+	}
+	
+	//
+	// draw
+	//
+	for (i=0 ; i<gl_alphalist_num ; i++)
+	{
+		if ((i + 1) % 100 == 0)
+			S_ExtraUpdateTime (); // don't let sound get messed up if going slow
+		
+		alpha = gl_alphalist[i];
+		
+		switch (alpha.type)
+		{
+		case ALPHA_SURFACE:
+		case ALPHA_WATERWARP:
+		case ALPHA_FENCE:
+			{
+				if (alpha.surfentity)
+				{
+					glPushMatrix ();
+					
+					//
+					// go back to the entity matrix
+					//
+					glLoadMatrixf (alpha.surfentity->matrix); // load matrix
+
+					
+					
+					R_DrawSequentialPoly (alpha.surfentity, (msurface_t *)alpha.data); // draw
+					
+					
+					
+					GL_DisableMultitexture (); // selects TEXTURE0
+
+					glPopMatrix ();
+				}
+				else 
+				{
+					R_DrawSequentialPoly (NULL, (msurface_t *)alpha.data); // draw
+				}
+			}
+			break;
+			
+		case ALPHA_ALIAS:
+			break;
+			
+		case ALPHA_SPRITE:
+			break;
+			
+		default:
+			break;
+		}
+	}
+
+		
+	gl_alphalist_num = 0;
+}
 
 
 // ----------------------------------------------------
@@ -711,13 +841,17 @@ void R_DrawBrushModel (entity_t *e)
 	mplane_t	*pplane;
 	model_t		*clmodel;
 	qboolean	rotated = false;
-	float		midpoint[3]; 	// alpha sorting
+	qboolean	isalpha = false;
+	vec3_t		midpoint; 	// alpha sorting
 
 	if (R_CullModelForEntity(e))
 		return;
-
+	
 	clmodel = e->model;
-
+	
+	if (ENTALPHA_DECODE(e->alpha) < 1)
+		isalpha = true;
+	
 	VectorSubtract (r_refdef.vieworg, e->origin, modelorg);
 	if (e->angles[0] || e->angles[1] || e->angles[2])
 	{
@@ -773,6 +907,9 @@ void R_DrawBrushModel (entity_t *e)
 		if (((psurf->flags & SURF_PLANEBACK) && (dot < -BACKFACE_EPSILON)) ||
 			(!(psurf->flags & SURF_PLANEBACK) && (dot > BACKFACE_EPSILON)))
 		{
+			
+			
+			
 			// transform the surface midpoint
 			VectorAdd (psurf->midpoint, e->origin, midpoint);
 			if (rotated)
@@ -788,7 +925,18 @@ void R_DrawBrushModel (entity_t *e)
 			}
 			// TODO: add to alpha here
 			
-			R_DrawSequentialPoly (e, psurf); // draw entities
+			
+			
+			if (psurf->flags & SURF_DRAWTURB)
+				R_AddToAlpha (ALPHA_WATERWARP, R_AlphaGetDist(midpoint), e, psurf);
+			else if (psurf->flags & SURF_DRAWFENCE)
+				R_AddToAlpha (ALPHA_FENCE, R_AlphaGetDist(midpoint), e, psurf);
+			else if (isalpha)
+				R_AddToAlpha (ALPHA_SURFACE, R_AlphaGetDist(midpoint), e, psurf);
+			else
+				R_DrawSequentialPoly (e, psurf); // draw entities
+			
+			
 			
 			rs_c_brush_polys++; // r_speeds
 		}
@@ -914,8 +1062,13 @@ restart:
 			} 
 			else if (surf->flags & SURF_DRAWTURB)
 			{
-				surf->texturechain = waterchain;
-				waterchain = surf;
+				R_AddToAlpha (ALPHA_WATERWARP, R_AlphaGetDist(surf->midpoint), NULL, surf);
+//				surf->texturechain = waterchain;
+//				waterchain = surf;
+			}
+			else if (surf->flags & SURF_DRAWFENCE)
+			{
+				R_AddToAlpha (ALPHA_FENCE, R_AlphaGetDist(surf->midpoint), NULL, surf);
 			}
 			else
 			{

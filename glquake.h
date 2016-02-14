@@ -346,20 +346,22 @@ typedef struct particle_s
 #define ALPHA_DLIGHTS 				9
 
 #define MAX_ALPHA_ITEMS			65535
-typedef struct gl_alphalist_s {
-	int		type;
-	float	dist;
+typedef struct gl_alphalist_s 
+{
+	int			type;
+	vec_t		dist;
+	
 	entity_t	*surfentity;
-	union {
-		entity_t	*entity;
-		particle_t	*particle;
-		msurface_t	*surface;
-		void 		*data; // access to union fields
-	};
+	
+	void 		*data;
 } gl_alphalist_t;
 
-extern gl_alphalist_t	*gl_alphalist[MAX_ALPHA_ITEMS];
+extern gl_alphalist_t	gl_alphalist[MAX_ALPHA_ITEMS];
 extern int				gl_alphalist_num;
+
+extern inline vec_t R_AlphaGetDist (vec3_t origin);
+extern inline void R_AddToAlpha (int type, vec_t dist, entity_t *surfentity, void *data);
+extern void R_DrawAlpha (void);
 
 //====================================================
 
