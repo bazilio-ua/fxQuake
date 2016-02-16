@@ -915,9 +915,10 @@ void R_DrawBrushModel (entity_t *e)
 			(!(psurf->flags & SURF_PLANEBACK) && (dot > BACKFACE_EPSILON)))
 		{
 			
-			
+
+						
 /*			
-			// transform the surface midpoint
+			// transform the surface midpoint (old)
 			VectorAdd (psurf->midpoint, e->origin, midpoint);
 			if (rotated)
 			{
@@ -931,15 +932,33 @@ void R_DrawBrushModel (entity_t *e)
 				midpoint[2] = DotProduct (temp, up);
 			}
 			// TODO: add to alpha here
-*/	
-	
+*/
+
+/*	
 		vec3_t  vf, vr, vu;	
 	
 		AngleVectors (e->angles, vf, vr, vu);
 		midpoint[0] = psurf->midpoint[0] * vf[0] + psurf->midpoint[1] * vf[1] + psurf->midpoint[2] * vf[2] + e->origin[0];
 		midpoint[1] = psurf->midpoint[0] * vr[0] + psurf->midpoint[1] * vr[1] + psurf->midpoint[2] * vr[2] + e->origin[1];
 		midpoint[2] = psurf->midpoint[0] * vu[0] + psurf->midpoint[1] * vu[1] + psurf->midpoint[2] * vu[2] + e->origin[2];
-	
+*/	
+			
+			
+			
+			// transform the surface midpoint (NEW)
+			if (rotated)
+			{
+				vec3_t	temp;
+				vec3_t	forward, right, up;
+				
+				VectorCopy (psurf->midpoint, temp);
+				AngleVectors (e->angles, forward, right, up);
+				midpoint[0] = (DotProduct (temp, forward) + e->origin[0]);
+				midpoint[1] = (DotProduct (temp, right) + e->origin[1]);
+				midpoint[2] = (DotProduct (temp, up) + e->origin[2]);
+			}
+			else
+				VectorAdd (psurf->midpoint, e->origin, midpoint);
 	
 	
 			
