@@ -12,7 +12,7 @@
 				<Option object_output="./Debug" />
 				<Option type="0" />
 				<Option compiler="gcc" />
-				<Option parameters="-window +map start" />
+				<Option parameters="-window -game rotate +map tst" />
 				<Compiler>
 					<Add option="-g" />
 					<Add option="-DDEBUG" />
