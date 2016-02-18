@@ -77,12 +77,20 @@ inline vec_t R_AlphaGetDist (vec3_t origin)
 	return VectorLength (result);
 */	
 	
+	entity_t *ent = &cl_entities[cl.viewentity];
+	
 	// no need to sqrt these as all we're concerned about is relative distances
 	// (if x < y then sqrt (x) is also < sqrt (y))
+//	return (
+//		(origin[0] - r_origin[0]) * (origin[0] - r_origin[0]) +
+//		(origin[1] - r_origin[1]) * (origin[1] - r_origin[1]) +
+//		(origin[2] - r_origin[2]) * (origin[2] - r_origin[2])
+//	);
+
 	return (
-		(origin[0] - r_origin[0]) * (origin[0] - r_origin[0]) +
-		(origin[1] - r_origin[1]) * (origin[1] - r_origin[1]) +
-		(origin[2] - r_origin[2]) * (origin[2] - r_origin[2])
+		(origin[0] - ent->origin[0]) * (origin[0] - ent->origin[0]) +
+		(origin[1] - ent->origin[1]) * (origin[1] - ent->origin[1]) +
+		(origin[2] - ent->origin[2]) * (origin[2] - ent->origin[2])
 	);
 	
 }
@@ -944,6 +952,7 @@ void R_DrawBrushModel (entity_t *e)
 		midpoint[2] = psurf->midpoint[0] * vu[0] + psurf->midpoint[1] * vu[1] + psurf->midpoint[2] * vu[2] + e->origin[2];
 */	
 			vec_t minimum_dist;
+			entity_t *ent = &cl_entities[cl.viewentity];
 			
 			Con_Printf("psurf->midpoint: %f %f %f\n", psurf->midpoint[0],  psurf->midpoint[1],  psurf->midpoint[2]);
 			Con_Printf("psurf->mins: %f %f %f\n", psurf->mins[0],  psurf->mins[1],  psurf->mins[2]);
@@ -998,6 +1007,15 @@ void R_DrawBrushModel (entity_t *e)
 						
 			Con_Printf("minimum_dist: %f \n", minimum_dist);
 
+			
+			
+			Con_Warning("r_origin: %f %f %f\n", r_origin[0],r_origin[1],r_origin[2]);
+
+			
+			Con_Warning("player origin: %f %f %f\n", ent->origin[0],ent->origin[1],ent->origin[2]);
+			Con_Warning("player angles: %f %f %f\n", ent->angles[0],ent->angles[1],ent->angles[2]);
+			
+			
 						
 			if (psurf->flags & SURF_DRAWTURB)
 				R_AddToAlpha (ALPHA_WATERWARP, minimum_dist, e, psurf);
