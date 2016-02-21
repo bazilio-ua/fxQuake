@@ -77,21 +77,21 @@ inline vec_t R_AlphaGetDist (vec3_t origin)
 	return VectorLength (result);
 */	
 	
-	entity_t *ent = &cl_entities[cl.viewentity];
+//	entity_t *ent = &cl_entities[cl.viewentity];
 	
 	// no need to sqrt these as all we're concerned about is relative distances
 	// (if x < y then sqrt (x) is also < sqrt (y))
-//	return (
-//		(origin[0] - r_origin[0]) * (origin[0] - r_origin[0]) +
-//		(origin[1] - r_origin[1]) * (origin[1] - r_origin[1]) +
-//		(origin[2] - r_origin[2]) * (origin[2] - r_origin[2])
-//	);
-
 	return (
-		(origin[0] - ent->origin[0]) * (origin[0] - ent->origin[0]) +
-		(origin[1] - ent->origin[1]) * (origin[1] - ent->origin[1]) +
-		(origin[2] - ent->origin[2]) * (origin[2] - ent->origin[2])
+		(origin[0] - r_origin[0]) * (origin[0] - r_origin[0]) +
+		(origin[1] - r_origin[1]) * (origin[1] - r_origin[1]) +
+		(origin[2] - r_origin[2]) * (origin[2] - r_origin[2])
 	);
+
+//	return (
+//		(origin[0] - ent->origin[0]) * (origin[0] - ent->origin[0]) +
+//		(origin[1] - ent->origin[1]) * (origin[1] - ent->origin[1]) +
+//		(origin[2] - ent->origin[2]) * (origin[2] - ent->origin[2])
+//	);
 	
 }
 
@@ -1001,19 +1001,20 @@ void R_DrawBrushModel (entity_t *e)
 			Con_Printf("psurf maxs dist: %f \n", R_AlphaGetDist(maxs));
 
 			
-			minimum_dist = min(R_AlphaGetDist(mins),R_AlphaGetDist(maxs));
-			minimum_dist = min(minimum_dist,R_AlphaGetDist(midpoint));
+//			minimum_dist = min(R_AlphaGetDist(mins),R_AlphaGetDist(maxs));
+//			minimum_dist = min(minimum_dist,R_AlphaGetDist(midpoint));
 
+			minimum_dist = R_AlphaGetDist(midpoint);
 						
 			Con_Printf("minimum_dist: %f \n", minimum_dist);
 
 			
 			
-			Con_Warning("r_origin: %f %f %f\n", r_origin[0],r_origin[1],r_origin[2]);
-
-			
-			Con_Warning("player origin: %f %f %f\n", ent->origin[0],ent->origin[1],ent->origin[2]);
-			Con_Warning("player angles: %f %f %f\n", ent->angles[0],ent->angles[1],ent->angles[2]);
+//			Con_Warning("r_origin: %f %f %f\n", r_origin[0],r_origin[1],r_origin[2]);
+//
+//			
+//			Con_Warning("player origin: %f %f %f\n", ent->origin[0],ent->origin[1],ent->origin[2]);
+//			Con_Warning("player angles: %f %f %f\n", ent->angles[0],ent->angles[1],ent->angles[2]);
 			
 			
 						
