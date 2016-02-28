@@ -345,7 +345,7 @@ typedef struct particle_s
 #define ALPHA_PARTICLE 				8
 #define ALPHA_DLIGHTS 				9
 
-#define MAX_ALPHA_ITEMS			65535
+#define MAX_ALPHA_ITEMS			65536
 typedef struct gl_alphalist_s 
 {
 	int			type;
