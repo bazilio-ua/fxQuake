@@ -1119,7 +1119,7 @@ void Mod_PolyForUnlitSurface (msurface_t *s)
 	float		texscale;
 
 	if (s->flags & (SURF_DRAWTURB | SURF_DRAWSKY))
-		texscale = (1.0/128.0); // warp animation repeats every 128
+		texscale = (1.0/128.0); // warp animation repeats every 128 units
 	else
 		texscale = (1.0/16.0); // to match notexture_mip
 

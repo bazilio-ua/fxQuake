@@ -926,48 +926,13 @@ void R_DrawBrushModel (entity_t *e)
 			(!(psurf->flags & SURF_PLANEBACK) && (dot > BACKFACE_EPSILON)))
 		{
 			
-
-						
-/*			
-			// transform the surface midpoint (old)
-			VectorAdd (psurf->midpoint, e->origin, midpoint);
-			if (rotated)
-			{
-				vec3_t	temp;
-				vec3_t	forward, right, up;
-				
-				VectorCopy (midpoint, temp);
-				AngleVectors (e->angles, forward, right, up);
-				midpoint[0] = DotProduct (temp, forward);
-				midpoint[1] = -DotProduct (temp, right);
-				midpoint[2] = DotProduct (temp, up);
-			}
-			// TODO: add to alpha here
-*/
-
-/*	
-		vec3_t  vf, vr, vu;	
-	
-		AngleVectors (e->angles, vf, vr, vu);
-		midpoint[0] = psurf->midpoint[0] * vf[0] + psurf->midpoint[1] * vf[1] + psurf->midpoint[2] * vf[2] + e->origin[0];
-		midpoint[1] = psurf->midpoint[0] * vr[0] + psurf->midpoint[1] * vr[1] + psurf->midpoint[2] * vr[2] + e->origin[1];
-		midpoint[2] = psurf->midpoint[0] * vu[0] + psurf->midpoint[1] * vu[1] + psurf->midpoint[2] * vu[2] + e->origin[2];
-*/	
-			vec_t minimum_dist;
-			
-			
-			vec_t midpoint_dist;
 			vec_t mins_dist;
 			vec_t maxs_dist;
+			vec_t midpoint_dist;
+			
+			vec_t minimum_dist;
 			
 			vec_t average_dist;
-			
-//			entity_t *ent = &cl_entities[cl.viewentity];
-			
-//			Con_Printf("psurf->midpoint: %f %f %f\n", psurf->midpoint[0],  psurf->midpoint[1],  psurf->midpoint[2]);
-//			Con_Printf("psurf->mins: %f %f %f\n", psurf->mins[0],  psurf->mins[1],  psurf->mins[2]);
-//			Con_Printf("psurf->maxs: %f %f %f\n", psurf->maxs[0],  psurf->maxs[1],  psurf->maxs[2]);
-			
 			
 			// transform the surface midpoint, mins, maxs (NEW)
 			if (rotated)
@@ -999,47 +964,29 @@ void R_DrawBrushModel (entity_t *e)
 				VectorAdd (psurf->mins, e->origin, mins);
 				VectorAdd (psurf->maxs, e->origin, maxs);
 			}
-	
-	
-			
-//			Con_Printf("psurf final midpoint: %f %f %f\n", midpoint[0],  midpoint[1],  midpoint[2]);
-//			Con_Printf("psurf final mins: %f %f %f\n", mins[0],  mins[1],  mins[2]);
-//			Con_Printf("psurf final maxs: %f %f %f\n", maxs[0],  maxs[1],  maxs[2]);
-//			
-//			Con_Printf("psurf midpoint dist: %f \n", R_AlphaGetDist(midpoint));
-//			Con_Printf("psurf mins dist: %f \n", R_AlphaGetDist(mins));
-//			Con_Printf("psurf maxs dist: %f \n", R_AlphaGetDist(maxs));
-
-			
-//			minimum_dist = min(R_AlphaGetDist(mins),R_AlphaGetDist(maxs));
-//			minimum_dist = min(minimum_dist,R_AlphaGetDist(midpoint));
-
-			minimum_dist = R_AlphaGetDist(midpoint);
-						
-			Con_Printf("minimum_dist: %f \n", minimum_dist);
-
 			
 			
-			midpoint_dist = R_AlphaGetDist(midpoint);
 			mins_dist = R_AlphaGetDist(mins);
 			maxs_dist = R_AlphaGetDist(maxs);
-
-			Con_Printf("midpoint_dist: %f \n", midpoint_dist);
+			midpoint_dist = R_AlphaGetDist(midpoint);
+			
 			Con_Printf("mins_dist: %f \n", mins_dist);
 			Con_Printf("maxs_dist: %f \n", maxs_dist);
+			Con_Printf("midpoint_dist: %f \n", midpoint_dist);
 			
-			average_dist = (mins_dist+midpoint_dist+maxs_dist)/3;
+			
+			minimum_dist = min(mins_dist, maxs_dist);
+			minimum_dist = min(minimum_dist, midpoint_dist);
+			
+			Con_Printf("minimum_dist: %f \n", minimum_dist);
+			
+			
+			average_dist = (mins_dist + midpoint_dist + maxs_dist) / 3;
 			
 			Con_Printf("average_dist: %f \n", average_dist);
 			
-//			Con_Warning("r_origin: %f %f %f\n", r_origin[0],r_origin[1],r_origin[2]);
-//
-//			
-//			Con_Warning("player origin: %f %f %f\n", ent->origin[0],ent->origin[1],ent->origin[2]);
-//			Con_Warning("player angles: %f %f %f\n", ent->angles[0],ent->angles[1],ent->angles[2]);
 			
 			
-						
 			if (psurf->flags & SURF_DRAWTURB)
 				R_AddToAlpha (ALPHA_WATERWARP, average_dist, e, psurf);
 			else if (psurf->flags & SURF_DRAWFENCE)
@@ -1176,44 +1123,37 @@ restart:
 			else if (surf->flags & SURF_DRAWTURB)
 			{
 				
+				
+				vec_t mins_dist;
+				vec_t maxs_dist;
+				vec_t midpoint_dist;
+				
 				vec_t minimum_dist;
-	
-			vec_t midpoint_dist;
-			vec_t mins_dist;
-			vec_t maxs_dist;
-			
-			vec_t average_dist;
 				
-//			Con_Printf("water final surf->midpoint: %f %f %f\n", surf->midpoint[0],  surf->midpoint[1],  surf->midpoint[2]);
-//			Con_Printf("water final surf->mins: %f %f %f\n", surf->mins[0],  surf->mins[1],  surf->mins[2]);
-//			Con_Printf("water final surf->maxs: %f %f %f\n", surf->maxs[0],  surf->maxs[1],  surf->maxs[2]);
-//				
-//			Con_Printf("water surf->midpoint dist: %f \n", R_AlphaGetDist(surf->midpoint));
-//			Con_Printf("water surf->mins dist: %f \n", R_AlphaGetDist(surf->mins));
-//			Con_Printf("water surf->maxs dist: %f \n", R_AlphaGetDist(surf->maxs));
+				vec_t average_dist;
 				
-//			minimum_dist = min(R_AlphaGetDist(surf->mins),R_AlphaGetDist(surf->maxs));
-//			minimum_dist = min(minimum_dist,R_AlphaGetDist(surf->midpoint));
+				
+				mins_dist = R_AlphaGetDist(surf->mins);
+				maxs_dist = R_AlphaGetDist(surf->maxs);
+				midpoint_dist = R_AlphaGetDist(surf->midpoint);
 
-			minimum_dist = R_AlphaGetDist(surf->midpoint);
-						
-			Con_Printf("water minimum_dist: %f \n", minimum_dist);
-
-
-			midpoint_dist = R_AlphaGetDist(surf->midpoint);
-			mins_dist = R_AlphaGetDist(surf->mins);
-			maxs_dist = R_AlphaGetDist(surf->maxs);
-
-			Con_Printf("water midpoint_dist: %f \n", midpoint_dist);
-			Con_Printf("water mins_dist: %f \n", mins_dist);
-			Con_Printf("water maxs_dist: %f \n", maxs_dist);
-			
-			average_dist = (mins_dist+midpoint_dist+maxs_dist)/3;
-			
-			Con_Printf("water average_dist: %f \n", average_dist);
-
-
-								
+				Con_Printf("water mins_dist: %f \n", mins_dist);
+				Con_Printf("water maxs_dist: %f \n", maxs_dist);
+				Con_Printf("water midpoint_dist: %f \n", midpoint_dist);
+				
+				
+				minimum_dist = min(mins_dist, maxs_dist);
+				minimum_dist = min(minimum_dist, midpoint_dist);
+				
+				Con_Printf("water minimum_dist: %f \n", minimum_dist);
+				
+				
+				average_dist = (mins_dist + midpoint_dist + maxs_dist) / 3;
+				
+				Con_Printf("water average_dist: %f \n", average_dist);
+				
+				
+				
 				R_AddToAlpha (ALPHA_WATERWARP, average_dist, NULL, surf);
 //				surf->texturechain = waterchain;
 //				waterchain = surf;
@@ -1333,7 +1273,8 @@ void R_MarkLeaves (void)
 		vis = SV_FatPVS (r_origin, cl.worldmodel);
 	else
 		vis = Mod_LeafPVS (r_viewleaf, cl.worldmodel);
-		
+	
+	// mark leafs and surfaces as visible	
 	for (i=0 ; i<cl.worldmodel->numleafs ; i++)
 	{
 		if (vis[i>>3] & (1<<(i&7)))
