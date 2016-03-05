@@ -931,8 +931,20 @@ void R_DrawBrushModel (entity_t *e)
 			vec_t midpoint_dist;
 			
 			vec_t minimum_dist;
-			
 			vec_t average_dist;
+			
+			vec_t final_dist;
+			
+			
+			
+			if (psurf->flags & SURF_DRAWTURB)
+				Con_Printf("psurf name %s\n", psurf->texinfo->texture->name);
+			else if (psurf->flags & SURF_DRAWFENCE)
+				Con_Printf("psurf name %s\n", psurf->texinfo->texture->name);
+			else if (isalpha)
+				Con_Printf("psurf name %s\n", psurf->texinfo->texture->name);
+			
+			
 			
 			// transform the surface midpoint, mins, maxs (NEW)
 			if (rotated)
@@ -969,7 +981,6 @@ void R_DrawBrushModel (entity_t *e)
 			mins_dist = R_AlphaGetDist(mins);
 			maxs_dist = R_AlphaGetDist(maxs);
 			midpoint_dist = R_AlphaGetDist(midpoint);
-			
 			Con_Printf("mins_dist: %f \n", mins_dist);
 			Con_Printf("maxs_dist: %f \n", maxs_dist);
 			Con_Printf("midpoint_dist: %f \n", midpoint_dist);
@@ -977,22 +988,23 @@ void R_DrawBrushModel (entity_t *e)
 			
 			minimum_dist = min(mins_dist, maxs_dist);
 			minimum_dist = min(minimum_dist, midpoint_dist);
-			
 			Con_Printf("minimum_dist: %f \n", minimum_dist);
 			
 			
 			average_dist = (mins_dist + midpoint_dist + maxs_dist) / 3;
-			
 			Con_Printf("average_dist: %f \n", average_dist);
 			
 			
+			final_dist = (average_dist + minimum_dist) / 2;
+			Con_Printf("final_dist: %f \n", final_dist);
+			
 			
 			if (psurf->flags & SURF_DRAWTURB)
-				R_AddToAlpha (ALPHA_WATERWARP, average_dist, e, psurf);
+				R_AddToAlpha (ALPHA_WATERWARP, midpoint_dist, e, psurf);
 			else if (psurf->flags & SURF_DRAWFENCE)
-				R_AddToAlpha (ALPHA_FENCE, average_dist, e, psurf);
+				R_AddToAlpha (ALPHA_FENCE, midpoint_dist, e, psurf);
 			else if (isalpha)
-				R_AddToAlpha (ALPHA_SURFACE, average_dist, e, psurf);
+				R_AddToAlpha (ALPHA_SURFACE, midpoint_dist, e, psurf);
 			else
 				R_DrawSequentialPoly (e, psurf); // draw entities
 			
@@ -1129,14 +1141,17 @@ restart:
 				vec_t midpoint_dist;
 				
 				vec_t minimum_dist;
-				
 				vec_t average_dist;
+				
+				vec_t final_dist;
+				
+				
+				Con_Printf("surf name %s\n", surf->texinfo->texture->name);
 				
 				
 				mins_dist = R_AlphaGetDist(surf->mins);
 				maxs_dist = R_AlphaGetDist(surf->maxs);
 				midpoint_dist = R_AlphaGetDist(surf->midpoint);
-
 				Con_Printf("water mins_dist: %f \n", mins_dist);
 				Con_Printf("water maxs_dist: %f \n", maxs_dist);
 				Con_Printf("water midpoint_dist: %f \n", midpoint_dist);
@@ -1144,17 +1159,20 @@ restart:
 				
 				minimum_dist = min(mins_dist, maxs_dist);
 				minimum_dist = min(minimum_dist, midpoint_dist);
-				
 				Con_Printf("water minimum_dist: %f \n", minimum_dist);
 				
 				
 				average_dist = (mins_dist + midpoint_dist + maxs_dist) / 3;
-				
 				Con_Printf("water average_dist: %f \n", average_dist);
 				
 				
+				final_dist = (average_dist + minimum_dist) / 2;
+				Con_Printf("water final_dist: %f \n", final_dist);
 				
-				R_AddToAlpha (ALPHA_WATERWARP, average_dist, NULL, surf);
+				
+				R_AddToAlpha (ALPHA_WATERWARP, midpoint_dist, NULL, surf);
+				
+				
 //				surf->texturechain = waterchain;
 //				waterchain = surf;
 			}
