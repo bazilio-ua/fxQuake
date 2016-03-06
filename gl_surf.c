@@ -1137,7 +1137,7 @@ restart:
 				
 				vec_t final_dist;
 				
-				mleaf_t	*leaf;
+				mleaf_t	*leaf, *testleaf;
 				
 				
 				Con_Printf("surf name %s\n", surf->texinfo->texture->name);
@@ -1165,9 +1165,11 @@ restart:
 				
 				
 				
-//				leaf = Mod_PointInLeaf (surf->midpoint, cl.worldmodel);
-//				if (leaf->contents != r_viewleaf->contents)
-//					midpoint_dist *= 2;
+				testleaf = Mod_PointInLeaf (surf->midpoint, cl.worldmodel);
+				leaf = (mleaf_t *)node;
+				if (leaf->contents != r_viewleaf->contents)
+					if (leaf->contents == testleaf->contents)
+						midpoint_dist *= 2;
 //				else
 //					midpoint_dist /= 2;
 				
@@ -1181,7 +1183,19 @@ restart:
 			}
 			else if (surf->flags & SURF_DRAWFENCE)
 			{
-				R_AddToAlpha (ALPHA_FENCE, R_AlphaGetDist(surf->midpoint), NULL, surf);
+				vec_t midpoint_dist;
+
+				mleaf_t	*leaf, *testleaf;
+				
+				midpoint_dist = R_AlphaGetDist(surf->midpoint);
+
+				testleaf = Mod_PointInLeaf (surf->midpoint, cl.worldmodel);
+				leaf = (mleaf_t *)node;
+				if (leaf->contents != r_viewleaf->contents)
+//					if (leaf->contents == testleaf->contents)
+						midpoint_dist *= 2;
+				
+				R_AddToAlpha (ALPHA_FENCE, midpoint_dist, NULL, surf);
 			}
 			else
 			{
