@@ -75,25 +75,8 @@ inline vec_t R_AlphaGetDist (vec3_t origin)
 	VectorSubtract (origin, r_origin, result);
 
 	// no need to sqrt these as all we're concerned about is relative distances
-	return DotProduct (result, result);
-//	return VectorLength (result);
-	
-	
-//	entity_t *ent = &cl_entities[cl.viewentity];
-	
-	// no need to sqrt these as all we're concerned about is relative distances
-	// (if x < y then sqrt (x) is also < sqrt (y))
-//	return (
-//		(origin[0] - r_origin[0]) * (origin[0] - r_origin[0]) +
-//		(origin[1] - r_origin[1]) * (origin[1] - r_origin[1]) +
-//		(origin[2] - r_origin[2]) * (origin[2] - r_origin[2])
-//	);
-
-//	return (
-//		(origin[0] - ent->origin[0]) * (origin[0] - ent->origin[0]) +
-//		(origin[1] - ent->origin[1]) * (origin[1] - ent->origin[1]) +
-//		(origin[2] - ent->origin[2]) * (origin[2] - ent->origin[2])
-//	);
+//	return DotProduct (result, result);
+	return VectorLength (result);
 	
 }
 
@@ -936,6 +919,8 @@ void R_DrawBrushModel (entity_t *e)
 			vec_t final_dist;
 			
 			
+			mleaf_t	*leaf;
+			
 			
 			if (psurf->flags & SURF_DRAWTURB)
 				Con_Printf("psurf name %s\n", psurf->texinfo->texture->name);
@@ -997,6 +982,13 @@ void R_DrawBrushModel (entity_t *e)
 			
 			final_dist = (average_dist + minimum_dist) / 2;
 			Con_Printf("final_dist: %f \n", final_dist);
+			
+			
+			leaf = Mod_PointInLeaf (midpoint, cl.worldmodel);
+			if (leaf->contents != r_viewleaf->contents)
+				midpoint_dist *= 2; // hack to make dist longer if leafcontents is different. (e.g. transparent surface might be in transparent water)
+//			else
+//				midpoint_dist /= 2;
 			
 			
 			if (psurf->flags & SURF_DRAWTURB)
@@ -1145,6 +1137,8 @@ restart:
 				
 				vec_t final_dist;
 				
+				mleaf_t	*leaf;
+				
 				
 				Con_Printf("surf name %s\n", surf->texinfo->texture->name);
 				
@@ -1168,6 +1162,15 @@ restart:
 				
 				final_dist = (average_dist + minimum_dist) / 2;
 				Con_Printf("water final_dist: %f \n", final_dist);
+				
+				
+				
+//				leaf = Mod_PointInLeaf (surf->midpoint, cl.worldmodel);
+//				if (leaf->contents != r_viewleaf->contents)
+//					midpoint_dist *= 2;
+//				else
+//					midpoint_dist /= 2;
+				
 				
 				
 				R_AddToAlpha (ALPHA_WATERWARP, midpoint_dist, NULL, surf);
