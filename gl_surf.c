@@ -984,11 +984,9 @@ void R_DrawBrushModel (entity_t *e)
 			Con_Printf("final_dist: %f \n", final_dist);
 			
 			
-			leaf = Mod_PointInLeaf (midpoint, cl.worldmodel);
-			if (leaf->contents != r_viewleaf->contents)
-				midpoint_dist *= 2; // hack to make dist longer if leafcontents is different. (e.g. transparent surface might be in transparent water)
-//			else
-//				midpoint_dist /= 2;
+//			leaf = Mod_PointInLeaf (midpoint, cl.worldmodel);
+//			if (leaf->contents != r_viewleaf->contents)
+//				midpoint_dist *= 2; // hack to make dist longer if leafcontents is different. (e.g. transparent surface might be in transparent water)
 			
 			
 			if (psurf->flags & SURF_DRAWTURB)
@@ -1165,13 +1163,11 @@ restart:
 				
 				
 				
-				testleaf = Mod_PointInLeaf (surf->midpoint, cl.worldmodel);
-				leaf = (mleaf_t *)node;
-				if (leaf->contents != r_viewleaf->contents)
-					if (leaf->contents == testleaf->contents)
-						midpoint_dist *= 2;
-//				else
-//					midpoint_dist /= 2;
+//				testleaf = Mod_PointInLeaf (surf->midpoint, cl.worldmodel);
+//				leaf = (mleaf_t *)node;
+//				if (leaf->contents != r_viewleaf->contents)
+//					if (leaf->contents == testleaf->contents)
+//						midpoint_dist *= 2;
 				
 				
 				
@@ -1189,11 +1185,10 @@ restart:
 				
 				midpoint_dist = R_AlphaGetDist(surf->midpoint);
 
-				testleaf = Mod_PointInLeaf (surf->midpoint, cl.worldmodel);
-				leaf = (mleaf_t *)node;
-				if (leaf->contents != r_viewleaf->contents)
-//					if (leaf->contents == testleaf->contents)
-						midpoint_dist *= 2;
+//				testleaf = Mod_PointInLeaf (surf->midpoint, cl.worldmodel);
+//				leaf = (mleaf_t *)node;
+//				if (leaf->contents != r_viewleaf->contents)
+//						midpoint_dist *= 2;
 				
 				R_AddToAlpha (ALPHA_FENCE, midpoint_dist, NULL, surf);
 			}
