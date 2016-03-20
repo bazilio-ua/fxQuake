@@ -1048,7 +1048,10 @@ void R_RenderView (void)
 				rs_c_dynamic_lightmaps,
 				rs_c_particles);
 		else
-			sprintf (str, "%5.1f ms - %4i wpoly * %4i epoly * %4i lmaps\n", ms, rs_c_brush_polys, rs_c_alias_polys, rs_c_dynamic_lightmaps);
+			sprintf (str, "%5.1f ms - %4i wpoly * %4i epoly * %4i lmaps\n", ms, 
+				rs_c_brush_polys, 
+				rs_c_alias_polys, 
+				rs_c_dynamic_lightmaps);
 
 		Con_Printf (str);
 	}
