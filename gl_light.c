@@ -162,15 +162,6 @@ void R_RenderDlight (dlight_t *light)
 		return;
 	
 	
-	glDepthMask (GL_FALSE); // don't bother writing Z	
-	glDisable (GL_TEXTURE_2D);
-	glShadeModel (GL_SMOOTH);
-	glEnable (GL_BLEND);
-	//glBlendFunc (GL_ONE, GL_ONE); // orig.
-	glBlendFunc (GL_SRC_ALPHA, GL_ONE); // ver.2 attempt to make it more smooth
-	
-	R_FogDisableGFog ();
-	
 	
 	VectorCopy (light->colored ? light->color : bubblecolor, color);
 	rad = light->radius * 0.1; // (orig. 0.35) reduce the bubble size so that it coexists more peacefully with proper light
@@ -182,6 +173,18 @@ void R_RenderDlight (dlight_t *light)
 			V_AddLightBlend (color[0], color[1], color[2], light->radius * 0.0003);
 		return;
 	}
+	
+	
+	
+	glDepthMask (GL_FALSE); // don't bother writing Z	
+	glDisable (GL_TEXTURE_2D);
+	glShadeModel (GL_SMOOTH);
+	glEnable (GL_BLEND);
+	//glBlendFunc (GL_ONE, GL_ONE); // orig.
+	glBlendFunc (GL_SRC_ALPHA, GL_ONE); // ver.2 attempt to make it more smooth
+	
+	R_FogDisableGFog ();
+	
 	
 	glBegin (GL_TRIANGLE_FAN);
 	VectorScale (color, 0.2, color);
