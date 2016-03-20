@@ -408,8 +408,8 @@ void R_NewMap (void)
 
 	r_viewleaf = NULL;
 	
-	skychain = 
-	waterchain = NULL;
+	skychain = NULL;
+//	waterchain = NULL;
 
 	R_ClearParticles ();
 

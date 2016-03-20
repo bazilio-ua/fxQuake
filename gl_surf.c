@@ -50,7 +50,7 @@ int			d_overbright = 1;
 float		d_overbrightscale = OVERBRIGHT_SCALE;
 
 msurface_t  *skychain = NULL;
-msurface_t  *waterchain = NULL;
+//msurface_t  *waterchain = NULL;
 
 /*
 ============================================================================================================
