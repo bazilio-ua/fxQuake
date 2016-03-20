@@ -199,6 +199,8 @@ void R_DrawAlpha (void)
 			break;
 			
 		case ALPHA_DLIGHTS:
+			R_RenderDlight ((dlight_t *)alpha.data);
+//			R_RenderDlight (l);
 			break;
 			
 		default:

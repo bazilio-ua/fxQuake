@@ -1023,8 +1023,8 @@ void R_RenderView (void)
 //	R_DrawParticles ();
 	R_SetupParticles ();
 	
-	R_RenderDlights (); // flash blend dlights
-	
+//	R_RenderDlights (); // flash blend dlights
+	R_SetupDlights (); // flash blend dlights
 	
 	R_DrawAlpha ();
 	

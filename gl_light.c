@@ -157,6 +157,20 @@ void R_RenderDlight (dlight_t *light)
 	vec3_t	v;
 	vec3_t	color;
 	float	rad;
+
+	if (!gl_flashblend.value)
+		return;
+	
+	
+	glDepthMask (GL_FALSE); // don't bother writing Z	
+	glDisable (GL_TEXTURE_2D);
+	glShadeModel (GL_SMOOTH);
+	glEnable (GL_BLEND);
+	//glBlendFunc (GL_ONE, GL_ONE); // orig.
+	glBlendFunc (GL_SRC_ALPHA, GL_ONE); // ver.2 attempt to make it more smooth
+	
+	R_FogDisableGFog ();
+	
 	
 	VectorCopy (light->colored ? light->color : bubblecolor, color);
 	rad = light->radius * 0.1; // (orig. 0.35) reduce the bubble size so that it coexists more peacefully with proper light
@@ -183,16 +197,28 @@ void R_RenderDlight (dlight_t *light)
 		glVertex3fv (v);
 	}
 	glEnd ();
+	
+	
+	R_FogEnableGFog ();
+	
+	glColor3f (1,1,1);
+	glDisable (GL_BLEND);
+	glEnable (GL_TEXTURE_2D);
+	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glDepthMask (GL_TRUE); // back to normal Z buffering
+	
+	
 }
 
 /*
 =============
-R_RenderDlights
+R_SetupDlights
 
 flash blend dlights
 =============
 */
-void R_RenderDlights (void)
+//void R_RenderDlights (void)
+void R_SetupDlights (void)
 {
 	int		i;
 	dlight_t	*l;
@@ -201,31 +227,20 @@ void R_RenderDlights (void)
 		return;
 
 	r_dlightframecount = r_framecount + 1;	// because the count hasn't advanced yet for this frame
-
-	glDepthMask (GL_FALSE); // don't bother writing Z	
-	glDisable (GL_TEXTURE_2D);
-	glShadeModel (GL_SMOOTH);
-	glEnable (GL_BLEND);
-	//glBlendFunc (GL_ONE, GL_ONE); // orig.
-	glBlendFunc (GL_SRC_ALPHA, GL_ONE); // ver.2 attempt to make it more smooth
 	
-	R_FogDisableGFog ();
 	
 	l = cl_dlights;
 	for (i=0 ; i<MAX_DLIGHTS ; i++, l++)
 	{
 		if (l->die < cl.time || !l->radius)
 			continue;
-		R_RenderDlight (l);
+		
+//		R_RenderDlight (l);
+		R_AddToAlpha (ALPHA_DLIGHTS, R_AlphaGetDist(l->origin), NULL, l);
+		
 	}
 	
-	R_FogEnableGFog ();
 	
-	glColor3f (1,1,1);
-	glDisable (GL_BLEND);
-	glEnable (GL_TEXTURE_2D);
-	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glDepthMask (GL_TRUE); // back to normal Z buffering 	
 }
 
 

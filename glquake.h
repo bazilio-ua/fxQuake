@@ -265,7 +265,9 @@ void R_StoreEfrags (efrag_t **ppefrag);
 void R_AnimateLight (void);
 void R_LightPoint (vec3_t p, vec3_t color);
 void R_MarkLights (dlight_t *light, int num, mnode_t *node);
-void R_RenderDlights (void);
+//void R_RenderDlights (void);
+void R_SetupDlights (void);
+void R_RenderDlight (dlight_t *light);
 
 // gl_surf.c
 void R_MarkLeaves (void);
