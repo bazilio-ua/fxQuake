@@ -728,15 +728,41 @@ void R_UpdateParticles (void)
 
 /*
 ===============
-R_DrawParticles
+R_SetupParticles
 
 moved all non-drawing code to R_UpdateParticles
 ===============
 */
-void R_DrawParticles (void)
+void R_SetupParticles (void)
 {
 	particle_t		*p;
 	int				i = 0;
+	
+	if (!r_particles.value)
+		return;
+	
+	for (p=active_particles ; p ; p=p->next)
+	{
+		// improve sound when many particles
+		if (++i % 8192 == 0)
+			S_ExtraUpdateTime ();
+		
+		R_AddToAlpha (ALPHA_PARTICLE, R_AlphaGetDist(p->org), NULL, p);
+		
+		rs_c_particles++; // r_speeds
+	}
+}
+
+/*
+===============
+R_DrawParticle
+===============
+*/
+//void R_DrawParticles (void)
+void R_DrawParticle (particle_t *p)
+{
+//	particle_t		*p;
+//	int				i = 0;
 	vec3_t			up, right, p_up, p_right, p_upright;
 	float			scale;
 	byte			*color, alpha;
@@ -754,11 +780,11 @@ void R_DrawParticles (void)
 	glDepthMask (GL_FALSE); // don't bother writing Z (fix for particle z-buffer bug)
 
 	glBegin (GL_QUADS); // quads save fillrate
-	for (p=active_particles ; p ; p=p->next)
-	{
+//	for (p=active_particles ; p ; p=p->next)
+//	{
 		// improve sound when many particles
-		if (++i % 8192 == 0)
-			S_ExtraUpdateTime ();
+//		if (++i % 8192 == 0)
+//			S_ExtraUpdateTime ();
 
 		// hack a scale up to keep particles from disapearing
 		scale = (p->org[0] - r_origin[0])*vpn[0] 
@@ -793,8 +819,8 @@ void R_DrawParticles (void)
 		VectorMA (p->org, scale, right, p_right);
 		glVertex3fv (p_right);
 
-		rs_c_particles++; // r_speeds
-	}
+//		rs_c_particles++; // r_speeds
+//	}
 	glEnd ();
 
 	glDepthMask (GL_TRUE); // back to normal Z buffering

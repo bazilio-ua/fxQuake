@@ -116,7 +116,7 @@
 
 1381643479 c:\projects\fxquake\cdaudio.h
 
-1458495998 c:\projects\fxquake\glquake.h
+1458502966 c:\projects\fxquake\glquake.h
 	<GL/gl.h>
 	<GL/glx.h>
 
@@ -198,7 +198,7 @@
 1458481179 source:c:\projects\fxquake\gl_light.c
 	"quakedef.h"
 
-1458496220 source:c:\projects\fxquake\gl_main.c
+1458503249 source:c:\projects\fxquake\gl_main.c
 	"quakedef.h"
 	"anorms.h"
 	"anorm_dots.h"
@@ -216,13 +216,13 @@
 1458460039 source:c:\projects\fxquake\gl_model.c
 	"quakedef.h"
 
-1458495791 source:c:\projects\fxquake\gl_part.c
+1458503299 source:c:\projects\fxquake\gl_part.c
 	"quakedef.h"
 
 1427297794 source:c:\projects\fxquake\gl_screen.c
 	"quakedef.h"
 
-1458495440 source:c:\projects\fxquake\gl_surf.c
+1458503220 source:c:\projects\fxquake\gl_surf.c
 	"quakedef.h"
 
 1381574758 source:c:\projects\fxquake\host.c

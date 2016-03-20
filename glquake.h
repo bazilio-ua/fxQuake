@@ -194,6 +194,25 @@ typedef struct
 	float	sl, tl, sh, th;
 } glpic_t;
 
+typedef enum 
+{
+	pt_static, pt_grav, pt_slowgrav, pt_fire, pt_explode, pt_explode2, pt_blob, pt_blob2
+} ptype_t;
+
+typedef struct particle_s
+{
+// driver-usable fields
+	vec3_t		org;
+	float		color;
+// drivers never touch the following fields
+	struct particle_s	*next;
+	vec3_t		vel;
+	float		ramp;
+	float		die;
+	ptype_t		type;
+} particle_t;
+
+
 extern	model_t	*loadmodel;
 
 // vid_*gl*.c
@@ -234,7 +253,9 @@ void R_TranslatePlayerSkin (int playernum);
 
 // gl_part.c
 void R_InitParticles (void);
-void R_DrawParticles (void);
+//void R_DrawParticles (void);
+void R_SetupParticles (void);
+void R_DrawParticle (particle_t *p);
 void R_ClearParticles (void);
 
 // gl_efrag.c
@@ -313,23 +334,6 @@ void R_Fog_f (void);
 
 texture_t *R_TextureAnimation (texture_t *base, int frame);
 
-typedef enum 
-{
-	pt_static, pt_grav, pt_slowgrav, pt_fire, pt_explode, pt_explode2, pt_blob, pt_blob2
-} ptype_t;
-
-typedef struct particle_s
-{
-// driver-usable fields
-	vec3_t		org;
-	float		color;
-// drivers never touch the following fields
-	struct particle_s	*next;
-	vec3_t		vel;
-	float		ramp;
-	float		die;
-	ptype_t		type;
-} particle_t;
 
 //====================================================
 // GL Alpha Sorting

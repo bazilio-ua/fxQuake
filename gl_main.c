@@ -1019,10 +1019,15 @@ void R_RenderView (void)
 	R_DrawSky (); // handle worldspawn and bmodels
 	R_DrawSolid ();
 	R_DrawEntities ();
+	
+//	R_DrawParticles ();
+	R_SetupParticles ();
+	
+	R_RenderDlights (); // flash blend dlights
+	
+	
 	R_DrawAlpha ();
 	
-	R_DrawParticles ();
-	R_RenderDlights (); // flash blend dlights
 	
 	R_DrawViewModel ();
 	R_FogDisableGFog ();

@@ -195,6 +195,7 @@ void R_DrawAlpha (void)
 			break;
 			
 		case ALPHA_PARTICLE:
+			R_DrawParticle ((particle_t *)alpha.data);
 			break;
 			
 		case ALPHA_DLIGHTS:
