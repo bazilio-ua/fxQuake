@@ -414,7 +414,7 @@ extern	int		d_overbright;
 extern	float	d_overbrightscale;
 
 extern	msurface_t *skychain;
-extern	msurface_t *waterchain;
+//extern	msurface_t *waterchain;
 
 //
 // cvars

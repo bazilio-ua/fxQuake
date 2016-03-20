@@ -116,7 +116,7 @@
 
 1381643479 c:\projects\fxquake\cdaudio.h
 
-1458494024 c:\projects\fxquake\glquake.h
+1458494999 c:\projects\fxquake\glquake.h
 	<GL/gl.h>
 	<GL/glx.h>
 
@@ -210,7 +210,7 @@
 1381737224 source:c:\projects\fxquake\gl_mesh.c
 	"quakedef.h"
 
-1450476804 source:c:\projects\fxquake\gl_misc.c
+1458494869 source:c:\projects\fxquake\gl_misc.c
 	"quakedef.h"
 
 1458460039 source:c:\projects\fxquake\gl_model.c
