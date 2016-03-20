@@ -50,7 +50,6 @@ int			d_overbright = 1;
 float		d_overbrightscale = OVERBRIGHT_SCALE;
 
 msurface_t  *skychain = NULL;
-//msurface_t  *waterchain = NULL;
 
 /*
 ============================================================================================================
@@ -1207,35 +1206,6 @@ void R_MarkLeaves (void)
 	}
 }
 
-/*
-================
-R_DrawTextureChainsWater
-================
-*/
-/*
-void R_DrawTextureChainsWater (void)
-{
-	msurface_t	*s;
-
-	if (!r_drawworld.value)
-		return;
-
-	//
-	// go back to the world matrix
-	//
-	glLoadMatrixf (r_worldentity.matrix);
-
-	if (waterchain)
-	{
-		for (s = waterchain; s; s = s->texturechain)
-		{
-			R_DrawSequentialPoly (NULL, s); // draw liquid (worldspawn)
-		}
-
-		waterchain = NULL;
-	}
-}
-*/
 
 /*
 =============================================================================
