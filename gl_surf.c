@@ -872,8 +872,7 @@ void R_DrawBrushModel (entity_t *e)
 				(!cl_dlights[k].radius))
 				continue;
 
-			R_MarkLights (&cl_dlights[k], k,
-				clmodel->nodes + clmodel->hulls[0].firstclipnode);
+			R_MarkLights (&cl_dlights[k], k, clmodel->nodes + clmodel->hulls[0].firstclipnode);
 		}
 	}
 
@@ -1213,6 +1212,7 @@ void R_MarkLeaves (void)
 R_DrawTextureChainsWater
 ================
 */
+/*
 void R_DrawTextureChainsWater (void)
 {
 	msurface_t	*s;
@@ -1235,7 +1235,7 @@ void R_DrawTextureChainsWater (void)
 		waterchain = NULL;
 	}
 }
-
+*/
 
 /*
 =============================================================================

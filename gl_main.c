@@ -708,7 +708,7 @@ void R_DrawEntities (void)
 }
 
 //==================================================================================
-
+/*
 // For rendering speed when many trans ents
 typedef struct distent_s
 {
@@ -771,12 +771,14 @@ int transdistcmp (const void *arg1, const void *arg2)
 {
 	return ((distent_t *)arg2)->dist - ((distent_t *)arg1)->dist; // Sorted in reverse order
 }
+*/
 
 /*
 =============
 R_DrawTransEntities
 =============
 */
+/*
 void R_DrawTransEntities (qboolean inwater)
 {
 	// need to draw back to front
@@ -827,6 +829,7 @@ void R_DrawTransEntities (qboolean inwater)
 		}
 	}
 }
+*/
 
 //==================================================================================
 
@@ -1140,14 +1143,18 @@ void R_RenderView (void)
 	R_DrawSolid ();
 	R_DrawEntities ();
 	R_DrawAlpha ();
+	
 //	R_SetupTransEntities (); // do this after R_DrawWorld so efrags updated correctly
-	R_SetupParticles ();
+//	R_SetupParticles ();
 //	R_DrawTransEntities (r_viewleaf->contents == CONTENTS_EMPTY);
-	R_DrawParticles (r_viewleaf->contents == CONTENTS_EMPTY);
+//	R_DrawParticles (r_viewleaf->contents == CONTENTS_EMPTY);
 //	R_DrawTextureChainsWater (); // drawn here since they might have transparency
 //	R_DrawTransEntities (r_viewleaf->contents != CONTENTS_EMPTY);
-	R_DrawParticles (r_viewleaf->contents != CONTENTS_EMPTY);
+//	R_DrawParticles (r_viewleaf->contents != CONTENTS_EMPTY);
+	
+	R_DrawParticles ();
 	R_RenderDlights (); // flash blend dlights
+	
 	R_DrawViewModel ();
 	R_FogDisableGFog ();
 	R_PolyBlend ();

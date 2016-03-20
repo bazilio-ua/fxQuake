@@ -234,8 +234,9 @@ void R_TranslatePlayerSkin (int playernum);
 
 // gl_part.c
 void R_InitParticles (void);
-void R_SetupParticles (void);
-void R_DrawParticles (qboolean inwater);
+//void R_SetupParticles (void);
+//void R_DrawParticles (qboolean inwater);
+void R_DrawParticles (void);
 void R_ClearParticles (void);
 
 // gl_efrag.c
@@ -252,7 +253,7 @@ void R_MarkLeaves (void);
 void R_DrawBrushModel (entity_t *e);
 void R_DrawWorld (void);
 void R_DrawSolid (void);
-void R_DrawTextureChainsWater (void);
+//void R_DrawTextureChainsWater (void);
 extern inline void R_DrawGLPoly34 (glpoly_t *p);
 extern inline void R_DrawGLPoly56 (glpoly_t *p);
 void R_DrawSequentialPoly (entity_t *e, msurface_t *s);
