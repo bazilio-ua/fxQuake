@@ -1203,7 +1203,7 @@ void Mod_CalcSurfaceBounds (msurface_t *s)
 		s->maxs[i] += 1.0f;
 		
 		// get final midpoint
-		s->midpoint[i] = s->mins[i] + (s->maxs[i] - s->mins[i]) * 0.5f;
+		s->midp[i] = s->mins[i] + (s->maxs[i] - s->mins[i]) * 0.5f;
 	}
 }
 

@@ -153,7 +153,7 @@ typedef struct msurface_s
 	glpoly_t	*polys;				// multiple if warped
 	struct	msurface_s	*texturechain;
 
-	vec3_t		midpoint;		// for alpha sorting
+	float		midp[3];		// for alpha sorting
 	
 // lighting info
 	int			dlightframe;

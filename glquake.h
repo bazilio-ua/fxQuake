@@ -337,9 +337,6 @@ typedef struct particle_s
 // GL Alpha Sorting
 
 #define ALPHA_SURFACE 				2
-#define ALPHA_WATERWARP 			3
-#define ALPHA_FENCE 				4
-#define ALPHA_BRUSH 				5
 #define ALPHA_ALIAS 				6
 #define ALPHA_SPRITE 				7
 #define ALPHA_PARTICLE 				8

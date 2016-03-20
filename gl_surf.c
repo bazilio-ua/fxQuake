@@ -73,11 +73,10 @@ inline vec_t R_AlphaGetDist (vec3_t origin)
 	vec3_t	result;
 	
 	VectorSubtract (origin, r_origin, result);
-
+	
 	// no need to sqrt these as all we're concerned about is relative distances
 //	return DotProduct (result, result);
 	return VectorLength (result);
-	
 }
 
 /*
@@ -101,8 +100,7 @@ inline void R_AddToAlpha (int type, vec_t dist, entity_t *surfentity, void *data
 static inline int alphadistcompare (const void *arg1, const void *arg2) 
 {
 	// Sort in descending dist order, i.e. back to front
-//	return ((gl_alphalist_t *)arg2)->dist - ((gl_alphalist_t *)arg1)->dist; // Sorted in reverse order
-	
+	// Sorted in reverse order
 	const gl_alphalist_t *a1 = (gl_alphalist_t *)arg1;
 	const gl_alphalist_t *a2 = (gl_alphalist_t *)arg2;
 	
@@ -167,31 +165,22 @@ void R_DrawAlpha (void)
 		switch (alpha.type)
 		{
 		case ALPHA_SURFACE:
-		case ALPHA_WATERWARP:
-		case ALPHA_FENCE:
 			{
 				if (alpha.surfentity)
 				{
 					glPushMatrix ();
 					
-					//
-					// go back to the entity matrix
-					//
-					glLoadMatrixf (alpha.surfentity->matrix); // load matrix
-
+					glLoadMatrixf (alpha.surfentity->matrix); // load entity matrix
 					
-					
-					R_DrawSequentialPoly (alpha.surfentity, (msurface_t *)alpha.data); // draw
-					
-					
+					R_DrawSequentialPoly (alpha.surfentity, (msurface_t *)alpha.data); // draw entity surfaces
 					
 					GL_DisableMultitexture (); // selects TEXTURE0
-
+					
 					glPopMatrix ();
 				}
 				else 
 				{
-					R_DrawSequentialPoly (NULL, (msurface_t *)alpha.data); // draw
+					R_DrawSequentialPoly (NULL, (msurface_t *)alpha.data); // draw world surfaces
 				}
 			}
 			break;
@@ -202,15 +191,19 @@ void R_DrawAlpha (void)
 		case ALPHA_SPRITE:
 			break;
 			
+		case ALPHA_PARTICLE:
+			break;
+			
+		case ALPHA_DLIGHTS:
+			break;
+			
 		default:
 			break;
 		}
 	}
-
-		
+	
 	gl_alphalist_num = 0;
 }
-
 
 // ----------------------------------------------------
 
@@ -843,7 +836,6 @@ void R_DrawBrushModel (entity_t *e)
 	model_t		*clmodel;
 	qboolean	rotated = false;
 	qboolean	isalpha = false;
-	vec3_t		midpoint, mins, maxs; 	// alpha sorting
 	
 	if (R_CullModelForEntity(e))
 		return;
@@ -891,7 +883,7 @@ void R_DrawBrushModel (entity_t *e)
 		glRotatef (e->angles[2],  1, 0, 0);
 	}
 	
-	glGetFloatv (GL_MODELVIEW_MATRIX, e->matrix); // get entity matrix and save it
+	glGetFloatv (GL_MODELVIEW_MATRIX, e->matrix); // save entity matrix
 	
 	//
 	// draw it
@@ -909,96 +901,49 @@ void R_DrawBrushModel (entity_t *e)
 			(!(psurf->flags & SURF_PLANEBACK) && (dot > BACKFACE_EPSILON)))
 		{
 			
-			vec_t mins_dist;
-			vec_t maxs_dist;
-			vec_t midpoint_dist;
-			
-			vec_t minimum_dist;
-			vec_t average_dist;
-			
-			vec_t final_dist;
-			
-			
-			mleaf_t	*leaf;
-			
-			
-			if (psurf->flags & SURF_DRAWTURB)
-				Con_Printf("psurf name %s\n", psurf->texinfo->texture->name);
-			else if (psurf->flags & SURF_DRAWFENCE)
-				Con_Printf("psurf name %s\n", psurf->texinfo->texture->name);
-			else if (isalpha)
-				Con_Printf("psurf name %s\n", psurf->texinfo->texture->name);
-			
-			
-			
-			// transform the surface midpoint, mins, maxs (NEW)
-			if (rotated)
+			if (isalpha || psurf->flags & SURF_DRAWTURB || psurf->flags & SURF_DRAWFENCE)
 			{
-				vec3_t	temp_midpoint, temp_mins, temp_maxs;
-				vec3_t	forward, right, up;
+				vec3_t	midp, mins, maxs;
+				vec_t	midp_dist, mins_dist, maxs_dist;
 				
-				AngleVectors (e->angles, forward, right, up);
+				// transform the surface midpoint, mins, maxs (NEW)
+				if (rotated)
+				{
+					vec3_t	temp_midp, temp_mins, temp_maxs;
+					vec3_t	forward, right, up;
+					
+					AngleVectors (e->angles, forward, right, up);
+					
+					VectorCopy (psurf->midp, temp_midp);
+					midp[0] = (DotProduct (temp_midp, forward) + e->origin[0]);
+					midp[1] = (DotProduct (temp_midp, right) + e->origin[1]);
+					midp[2] = (DotProduct (temp_midp, up) + e->origin[2]);
+					
+					VectorCopy (psurf->mins, temp_mins);
+					mins[0] = (DotProduct (temp_mins, forward) + e->origin[0]);
+					mins[1] = (DotProduct (temp_mins, right) + e->origin[1]);
+					mins[2] = (DotProduct (temp_mins, up) + e->origin[2]);
+					
+					VectorCopy (psurf->maxs, temp_maxs);
+					maxs[0] = (DotProduct (temp_maxs, forward) + e->origin[0]);
+					maxs[1] = (DotProduct (temp_maxs, right) + e->origin[1]);
+					maxs[2] = (DotProduct (temp_maxs, up) + e->origin[2]);
+				}
+				else
+				{
+					VectorAdd (psurf->midp, e->origin, midp);
+					VectorAdd (psurf->mins, e->origin, mins);
+					VectorAdd (psurf->maxs, e->origin, maxs);
+				}
 				
-				VectorCopy (psurf->midpoint, temp_midpoint);
-				midpoint[0] = (DotProduct (temp_midpoint, forward) + e->origin[0]);
-				midpoint[1] = (DotProduct (temp_midpoint, right) + e->origin[1]);
-				midpoint[2] = (DotProduct (temp_midpoint, up) + e->origin[2]);
+				mins_dist = R_AlphaGetDist(mins);
+				maxs_dist = R_AlphaGetDist(maxs);
+				midp_dist = R_AlphaGetDist(midp);
 				
-				VectorCopy (psurf->mins, temp_mins);
-				mins[0] = (DotProduct (temp_mins, forward) + e->origin[0]);
-				mins[1] = (DotProduct (temp_mins, right) + e->origin[1]);
-				mins[2] = (DotProduct (temp_mins, up) + e->origin[2]);
-
-				VectorCopy (psurf->maxs, temp_maxs);
-				maxs[0] = (DotProduct (temp_maxs, forward) + e->origin[0]);
-				maxs[1] = (DotProduct (temp_maxs, right) + e->origin[1]);
-				maxs[2] = (DotProduct (temp_maxs, up) + e->origin[2]);
-								
+				R_AddToAlpha (ALPHA_SURFACE, midp_dist, e, psurf);
 			}
-			else
-			{
-				VectorAdd (psurf->midpoint, e->origin, midpoint);
-				VectorAdd (psurf->mins, e->origin, mins);
-				VectorAdd (psurf->maxs, e->origin, maxs);
-			}
-			
-			
-			mins_dist = R_AlphaGetDist(mins);
-			maxs_dist = R_AlphaGetDist(maxs);
-			midpoint_dist = R_AlphaGetDist(midpoint);
-			Con_Printf("mins_dist: %f \n", mins_dist);
-			Con_Printf("maxs_dist: %f \n", maxs_dist);
-			Con_Printf("midpoint_dist: %f \n", midpoint_dist);
-			
-			
-			minimum_dist = min(mins_dist, maxs_dist);
-			minimum_dist = min(minimum_dist, midpoint_dist);
-			Con_Printf("minimum_dist: %f \n", minimum_dist);
-			
-			
-			average_dist = (mins_dist + midpoint_dist + maxs_dist) / 3;
-			Con_Printf("average_dist: %f \n", average_dist);
-			
-			
-			final_dist = (average_dist + minimum_dist) / 2;
-			Con_Printf("final_dist: %f \n", final_dist);
-			
-			
-//			leaf = Mod_PointInLeaf (midpoint, cl.worldmodel);
-//			if (leaf->contents != r_viewleaf->contents)
-//				midpoint_dist *= 2; // hack to make dist longer if leafcontents is different. (e.g. transparent surface might be in transparent water)
-			
-			
-			if (psurf->flags & SURF_DRAWTURB)
-				R_AddToAlpha (ALPHA_WATERWARP, midpoint_dist, e, psurf);
-			else if (psurf->flags & SURF_DRAWFENCE)
-				R_AddToAlpha (ALPHA_FENCE, midpoint_dist, e, psurf);
-			else if (isalpha)
-				R_AddToAlpha (ALPHA_SURFACE, midpoint_dist, e, psurf);
 			else
 				R_DrawSequentialPoly (e, psurf); // draw entities
-			
-			
 			
 			rs_c_brush_polys++; // r_speeds
 		}
@@ -1122,75 +1067,13 @@ restart:
 				surf->texturechain = skychain;
 				skychain = surf;
 			} 
-			else if (surf->flags & SURF_DRAWTURB)
+			else if (surf->flags & SURF_DRAWTURB || surf->flags & SURF_DRAWFENCE)
 			{
+				vec_t midp_dist;
 				
+				midp_dist = R_AlphaGetDist(surf->midp);
 				
-				vec_t mins_dist;
-				vec_t maxs_dist;
-				vec_t midpoint_dist;
-				
-				vec_t minimum_dist;
-				vec_t average_dist;
-				
-				vec_t final_dist;
-				
-				mleaf_t	*leaf, *testleaf;
-				
-				
-				Con_Printf("surf name %s\n", surf->texinfo->texture->name);
-				
-				
-				mins_dist = R_AlphaGetDist(surf->mins);
-				maxs_dist = R_AlphaGetDist(surf->maxs);
-				midpoint_dist = R_AlphaGetDist(surf->midpoint);
-				Con_Printf("water mins_dist: %f \n", mins_dist);
-				Con_Printf("water maxs_dist: %f \n", maxs_dist);
-				Con_Printf("water midpoint_dist: %f \n", midpoint_dist);
-				
-				
-				minimum_dist = min(mins_dist, maxs_dist);
-				minimum_dist = min(minimum_dist, midpoint_dist);
-				Con_Printf("water minimum_dist: %f \n", minimum_dist);
-				
-				
-				average_dist = (mins_dist + midpoint_dist + maxs_dist) / 3;
-				Con_Printf("water average_dist: %f \n", average_dist);
-				
-				
-				final_dist = (average_dist + minimum_dist) / 2;
-				Con_Printf("water final_dist: %f \n", final_dist);
-				
-				
-				
-//				testleaf = Mod_PointInLeaf (surf->midpoint, cl.worldmodel);
-//				leaf = (mleaf_t *)node;
-//				if (leaf->contents != r_viewleaf->contents)
-//					if (leaf->contents == testleaf->contents)
-//						midpoint_dist *= 2;
-				
-				
-				
-				R_AddToAlpha (ALPHA_WATERWARP, midpoint_dist, NULL, surf);
-				
-				
-//				surf->texturechain = waterchain;
-//				waterchain = surf;
-			}
-			else if (surf->flags & SURF_DRAWFENCE)
-			{
-				vec_t midpoint_dist;
-
-				mleaf_t	*leaf, *testleaf;
-				
-				midpoint_dist = R_AlphaGetDist(surf->midpoint);
-
-//				testleaf = Mod_PointInLeaf (surf->midpoint, cl.worldmodel);
-//				leaf = (mleaf_t *)node;
-//				if (leaf->contents != r_viewleaf->contents)
-//						midpoint_dist *= 2;
-				
-				R_AddToAlpha (ALPHA_FENCE, midpoint_dist, NULL, surf);
+				R_AddToAlpha (ALPHA_SURFACE, midp_dist, NULL, surf);
 			}
 			else
 			{
