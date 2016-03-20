@@ -198,7 +198,7 @@
 1458481179 source:c:\projects\fxquake\gl_light.c
 	"quakedef.h"
 
-1458493937 source:c:\projects\fxquake\gl_main.c
+1458496220 source:c:\projects\fxquake\gl_main.c
 	"quakedef.h"
 	"anorms.h"
 	"anorm_dots.h"

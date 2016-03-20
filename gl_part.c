@@ -736,7 +736,7 @@ moved all non-drawing code to R_UpdateParticles
 void R_DrawParticles (void)
 {
 	particle_t		*p;
-	int				i;
+	int				i = 0;
 	vec3_t			up, right, p_up, p_right, p_upright;
 	float			scale;
 	byte			*color, alpha;
@@ -757,7 +757,7 @@ void R_DrawParticles (void)
 	for (p=active_particles ; p ; p=p->next)
 	{
 		// improve sound when many particles
-		if ((i + 1) % 8192 == 0)
+		if (++i % 8192 == 0)
 			S_ExtraUpdateTime ();
 
 		// hack a scale up to keep particles from disapearing
