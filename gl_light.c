@@ -200,14 +200,14 @@ void R_RenderDlights (void)
 	if (!gl_flashblend.value)
 		return;
 
-	r_dlightframecount = r_framecount + 1;	// because the count hasn't
-											//  advanced yet for this frame
+	r_dlightframecount = r_framecount + 1;	// because the count hasn't advanced yet for this frame
+
 	glDepthMask (GL_FALSE); // don't bother writing Z	
 	glDisable (GL_TEXTURE_2D);
 	glShadeModel (GL_SMOOTH);
 	glEnable (GL_BLEND);
-	//glBlendFunc (GL_ONE, GL_ONE);//orig.
-	glBlendFunc (GL_SRC_ALPHA, GL_ONE);//ver.2 attempt to make it more smooth
+	//glBlendFunc (GL_ONE, GL_ONE); // orig.
+	glBlendFunc (GL_SRC_ALPHA, GL_ONE); // ver.2 attempt to make it more smooth
 	
 	R_FogDisableGFog ();
 	
@@ -339,8 +339,8 @@ void R_PushDlights (void)
 	if (!r_dynamic.value) // EER1
 		return;
 	
-	r_dlightframecount = r_framecount + 1;	// because the count hasn't
-											//  advanced yet for this frame
+	r_dlightframecount = r_framecount + 1;	// because the count hasn't advanced yet for this frame
+
 	l = cl_dlights;
 
 	for (i=0 ; i<MAX_DLIGHTS ; i++, l++)

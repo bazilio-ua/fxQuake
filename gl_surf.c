@@ -186,9 +186,13 @@ void R_DrawAlpha (void)
 			break;
 			
 		case ALPHA_ALIAS:
+			R_DrawAliasModel ((entity_t *)alpha.data);
+//			R_DrawAliasModel (e);
 			break;
 			
 		case ALPHA_SPRITE:
+			R_DrawSpriteModel ((entity_t *)alpha.data);
+//			R_DrawSpriteModel (e);
 			break;
 			
 		case ALPHA_PARTICLE:
@@ -936,9 +940,9 @@ void R_DrawBrushModel (entity_t *e)
 					VectorAdd (psurf->maxs, e->origin, maxs);
 				}
 				
+				midp_dist = R_AlphaGetDist(midp);
 				mins_dist = R_AlphaGetDist(mins);
 				maxs_dist = R_AlphaGetDist(maxs);
-				midp_dist = R_AlphaGetDist(midp);
 				
 				R_AddToAlpha (ALPHA_SURFACE, midp_dist, e, psurf);
 			}
