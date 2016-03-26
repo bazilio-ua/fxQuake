@@ -945,7 +945,8 @@ void R_DrawBrushModel (entity_t *e)
 				mins_dist = R_AlphaGetDist(mins);
 				maxs_dist = R_AlphaGetDist(maxs);
 				
-				R_AddToAlpha (ALPHA_SURFACE, midp_dist, e, psurf);
+//				R_AddToAlpha (ALPHA_SURFACE, midp_dist, e, psurf);
+				R_AddToAlpha (ALPHA_SURFACE, (mins_dist+midp_dist+maxs_dist)/3, e, psurf);
 			}
 			else
 				R_DrawSequentialPoly (e, psurf); // draw entities
@@ -1074,11 +1075,14 @@ restart:
 			} 
 			else if (surf->flags & SURF_DRAWTURB || surf->flags & SURF_DRAWFENCE)
 			{
-				vec_t midp_dist;
+				vec_t midp_dist, mins_dist, maxs_dist;
 				
 				midp_dist = R_AlphaGetDist(surf->midp);
+				mins_dist = R_AlphaGetDist(surf->mins);
+				maxs_dist = R_AlphaGetDist(surf->maxs);
 				
-				R_AddToAlpha (ALPHA_SURFACE, midp_dist, NULL, surf);
+//				R_AddToAlpha (ALPHA_SURFACE, midp_dist, NULL, surf);
+				R_AddToAlpha (ALPHA_SURFACE, (mins_dist+midp_dist+maxs_dist)/3, NULL, surf);
 			}
 			else
 			{
