@@ -74,8 +74,8 @@ inline vec_t R_AlphaGetDist (vec3_t origin)
 	VectorSubtract (origin, r_origin, result);
 	
 	// no need to sqrt these as all we're concerned about is relative distances
-//	return DotProduct (result, result);
-	return VectorLength (result);
+	return DotProduct (result, result);
+//	return VectorLength (result);
 }
 
 /*
@@ -910,6 +910,7 @@ void R_DrawBrushModel (entity_t *e)
 			{
 				vec3_t	midp, mins, maxs;
 				vec_t	midp_dist, mins_dist, maxs_dist;
+//				vec_t	minimal_dist;
 				
 				// transform the surface midpoint, mins, maxs (NEW)
 				if (rotated)
@@ -942,11 +943,15 @@ void R_DrawBrushModel (entity_t *e)
 				}
 				
 				midp_dist = R_AlphaGetDist(midp);
-				mins_dist = R_AlphaGetDist(mins);
-				maxs_dist = R_AlphaGetDist(maxs);
+//				mins_dist = R_AlphaGetDist(mins);
+//				maxs_dist = R_AlphaGetDist(maxs);
 				
-//				R_AddToAlpha (ALPHA_SURFACE, midp_dist, e, psurf);
-				R_AddToAlpha (ALPHA_SURFACE, (mins_dist+midp_dist+maxs_dist)/3, e, psurf);
+//				minimal_dist = min(mins_dist, maxs_dist);
+//				minimal_dist = min(minimal_dist, midp_dist);
+				
+				R_AddToAlpha (ALPHA_SURFACE, midp_dist, e, psurf);
+//				R_AddToAlpha (ALPHA_SURFACE, (mins_dist+midp_dist+maxs_dist)/3, e, psurf);
+//				R_AddToAlpha (ALPHA_SURFACE, minimal_dist, e, psurf);
 			}
 			else
 				R_DrawSequentialPoly (e, psurf); // draw entities
@@ -1076,13 +1081,18 @@ restart:
 			else if (surf->flags & SURF_DRAWTURB || surf->flags & SURF_DRAWFENCE)
 			{
 				vec_t midp_dist, mins_dist, maxs_dist;
+//				vec_t minimal_dist;
 				
 				midp_dist = R_AlphaGetDist(surf->midp);
-				mins_dist = R_AlphaGetDist(surf->mins);
-				maxs_dist = R_AlphaGetDist(surf->maxs);
+//				mins_dist = R_AlphaGetDist(surf->mins);
+//				maxs_dist = R_AlphaGetDist(surf->maxs);
 				
-//				R_AddToAlpha (ALPHA_SURFACE, midp_dist, NULL, surf);
-				R_AddToAlpha (ALPHA_SURFACE, (mins_dist+midp_dist+maxs_dist)/3, NULL, surf);
+//				minimal_dist = min(mins_dist, maxs_dist);
+//				minimal_dist = min(minimal_dist, midp_dist);
+				
+				R_AddToAlpha (ALPHA_SURFACE, midp_dist, NULL, surf);
+//				R_AddToAlpha (ALPHA_SURFACE, (mins_dist+midp_dist+maxs_dist)/3, NULL, surf);
+//				R_AddToAlpha (ALPHA_SURFACE, minimal_dist, NULL, surf);
 			}
 			else
 			{
