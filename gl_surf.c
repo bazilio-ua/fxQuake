@@ -62,6 +62,13 @@ msurface_t  *skychain = NULL;
 gl_alphalist_t	gl_alphalist[MAX_ALPHA_ITEMS];
 int				gl_alphalist_num = 0;
 
+inline float R_AlphaTurbDetect (msurface_t *s)
+{
+	float alpha = 1.0f;
+
+	return alpha;
+}
+
 /*
 ===============
 R_AlphaGetDist

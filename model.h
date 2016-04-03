@@ -140,6 +140,7 @@ typedef struct msurface_s
 	float		maxs[3];		// for frustum culling
 	
 	float		midp[3];		// for alpha sorting
+	float		alpha;			// surface 'alpha' attribute
 
 	mplane_t	*plane;
 	int			flags;

@@ -1199,9 +1199,9 @@ void Mod_CalcSurfaceBounds (msurface_t *s)
 	{
 		// expand the bbox by 1 unit in each direction to ensure that marginal surfs don't get culled
 		// (needed for R_RecursiveWorldNode avoidance)
-		s->mins[i] -= 1.0f;
+/*		s->mins[i] -= 1.0f;
 		s->maxs[i] += 1.0f;
-		
+*/		
 		// get final midpoint
 		s->midp[i] = s->mins[i] + (s->maxs[i] - s->mins[i]) * 0.5f;
 	}
