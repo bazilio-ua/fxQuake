@@ -173,7 +173,7 @@ void R_DrawAlpha (void)
 					
 					R_DrawSequentialPoly (alpha.surfentity, (msurface_t *)alpha.data); // draw entity surfaces
 					
-					GL_DisableMultitexture (); // selects TEXTURE0
+//					GL_DisableMultitexture (); // selects TEXTURE0
 					
 					glPopMatrix ();
 				}
@@ -960,7 +960,7 @@ void R_DrawBrushModel (entity_t *e)
 		}
 	}
 
-	GL_DisableMultitexture (); // selects TEXTURE0
+//	GL_DisableMultitexture (); // selects TEXTURE0
 
 	glPopMatrix ();
 }
