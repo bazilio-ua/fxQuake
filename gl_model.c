@@ -1207,6 +1207,60 @@ void Mod_CalcSurfaceBounds (msurface_t *s)
 	}
 }
 
+
+/*
+=================
+Mod_SetDrawingFlags
+
+set the drawing flags flag
+=================
+*/
+void Mod_SetDrawingFlags (msurface_t *out)
+{
+	if (!strncasecmp(out->texinfo->texture->name, "sky", 3)) // sky surface (also note: was strncmp, changed to match qbsp)
+	{
+		out->flags |= (SURF_DRAWSKY | SURF_DRAWTILED);
+		Mod_PolyForUnlitSurface (out);
+		// no more subdivision 
+	}
+	else if (out->texinfo->texture->name[0] == '*') // warp surface
+	{
+		out->flags |= (SURF_DRAWTURB | SURF_DRAWTILED);
+
+		// detect special liquid types
+		if (!strncasecmp(out->texinfo->texture->name, "*lava", 5)
+		|| !strncasecmp(out->texinfo->texture->name, "*brim", 5))
+			out->flags |= SURF_DRAWLAVA;
+		else if (!strncasecmp(out->texinfo->texture->name, "*slime", 6))
+			out->flags |= SURF_DRAWSLIME;
+		else if (!strncasecmp(out->texinfo->texture->name, "*tele", 5)
+		|| !strncasecmp(out->texinfo->texture->name, "*rift", 5)
+		|| !strncasecmp(out->texinfo->texture->name, "*gate", 5))
+			out->flags |= SURF_DRAWTELEPORT;
+		else
+			out->flags |= SURF_DRAWWATER; 
+
+		Mod_PolyForUnlitSurface (out);
+		// no more subdivision 
+	}
+	else if (out->texinfo->texture->name[0] == '{') // surface with fence texture
+	{
+		out->flags |= SURF_DRAWFENCE;
+	}
+	else if (out->texinfo->flags & TEX_MISSING) // texture is missing from bsp
+	{
+		if (out->samples) // lightmapped
+		{
+			out->flags |= SURF_NOTEXTURE;
+		}
+		else // not lightmapped
+		{
+			out->flags |= (SURF_NOTEXTURE | SURF_DRAWTILED);
+			Mod_PolyForUnlitSurface (out);
+		}
+	}
+}
+
 /*
 =================
 Mod_LoadFaces_S
@@ -1260,8 +1314,10 @@ void Mod_LoadFaces_S (lump_t *l)
 		else
 			out->samples = loadmodel->lightdata + (i * 3); // lit support via lordhavoc (was "+ i") 
 		
-		// set the drawing flags flag
-		if (!strncasecmp(out->texinfo->texture->name, "sky", 3)) // sky surface (also note: was strncmp, changed to match qbsp)
+		Mod_SetDrawingFlags (out); // set the drawing flags flag
+		
+		// set the drawing flags flag		
+/* 		if (!strncasecmp(out->texinfo->texture->name, "sky", 3)) // sky surface (also note: was strncmp, changed to match qbsp)
 		{
 			out->flags |= (SURF_DRAWSKY | SURF_DRAWTILED);
 			Mod_PolyForUnlitSurface (out);
@@ -1302,7 +1358,7 @@ void Mod_LoadFaces_S (lump_t *l)
 				out->flags |= (SURF_NOTEXTURE | SURF_DRAWTILED);
 				Mod_PolyForUnlitSurface (out);
 			}
-		}
+		} */
 	}
 }
 
@@ -1359,8 +1415,10 @@ void Mod_LoadFaces_L (lump_t *l)
 		else
 			out->samples = loadmodel->lightdata + (i * 3); // lit support via lordhavoc (was "+ i") 
 		
+		Mod_SetDrawingFlags (out); // set the drawing flags flag
+		
 		// set the drawing flags flag
-		if (!strncasecmp(out->texinfo->texture->name, "sky", 3)) // sky surface (also note: was strncmp, changed to match qbsp)
+/* 		if (!strncasecmp(out->texinfo->texture->name, "sky", 3)) // sky surface (also note: was strncmp, changed to match qbsp)
 		{
 			out->flags |= (SURF_DRAWSKY | SURF_DRAWTILED);
 			Mod_PolyForUnlitSurface (out);
@@ -1401,7 +1459,7 @@ void Mod_LoadFaces_L (lump_t *l)
 				out->flags |= (SURF_NOTEXTURE | SURF_DRAWTILED);
 				Mod_PolyForUnlitSurface (out);
 			}
-		}
+		} */
 	}
 }
 
