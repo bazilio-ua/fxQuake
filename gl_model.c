@@ -2256,40 +2256,57 @@ void Mod_LoadBrushModel (model_t *mod, void *buffer)
 	dheader_t	*header;
 	dmodel_t 	*bm;
 	float		radius;
+	qboolean	servermatch, clientmatch;
 	
 	loadmodel->type = mod_brush;
 	
+// isworldmodel check
+	servermatch = sv.modelname[0] && !strcasecmp (loadname, sv.name);
+	clientmatch = cl.worldname[0] && !strcasecmp (loadname, cl.worldname);
+	Con_DPrintf ("loadname: %s\n", loadname);
+	if (servermatch)
+		Con_DPrintf ("sv.modelname: %s\n", sv.modelname);
+	if (clientmatch)
+		Con_DPrintf ("cl.modelname: %s\n", cl.worldname);
+	loadmodel->isworldmodel = servermatch || clientmatch;
+	
 	header = (dheader_t *)buffer;
-
+	
 	mod->bspversion = LittleLong (header->version);
-
+	
+	Con_DPrintf ("bspversion: %i ", mod->bspversion);
 	switch(mod->bspversion)
 	{
 	case BSPVERSION:
+		Con_DPrintf ("(Quake)\n");
 		bsp2 = 0;
 		break;
 	case BSP2RMQVERSION:
+		Con_DPrintf ("(BSP2 v1 RMQ)\n");
 		bsp2 = 1;	// first iteration (RMQ)
 		break;
 	case BSP2VERSION:
+		Con_DPrintf ("(BSP2 v2)\n");
 		bsp2 = 2;	// sanitised revision
 		break;
 	default:
+		Con_DPrintf ("(unknown)\n");
 		Host_Error ("Mod_LoadBrushModel: %s has wrong version number (%i should be %i (Quake), %i (RMQ) or %i (BSP2))", mod->name, mod->bspversion, BSPVERSION, BSP2RMQVERSION, BSP2VERSION); // was Sys_Error
 		break;
 	}
+	
 //	if (mod->bspversion != BSPVERSION)
 //		Host_Error ("Mod_LoadBrushModel: %s has wrong version number (%i should be %i (Quake))", mod->name, mod->bspversion, BSPVERSION); // was Sys_Error
 
-	Con_DPrintf ("bspversion: %i ", mod->bspversion);
+/*	Con_DPrintf ("bspversion: %i ", mod->bspversion);
 	if (bsp2 == 2)
 		Con_DPrintf ("(BSP2 v2)\n");
 	else if (bsp2)
 		Con_DPrintf ("(BSP2 v1 RMQ)\n");
 	else
 		Con_DPrintf ("(Quake)\n");
-
-	{
+*/
+/*	{
 	// isworldmodel check
 		qboolean servermatch = sv.modelname[0] && !strcasecmp (loadname, sv.name);
 		qboolean clientmatch = cl.worldname[0] && !strcasecmp (loadname, cl.worldname);
@@ -2300,7 +2317,7 @@ void Mod_LoadBrushModel (model_t *mod, void *buffer)
 			Con_DPrintf ("cl.modelname: %s\n", cl.worldname);
 		loadmodel->isworldmodel = servermatch || clientmatch;
 	}
-
+*/
 // swap all the lumps
 	mod_base = (byte *)header;
 
