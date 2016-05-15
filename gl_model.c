@@ -2271,9 +2271,7 @@ void Mod_LoadBrushModel (model_t *mod, void *buffer)
 	loadmodel->isworldmodel = servermatch || clientmatch;
 	
 	header = (dheader_t *)buffer;
-	
 	mod->bspversion = LittleLong (header->version);
-	
 	Con_DPrintf ("bspversion: %i ", mod->bspversion);
 	switch(mod->bspversion)
 	{
