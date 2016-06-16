@@ -51,6 +51,8 @@ float		d_overbrightscale = OVERBRIGHT_SCALE;
 
 msurface_t  *skychain = NULL;
 
+extern byte	mod_novis[MAX_MAP_LEAFS/8];
+
 /*
 ============================================================================================================
 
@@ -1181,16 +1183,16 @@ void R_MarkLeaves (void)
 	mnode_t	*node;
 	msurface_t **mark;
 	int	   i;
-	byte	   solid[MAX_MAP_LEAFS / 2];
+//	byte	   solid[MAX_MAP_LEAFS / 2];
 	qboolean   nearwaterportal = false;
-
+	
 	// check if near water to avoid HOMs when crossing the surface
 	for (i=0, mark = r_viewleaf->firstmarksurface; i < r_viewleaf->nummarksurfaces; i++, mark++)
 	{
 		if ((*mark)->flags & SURF_DRAWTURB)
 		{
-			nearwaterportal = true;
 //			Con_SafePrintf ("R_MarkLeaves: nearwaterportal, surfs=%d\n", r_viewleaf->nummarksurfaces);
+			nearwaterportal = true;
 			break;
 		}
 	}
@@ -1205,8 +1207,10 @@ void R_MarkLeaves (void)
 	// choose vis data
 	if (r_novis.value || r_viewleaf->contents == CONTENTS_SOLID || r_viewleaf->contents == CONTENTS_SKY)
 	{
-		vis = solid;
-		memset (solid, 0xff, (cl.worldmodel->numleafs+7)>>3);
+		vis = &mod_novis[0]; 
+		
+//		vis = solid;
+//		memset (solid, 0xff, (cl.worldmodel->numleafs+7)>>3);
 	}
 	else if (nearwaterportal)
 		vis = SV_FatPVS (r_origin, cl.worldmodel);
