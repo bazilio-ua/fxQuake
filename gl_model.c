@@ -1259,6 +1259,9 @@ void Mod_SetDrawingFlags (msurface_t *out)
 			Mod_PolyForUnlitSurface (out);
 		}
 	}
+
+	// set default surface alpha
+	out->alpha = 1.0f;
 }
 
 /*

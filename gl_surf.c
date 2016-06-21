@@ -917,14 +917,14 @@ void R_DrawBrushModel (entity_t *e)
 			
 			if (isalpha || psurf->flags & SURF_DRAWTURB || psurf->flags & SURF_DRAWFENCE)
 			{
-				vec3_t	midp, mins, maxs;
-				vec_t	midp_dist, mins_dist, maxs_dist;
+				vec3_t	midp;//, mins, maxs;
+				vec_t	midp_dist;//, mins_dist, maxs_dist;
 //				vec_t	minimal_dist;
 				
-				// transform the surface midpoint, mins, maxs (NEW)
+				// transform the surface midpoint//, mins, maxs (NEW)
 				if (rotated)
 				{
-					vec3_t	temp_midp, temp_mins, temp_maxs;
+					vec3_t	temp_midp;//, temp_mins, temp_maxs;
 					vec3_t	forward, right, up;
 					
 					AngleVectors (e->angles, forward, right, up);
@@ -934,7 +934,7 @@ void R_DrawBrushModel (entity_t *e)
 					midp[1] = (DotProduct (temp_midp, right) + e->origin[1]);
 					midp[2] = (DotProduct (temp_midp, up) + e->origin[2]);
 					
-					VectorCopy (psurf->mins, temp_mins);
+/*					VectorCopy (psurf->mins, temp_mins);
 					mins[0] = (DotProduct (temp_mins, forward) + e->origin[0]);
 					mins[1] = (DotProduct (temp_mins, right) + e->origin[1]);
 					mins[2] = (DotProduct (temp_mins, up) + e->origin[2]);
@@ -943,12 +943,12 @@ void R_DrawBrushModel (entity_t *e)
 					maxs[0] = (DotProduct (temp_maxs, forward) + e->origin[0]);
 					maxs[1] = (DotProduct (temp_maxs, right) + e->origin[1]);
 					maxs[2] = (DotProduct (temp_maxs, up) + e->origin[2]);
-				}
+*/				}
 				else
 				{
 					VectorAdd (psurf->midp, e->origin, midp);
-					VectorAdd (psurf->mins, e->origin, mins);
-					VectorAdd (psurf->maxs, e->origin, maxs);
+//					VectorAdd (psurf->mins, e->origin, mins);
+//					VectorAdd (psurf->maxs, e->origin, maxs);
 				}
 				
 				midp_dist = R_AlphaGetDist(midp);
@@ -1089,7 +1089,7 @@ restart:
 			} 
 			else if (surf->flags & SURF_DRAWTURB || surf->flags & SURF_DRAWFENCE)
 			{
-				vec_t midp_dist, mins_dist, maxs_dist;
+				vec_t midp_dist;//, mins_dist, maxs_dist;
 //				vec_t minimal_dist;
 				
 				midp_dist = R_AlphaGetDist(surf->midp);
