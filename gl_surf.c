@@ -589,7 +589,7 @@ void R_DrawSequentialPoly (entity_t *e, msurface_t *s)
 	int			i;
 
 	p = s->polys;
-	t = R_TextureAnimation (s->texinfo->texture, e ? e->frame : 0);
+//	t = R_TextureAnimation (s->texinfo->texture, e ? e->frame : 0);
 	brushalpha = e ? ENTALPHA_DECODE(e->alpha) : 1.0;
 	
 	//
@@ -679,6 +679,8 @@ void R_DrawSequentialPoly (entity_t *e, msurface_t *s)
 		
 		return;
 	}
+
+	t = R_TextureAnimation (s->texinfo->texture, e ? e->frame : 0);
 
 	//
 	// missing texture
