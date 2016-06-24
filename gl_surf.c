@@ -64,11 +64,31 @@ extern byte	mod_novis[MAX_MAP_LEAFS/8];
 gl_alphalist_t	gl_alphalist[MAX_ALPHA_ITEMS];
 int				gl_alphalist_num = 0;
 
-inline float R_AlphaTurbDetect (msurface_t *s)
+//inline float R_AlphaTurbDetect (msurface_t *s)
+inline qboolean R_AlphaTurbDetect (msurface_t *s)
 {
-	float alpha = 1.0f;
-
-	return alpha;
+//	float alpha = 1.0f;
+//	return alpha;
+	
+	if (!r_lockalpha.value) // override water alpha for certain surface types
+	{
+		if (s->flags & SURF_DRAWLAVA)
+			s->alpha /*brushalpha*/ = CLAMP(0.0, r_lavaalpha.value, 1.0);
+		else if (s->flags & SURF_DRAWSLIME)
+			s->alpha /*brushalpha*/ = CLAMP(0.0, r_slimealpha.value, 1.0);
+		else if (s->flags & SURF_DRAWTELEPORT)
+			s->alpha /*brushalpha*/ = CLAMP(0.0, r_teleportalpha.value, 1.0);
+	}
+	
+	if (s->flags & SURF_DRAWWATER)
+	{
+		if (globalwateralpha > 0)
+			s->alpha /*brushalpha*/ = globalwateralpha;
+		else
+			s->alpha /*brushalpha*/ = CLAMP(0.0, r_wateralpha.value, 1.0);
+	}
+	
+	return (s->alpha /*brushalpha*/ < 1.0) ? true : false;
 }
 
 /*
@@ -603,26 +623,26 @@ void R_DrawSequentialPoly (entity_t *e, msurface_t *s)
 	//
 	if (s->flags & SURF_DRAWTURB)
 	{
-		if (e == NULL /* || (e && brushalpha == 1.0) */) // worldspawn, or entity with no alpha (uncomment this condition, only when alpha drawing will be controlled with alphapass)
-		{
-			if (!r_lockalpha.value) // override water alpha for certain surface types
-			{
-				if (s->flags & SURF_DRAWLAVA)
-					s->alpha /*brushalpha*/ = CLAMP(0.0, r_lavaalpha.value, 1.0);
-				else if (s->flags & SURF_DRAWSLIME)
-					s->alpha /*brushalpha*/ = CLAMP(0.0, r_slimealpha.value, 1.0);
-				else if (s->flags & SURF_DRAWTELEPORT)
-					s->alpha /*brushalpha*/ = CLAMP(0.0, r_teleportalpha.value, 1.0);
-			}
+		// if (e == NULL /* || (e && brushalpha == 1.0) */) // worldspawn, or entity with no alpha (uncomment this condition, only when alpha drawing will be controlled with alphapass)
+		// {
+			// if (!r_lockalpha.value) // override water alpha for certain surface types
+			// {
+				// if (s->flags & SURF_DRAWLAVA)
+					// s->alpha /*brushalpha*/ = CLAMP(0.0, r_lavaalpha.value, 1.0);
+				// else if (s->flags & SURF_DRAWSLIME)
+					// s->alpha /*brushalpha*/ = CLAMP(0.0, r_slimealpha.value, 1.0);
+				// else if (s->flags & SURF_DRAWTELEPORT)
+					// s->alpha /*brushalpha*/ = CLAMP(0.0, r_teleportalpha.value, 1.0);
+			// }
 
-			if (s->flags & SURF_DRAWWATER)
-			{
-				if (globalwateralpha > 0)
-					s->alpha /*brushalpha*/ = globalwateralpha;
-				else
-					s->alpha /*brushalpha*/ = CLAMP(0.0, r_wateralpha.value, 1.0);
-			}
-		}
+			// if (s->flags & SURF_DRAWWATER)
+			// {
+				// if (globalwateralpha > 0)
+					// s->alpha /*brushalpha*/ = globalwateralpha;
+				// else
+					// s->alpha /*brushalpha*/ = CLAMP(0.0, r_wateralpha.value, 1.0);
+			// }
+		// }
 /*		else // entities
 		{
 			brushalpha = ENTALPHA_DECODE(e->alpha);
@@ -925,7 +945,7 @@ void R_DrawBrushModel (entity_t *e)
 			psurf->alpha = alpha;
 			psurf->frame = frame;
 			
-			if (/* isalpha */ psurf->alpha < 1.0 || psurf->flags & SURF_DRAWTURB || psurf->flags & SURF_DRAWFENCE)
+			if (/* isalpha */ psurf->alpha < 1.0 || (psurf->flags & SURF_DRAWTURB) && R_AlphaTurbDetect(psurf) || psurf->flags & SURF_DRAWFENCE)
 			{
 				vec3_t	midp;//, mins, maxs;
 				vec_t	midp_dist;//, mins_dist, maxs_dist;
@@ -1097,7 +1117,7 @@ restart:
 				surf->texturechain = skychain;
 				skychain = surf;
 			} 
-			else if ( /*TODO surf->alpha < 1.0*/  surf->flags & SURF_DRAWTURB || surf->flags & SURF_DRAWFENCE)
+			else if ( /*TODO surf->alpha < 1.0*/ (surf->flags & SURF_DRAWTURB) && R_AlphaTurbDetect(surf) || surf->flags & SURF_DRAWFENCE)
 			{
 				vec_t midp_dist;//, mins_dist, maxs_dist;
 //				vec_t minimal_dist;
