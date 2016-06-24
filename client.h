@@ -228,12 +228,12 @@ typedef struct
 
 	char		worldname[MAX_QPATH];
 	char		levelname[256];	// for display on solo scoreboard
-	int			viewentity;		// cl_entitites[cl.viewentity] = player
+	int			viewentity;		// cl_entities[cl.viewentity] = player
 	int			maxclients;
 	int			gametype;
 
 // refresh related state
-	struct model_s	*worldmodel;	// cl_entitites[0].model
+	struct model_s	*worldmodel;	// cl_entities[0].model
 	struct efrag_s	*free_efrags;
 	int			num_entities;	// held in cl_entities array
 	int			num_statics;	// held in cl_staticentities array

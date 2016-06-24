@@ -141,6 +141,7 @@ typedef struct msurface_s
 	
 	float		midp[3];		// for alpha sorting
 	float		alpha;			// surface 'alpha' attribute
+	int			frame;			// texture animation frame from entity, zero if worldspawn
 
 	mplane_t	*plane;
 	int			flags;
