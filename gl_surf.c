@@ -200,7 +200,7 @@ void R_DrawAlpha (void)
 					
 					glLoadMatrixf (alpha.surfentity->matrix); // load entity matrix
 					
-					R_DrawSequentialPoly (alpha.surfentity, (msurface_t *)alpha.data); // draw entity surfaces
+					R_DrawSequentialPoly (/*alpha.surfentity,*/ (msurface_t *)alpha.data); // draw entity surfaces
 					
 //					GL_DisableMultitexture (); // selects TEXTURE0
 					
@@ -208,7 +208,7 @@ void R_DrawAlpha (void)
 				}
 				else 
 				{
-					R_DrawSequentialPoly (NULL, (msurface_t *)alpha.data); // draw world surfaces
+					R_DrawSequentialPoly (/*NULL,*/ (msurface_t *)alpha.data); // draw world surfaces
 				}
 			}
 			break;
@@ -599,7 +599,7 @@ Systems that have fast state and texture changes can
 just do everything as it passes with no need to sort
 ================
 */
-void R_DrawSequentialPoly (entity_t *e, msurface_t *s)
+void R_DrawSequentialPoly (/*entity_t *e,*/ msurface_t *s)
 {
 	glpoly_t	*p;
 	texture_t	*t;
@@ -993,7 +993,7 @@ void R_DrawBrushModel (entity_t *e)
 //				R_AddToAlpha (ALPHA_SURFACE, minimal_dist, e, psurf);
 			}
 			else
-				R_DrawSequentialPoly (e, psurf); // draw entities
+				R_DrawSequentialPoly (/*e,*/ psurf); // draw entities
 			
 			rs_c_brush_polys++; // r_speeds
 		}
@@ -1152,10 +1152,10 @@ restart:
 
 /*
 =============
-R_DrawSolid
+R_DrawOpaque
 =============
 */
-void R_DrawSolid (void)
+void R_DrawOpaque (void)
 {
 	int			i;
 	msurface_t	*s;
@@ -1175,7 +1175,7 @@ void R_DrawSolid (void)
 			continue;
 
 		for ( ; s ; s=s->texturechain)
-			R_DrawSequentialPoly (NULL, s); // draw solid (worldspawn)
+			R_DrawSequentialPoly (/*NULL,*/ s); // draw opaque (worldspawn)
 		
 		t->texturechain = NULL;
 	} 

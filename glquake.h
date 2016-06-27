@@ -273,10 +273,10 @@ void R_RenderDlight (dlight_t *light);
 void R_MarkLeaves (void);
 void R_DrawBrushModel (entity_t *e);
 void R_DrawWorld (void);
-void R_DrawSolid (void);
+void R_DrawOpaque (void);
 extern inline void R_DrawGLPoly34 (glpoly_t *p);
 extern inline void R_DrawGLPoly56 (glpoly_t *p);
-void R_DrawSequentialPoly (entity_t *e, msurface_t *s);
+void R_DrawSequentialPoly (/*entity_t *e,*/ msurface_t *s);
 void R_BuildLightmaps (void);
 void R_UploadLightmaps (void);
 

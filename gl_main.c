@@ -1017,7 +1017,7 @@ void R_RenderView (void)
 	R_FogEnableGFog ();
 	R_DrawWorld (); // adds static entities to the list
 	R_DrawSky (); // handle worldspawn and bmodels
-	R_DrawSolid ();
+	R_DrawOpaque ();
 	R_DrawEntities ();
 	
 //	R_DrawParticles ();
