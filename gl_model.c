@@ -1265,6 +1265,9 @@ void Mod_SetDrawingFlags (msurface_t *out)
 	
 	// set default texture animation frame from entity  
 	out->frame = 0;
+	
+	// set entity
+	out->entity = NULL;
 }
 
 /*

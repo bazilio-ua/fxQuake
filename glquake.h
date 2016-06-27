@@ -352,7 +352,7 @@ typedef struct gl_alphalist_s
 	int			type;
 	vec_t		dist;
 	
-	entity_t	*surfentity;
+//	entity_t	*surfentity;
 	
 	void 		*data;
 } gl_alphalist_t;
@@ -361,7 +361,7 @@ extern gl_alphalist_t	gl_alphalist[MAX_ALPHA_ITEMS];
 extern int				gl_alphalist_num;
 
 extern inline vec_t R_AlphaGetDist (vec3_t origin);
-extern inline void R_AddToAlpha (int type, vec_t dist, entity_t *surfentity, void *data);
+extern inline void R_AddToAlpha (int type, vec_t dist, /*entity_t *surfentity,*/ void *data);
 extern void R_DrawAlpha (void);
 
 //====================================================

@@ -112,14 +112,14 @@ inline vec_t R_AlphaGetDist (vec3_t origin)
 R_AddToAlpha
 ===============
 */
-inline void R_AddToAlpha (int type, vec_t dist, entity_t *surfentity, void *data)
+inline void R_AddToAlpha (int type, vec_t dist, /*entity_t *surfentity,*/ void *data)
 {
 	if (gl_alphalist_num == MAX_ALPHA_ITEMS)
 		return;
 	
 	gl_alphalist[gl_alphalist_num].type = type;
 	gl_alphalist[gl_alphalist_num].dist = dist;
-	gl_alphalist[gl_alphalist_num].surfentity = surfentity;
+//	gl_alphalist[gl_alphalist_num].surfentity = surfentity;
 	gl_alphalist[gl_alphalist_num].data = data;
 	
 	gl_alphalist_num++;
@@ -150,8 +150,8 @@ R_DrawAlpha
 void R_DrawAlpha (void)
 {
 	int			i;
-	entity_t	*e;
-	msurface_t	*s;
+//	entity_t	*e;
+//	msurface_t	*s;
 	gl_alphalist_t	alpha;
 	
 	if (gl_alphalist_num == 0)
@@ -194,11 +194,13 @@ void R_DrawAlpha (void)
 		{
 		case ALPHA_SURFACE:
 			{
-				if (alpha.surfentity)
+				//if (alpha.surfentity)
+				if (((msurface_t *)alpha.data)->entity)
 				{
 					glPushMatrix ();
 					
-					glLoadMatrixf (alpha.surfentity->matrix); // load entity matrix
+//					glLoadMatrixf (alpha.surfentity->matrix); // load entity matrix
+					glLoadMatrixf (((msurface_t *)alpha.data)->entity->matrix); // load entity matrix
 					
 					R_DrawSequentialPoly (/*alpha.surfentity,*/ (msurface_t *)alpha.data); // draw entity surfaces
 					
@@ -944,6 +946,7 @@ void R_DrawBrushModel (entity_t *e)
 		{
 			psurf->alpha = alpha;
 			psurf->frame = frame;
+			psurf->entity = e;
 			
 			if (/* isalpha */ psurf->alpha < 1.0 || (psurf->flags & SURF_DRAWTURB) && R_AlphaTurbDetect(psurf) || psurf->flags & SURF_DRAWFENCE)
 			{
@@ -988,7 +991,7 @@ void R_DrawBrushModel (entity_t *e)
 //				minimal_dist = min(mins_dist, maxs_dist);
 //				minimal_dist = min(minimal_dist, midp_dist);
 				
-				R_AddToAlpha (ALPHA_SURFACE, midp_dist, e, psurf);
+				R_AddToAlpha (ALPHA_SURFACE, midp_dist, /*e,*/ psurf);
 //				R_AddToAlpha (ALPHA_SURFACE, (mins_dist+midp_dist+maxs_dist)/3, e, psurf);
 //				R_AddToAlpha (ALPHA_SURFACE, minimal_dist, e, psurf);
 			}
@@ -1129,7 +1132,7 @@ restart:
 //				minimal_dist = min(mins_dist, maxs_dist);
 //				minimal_dist = min(minimal_dist, midp_dist);
 				
-				R_AddToAlpha (ALPHA_SURFACE, midp_dist, NULL, surf);
+				R_AddToAlpha (ALPHA_SURFACE, midp_dist, /*NULL,*/ surf);
 //				R_AddToAlpha (ALPHA_SURFACE, (mins_dist+midp_dist+maxs_dist)/3, NULL, surf);
 //				R_AddToAlpha (ALPHA_SURFACE, minimal_dist, NULL, surf);
 			}

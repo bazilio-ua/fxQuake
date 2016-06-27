@@ -239,7 +239,7 @@ void R_SetupDlights (void)
 			continue;
 		
 //		R_RenderDlight (l);
-		R_AddToAlpha (ALPHA_DLIGHTS, R_AlphaGetDist(l->origin), NULL, l);
+		R_AddToAlpha (ALPHA_DLIGHTS, R_AlphaGetDist(l->origin), /*NULL,*/ l);
 		
 	}
 	
