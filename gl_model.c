@@ -1261,13 +1261,13 @@ void Mod_SetDrawingFlags (msurface_t *out)
 	}
 	
 	// set default surface alpha
-	out->alpha = 1.0f;
+//	out->alpha = 1.0f;
 	
 	// set default texture animation frame from entity  
-	out->frame = 0;
+//	out->frame = 0;
 	
 	// set entity
-	out->entity = NULL;
+//	out->entity = NULL;
 }
 
 /*

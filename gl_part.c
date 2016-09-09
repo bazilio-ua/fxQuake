@@ -747,7 +747,7 @@ void R_SetupParticles (void)
 		if (++i % 8192 == 0)
 			S_ExtraUpdateTime ();
 		
-		R_AddToAlpha (ALPHA_PARTICLE, R_AlphaGetDist(p->org), /*NULL,*/ p);
+		R_AddToAlpha (ALPHA_PARTICLE, R_GetAlphaDist(p->org), p, NULL, 0);
 		
 		rs_c_particles++; // r_speeds
 	}

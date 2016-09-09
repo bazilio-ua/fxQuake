@@ -65,38 +65,69 @@ gl_alphalist_t	gl_alphalist[MAX_ALPHA_ITEMS];
 int				gl_alphalist_num = 0;
 
 //inline float R_AlphaTurbDetect (msurface_t *s)
-inline qboolean R_AlphaTurbDetect (msurface_t *s)
-{
+// inline qboolean R_AlphaTurbDetect (msurface_t *s)
+// {
 //	float alpha = 1.0f;
 //	return alpha;
+	
+	// if (!r_lockalpha.value) // override water alpha for certain surface types
+	// {
+		// if (s->flags & SURF_DRAWLAVA)
+			// s->alpha /*brushalpha*/ = CLAMP(0.0, r_lavaalpha.value, 1.0);
+		// else if (s->flags & SURF_DRAWSLIME)
+			// s->alpha /*brushalpha*/ = CLAMP(0.0, r_slimealpha.value, 1.0);
+		// else if (s->flags & SURF_DRAWTELEPORT)
+			// s->alpha /*brushalpha*/ = CLAMP(0.0, r_teleportalpha.value, 1.0);
+	// }
+	
+	// if (s->flags & SURF_DRAWWATER)
+	// {
+		// if (globalwateralpha > 0)
+			// s->alpha /*brushalpha*/ = globalwateralpha;
+		// else
+			// s->alpha /*brushalpha*/ = CLAMP(0.0, r_wateralpha.value, 1.0);
+	// }
+	
+	// return (s->alpha /*brushalpha*/ < 1.0) ? true : false;
+// }
+
+/*
+===============
+R_GetTurbAlpha
+===============
+*/
+inline float R_GetTurbAlpha (msurface_t *s)
+{
+	float alpha = 1.0f;
 	
 	if (!r_lockalpha.value) // override water alpha for certain surface types
 	{
 		if (s->flags & SURF_DRAWLAVA)
-			s->alpha /*brushalpha*/ = CLAMP(0.0, r_lavaalpha.value, 1.0);
+			alpha = CLAMP(0.0, r_lavaalpha.value, 1.0);
 		else if (s->flags & SURF_DRAWSLIME)
-			s->alpha /*brushalpha*/ = CLAMP(0.0, r_slimealpha.value, 1.0);
+			alpha = CLAMP(0.0, r_slimealpha.value, 1.0);
 		else if (s->flags & SURF_DRAWTELEPORT)
-			s->alpha /*brushalpha*/ = CLAMP(0.0, r_teleportalpha.value, 1.0);
+			alpha = CLAMP(0.0, r_teleportalpha.value, 1.0);
 	}
 	
 	if (s->flags & SURF_DRAWWATER)
 	{
 		if (globalwateralpha > 0)
-			s->alpha /*brushalpha*/ = globalwateralpha;
+			alpha = globalwateralpha;
 		else
-			s->alpha /*brushalpha*/ = CLAMP(0.0, r_wateralpha.value, 1.0);
+			alpha = CLAMP(0.0, r_wateralpha.value, 1.0);
 	}
 	
-	return (s->alpha /*brushalpha*/ < 1.0) ? true : false;
+	return alpha;
 }
+
 
 /*
 ===============
-R_AlphaGetDist
+R_GetAlphaDist
 ===============
 */
-inline vec_t R_AlphaGetDist (vec3_t origin)
+inline vec_t R_GetAlphaDist (vec3_t origin)
 {
 	vec3_t	result;
 	
@@ -112,15 +143,17 @@ inline vec_t R_AlphaGetDist (vec3_t origin)
 R_AddToAlpha
 ===============
 */
-inline void R_AddToAlpha (int type, vec_t dist, /*entity_t *surfentity,*/ void *data)
+inline void R_AddToAlpha (int type, vec_t dist, void *data, entity_t *entity, float alpha)
 {
 	if (gl_alphalist_num == MAX_ALPHA_ITEMS)
 		return;
 	
 	gl_alphalist[gl_alphalist_num].type = type;
 	gl_alphalist[gl_alphalist_num].dist = dist;
-//	gl_alphalist[gl_alphalist_num].surfentity = surfentity;
 	gl_alphalist[gl_alphalist_num].data = data;
+	
+	gl_alphalist[gl_alphalist_num].entity = entity;
+	gl_alphalist[gl_alphalist_num].alpha = alpha;
 	
 	gl_alphalist_num++;
 }
@@ -194,15 +227,18 @@ void R_DrawAlpha (void)
 		{
 		case ALPHA_SURFACE:
 			{
-				//if (alpha.surfentity)
-				if (((msurface_t *)alpha.data)->entity)
+				if (alpha.entity)
+//				if (((msurface_t *)alpha.data)->entity)
 				{
 					glPushMatrix ();
 					
-//					glLoadMatrixf (alpha.surfentity->matrix); // load entity matrix
-					glLoadMatrixf (((msurface_t *)alpha.data)->entity->matrix); // load entity matrix
+					glLoadMatrixf (alpha.entity->matrix); // load entity matrix
+//					glLoadMatrixf (((msurface_t *)alpha.data)->entity->matrix); // load entity matrix
 					
-					R_DrawSequentialPoly (/*alpha.surfentity,*/ (msurface_t *)alpha.data); // draw entity surfaces
+//					R_DrawSequentialPoly (alpha.entity, (msurface_t *)alpha.data); // draw entity surfaces
+			//void  R_DrawSequentialPoly (msurface_t *s, float alpha, int frame);
+					R_DrawSequentialPoly ((msurface_t *)alpha.data, alpha.alpha, alpha.entity->frame); // draw entity surfaces
+					
 					
 //					GL_DisableMultitexture (); // selects TEXTURE0
 					
@@ -210,7 +246,8 @@ void R_DrawAlpha (void)
 				}
 				else 
 				{
-					R_DrawSequentialPoly (/*NULL,*/ (msurface_t *)alpha.data); // draw world surfaces
+//					R_DrawSequentialPoly (NULL, (msurface_t *)alpha.data); // draw world surfaces
+					R_DrawSequentialPoly ((msurface_t *)alpha.data, alpha.alpha, 0); // draw world surfaces
 				}
 			}
 			break;
@@ -601,7 +638,8 @@ Systems that have fast state and texture changes can
 just do everything as it passes with no need to sort
 ================
 */
-void R_DrawSequentialPoly (/*entity_t *e,*/ msurface_t *s)
+//void R_DrawSequentialPoly (entity_t *e, msurface_t *s)
+void R_DrawSequentialPoly (msurface_t *s, float alpha, int frame)
 {
 	glpoly_t	*p;
 	texture_t	*t;
@@ -650,12 +688,12 @@ void R_DrawSequentialPoly (/*entity_t *e,*/ msurface_t *s)
 			brushalpha = ENTALPHA_DECODE(e->alpha);
 		}
 */
-		if (s->alpha /*brushalpha*/ < 1.0) // FIXME: there should be a deal brushalpha with alphapass
+		if (alpha /*brushalpha*/ < 1.0) // FIXME: there should be a deal brushalpha with alphapass
 		{
 			glDepthMask(GL_FALSE);
 			glEnable(GL_BLEND);
 			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-			glColor4f(1, 1, 1, s->alpha /*brushalpha*/);
+			glColor4f(1, 1, 1, alpha /*brushalpha*/);
 		}
 
 		GL_Bind (s->texinfo->texture->warpimage);
@@ -691,7 +729,7 @@ void R_DrawSequentialPoly (/*entity_t *e,*/ msurface_t *s)
 			}
 		}
 
-		if (s->alpha /*brushalpha*/ < 1.0) // FIXME: there should be a deal brushalpha with alphapass
+		if (alpha /*brushalpha*/ < 1.0) // FIXME: there should be a deal brushalpha with alphapass
 		{
 			glDepthMask(GL_TRUE);
 			glDisable(GL_BLEND);
@@ -703,26 +741,27 @@ void R_DrawSequentialPoly (/*entity_t *e,*/ msurface_t *s)
 	}
 
 //	t = R_TextureAnimation (s->texinfo->texture, e ? e->frame : 0);
-	t = R_TextureAnimation (s->texinfo->texture, s->frame);
+//	t = R_TextureAnimation (s->texinfo->texture, s->frame);
+	t = R_TextureAnimation (s->texinfo->texture, frame);
 
 	//
 	// missing texture
 	//
 	if (s->flags & SURF_NOTEXTURE)
 	{
-		if (s->alpha /*brushalpha*/ < 1.0)
+		if (alpha /*brushalpha*/ < 1.0)
 		{
 			glDepthMask(GL_FALSE);
 			glEnable(GL_BLEND);
 			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-			glColor4f(1, 1, 1, s->alpha /*brushalpha*/);
+			glColor4f(1, 1, 1, alpha /*brushalpha*/);
 		}
 
 		GL_Bind (t->gltexture);
 		R_DrawGLPoly34 (p);
 		rs_c_brush_passes++; // r_speeds
 
-		if (s->alpha /*brushalpha*/ < 1.0)
+		if (alpha /*brushalpha*/ < 1.0)
 		{
 			glDepthMask(GL_TRUE);
 			glDisable(GL_BLEND);
@@ -738,12 +777,12 @@ void R_DrawSequentialPoly (/*entity_t *e,*/ msurface_t *s)
 	//
 	if ( !(s->flags & SURF_DRAWTILED) )
 	{
-		if (s->alpha /*brushalpha*/ < 1.0)
+		if (alpha /*brushalpha*/ < 1.0)
 		{
 			glDepthMask (GL_FALSE);
 			glEnable (GL_BLEND);
 			glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-			glColor4f (1, 1, 1, s->alpha /*brushalpha*/);
+			glColor4f (1, 1, 1, alpha /*brushalpha*/);
 		}
 		else
 			glColor3f (1, 1, 1);
@@ -785,7 +824,7 @@ void R_DrawSequentialPoly (/*entity_t *e,*/ msurface_t *s)
 			GL_DisableMultitexture (); // selects TEXTURE0
 			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);//FX
 		} 
-		else if (s->alpha /*brushalpha*/ < 1.0 || (s->flags & SURF_DRAWFENCE)) // case 2: can't do multipass if brush has alpha, so just draw the texture
+		else if (alpha /*brushalpha*/ < 1.0 || (s->flags & SURF_DRAWFENCE)) // case 2: can't do multipass if brush has alpha, so just draw the texture
 		{
 			GL_Bind (t->gltexture);
 			R_DrawGLPoly34 (p);
@@ -829,7 +868,7 @@ void R_DrawSequentialPoly (/*entity_t *e,*/ msurface_t *s)
 			glDepthMask (GL_TRUE); // back to normal Z buffering
 		}
 
-		if (s->alpha /*brushalpha*/ < 1.0)
+		if (alpha /*brushalpha*/ < 1.0)
 		{
 			glDepthMask(GL_TRUE);
 			glDisable(GL_BLEND);
@@ -847,7 +886,7 @@ void R_DrawSequentialPoly (/*entity_t *e,*/ msurface_t *s)
 			glEnable (GL_BLEND);
 			glBlendFunc (GL_ONE, GL_ONE);
 			glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-			glColor3f (s->alpha /*brushalpha*/, s->alpha /*brushalpha*/, s->alpha /*brushalpha*/);
+			glColor3f (alpha /*brushalpha*/, alpha /*brushalpha*/, alpha /*brushalpha*/);
 			R_FogStartAdditive ();
 			R_DrawGLPoly34 (p);
 			rs_c_brush_passes++; // r_speeds
@@ -877,7 +916,7 @@ void R_DrawBrushModel (entity_t *e)
 	qboolean	rotated = false;
 //	qboolean	isalpha = false;
 	float		alpha;
-	int			frame;
+//	int			frame;
 	
 	if (R_CullModelForEntity(e))
 		return;
@@ -888,7 +927,7 @@ void R_DrawBrushModel (entity_t *e)
 //		isalpha = true;
 	
 	alpha = ENTALPHA_DECODE(e->alpha);
-	frame = e->frame;
+//	frame = e->frame;
 	
 	VectorSubtract (r_refdef.vieworg, e->origin, modelorg);
 	if (e->angles[0] || e->angles[1] || e->angles[2])
@@ -944,11 +983,15 @@ void R_DrawBrushModel (entity_t *e)
 		if (((psurf->flags & SURF_PLANEBACK) && (dot < -BACKFACE_EPSILON)) ||
 			(!(psurf->flags & SURF_PLANEBACK) && (dot > BACKFACE_EPSILON)))
 		{
-			psurf->alpha = alpha;
-			psurf->frame = frame;
-			psurf->entity = e;
+//			psurf->alpha = alpha;
+//			psurf->frame = frame;
+//			psurf->entity = e;
 			
-			if (/* isalpha */ psurf->alpha < 1.0 || (psurf->flags & SURF_DRAWTURB) && R_AlphaTurbDetect(psurf) || psurf->flags & SURF_DRAWFENCE)
+			/* isalpha */
+//			psurf->alpha < 1.0 || 
+			if (alpha < 1.0 || 
+				(psurf->flags & SURF_DRAWTURB) && (alpha = R_GetTurbAlpha(psurf)) < 1.0 || 
+				 psurf->flags & SURF_DRAWFENCE)
 			{
 				vec3_t	midp;//, mins, maxs;
 				vec_t	midp_dist;//, mins_dist, maxs_dist;
@@ -984,24 +1027,25 @@ void R_DrawBrushModel (entity_t *e)
 //					VectorAdd (psurf->maxs, e->origin, maxs);
 				}
 				
-				midp_dist = R_AlphaGetDist(midp);
+				midp_dist = R_GetAlphaDist(midp);
 //				mins_dist = R_AlphaGetDist(mins);
 //				maxs_dist = R_AlphaGetDist(maxs);
 				
 //				minimal_dist = min(mins_dist, maxs_dist);
 //				minimal_dist = min(minimal_dist, midp_dist);
 				
-				R_AddToAlpha (ALPHA_SURFACE, midp_dist, /*e,*/ psurf);
+				R_AddToAlpha (ALPHA_SURFACE, midp_dist, psurf, e, alpha);
 //				R_AddToAlpha (ALPHA_SURFACE, (mins_dist+midp_dist+maxs_dist)/3, e, psurf);
 //				R_AddToAlpha (ALPHA_SURFACE, minimal_dist, e, psurf);
 			}
 			else
-				R_DrawSequentialPoly (/*e,*/ psurf); // draw entities
+//				R_DrawSequentialPoly (e, psurf); // draw entities
+				R_DrawSequentialPoly (psurf, alpha, e->frame); // draw entities
 			
 			rs_c_brush_polys++; // r_speeds
 		}
 	}
-
+	
 //	GL_DisableMultitexture (); // selects TEXTURE0
 
 	glPopMatrix ();
@@ -1030,7 +1074,8 @@ void R_RecursiveWorldNode (mnode_t *node)
 	msurface_t	*surf, **mark;
 	mleaf_t		*pleaf;
 	float		dot;
-
+	float		alpha = 1.0;
+	
 restart:
 	if (node->contents == CONTENTS_SOLID)
 		return;		// solid
@@ -1119,20 +1164,21 @@ restart:
 			{
 				surf->texturechain = skychain;
 				skychain = surf;
-			} 
-			else if ( /*TODO surf->alpha < 1.0*/ (surf->flags & SURF_DRAWTURB) && R_AlphaTurbDetect(surf) || surf->flags & SURF_DRAWFENCE)
+			} /*TODO surf->alpha < 1.0*/
+			else if ((surf->flags & SURF_DRAWTURB) && (alpha = R_GetTurbAlpha(surf)) < 1.0 || 
+					  surf->flags & SURF_DRAWFENCE)
 			{
 				vec_t midp_dist;//, mins_dist, maxs_dist;
 //				vec_t minimal_dist;
 				
-				midp_dist = R_AlphaGetDist(surf->midp);
+				midp_dist = R_GetAlphaDist(surf->midp);
 //				mins_dist = R_AlphaGetDist(surf->mins);
 //				maxs_dist = R_AlphaGetDist(surf->maxs);
 				
 //				minimal_dist = min(mins_dist, maxs_dist);
 //				minimal_dist = min(minimal_dist, midp_dist);
 				
-				R_AddToAlpha (ALPHA_SURFACE, midp_dist, /*NULL,*/ surf);
+				R_AddToAlpha (ALPHA_SURFACE, midp_dist, surf, NULL, alpha);
 //				R_AddToAlpha (ALPHA_SURFACE, (mins_dist+midp_dist+maxs_dist)/3, NULL, surf);
 //				R_AddToAlpha (ALPHA_SURFACE, minimal_dist, NULL, surf);
 			}
@@ -1178,7 +1224,8 @@ void R_DrawOpaque (void)
 			continue;
 
 		for ( ; s ; s=s->texturechain)
-			R_DrawSequentialPoly (/*NULL,*/ s); // draw opaque (worldspawn)
+//			R_DrawSequentialPoly (NULL, s); // draw opaque (worldspawn)
+			R_DrawSequentialPoly (s, 1.0, 0); // draw opaque (worldspawn)
 		
 		t->texturechain = NULL;
 	} 

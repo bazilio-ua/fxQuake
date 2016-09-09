@@ -691,13 +691,13 @@ void R_DrawEntities (void)
 			
 		case mod_alias:
 			if (ENTALPHA_DECODE(e->alpha) < 1)
-				R_AddToAlpha (ALPHA_ALIAS, R_AlphaGetDist(e->origin), /*NULL,*/ e);
+				R_AddToAlpha (ALPHA_ALIAS, R_GetAlphaDist(e->origin), e, NULL, 0);
 			else	
 				R_DrawAliasModel (e);
 			break;
 			
 		case mod_sprite:
-			R_AddToAlpha (ALPHA_SPRITE, R_AlphaGetDist(e->origin), /*NULL,*/ e);
+			R_AddToAlpha (ALPHA_SPRITE, R_GetAlphaDist(e->origin), e, NULL, 0);
 //			R_DrawSpriteModel (e);
 			break;
 			
