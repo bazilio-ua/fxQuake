@@ -906,7 +906,7 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, int frame)
 R_DrawBrushModel
 =================
 */
-void R_DrawBrushModel (entity_t *e, float alpha)
+void R_DrawBrushModel (entity_t *e)
 {
 	int			k, i;
 	msurface_t	*psurf;
@@ -915,7 +915,7 @@ void R_DrawBrushModel (entity_t *e, float alpha)
 	model_t		*clmodel;
 	qboolean	rotated = false;
 //	qboolean	isalpha = false;
-//	float		alpha;
+	float		alpha;
 //	int			frame;
 	
 	if (R_CullModelForEntity(e))
@@ -926,7 +926,7 @@ void R_DrawBrushModel (entity_t *e, float alpha)
 //	if (ENTALPHA_DECODE(e->alpha) < 1)
 //		isalpha = true;
 	
-//	alpha = ENTALPHA_DECODE(e->alpha);
+	alpha = ENTALPHA_DECODE(e->alpha);
 //	frame = e->frame;
 	
 	VectorSubtract (r_refdef.vieworg, e->origin, modelorg);
