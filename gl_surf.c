@@ -906,7 +906,7 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, int frame)
 R_DrawBrushModel
 =================
 */
-void R_DrawBrushModel (entity_t *e)
+void R_DrawBrushModel (entity_t *e, float alpha)
 {
 	int			k, i;
 	msurface_t	*psurf;
@@ -915,7 +915,7 @@ void R_DrawBrushModel (entity_t *e)
 	model_t		*clmodel;
 	qboolean	rotated = false;
 //	qboolean	isalpha = false;
-	float		alpha;
+//	float		alpha;
 //	int			frame;
 	
 	if (R_CullModelForEntity(e))
@@ -926,7 +926,7 @@ void R_DrawBrushModel (entity_t *e)
 //	if (ENTALPHA_DECODE(e->alpha) < 1)
 //		isalpha = true;
 	
-	alpha = ENTALPHA_DECODE(e->alpha);
+//	alpha = ENTALPHA_DECODE(e->alpha);
 //	frame = e->frame;
 	
 	VectorSubtract (r_refdef.vieworg, e->origin, modelorg);
@@ -986,6 +986,7 @@ void R_DrawBrushModel (entity_t *e)
 //			psurf->alpha = alpha;
 //			psurf->frame = frame;
 //			psurf->entity = e;
+//			Con_Printf("alpha 1: %f\n", alpha);
 			
 			/* isalpha */
 //			psurf->alpha < 1.0 || 
@@ -997,6 +998,7 @@ void R_DrawBrushModel (entity_t *e)
 				vec_t	midp_dist;//, mins_dist, maxs_dist;
 //				vec_t	minimal_dist;
 				
+//				Con_Printf("alpha 2: %f\n", alpha);
 				// transform the surface midpoint//, mins, maxs (NEW)
 				if (rotated)
 				{
@@ -1171,6 +1173,8 @@ restart:
 				vec_t midp_dist;//, mins_dist, maxs_dist;
 //				vec_t minimal_dist;
 				
+//				Con_Printf("alpha: %f\n", alpha);
+
 				midp_dist = R_GetAlphaDist(surf->midp);
 //				mins_dist = R_AlphaGetDist(surf->mins);
 //				maxs_dist = R_AlphaGetDist(surf->maxs);

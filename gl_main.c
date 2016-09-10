@@ -664,6 +664,7 @@ void R_DrawEntities (void)
 {
 	int		i;
 	entity_t	*e;
+	float		alpha;
 
 	if (!r_drawentities.value)
 		return;
@@ -679,6 +680,8 @@ void R_DrawEntities (void)
 //		if (ENTALPHA_DECODE(e->alpha) < 1)
 //			continue;
 
+		alpha = ENTALPHA_DECODE(e->alpha);
+
 		// chase_active
 		if (e == &cl_entities[cl.viewentity])
 			e->angles[0] *= 0.3;
@@ -686,12 +689,12 @@ void R_DrawEntities (void)
 		switch (e->model->type)
 		{
 		case mod_brush:
-			R_DrawBrushModel (e);
+			R_DrawBrushModel (e, alpha);
 			break;
 			
 		case mod_alias:
-			if (ENTALPHA_DECODE(e->alpha) < 1)
-				R_AddToAlpha (ALPHA_ALIAS, R_GetAlphaDist(e->origin), e, NULL, 0);
+			if (/*ENTALPHA_DECODE(e->alpha)*/ alpha < 1)
+				R_AddToAlpha (ALPHA_ALIAS, R_GetAlphaDist(e->origin), e, NULL, alpha);
 			else	
 				R_DrawAliasModel (e);
 			break;

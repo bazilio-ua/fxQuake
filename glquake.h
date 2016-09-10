@@ -271,7 +271,7 @@ void R_RenderDlight (dlight_t *light);
 
 // gl_surf.c
 void R_MarkLeaves (void);
-void R_DrawBrushModel (entity_t *e);
+void R_DrawBrushModel (entity_t *e, float alpha);
 void R_DrawWorld (void);
 void R_DrawOpaque (void);
 extern inline void R_DrawGLPoly34 (glpoly_t *p);
