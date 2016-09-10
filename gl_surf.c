@@ -185,7 +185,7 @@ void R_DrawAlpha (void)
 	int			i;
 //	entity_t	*e;
 //	msurface_t	*s;
-	gl_alphalist_t	alpha;
+	gl_alphalist_t	a;
 	
 	if (gl_alphalist_num == 0)
 		return;
@@ -221,23 +221,23 @@ void R_DrawAlpha (void)
 		if ((i + 1) % 100 == 0)
 			S_ExtraUpdateTime (); // don't let sound get messed up if going slow
 		
-		alpha = gl_alphalist[i];
+		a = gl_alphalist[i];
 		
-		switch (alpha.type)
+		switch (a.type)
 		{
 		case ALPHA_SURFACE:
 			{
-				if (alpha.entity)
+				if (a.entity)
 //				if (((msurface_t *)alpha.data)->entity)
 				{
 					glPushMatrix ();
 					
-					glLoadMatrixf (alpha.entity->matrix); // load entity matrix
+					glLoadMatrixf (a.entity->matrix); // load entity matrix
 //					glLoadMatrixf (((msurface_t *)alpha.data)->entity->matrix); // load entity matrix
 					
 //					R_DrawSequentialPoly (alpha.entity, (msurface_t *)alpha.data); // draw entity surfaces
 			//void  R_DrawSequentialPoly (msurface_t *s, float alpha, int frame);
-					R_DrawSequentialPoly ((msurface_t *)alpha.data, alpha.alpha, alpha.entity->frame); // draw entity surfaces
+					R_DrawSequentialPoly ((msurface_t *)a.data, a.alpha, a.entity->frame); // draw entity surfaces
 					
 					
 //					GL_DisableMultitexture (); // selects TEXTURE0
@@ -247,27 +247,27 @@ void R_DrawAlpha (void)
 				else 
 				{
 //					R_DrawSequentialPoly (NULL, (msurface_t *)alpha.data); // draw world surfaces
-					R_DrawSequentialPoly ((msurface_t *)alpha.data, alpha.alpha, 0); // draw world surfaces
+					R_DrawSequentialPoly ((msurface_t *)a.data, a.alpha, 0); // draw world surfaces
 				}
 			}
 			break;
 			
 		case ALPHA_ALIAS:
-			R_DrawAliasModel ((entity_t *)alpha.data);
+			R_DrawAliasModel ((entity_t *)a.data);
 //			R_DrawAliasModel (e);
 			break;
 			
 		case ALPHA_SPRITE:
-			R_DrawSpriteModel ((entity_t *)alpha.data);
+			R_DrawSpriteModel ((entity_t *)a.data);
 //			R_DrawSpriteModel (e);
 			break;
 			
 		case ALPHA_PARTICLE:
-			R_DrawParticle ((particle_t *)alpha.data);
+			R_DrawParticle ((particle_t *)a.data);
 			break;
 			
 		case ALPHA_DLIGHTS:
-			R_RenderDlight ((dlight_t *)alpha.data);
+			R_RenderDlight ((dlight_t *)a.data);
 //			R_RenderDlight (l);
 			break;
 			
