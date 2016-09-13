@@ -107,10 +107,7 @@ void SV_Init (void)
 void SV_StupidQuakeBugFix (void)
 {
 	stupidquakebugfix = (qboolean)(sv_stupidquakebugfix.value);
-	if (stupidquakebugfix)
-		Con_Printf ("'stupid quake bug' fix enabled\n");
-	else
-		Con_Printf ("'stupid quake bug' fix disabled\n");
+	Con_Printf ("'stupid quake bug' fix %s\n", stupidquakebugfix ? "enabled" : "disabled");
 }
 
 /*

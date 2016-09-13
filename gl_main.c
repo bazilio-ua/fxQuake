@@ -1076,12 +1076,7 @@ void GL_DrawEntityTransform (lerpdata_t lerpdata)
 {
 	glTranslatef (lerpdata.origin[0], lerpdata.origin[1], lerpdata.origin[2]);
 	glRotatef (lerpdata.angles[1],  0, 0, 1);
-	
-	if (stupidquakebugfix)
-		glRotatef (lerpdata.angles[0],  0, 1, 0);
-	else
-		glRotatef (-lerpdata.angles[0],  0, 1, 0);
-	
+	glRotatef (stupidquakebugfix ? lerpdata.angles[0] : -lerpdata.angles[0],  0, 1, 0);
 	glRotatef (lerpdata.angles[2],  1, 0, 0);
 }
 
