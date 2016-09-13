@@ -1076,7 +1076,12 @@ void GL_DrawEntityTransform (lerpdata_t lerpdata)
 {
 	glTranslatef (lerpdata.origin[0], lerpdata.origin[1], lerpdata.origin[2]);
 	glRotatef (lerpdata.angles[1],  0, 0, 1);
-	glRotatef (lerpdata.angles[0],  0, 1, 0);
+	
+	if (stupidquakebugfix)
+		glRotatef (lerpdata.angles[0],  0, 1, 0);
+	else
+		glRotatef (-lerpdata.angles[0],  0, 1, 0);
+	
 	glRotatef (lerpdata.angles[2],  1, 0, 0);
 }
 
@@ -1313,7 +1318,7 @@ void R_SetupEntityTransform (entity_t *e, lerpdata_t *lerpdata)
 	}
 
 	// set up values
-	if (e == &cl.viewent)
+	if (stupidquakebugfix && e == &cl.viewent)
 		e->angles[0] = -e->angles[0]; // stupid quake bug
 
 	if (e != &cl.viewent && e->lerpflags & LERP_MOVESTEP)

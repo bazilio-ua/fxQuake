@@ -90,6 +90,7 @@ void SV_Init (void)
 	Cvar_RegisterVariable (&sv_aim, NULL);
 	Cvar_RegisterVariable (&sv_nostep, NULL);
 	Cvar_RegisterVariable (&sv_altnoclip, NULL);
+	Cvar_RegisterVariable (&sv_stupidquakebugfix, SV_StupidQuakeBugFix);
 
 	Cvar_RegisterVariable (&sv_novis, NULL);
 	Cvar_RegisterVariable (&sv_bouncedownslopes, NULL);
@@ -101,6 +102,15 @@ void SV_Init (void)
 
 	for (i=0 ; i<MAX_MODELS ; i++)
 		sprintf (localmodels[i], "*%i", i);
+}
+
+void SV_StupidQuakeBugFix (void)
+{
+	stupidquakebugfix = (qboolean)(sv_stupidquakebugfix.value);
+	if (stupidquakebugfix)
+		Con_Printf ("'stupid quake bug' fix enabled\n");
+	else
+		Con_Printf ("'stupid quake bug' fix disabled\n");
 }
 
 /*

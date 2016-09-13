@@ -196,6 +196,7 @@ extern	cvar_t	sv_aim;
 extern	cvar_t	sv_altnoclip;
 extern	cvar_t	sv_bouncedownslopes;
 extern	cvar_t	sv_novis;
+extern	cvar_t	sv_stupidquakebugfix;
 
 extern	cvar_t	teamplay;
 extern	cvar_t	skill;
@@ -214,6 +215,8 @@ extern	jmp_buf 	host_abortserver;
 extern	double		host_time;
 
 extern	edict_t		*sv_player;
+
+extern qboolean stupidquakebugfix;
 
 //===========================================================
 
@@ -257,3 +260,4 @@ void SV_SpawnServer (char *server);
 
 void SV_Freezeall_f (void);
 
+void SV_StupidQuakeBugFix (void);

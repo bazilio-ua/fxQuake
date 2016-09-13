@@ -426,6 +426,9 @@ PF_vectoangles
 vector vectoangles(vector)
 =================
 */
+qboolean stupidquakebugfix = false; 
+cvar_t	sv_stupidquakebugfix = {"sv_stupidquakebugfix", "0", true};
+
 void PF_vectoangles (void)
 {
 	float	*value1;
@@ -454,7 +457,10 @@ void PF_vectoangles (void)
 			pitch += 360;
 	}
 
-	G_FLOAT(OFS_RETURN+0) = -pitch;
+	if (stupidquakebugfix)
+		G_FLOAT(OFS_RETURN+0) = -pitch;
+	else
+		G_FLOAT(OFS_RETURN+0) = pitch;
 	G_FLOAT(OFS_RETURN+1) = yaw;
 	G_FLOAT(OFS_RETURN+2) = 0;
 }
