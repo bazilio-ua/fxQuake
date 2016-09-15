@@ -534,8 +534,6 @@ void R_DrawAliasModel (entity_t *e)
 	//
 	// set up textures
 	//
-//	GL_DisableMultitexture (); // selects TEXTURE0
-
 	anim = (int)(cl.time*10) & 3;
 	tx = paliashdr->gltexture[skinnum][anim];
 	fb = paliashdr->fullbright[skinnum][anim];
@@ -664,7 +662,6 @@ void R_DrawEntities (void)
 {
 	int		i;
 	entity_t	*e;
-//	float		alpha;
 
 	if (!r_drawentities.value)
 		return;
@@ -676,11 +673,6 @@ void R_DrawEntities (void)
 			S_ExtraUpdateTime (); // don't let sound get messed up if going slow
 
 		e = cl_visedicts[i];
-
-//		if (ENTALPHA_DECODE(e->alpha) < 1)
-//			continue;
-
-//		alpha = ENTALPHA_DECODE(e->alpha);
 
 		// chase_active
 		if (e == &cl_entities[cl.viewentity])
@@ -701,7 +693,6 @@ void R_DrawEntities (void)
 			
 		case mod_sprite:
 			R_AddToAlpha (ALPHA_SPRITE, R_GetAlphaDist(e->origin), e, NULL, 0);
-//			R_DrawSpriteModel (e);
 			break;
 			
 		default:
@@ -1023,14 +1014,10 @@ void R_RenderView (void)
 	R_DrawOpaque ();
 	R_DrawEntities ();
 	
-//	R_DrawParticles ();
 	R_SetupParticles ();
-	
-//	R_RenderDlights (); // flash blend dlights
 	R_SetupDlights (); // flash blend dlights
 	
-	R_DrawAlpha ();
-	
+	R_DrawAlpha (); // handle surfaces, entities, particles, dlights
 	
 	R_DrawViewModel ();
 	R_FogDisableGFog ();
