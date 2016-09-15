@@ -220,7 +220,6 @@ R_SetupDlights
 flash blend dlights
 =============
 */
-//void R_RenderDlights (void)
 void R_SetupDlights (void)
 {
 	int		i;
@@ -231,19 +230,15 @@ void R_SetupDlights (void)
 
 	r_dlightframecount = r_framecount + 1;	// because the count hasn't advanced yet for this frame
 	
-	
 	l = cl_dlights;
+	
 	for (i=0 ; i<MAX_DLIGHTS ; i++, l++)
 	{
 		if (l->die < cl.time || !l->radius)
 			continue;
 		
-//		R_RenderDlight (l);
 		R_AddToAlpha (ALPHA_DLIGHTS, R_GetAlphaDist(l->origin), l, NULL, 0);
-		
 	}
-	
-	
 }
 
 
@@ -365,6 +360,7 @@ void R_PushDlights (void)
 	{
 		if (l->die < cl.time || !l->radius)
 			continue;
+		
 		R_MarkLights (l, i, cl.worldmodel->nodes);
 	}
 }
