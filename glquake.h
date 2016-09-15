@@ -253,7 +253,6 @@ void R_TranslatePlayerSkin (int playernum);
 
 // gl_part.c
 void R_InitParticles (void);
-//void R_DrawParticles (void);
 void R_SetupParticles (void);
 void R_DrawParticle (particle_t *p);
 void R_ClearParticles (void);
@@ -265,7 +264,6 @@ void R_StoreEfrags (efrag_t **ppefrag);
 void R_AnimateLight (void);
 void R_LightPoint (vec3_t p, vec3_t color);
 void R_MarkLights (dlight_t *light, int num, mnode_t *node);
-//void R_RenderDlights (void);
 void R_SetupDlights (void);
 void R_RenderDlight (dlight_t *light);
 
@@ -276,7 +274,6 @@ void R_DrawWorld (void);
 void R_DrawOpaque (void);
 extern inline void R_DrawGLPoly34 (glpoly_t *p);
 extern inline void R_DrawGLPoly56 (glpoly_t *p);
-//void R_DrawSequentialPoly (entity_t *e, msurface_t *s);
 void R_DrawSequentialPoly (msurface_t *s, float alpha, int frame);
 void R_BuildLightmaps (void);
 void R_UploadLightmaps (void);
