@@ -447,23 +447,18 @@ void Mod_LoadTextures (lump_t *l)
 			}
 			else if (tx->name[0] == '*') // warping texture
 			{
-//				byte	*dummy;
 				mark = Hunk_LowMark();
 
 				sprintf (texturename, "%s:%s", loadmodel->name, tx->name);
 				offset = (unsigned)(mt+1) - (unsigned)mod_base;
 				tx->gltexture = GL_LoadTexture (loadmodel, texturename, tx->width, tx->height, SRC_INDEXED, (byte *)(tx+1), loadmodel->name, offset, TEXPREF_NONE);
 
-				// now create the warpimage, using dummy data to create the initial image
-//				dummy = malloc (gl_warpimage_size*gl_warpimage_size*4);
 				//now create the warpimage, using dummy data from the hunk to create the initial image
 				Hunk_Alloc (gl_warpimage_size*gl_warpimage_size*4); //make sure hunk is big enough so we don't reach an illegal address
 				Hunk_FreeToLowMark (mark);
 				sprintf (texturename, "%s_warp", texturename);
-//				tx->warpimage = GL_LoadTexture (loadmodel, texturename, gl_warpimage_size, gl_warpimage_size, SRC_RGBA /* SRC_INDEXED */, dummy, "", (unsigned)dummy, TEXPREF_NOPICMIP | TEXPREF_WARPIMAGE);
 				tx->warpimage = GL_LoadTexture (loadmodel, texturename, gl_warpimage_size, gl_warpimage_size, SRC_RGBA /* SRC_INDEXED */, hunk_base, "", (unsigned)hunk_base, TEXPREF_NOPICMIP | TEXPREF_WARPIMAGE);
 				tx->update_warp = true;
-//				free (dummy);
 			}
 			else // regular texture
 			{
@@ -658,7 +653,6 @@ void Mod_LoadLighting (lump_t *l)
 } 
 
 // store external leaf data
-//dleaf_s_t 	*extleafdata;
 void 	*extleafdata;
 int 	extleaflen;
 
@@ -1197,12 +1191,7 @@ void Mod_CalcSurfaceBounds (msurface_t *s)
 	// midpoint
 	for (i=0 ; i<3 ; i++)
 	{
-		// expand the bbox by 1 unit in each direction to ensure that marginal surfs don't get culled
-		// (needed for R_RecursiveWorldNode avoidance)
-/*		s->mins[i] -= 1.0f;
-		s->maxs[i] += 1.0f;
-*/		
-		// get final midpoint
+		// get midpoint
 		s->midp[i] = s->mins[i] + (s->maxs[i] - s->mins[i]) * 0.5f;
 	}
 }
@@ -1259,15 +1248,6 @@ void Mod_SetDrawingFlags (msurface_t *out)
 			Mod_PolyForUnlitSurface (out);
 		}
 	}
-	
-	// set default surface alpha
-//	out->alpha = 1.0f;
-	
-	// set default texture animation frame from entity  
-//	out->frame = 0;
-	
-	// set entity
-//	out->entity = NULL;
 }
 
 /*
@@ -1324,50 +1304,6 @@ void Mod_LoadFaces_S (lump_t *l)
 			out->samples = loadmodel->lightdata + (i * 3); // lit support via lordhavoc (was "+ i") 
 		
 		Mod_SetDrawingFlags (out); // set the drawing flags flag
-		
-		// set the drawing flags flag		
-/* 		if (!strncasecmp(out->texinfo->texture->name, "sky", 3)) // sky surface (also note: was strncmp, changed to match qbsp)
-		{
-			out->flags |= (SURF_DRAWSKY | SURF_DRAWTILED);
-			Mod_PolyForUnlitSurface (out);
-			// no more subdivision 
-		}
-		else if (out->texinfo->texture->name[0] == '*') // warp surface
-		{
-			out->flags |= (SURF_DRAWTURB | SURF_DRAWTILED);
-
-			// detect special liquid types
-			if (!strncasecmp(out->texinfo->texture->name, "*lava", 5)
-			|| !strncasecmp(out->texinfo->texture->name, "*brim", 5))
-				out->flags |= SURF_DRAWLAVA;
-			else if (!strncasecmp(out->texinfo->texture->name, "*slime", 6))
-				out->flags |= SURF_DRAWSLIME;
-			else if (!strncasecmp(out->texinfo->texture->name, "*tele", 5)
-			|| !strncasecmp(out->texinfo->texture->name, "*rift", 5)
-			|| !strncasecmp(out->texinfo->texture->name, "*gate", 5))
-				out->flags |= SURF_DRAWTELEPORT;
-			else
-				out->flags |= SURF_DRAWWATER; 
-
-			Mod_PolyForUnlitSurface (out);
-			// no more subdivision 
-		}
-		else if (out->texinfo->texture->name[0] == '{') // surface with fence texture
-		{
-			out->flags |= SURF_DRAWFENCE;
-		}
-		else if (out->texinfo->flags & TEX_MISSING) // texture is missing from bsp
-		{
-			if (out->samples) // lightmapped
-			{
-				out->flags |= SURF_NOTEXTURE;
-			}
-			else // not lightmapped
-			{
-				out->flags |= (SURF_NOTEXTURE | SURF_DRAWTILED);
-				Mod_PolyForUnlitSurface (out);
-			}
-		} */
 	}
 }
 
@@ -1425,50 +1361,6 @@ void Mod_LoadFaces_L (lump_t *l)
 			out->samples = loadmodel->lightdata + (i * 3); // lit support via lordhavoc (was "+ i") 
 		
 		Mod_SetDrawingFlags (out); // set the drawing flags flag
-		
-		// set the drawing flags flag
-/* 		if (!strncasecmp(out->texinfo->texture->name, "sky", 3)) // sky surface (also note: was strncmp, changed to match qbsp)
-		{
-			out->flags |= (SURF_DRAWSKY | SURF_DRAWTILED);
-			Mod_PolyForUnlitSurface (out);
-			// no more subdivision 
-		}
-		else if (out->texinfo->texture->name[0] == '*') // warp surface
-		{
-			out->flags |= (SURF_DRAWTURB | SURF_DRAWTILED);
-
-			// detect special liquid types
-			if (!strncasecmp(out->texinfo->texture->name, "*lava", 5)
-			|| !strncasecmp(out->texinfo->texture->name, "*brim", 5))
-				out->flags |= SURF_DRAWLAVA;
-			else if (!strncasecmp(out->texinfo->texture->name, "*slime", 6))
-				out->flags |= SURF_DRAWSLIME;
-			else if (!strncasecmp(out->texinfo->texture->name, "*tele", 5)
-			|| !strncasecmp(out->texinfo->texture->name, "*rift", 5)
-			|| !strncasecmp(out->texinfo->texture->name, "*gate", 5))
-				out->flags |= SURF_DRAWTELEPORT;
-			else
-				out->flags |= SURF_DRAWWATER; 
-
-			Mod_PolyForUnlitSurface (out);
-			// no more subdivision 
-		}
-		else if (out->texinfo->texture->name[0] == '{') // surface with fence texture
-		{
-			out->flags |= SURF_DRAWFENCE;
-		}
-		else if (out->texinfo->flags & TEX_MISSING) // texture is missing from bsp
-		{
-			if (out->samples) // lightmapped
-			{
-				out->flags |= SURF_NOTEXTURE;
-			}
-			else // not lightmapped
-			{
-				out->flags |= (SURF_NOTEXTURE | SURF_DRAWTILED);
-				Mod_PolyForUnlitSurface (out);
-			}
-		} */
 	}
 }
 
@@ -1717,7 +1609,6 @@ void Mod_LoadLeafs_S (lump_t *l)
 	if (extleafdata) // load external leaf data, if exist
 	{
 		Con_DPrintf ("load external leaf data\n");
-//		in = extleafdata;
 		in = (dleaf_s_t *)extleafdata;
 		filelen = extleaflen;
 	}
@@ -1727,9 +1618,9 @@ void Mod_LoadLeafs_S (lump_t *l)
 		filelen = l->filelen;
 	}
 
-	if (filelen % sizeof(*in)) /* l->filelen */
+	if (filelen % sizeof(*in))
 		Host_Error ("Mod_LoadLeafs_S: funny lump size in %s",loadmodel->name);
-	count = filelen / sizeof(*in); /* l->filelen */
+	count = filelen / sizeof(*in);
 	if (count > 32767) // old limit exceed
 		Host_Error ("Mod_LoadLeafs_S: leafs exceeds standard limit (%d, max = %d) in %s", count, 32767, loadmodel->name);
 	out = (mleaf_t *) Hunk_AllocName ( count*sizeof(*out), loadname);
@@ -1783,7 +1674,6 @@ void Mod_LoadLeafs_L1 (lump_t *l)
 	if (extleafdata) // load external leaf data, if exist
 	{
 		Con_DPrintf ("load external leaf data\n");
-//		in = extleafdata;
 		in = (dleaf_l1_t *)extleafdata;
 		filelen = extleaflen;
 	}
@@ -1793,9 +1683,9 @@ void Mod_LoadLeafs_L1 (lump_t *l)
 		filelen = l->filelen;
 	}
 
-	if (filelen % sizeof(*in)) /* l->filelen */
+	if (filelen % sizeof(*in))
 		Host_Error ("Mod_LoadLeafs_L1: funny lump size in %s",loadmodel->name);
-	count = filelen / sizeof(*in); /* l->filelen */
+	count = filelen / sizeof(*in);
 	if (count > MAX_MAP_LEAFS) // bsp2 limit exceed
 		Host_Error ("Mod_LoadLeafs_L1: leafs exceeds bsp2 limit (%d, max = %d) in %s", count, MAX_MAP_LEAFS, loadmodel->name);
 	out = (mleaf_t *) Hunk_AllocName ( count*sizeof(*out), loadname);
@@ -1849,7 +1739,6 @@ void Mod_LoadLeafs_L2 (lump_t *l)
 	if (extleafdata) // load external leaf data, if exist
 	{
 		Con_DPrintf ("load external leaf data\n");
-//		in = extleafdata;
 		in = (dleaf_l2_t *)extleafdata;
 		filelen = extleaflen;
 	}
@@ -1859,9 +1748,9 @@ void Mod_LoadLeafs_L2 (lump_t *l)
 		filelen = l->filelen;
 	}
 
-	if (filelen % sizeof(*in)) /* l->filelen */
+	if (filelen % sizeof(*in))
 		Host_Error ("Mod_LoadLeafs_L2: funny lump size in %s",loadmodel->name);
-	count = filelen / sizeof(*in); /* l->filelen */
+	count = filelen / sizeof(*in);
 	if (count > MAX_MAP_LEAFS) // bsp2 limit exceed
 		Host_Error ("Mod_LoadLeafs_L2: leafs exceeds bsp2 limit (%d, max = %d) in %s", count, MAX_MAP_LEAFS, loadmodel->name);
 	out = (mleaf_t *) Hunk_AllocName ( count*sizeof(*out), loadname);
@@ -2301,30 +2190,7 @@ void Mod_LoadBrushModel (model_t *mod, void *buffer)
 		Host_Error ("Mod_LoadBrushModel: %s has wrong version number (%i should be %i (Quake), %i (RMQ) or %i (BSP2))", mod->name, mod->bspversion, BSPVERSION, BSP2RMQVERSION, BSP2VERSION); // was Sys_Error
 		break;
 	}
-	
-//	if (mod->bspversion != BSPVERSION)
-//		Host_Error ("Mod_LoadBrushModel: %s has wrong version number (%i should be %i (Quake))", mod->name, mod->bspversion, BSPVERSION); // was Sys_Error
 
-/*	Con_DPrintf ("bspversion: %i ", mod->bspversion);
-	if (bsp2 == 2)
-		Con_DPrintf ("(BSP2 v2)\n");
-	else if (bsp2)
-		Con_DPrintf ("(BSP2 v1 RMQ)\n");
-	else
-		Con_DPrintf ("(Quake)\n");
-*/
-/*	{
-	// isworldmodel check
-		qboolean servermatch = sv.modelname[0] && !strcasecmp (loadname, sv.name);
-		qboolean clientmatch = cl.worldname[0] && !strcasecmp (loadname, cl.worldname);
-		Con_DPrintf ("loadname: %s\n", loadname);
-		if (servermatch)
-			Con_DPrintf ("sv.modelname: %s\n", sv.modelname);
-		if (clientmatch)
-			Con_DPrintf ("cl.modelname: %s\n", cl.worldname);
-		loadmodel->isworldmodel = servermatch || clientmatch;
-	}
-*/
 // swap all the lumps
 	mod_base = (byte *)header;
 
