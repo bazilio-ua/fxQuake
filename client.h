@@ -323,7 +323,6 @@ void CL_Signon3 (void);
 void CL_Signon4 (void);
 
 void CL_Disconnect (void);
-//void CL_Disconnect_f (void);
 
 // bumped for new value of MAX_EDICTS
 #define		MAX_VISEDICTS		MAX_EDICTS // was 256

@@ -697,7 +697,7 @@ void Host_Loadgame_f (void)
 	fscanf (f, "%s\n",mapname);
 	fscanf (f, "%f\n",&time);
 
-	CL_Disconnect (); // was CL_Disconnect_f
+	CL_Disconnect ();
 
 	SV_SpawnServer (mapname);
 
@@ -1823,7 +1823,7 @@ void Host_Demos_f (void)
 		return;
 	if (cls.demonum == -1)
 		cls.demonum = 1;
-	CL_Disconnect (); // was CL_Disconnect_f
+	CL_Disconnect ();
 	CL_NextDemo ();
 }
 
