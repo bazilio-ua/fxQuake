@@ -126,10 +126,7 @@ byte *Image_LoadTGA (FILE *fin, int *width, int *height)
 	numPixels = columns * rows;
 	upside_down = !(targa_header.attributes & 0x20); //johnfitz -- fix for upside-down targas
 
-//	targa_rgba = malloc (numPixels*4);
 	targa_rgba = Hunk_Alloc (numPixels*4);
-//	if (!targa_rgba)
-//		Sys_Error ("Image_LoadTGA: error allocating %d bytes for %s", numPixels*4, loadfilename);
 
 	if (targa_header.id_length != 0)
 		fseek(fin, targa_header.id_length, SEEK_CUR);  // skip TARGA image comment
@@ -335,10 +332,7 @@ byte *Image_LoadPCX (FILE *f, int *width, int *height)
 	w = pcx.xmax - pcx.xmin + 1;
 	h = pcx.ymax - pcx.ymin + 1;
 
-//	pcx_rgb = malloc ((w*h+1)*4); // +1 to allow reading padding byte on last line
 	pcx_rgb = Hunk_Alloc ((w*h+1)*4); // +1 to allow reading padding byte on last line
-//	if (!pcx_rgb)
-//		Sys_Error ("Image_LoadPCX: error allocating %d bytes for %s", (w*h+1)*4, loadfilename);
 
 	// load palette
 	fseek (f, start + com_filesize - 768, SEEK_SET);
@@ -1898,11 +1892,8 @@ static void R_Bloom_InitTextures (void)
 	mark = Hunk_LowMark ();
 
 	// init the screen texture
-//	bloomscreendata = malloc ( screen_texture_width * screen_texture_height * sizeof(int) );
-//	memset ( bloomscreendata, 255, screen_texture_width * screen_texture_height * sizeof(int) );
 	bloomscreendata = Hunk_Alloc (screen_texture_width * screen_texture_height * sizeof(int));
 	bloomscreentexture = GL_LoadTexture (NULL, "bloomscreentexture", screen_texture_width, screen_texture_height, SRC_BLOOM, bloomscreendata, "", (unsigned)bloomscreendata, TEXPREF_BLOOM /* | TEXPREF_OVERWRITE */ );
-//	free (bloomscreendata);
 
 	// validate bloom size
 	if (r_bloom_sample_size.value < 32)
@@ -1919,11 +1910,8 @@ static void R_Bloom_InitTextures (void)
 		Cvar_SetValue ("r_bloom_sample_size", bloom_size);
 
 	// init the bloom effect texture
-//	bloomeffectdata = malloc ( bloom_size * bloom_size * sizeof(int) );
-//	memset ( bloomeffectdata, 0, bloom_size * bloom_size * sizeof(int) );
 	bloomeffectdata = Hunk_Alloc (bloom_size * bloom_size * sizeof(int));
 	bloomeffecttexture = GL_LoadTexture (NULL, "bloomeffecttexture", bloom_size, bloom_size, SRC_BLOOM, bloomeffectdata, "", (unsigned)bloomeffectdata, TEXPREF_BLOOM /* | TEXPREF_OVERWRITE */ );
-//	free (bloomeffectdata);
 
 	// if screen size is more than 2x the bloom effect texture, set up for stepped downsampling
 	bloomdownsamplingtexture = NULL;
@@ -1932,11 +1920,8 @@ static void R_Bloom_InitTextures (void)
 	if ( (glwidth > (bloom_size * 2) || glheight > (bloom_size * 2) ) && !r_bloom_fast_sample.value)
 	{
 		screen_downsampling_texture_size = (int)(bloom_size * 2);
-//		bloomdownsamplingdata = malloc ( screen_downsampling_texture_size * screen_downsampling_texture_size * sizeof(int) );
-//		memset ( bloomdownsamplingdata, 0, screen_downsampling_texture_size * screen_downsampling_texture_size * sizeof(int) );
 		bloomdownsamplingdata = Hunk_Alloc (screen_downsampling_texture_size * screen_downsampling_texture_size * sizeof(int));
 		bloomdownsamplingtexture = GL_LoadTexture (NULL, "bloomdownsamplingtexture", screen_downsampling_texture_size, screen_downsampling_texture_size, SRC_BLOOM, bloomdownsamplingdata, "", (unsigned)bloomdownsamplingdata, TEXPREF_BLOOM /* | TEXPREF_OVERWRITE */ );
-//		free (bloomdownsamplingdata);
 	}
 
 	// init the screen backup texture
@@ -1951,11 +1936,8 @@ static void R_Bloom_InitTextures (void)
 		screen_backup_texture_height = bloom_size;
 	}
 
-//	bloombackupdata = malloc ( screen_backup_texture_width * screen_backup_texture_height * sizeof(int) );
-//	memset ( bloombackupdata, 0, screen_backup_texture_width * screen_backup_texture_height * sizeof(int) );
 	bloombackupdata = Hunk_Alloc (screen_backup_texture_width * screen_backup_texture_height * sizeof(int));
 	bloombackuptexture = GL_LoadTexture (NULL, "bloombackuptexture", screen_backup_texture_width, screen_backup_texture_height, SRC_BLOOM, bloombackupdata, "", (unsigned)bloombackupdata, TEXPREF_BLOOM /* | TEXPREF_OVERWRITE */ );
-//	free (bloombackupdata);
 
 	Hunk_FreeToLowMark (mark);
 }
