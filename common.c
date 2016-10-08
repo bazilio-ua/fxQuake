@@ -461,8 +461,8 @@ char *MSG_ReadString (qmsg_t *msg)
 		if (len + 1 > msg->badread_string_size) 
 		{
 			if (msg->badread_string)
-				free (msg->badread_string);
-			msg->badread_string = malloc (len + 1);
+				free (msg->badread_string); // FIXME: use Z_Free instead?
+			msg->badread_string = malloc (len + 1); // FIXME: use Z_Malloc instead?
 			msg->badread_string_size = len + 1;
 		}
 		if (!msg->badread_string)
