@@ -508,8 +508,14 @@ byte *SV_FatPVS (vec3_t org, model_t *worldmodel)
 	return fatpvs;
 }
 
+/*
+=============
+SV_Trace
 
-qboolean Q1BSP_Trace(model_t *model, int forcehullnum, int frame, vec3_t start, vec3_t end, vec3_t mins, vec3_t maxs, trace_t *trace)
+renamed from Q1BSP_Trace
+=============
+*/
+qboolean SV_Trace (model_t *model, int forcehullnum, int frame, vec3_t start, vec3_t end, vec3_t mins, vec3_t maxs, trace_t *trace)
 {
 	hull_t *hull;
 	vec3_t size;
@@ -552,8 +558,12 @@ qboolean Q1BSP_Trace(model_t *model, int forcehullnum, int frame, vec3_t start, 
 	return trace->fraction != 1;
 }
 
-
-qboolean SV_InvisibleToClient(edict_t *viewer, edict_t *seen)
+/*
+=============
+SV_InvisibleToClient
+=============
+*/
+qboolean SV_InvisibleToClient (edict_t *viewer, edict_t *seen)
 {
 	int i;
 	trace_t tr;
@@ -567,7 +577,7 @@ qboolean SV_InvisibleToClient(edict_t *viewer, edict_t *seen)
 	VectorAdd(viewer->v.origin, viewer->v.view_ofs, start);
 	tr.fraction = 1;
 
-	if (!Q1BSP_Trace (sv.worldmodel, 1, 0, start, seen->v.origin, vec3_origin, vec3_origin, &tr))
+	if (!SV_Trace (sv.worldmodel, 1, 0, start, seen->v.origin, vec3_origin, vec3_origin, &tr))
 		return false;	//wasn't blocked
 
 	//stage 2: check against their bbox
@@ -578,7 +588,7 @@ qboolean SV_InvisibleToClient(edict_t *viewer, edict_t *seen)
 		end[2] = seen->v.origin[2] + ((i&4)? seen->v.mins[2]+0.1: seen->v.maxs[2]);
 
 		tr.fraction = 1;
-		if (!Q1BSP_Trace (sv.worldmodel, 1, 0, start, end, vec3_origin, vec3_origin, &tr))
+		if (!SV_Trace (sv.worldmodel, 1, 0, start, end, vec3_origin, vec3_origin, &tr))
 			return false;	//this trace went through, so don't cull
 	}
 
