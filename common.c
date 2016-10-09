@@ -461,12 +461,10 @@ char *MSG_ReadString (qmsg_t *msg)
 		if (len + 1 > msg->badread_string_size) 
 		{
 			if (msg->badread_string)
-				free (msg->badread_string); // FIXME: use Z_Free instead?
-			msg->badread_string = malloc (len + 1); // FIXME: use Z_Malloc instead?
+				Z_Free (msg->badread_string);
+			msg->badread_string = Z_Malloc (len + 1);
 			msg->badread_string_size = len + 1;
 		}
-		if (!msg->badread_string)
-			Sys_Error ("MSG_ReadString: out of memory");
 
 		strncpy (msg->badread_string, string, len);
 		msg->badread_string[len] = 0;
