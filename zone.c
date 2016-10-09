@@ -146,7 +146,7 @@ void *Z_Malloc (int size)
 	Z_CheckHeap ();	// DEBUG
 	buf = Z_TagMalloc (size, 1);
 	if (!buf)
-		Sys_Error ("Z_Malloc: failed on allocation of %i bytes",size);
+		Sys_Error ("Z_Malloc: out of memory, failed on allocation of %i bytes", size);
 	memset (buf, 0, size);
 
 	return buf;
@@ -437,7 +437,7 @@ void *Hunk_AllocName (int size, char *name)
 	size = sizeof(hunk_t) + ((size+15)&~15);
 
 	if (hunk_size - hunk_low_used - hunk_high_used < size)
-		Sys_Error ("Hunk_AllocName: failed on %i bytes for '%s'", size, name);
+		Sys_Error ("Hunk_AllocName: out of memory, failed on allocation of %i bytes for '%s'", size, name);
 
 	h = (hunk_t *)(hunk_base + hunk_low_used);
 	hunk_low_used += size;
@@ -524,7 +524,7 @@ void *Hunk_HighAllocName (int size, char *name)
 
 	if (hunk_size - hunk_low_used - hunk_high_used < size)
 	{
-		Con_Printf ("Hunk_HighAllocName: failed on %i bytes for '%s'\n", size, name);
+		Con_Printf ("Hunk_HighAllocName: out of memory, failed on allocation of %i bytes for '%s'\n", size, name);
 		return NULL;
 	}
 
