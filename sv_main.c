@@ -570,9 +570,6 @@ qboolean SV_InvisibleToClient (edict_t *viewer, edict_t *seen)
 	vec3_t start;
 	vec3_t end;
 
-//	if (seen->v->solid == SOLID_BSP)
-//		return false;	//bsp ents are never culled this way
-
 	//stage 1: check against their origin
 	VectorAdd(viewer->v.origin, viewer->v.view_ofs, start);
 	tr.fraction = 1;
@@ -595,30 +592,7 @@ qboolean SV_InvisibleToClient (edict_t *viewer, edict_t *seen)
 	return true;
 }
 
-/*
-=============
-SV_VisibleToClient -- johnfitz
 
-PVS test encapsulated in a nice function
-=============
-*/
-/*
-qboolean SV_VisibleToClient (edict_t *client, edict_t *test, model_t *worldmodel)
-{
-	byte	*pvs;
-	vec3_t	org;
-	int		i;
-
-	VectorAdd (client->v.origin, client->v.view_ofs, org);
-	pvs = SV_FatPVS (org, worldmodel);
-
-	for (i=0 ; i < test->num_leafs ; i++)
-		if (pvs[test->leafnums[i] >> 3] & (1 << (test->leafnums[i]&7) ))
-			return true;
-
-	return false;
-}
-*/
 //=============================================================================
 
 
@@ -643,7 +617,7 @@ void SV_WriteEntitiesToClient (edict_t	*clent, sizebuf_t *msg)
 	VectorAdd (clent->v.origin, clent->v.view_ofs, org);
 	pvs = SV_FatPVS (org, sv.worldmodel);
 
-// send over all entities (excpet the client) that touch the pvs
+// send over all entities (except the client) that touch the pvs
 	ent = NEXT_EDICT(sv.edicts);
 	for (e=1 ; e<sv.num_edicts ; e++, ent = NEXT_EDICT(ent))
 	{
