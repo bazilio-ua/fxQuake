@@ -1570,7 +1570,7 @@ Loads the header and directory, adding the files at the beginning
 of the list so they override previous pack files.
 =================
 */
-pack_t *COM_LoadPackFile (char *filename)
+pack_t *COM_LoadPackFile (char *packfilename)
 {
 	dpackheader_t   header;
 	int             i;
@@ -1581,14 +1581,14 @@ pack_t *COM_LoadPackFile (char *filename)
 	dpackfile_t             info[MAX_FILES_IN_PACK];
 	unsigned short          crc;
 
-	if (Sys_FileOpenRead (filename, &packhandle) == -1)
+	if (Sys_FileOpenRead (packfilename, &packhandle) == -1)
 	{
-//		Con_SafePrintf ("COM_LoadPackFile: couldn't open %s\n", filename);
+//		Con_SafePrintf ("COM_LoadPackFile: couldn't open %s\n", packfilename);
 		return NULL;
 	}
 	if (Sys_FileRead (packhandle, (void *)&header, sizeof(header)) != sizeof(header) ||
 	    header.id[0] != 'P' || header.id[1] != 'A' || header.id[2] != 'C' || header.id[3] != 'K')
-		Sys_Error ("COM_LoadPackFile: %s is not a packfile, can't read header PACK id", filename);
+		Sys_Error ("COM_LoadPackFile: %s is not a packfile, can't read header PACK id", packfilename);
 
 	header.dirofs = LittleLong (header.dirofs);
 	header.dirlen = LittleLong (header.dirlen);
@@ -1596,14 +1596,14 @@ pack_t *COM_LoadPackFile (char *filename)
 	numpackfiles = header.dirlen / sizeof(dpackfile_t);
 
 	if (numpackfiles > MAX_FILES_IN_PACK)
-		Sys_Error ("COM_LoadPackFile: packfile %s has too many files (%i, max = %i)", filename, numpackfiles, MAX_FILES_IN_PACK);
+		Sys_Error ("COM_LoadPackFile: packfile %s has too many files (%i, max = %i)", packfilename, numpackfiles, MAX_FILES_IN_PACK);
 
 	newfiles = Hunk_AllocName (numpackfiles * sizeof(packfile_t), "packfile");
 //	newfiles = Z_Malloc (numpackfiles * sizeof(packfile_t)); // dynamic loading
 
 	Sys_FileSeek (packhandle, header.dirofs);
 	if (Sys_FileRead (packhandle, (void *)info, header.dirlen) != header.dirlen)
-		Sys_Error ("COM_LoadPackFile: can't read directory in packfile %s", filename);
+		Sys_Error ("COM_LoadPackFile: can't read directory in packfile %s", packfilename);
 
 // crc the directory to check for modifications
 	CRC_Init (&crc);
@@ -1624,12 +1624,12 @@ pack_t *COM_LoadPackFile (char *filename)
 	pack = Hunk_AllocName (sizeof(pack_t), "pack");
 //	pack = Z_Malloc (sizeof (pack_t)); // dynamic loading
 
-	strcpy (pack->filename, filename);
+	strcpy (pack->filename, packfilename);
 	pack->handle = packhandle;
 	pack->numfiles = numpackfiles;
 	pack->files = newfiles;
 
-	Con_Printf ("Added packfile %s (%i files)\n", filename, numpackfiles);
+	Con_Printf ("Added packfile %s (%i files)\n", packfilename, numpackfiles);
 	return pack;
 }
 

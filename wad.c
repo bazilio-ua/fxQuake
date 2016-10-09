@@ -71,18 +71,18 @@ void W_LoadWadFile (void)
 	wadinfo_t		*header;
 	int				i;
 	int				infotableofs;
-	char			*filename = WADFILE;
+	char			*wadfilename = WADFILE;
 
 	// modified to use malloc
 	// WADFILE need to be reloaded on every game change
-	wad_base = COM_LoadMallocFile (filename, wad_base, NULL); // was COM_LoadHunkFile
+	wad_base = COM_LoadMallocFile (wadfilename, wad_base, NULL); // was COM_LoadHunkFile
 	if (!wad_base)
-		Sys_Error ("W_LoadWadFile: couldn't load %s", filename);
+		Sys_Error ("W_LoadWadFile: couldn't load %s", wadfilename);
 
 	header = (wadinfo_t *)wad_base;
 	
 	if (header->id[0] != 'W' || header->id[1] != 'A' || header->id[2] != 'D' || header->id[3] != '2')
-		Sys_Error ("W_LoadWadFile: %s is not a wadfile, can't read header WAD2 id", filename);
+		Sys_Error ("W_LoadWadFile: %s is not a wadfile, can't read header WAD2 id", wadfilename);
 	
 	wad_numlumps = LittleLong(header->numlumps);
 	infotableofs = LittleLong(header->infotableofs);
