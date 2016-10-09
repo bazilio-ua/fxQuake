@@ -823,7 +823,6 @@ void R_LoadSkyBox (char *skybox)
 			Con_Printf ("Couldn't load %s\n", name);
 			skyboxtextures[i] = notexture;
 		}
-//		free (data);
 		Hunk_FreeToLowMark (mark);
 	}
 	
