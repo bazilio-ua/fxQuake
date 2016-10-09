@@ -366,7 +366,6 @@ skip:
 	size = paliashdr->skinwidth * paliashdr->skinheight;
 
 	// allocate dynamic memory
-//	pixels = malloc (size);
 	pixels = Hunk_Alloc (size);
 
 	dst = pixels;
@@ -381,7 +380,6 @@ skip:
 	playertextures[playernum] = GL_LoadTexture (e->model, name, paliashdr->skinwidth, paliashdr->skinheight, SRC_INDEXED, original, "", (unsigned)original, TEXPREF_PAD | TEXPREF_OVERWRITE);
 
 	// free allocated memory
-//	free (pixels);
 	Hunk_FreeToLowMark(mark);
 }
 
