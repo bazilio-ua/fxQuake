@@ -323,6 +323,9 @@ int main (int argc, char **argv)
 
 	parms.membase = malloc (parms.memsize);
 
+	if (!parms.membase)
+		Sys_Error ("Not enough memory free, check disk space");
+	
 //	parms.basedir = qbasedir;
 // caching is disabled by default, use -cachedir to enable
 //	parms.cachedir = qcachedir;
