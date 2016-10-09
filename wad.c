@@ -73,9 +73,7 @@ void W_LoadWadFile (void)
 	int				infotableofs;
 	char			*wadfilename = WADFILE;
 
-	// modified to use malloc
-	// WADFILE need to be reloaded on every game change
-	wad_base = COM_LoadMallocFile (wadfilename, wad_base, NULL); // was COM_LoadHunkFile
+	wad_base = COM_LoadHunkFile (wadfilename, NULL);
 	if (!wad_base)
 		Sys_Error ("W_LoadWadFile: couldn't load %s", wadfilename);
 

@@ -55,11 +55,9 @@ void R_LoadPalette (void)
 	byte *pal, *src, *dst;
 	int i;
 
-	// modified to use malloc
-	// palette need to be reloaded on every game change
-	host_basepal = COM_LoadMallocFile ("gfx/palette.lmp", host_basepal, NULL); // was COM_LoadHunkFile
+	host_basepal = COM_LoadHunkFile ("gfx/palette.lmp", NULL);
 	if (!host_basepal)
-		Sys_Error ("R_LoadPalette: Couldn't load gfx/palette.lmp");
+		Sys_Error ("R_LoadPalette: couldn't load gfx/palette.lmp");
 
 	pal = host_basepal;
 

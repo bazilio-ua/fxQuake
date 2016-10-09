@@ -1820,7 +1820,7 @@ void COM_InitFilesystem (void)
 			{
 				search->pack = COM_LoadPackFile (com_argv[i]);
 				if (!search->pack)
-					Sys_Error ("Couldn't load packfile: %s", com_argv[i]);
+					Sys_Error ("COM_InitFilesystem: couldn't load packfile: %s", com_argv[i]);
 			}
 			else
 				strcpy (search->filename, com_argv[i]);
