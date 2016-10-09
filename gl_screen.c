@@ -757,6 +757,7 @@ void SCR_ScreenShot_f (void)
 	char		tganame[16]; 
 	char		checkname[MAX_OSPATH];
 	int			i;
+	int			mark;
 
 //
 // find a file name to save it to 
@@ -777,8 +778,11 @@ void SCR_ScreenShot_f (void)
 //
 // get data
 //
-	buffer = malloc(glwidth * glheight * 4);
-
+	// Pa3PyX: now using hunk instead
+	mark = Hunk_LowMark();
+	
+	buffer = Hunk_AllocName(glwidth * glheight * 4, "buffer_sshot");
+	
 	glReadPixels (glx, gly, glwidth, glheight, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
 
 //
@@ -789,7 +793,8 @@ void SCR_ScreenShot_f (void)
 	else
 		Con_Printf ("SCR_ScreenShot_f: Couldn't create a TGA file\n");
 
-	free (buffer);
+	// Pa3PyX: now using hunk instead
+	Hunk_FreeToLowMark(mark);
 } 
 
 //=============================================================================
