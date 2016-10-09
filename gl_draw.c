@@ -162,7 +162,6 @@ void GL_UploadWarpImage (void)
 	//
 	// resize the textures in opengl
 	//
-//	dummy = malloc (gl_warpimage_size*gl_warpimage_size*4);
 	mark = Hunk_LowMark();
 	dummy = Hunk_Alloc (gl_warpimage_size*gl_warpimage_size*4);
 
@@ -176,7 +175,6 @@ void GL_UploadWarpImage (void)
 		}
 	}
 
-//	free (dummy);
 	Hunk_FreeToLowMark (mark);
 }
 
@@ -372,7 +370,7 @@ char *GL_MakeExtensionsList (const char *in)
 	out = Z_Malloc (strlen(in) + count*3 + 1); // usually about 1-2k
 	out[0] = 0;
 
-	copy = Z_Malloc(strlen(in) + 1);
+	copy = Z_Malloc (strlen(in) + 1);
 	strcpy(copy, in);
 
 	for (token = strtok(copy, " "); token; token = strtok(NULL, " "))
@@ -481,16 +479,9 @@ void GL_Init (void)
 {
 	// gl_info
 	gl_vendor = (const char *)glGetString (GL_VENDOR);
-//	Con_SafePrintf ("GL_VENDOR: %s\n", gl_vendor);
 	gl_renderer = (const char *)glGetString (GL_RENDERER);
-//	Con_SafePrintf ("GL_RENDERER: %s\n", gl_renderer);
 	gl_version = (const char *)glGetString (GL_VERSION);
-//	Con_SafePrintf ("GL_VERSION: %s\n", gl_version);
 	gl_extensions = (const char *)glGetString (GL_EXTENSIONS);
-//	Con_SafePrintf ("GL_EXTENSIONS: %s\n", gl_extensions);
-#ifndef _WIN32
-//	Con_SafePrintf ("GLX_EXTENSIONS: %s\n", glx_extensions);
-#endif
 
 	Cmd_AddCommand ("gl_info", GL_Info_f);
 	Cmd_AddCommand ("gl_reloadtextures", GL_ReloadTextures_f);
@@ -752,7 +743,7 @@ qpic_t *Draw_CachePic (char *path)
 			return &pic->pic;
 
 	if (menu_numcachepics == MAX_CACHED_PICS)
-		Sys_Error ("menu_numcachepics == MAX_CACHED_PICS (%d)", MAX_CACHED_PICS);
+		Sys_Error ("Draw_CachePic: menu_numcachepics == MAX_CACHED_PICS (%d)", MAX_CACHED_PICS);
 	menu_numcachepics++;
 	strcpy (pic->name, path);
 
@@ -1215,7 +1206,6 @@ void Draw_TransPicTranslate (int x, int y, qpic_t *pic, byte *translation)
 	size = pic->width * pic->height;
 
 	// allocate dynamic memory
-//	trans = malloc (size);
 	trans = Hunk_Alloc (size);
 
 	dst = trans;
@@ -1236,7 +1226,6 @@ void Draw_TransPicTranslate (int x, int y, qpic_t *pic, byte *translation)
 	Draw_Pic (x, y, pic);
 
 	// free allocated memory
-//	free (trans);
 	Hunk_FreeToLowMark(mark);
 }
 
@@ -1393,6 +1382,7 @@ Call after completing any disc IO
 */
 void Draw_EndDisc (void)
 {
+	
 }
 
 /*
@@ -1634,7 +1624,6 @@ void GL_Upload32 (gltexture_t *glt, unsigned *data)
 	scaled_height = CLAMP(2, scaled_height, gl_texture_max_size);
 
 	// allocate dynamic memory
-//	scaled = malloc (scaled_width * scaled_height * sizeof(unsigned)); // 4
 	scaled = Hunk_Alloc (scaled_width * scaled_height * sizeof(unsigned)); // 4
 
 	// Resample up
@@ -1690,7 +1679,6 @@ void GL_Upload32 (gltexture_t *glt, unsigned *data)
 	GL_SetFilterModes (glt);
 
 	// free allocated memory
-//	free (scaled);
 }
 
 /*
@@ -1755,7 +1743,6 @@ void GL_Upload8 (gltexture_t *glt, byte *data)
 		Con_DWarning ("GL_Upload8: size %d is not a multiple of 4 in '%s'\n", size, glt->name); // should be an error but ... (EER1)
 
 	// allocate dynamic memory
-//	trans = malloc (size * sizeof(unsigned)); // 4
 	trans = Hunk_Alloc (size * sizeof(unsigned)); // 4
 
 	// detect false alpha cases
@@ -1768,7 +1755,6 @@ void GL_Upload8 (gltexture_t *glt, byte *data)
 				break;
 		}
 		if (i == size)
-//			glt->flags -= TEXPREF_ALPHA;
 			glt->flags &= ~TEXPREF_ALPHA;
 	}
 
@@ -1779,42 +1765,22 @@ void GL_Upload8 (gltexture_t *glt, byte *data)
 			pal = d_8to24table_fbright_fence;
 		else
 			pal = d_8to24table_fbright;
-/*		for (i=0 ; i<size ; ++i)
-		{
-			p = data[i];
-			trans[i] = d_8to24table_fbright[p];
-		}
-*/	}
+	}
 	else if (glt->flags & TEXPREF_NOBRIGHT)
 	{
 		if (glt->flags & TEXPREF_ALPHA)
 			pal = d_8to24table_nobright_fence;
 		else
 			pal = d_8to24table_nobright;
-/*		for (i=0 ; i<size ; ++i)
-		{
-			p = data[i];
-			trans[i] = d_8to24table_nobright[p];
-		}
-*/	}
+	}
 	else if (glt->flags & TEXPREF_CONCHARS)
 	{
 		pal = d_8to24table_conchars;
-/*		for (i=0 ; i<size ; ++i)
-		{
-			p = data[i];
-			trans[i] = d_8to24table_conchars[p];
-		}
-*/	}
+	}
 	else
 	{
 		pal = d_8to24table;
-/*		for (i=0 ; i<size ; ++i)
-		{
-			p = data[i];
-			trans[i] = d_8to24table[p];
-		}
-*/	}
+	}
 
 	// convert to 32bit
 	for (i=0 ; i<size ; ++i)
@@ -1831,7 +1797,6 @@ void GL_Upload8 (gltexture_t *glt, byte *data)
 	GL_Upload32 (glt, trans);
 
 	// free allocated memory
-//	free (trans);
 }
 
 
@@ -1983,7 +1948,6 @@ gltexture_t *GL_LoadTexture (model_t *owner, char *name, int width, int height, 
 	// cache check
 	crc = CRC_Block(data, size);
 
-//	if ((flags ^ TEXPREF_OVERWRITE) && (glt = GL_FindTexture (owner, name)))
 	if ((flags & TEXPREF_OVERWRITE) && (glt = GL_FindTexture (owner, name))) 
 	{
 		if (glt->source_crc == crc)
