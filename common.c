@@ -1599,7 +1599,6 @@ pack_t *COM_LoadPackFile (char *packfilename)
 		Sys_Error ("COM_LoadPackFile: packfile %s has too many files (%i, max = %i)", packfilename, numpackfiles, MAX_FILES_IN_PACK);
 
 	newfiles = Hunk_AllocName (numpackfiles * sizeof(packfile_t), "packfile");
-//	newfiles = Z_Malloc (numpackfiles * sizeof(packfile_t)); // dynamic loading
 
 	Sys_FileSeek (packhandle, header.dirofs);
 	if (Sys_FileRead (packhandle, (void *)info, header.dirlen) != header.dirlen)
@@ -1622,7 +1621,6 @@ pack_t *COM_LoadPackFile (char *packfilename)
 	}
 
 	pack = Hunk_AllocName (sizeof(pack_t), "pack");
-//	pack = Z_Malloc (sizeof (pack_t)); // dynamic loading
 
 	strcpy (pack->filename, packfilename);
 	pack->handle = packhandle;
@@ -1664,7 +1662,6 @@ void COM_AddGameDirectory (char *dir)
 // add the directory to the search path
 //
 	search = Hunk_AllocName (sizeof(searchpath_t), "searchpath");
-//	search = Z_Malloc (sizeof(searchpath_t)); // dynamic loading
 	search->path_id = path_id;
 	strcpy (search->filename, dir);
 	search->next = com_searchpaths;
@@ -1680,7 +1677,6 @@ void COM_AddGameDirectory (char *dir)
 		if (!pak)
 			break;
 		search = Hunk_AllocName (sizeof(searchpath_t), "searchpath");
-//		search = Z_Malloc (sizeof(searchpath_t)); // dynamic loading
 		search->path_id = path_id;
 		search->pack = pak;
 		search->next = com_searchpaths;
@@ -1820,7 +1816,6 @@ void COM_InitFilesystem (void)
 			if (!com_argv[i] || com_argv[i][0] == '+' || com_argv[i][0] == '-')
 				break;
 			search = Hunk_AllocName (sizeof(searchpath_t), "searchpath");
-//			search = Z_Malloc(sizeof(searchpath_t)); // dynamic loading
 			if ( !strcmp(COM_FileExtension(com_argv[i]), "pak") )
 			{
 				search->pack = COM_LoadPackFile (com_argv[i]);
