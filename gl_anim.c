@@ -811,6 +811,7 @@ void R_LoadSkyBox (char *skybox)
 	for (i = 0 ; i < 6 ; i++)
 	{
 		mark = Hunk_LowMark ();
+		
 		sprintf (name, "gfx/env/%s%s", skybox, suf[i]);
 		data = GL_LoadImage (name, &width, &height);
 		if (data)
@@ -823,6 +824,7 @@ void R_LoadSkyBox (char *skybox)
 			Con_Printf ("Couldn't load %s\n", name);
 			skyboxtextures[i] = notexture;
 		}
+		
 		Hunk_FreeToLowMark (mark);
 	}
 	
@@ -1137,16 +1139,18 @@ void R_SkyDrawFace (int axis)
 {
 	glpoly_t	*p;
 	vec3_t		verts[4];
-	int			i, j, start;
+	int			i, j;
 	float		di,qi,dj,qj;
 	vec3_t		vup, vright, temp1, temp2;
+	int			mark;
 
 	R_SkySetBoxVert(-1.0, -1.0, axis, verts[0]);
 	R_SkySetBoxVert(-1.0,  1.0, axis, verts[1]);
 	R_SkySetBoxVert(1.0,   1.0, axis, verts[2]);
 	R_SkySetBoxVert(1.0,  -1.0, axis, verts[3]);
 
-	start = Hunk_LowMark ();
+	mark = Hunk_LowMark ();
+	
 	p = Hunk_AllocName (sizeof(glpoly_t), "skyface");
 
 	VectorSubtract(verts[2],verts[3],vup);
@@ -1182,7 +1186,8 @@ void R_SkyDrawFace (int axis)
 			R_SkyDrawFaceQuad (p);
 		}
 	}
-	Hunk_FreeToLowMark (start);
+	
+	Hunk_FreeToLowMark (mark);
 }
 
 /*
@@ -1466,7 +1471,8 @@ void R_SkyProcessEntities (void)
 					(!(s->flags & SURF_PLANEBACK) && (dot > BACKFACE_EPSILON)))
 				{
 					// copy the polygon and translate manually, since R_SkyProcessPoly needs it to be in world space
-					mark = Hunk_LowMark();
+					mark = Hunk_LowMark ();
+					
 					p = Hunk_AllocName (sizeof(*s->polys), "skypoly"); //FIXME: don't allocate for each poly
 					p->numverts = s->polys->numverts;
 					for (k=0; k<p->numverts; k++)
@@ -1487,6 +1493,7 @@ void R_SkyProcessEntities (void)
 							VectorAdd(s->polys->verts[k], e->origin, p->verts[k]);
 					}
 					R_SkyProcessPoly (p);
+					
 					Hunk_FreeToLowMark (mark);
 				}
 			}

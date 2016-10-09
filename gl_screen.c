@@ -779,7 +779,7 @@ void SCR_ScreenShot_f (void)
 // get data
 //
 	// Pa3PyX: now using hunk instead
-	mark = Hunk_LowMark();
+	mark = Hunk_LowMark ();
 	
 	buffer = Hunk_AllocName(glwidth * glheight * 4, "buffer_sshot");
 	
@@ -794,7 +794,7 @@ void SCR_ScreenShot_f (void)
 		Con_Printf ("SCR_ScreenShot_f: Couldn't create a TGA file\n");
 
 	// Pa3PyX: now using hunk instead
-	Hunk_FreeToLowMark(mark);
+	Hunk_FreeToLowMark (mark);
 } 
 
 //=============================================================================

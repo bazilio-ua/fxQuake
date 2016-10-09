@@ -162,7 +162,8 @@ void GL_UploadWarpImage (void)
 	//
 	// resize the textures in opengl
 	//
-	mark = Hunk_LowMark();
+	mark = Hunk_LowMark ();
+	
 	dummy = Hunk_Alloc (gl_warpimage_size*gl_warpimage_size*4);
 
 	for (glt=active_gltextures; glt; glt=glt->next)
@@ -1226,7 +1227,7 @@ void Draw_TransPicTranslate (int x, int y, qpic_t *pic, byte *translation)
 	Draw_Pic (x, y, pic);
 
 	// free allocated memory
-	Hunk_FreeToLowMark(mark);
+	Hunk_FreeToLowMark (mark);
 }
 
 
@@ -1970,7 +1971,7 @@ gltexture_t *GL_LoadTexture (model_t *owner, char *name, int width, int height, 
 	glt->source_crc = crc;
 
 	//upload it
-	mark = Hunk_LowMark();
+	mark = Hunk_LowMark ();
 
 	switch (glt->source_format)
 	{
@@ -1988,7 +1989,7 @@ gltexture_t *GL_LoadTexture (model_t *owner, char *name, int width, int height, 
 		break;
 	}
 
-	Hunk_FreeToLowMark(mark);
+	Hunk_FreeToLowMark (mark);
 
 	return glt;
 }
@@ -2052,7 +2053,7 @@ void GL_ReloadTexture (gltexture_t *glt)
 	if (!data)
 	{
 		Con_Printf ("GL_ReloadTexture: invalid source for %s\n", glt->name);
-		Hunk_FreeToLowMark(mark);
+		Hunk_FreeToLowMark (mark);
 		return;
 	}
 
@@ -2077,7 +2078,7 @@ void GL_ReloadTexture (gltexture_t *glt)
 		break;
 	}
 
-	Hunk_FreeToLowMark(mark);
+	Hunk_FreeToLowMark (mark);
 }
 
 /*
