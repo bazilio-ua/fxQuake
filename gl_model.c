@@ -373,10 +373,10 @@ void Mod_LoadTextures (lump_t *l)
 	texture_t	*altanims[10];
 	dmiptexlump_t *m;
 	char		texturename[64];
+	char		texname[16 + 1];
 	int			nummiptex;
 	unsigned	offset;
 	int			mark;
-	char		texname[16 + 1];
 
 	// don't return early if no textures; still need to create dummy texture
 	if (!l->filelen)
@@ -447,7 +447,7 @@ void Mod_LoadTextures (lump_t *l)
 			}
 			else if (tx->name[0] == '*') // warping texture
 			{
-				mark = Hunk_LowMark();
+				mark = Hunk_LowMark ();
 
 				sprintf (texturename, "%s:%s", loadmodel->name, tx->name);
 				offset = (unsigned)(mt+1) - (unsigned)mod_base;
@@ -455,15 +455,19 @@ void Mod_LoadTextures (lump_t *l)
 
 				//now create the warpimage, using dummy data from the hunk to create the initial image
 				Hunk_Alloc (gl_warpimage_size*gl_warpimage_size*4); //make sure hunk is big enough so we don't reach an illegal address
+				
 				Hunk_FreeToLowMark (mark);
+				
 				sprintf (texturename, "%s_warp", texturename);
-				tx->warpimage = GL_LoadTexture (loadmodel, texturename, gl_warpimage_size, gl_warpimage_size, SRC_RGBA /* SRC_INDEXED */, hunk_base, "", (unsigned)hunk_base, TEXPREF_NOPICMIP | TEXPREF_WARPIMAGE);
+				tx->warpimage = GL_LoadTexture (loadmodel, texturename, gl_warpimage_size, gl_warpimage_size, SRC_RGBA, hunk_base, "", (unsigned)hunk_base, TEXPREF_NOPICMIP | TEXPREF_WARPIMAGE);
 				tx->update_warp = true;
 			}
 			else // regular texture
 			{
 				int	extraflags = TEXPREF_NONE;
-
+				
+				mark = Hunk_LowMark ();
+				
 				if (tx->name[0] == '{') // fence texture
 					extraflags |= TEXPREF_ALPHA;
 
@@ -480,6 +484,8 @@ void Mod_LoadTextures (lump_t *l)
 					sprintf (texturename, "%s:%s", loadmodel->name, tx->name);
 					tx->gltexture = GL_LoadTexture (loadmodel, texturename, tx->width, tx->height, SRC_INDEXED, (byte *)(tx+1), loadmodel->name, offset, TEXPREF_MIPMAP | extraflags);
 				}
+				
+				Hunk_FreeToLowMark (mark);
 			}
 		}
 	}
@@ -593,6 +599,7 @@ void Mod_LoadLighting (lump_t *l)
 {
 	// LordHavoc: .lit support
 	int i;
+	int mark;
 	byte *in, *out, *data;
 	byte d;
 	char litfilename[MAX_QPATH];
@@ -608,6 +615,8 @@ void Mod_LoadLighting (lump_t *l)
 		strcat(litfilename, ".lit");
 		Con_DPrintf("trying to load %s\n", litfilename);
 
+		mark = Hunk_LowMark ();
+		
 		data = (byte *) COM_LoadHunkFile (litfilename, &path_id);
 		if (data)
 		{
@@ -627,10 +636,12 @@ void Mod_LoadLighting (lump_t *l)
 					return;
 				}
 				else
-					Con_Printf("Unknown .lit file version (%d)\n", i);
+					Con_DPrintf("Unknown .lit file version (%d)\n", i);
 			}
 			else
-				Con_Printf("Corrupt .lit file (old version?), ignoring\n");
+				Con_DPrintf("Corrupt .lit file (old version?), ignoring\n");
+			
+			Hunk_FreeToLowMark (mark);
 		}
 	}
 
@@ -755,12 +766,12 @@ void Mod_LoadVisibility (lump_t *l)
 					return;
 				}
 				else if (!match && hlen == VISPATCH_MAPNAME_IDLEN)
-					Con_Printf ("Not match .vis file header mapname (%s should be %s)\n", vispatch.mapname, loadmapname);
+					Con_DPrintf ("Not match .vis file header mapname (%s should be %s)\n", vispatch.mapname, loadmapname);
 				else
-					Con_Printf ("Wrong .vis file header lenght (%d should be %d)\n", hlen, VISPATCH_HEADER_LEN);
+					Con_DPrintf ("Wrong .vis file header lenght (%d should be %d)\n", hlen, VISPATCH_HEADER_LEN);
 			}
 			else
-				Con_Printf ("Ignoring invalid .vis file. Doing standard vis.\n");
+				Con_DPrintf ("Ignoring invalid .vis file. Doing standard vis.\n");
 standard:
 			fclose (f);
 		}
@@ -785,6 +796,7 @@ external .ent support from QuakeSpasm
 void Mod_LoadEntities (lump_t *l)
 {
 	// QS: .ent support
+	int		mark;
 	char	entfilename[MAX_QPATH];
 	char	*ents;
 	unsigned int	path_id;
@@ -799,6 +811,8 @@ void Mod_LoadEntities (lump_t *l)
 		strcat(entfilename, ".ent");
 		Con_DPrintf("trying to load %s\n", entfilename);
 
+		mark = Hunk_LowMark ();
+		
 		ents = (char *) COM_LoadHunkFile (entfilename, &path_id);
 		if (ents)
 		{
@@ -814,6 +828,8 @@ void Mod_LoadEntities (lump_t *l)
 				Con_DPrintf("Loaded external entity file %s\n", entfilename);
 				return;
 			}
+			
+			Hunk_FreeToLowMark (mark);
 		}
 	}
 
@@ -2647,9 +2663,9 @@ void Mod_LoadAliasModel (model_t *mod, void *buffer)
 	int					size;
 	daliasframetype_t	*pframetype;
 	daliasskintype_t	*pskintype;
-	int					start, end, total;
+	int					startmark, endmark, total;
 
-	start = Hunk_LowMark ();
+	startmark = Hunk_LowMark ();
 
 	pinmodel = (mdl_t *)buffer;
 	mod_base = (byte *)buffer;
@@ -2797,8 +2813,8 @@ void Mod_LoadAliasModel (model_t *mod, void *buffer)
 //
 // move the complete, relocatable alias model to the cache
 //	
-	end = Hunk_LowMark ();
-	total = end - start;
+	endmark = Hunk_LowMark ();
+	total = endmark - startmark;
 	
 	mod->size = total;
 
@@ -2807,7 +2823,7 @@ void Mod_LoadAliasModel (model_t *mod, void *buffer)
 		return;
 	memcpy (mod->cache.data, pheader, total);
 
-	Hunk_FreeToLowMark (start);
+	Hunk_FreeToLowMark (startmark);
 }
 
 //=============================================================================

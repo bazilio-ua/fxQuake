@@ -147,7 +147,7 @@ void CL_Disconnect (void)
 
 void CL_Disconnect_f (void)
 {
-	CL_Disconnect ();
+	Host_Error ("Disconnected from server");
 }
 
 

@@ -134,13 +134,13 @@ void Host_Error (char *error, ...)
 	vsnprintf (string, sizeof(string), error, argptr);
 	va_end (argptr);
 
-	Con_Printf ("Host Error: %s\n",string);
+	Con_Printf ("Host Error: %s\n", string);
 
 	if (sv.active)
 		Host_ShutdownServer (false);
 
 	if (cls.state == ca_dedicated)
-		Sys_Error ("Host_Error: %s",string);	// dedicated servers exit
+		Sys_Error ("Host_Error: %s", string);	// dedicated servers exit
 
 	CL_Disconnect ();
 	cls.demonum = -1;
