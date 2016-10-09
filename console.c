@@ -909,7 +909,8 @@ void Con_TabComplete (void)
 		partial[i-1] = 0;
 
 // find a match
-	mark = Hunk_LowMark();
+	mark = Hunk_LowMark ();
+	
 	if (!strlen(key_tabpartial)) // first time through
 	{
 		strcpy (key_tabpartial, partial);
@@ -948,7 +949,8 @@ void Con_TabComplete (void)
 		// use prev or next to find next match
 		match = keydown[K_SHIFT] ? t->prev->name : t->next->name;
 	}
-	Hunk_FreeToLowMark(mark); // it's okay to free it here because match is a pointer to persistent data
+	
+	Hunk_FreeToLowMark (mark); // it's okay to free it here because match is a pointer to persistent data
 
 // insert new match into edit line
 	strcpy (partial, match); // first copy match string

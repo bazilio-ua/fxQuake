@@ -380,7 +380,7 @@ skip:
 	playertextures[playernum] = GL_LoadTexture (e->model, name, paliashdr->skinwidth, paliashdr->skinheight, SRC_INDEXED, original, "", (unsigned)original, TEXPREF_PAD | TEXPREF_OVERWRITE);
 
 	// free allocated memory
-	Hunk_FreeToLowMark(mark);
+	Hunk_FreeToLowMark (mark);
 }
 
 
