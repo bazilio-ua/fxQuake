@@ -466,13 +466,12 @@ This is sent just before a server changes levels
 */
 void Host_Reconnect_f (void)
 {
-	// Consider stopping sound here?
-	if (cls.demoplayback)
+	if (cls.demoplayback)	// cross-map demo playback fix from Baker
 	{
-		Con_DPrintf("Demo playing -- ignoring reconnect\n");
+		Con_DPrintf("Ignoring reconnect during demo playback\n");
 		return;
 	}
-
+	
 	SCR_BeginLoadingPlaque ();
 	cls.signon = 0;		// need new connection messages
 }

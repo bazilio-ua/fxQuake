@@ -147,7 +147,10 @@ void CL_Disconnect (void)
 
 void CL_Disconnect_f (void)
 {
-	Host_Error ("Disconnected from server");
+	CL_Disconnect ();
+	if (sv.active)
+		Host_ShutdownServer (false);
+//	Host_Error ("Disconnected from server");
 }
 
 
