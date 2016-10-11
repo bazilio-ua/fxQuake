@@ -472,8 +472,7 @@ void Host_Reconnect_f (void)
 		return;
 	}
 	
-	SCR_BeginLoadingPlaque ();
-	cls.signon = 0;		// need new connection messages
+	CL_Reconnect ();
 }
 
 extern char server_name[MAX_QPATH]; // for rcon
@@ -497,9 +496,25 @@ void Host_Connect_f (void)
 	}
 	strcpy (name, Cmd_Argv(1));
 	CL_EstablishConnection (name);
-	Host_Reconnect_f ();
+	CL_Reconnect ();
 
 	strcpy(server_name, name); // for rcon
+}
+
+/*
+=====================
+Host_Disconnect_f
+
+User command to disconnect from server
+=====================
+*/
+void Host_Disconnect_f (void)
+{
+	CL_Disconnect ();
+	if (sv.active)
+		Host_ShutdownServer (false);
+
+	cls.demonum = -1;
 }
 
 
@@ -775,7 +790,7 @@ void Host_Loadgame_f (void)
 	if (cls.state != ca_dedicated)
 	{
 		CL_EstablishConnection ("local");
-		Host_Reconnect_f ();
+		CL_Reconnect ();
 	}
 }
 
@@ -1864,6 +1879,8 @@ void Host_InitCommands (void)
 
 	Cmd_AddCommand ("connect", Host_Connect_f);
 	Cmd_AddCommand ("reconnect", Host_Reconnect_f);
+	Cmd_AddCommand ("disconnect", Host_Disconnect_f);
+	
 	Cmd_AddCommand ("name", Host_Name_f);
 	Cmd_AddCommand (nehahra ? "wraith" : "noclip", Host_Noclip_f);
 	Cmd_AddCommand ("version", Host_Version_f);

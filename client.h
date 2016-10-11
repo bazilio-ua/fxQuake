@@ -322,6 +322,7 @@ void CL_Signon2 (void);
 void CL_Signon3 (void);
 void CL_Signon4 (void);
 
+void CL_Reconnect (void);
 void CL_Disconnect (void);
 
 // bumped for new value of MAX_EDICTS

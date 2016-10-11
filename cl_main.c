@@ -97,6 +97,19 @@ void CL_ClearState (void)
 
 /*
 =====================
+CL_Reconnect
+
+Wait for the signon messages again.
+=====================
+*/
+void CL_Reconnect (void)
+{
+	SCR_BeginLoadingPlaque ();
+	cls.signon = 0;		// need new connection messages
+}
+
+/*
+=====================
 CL_Disconnect
 
 Sends a disconnect message to the server
@@ -108,13 +121,13 @@ void CL_Disconnect (void)
 // stop sounds (especially looping!)
 	S_StopAllSounds (true);
 
-	CDAudio_Stop(); // Stop CD music
+	CDAudio_Stop(); // Stop the CD music
 
 // if running a local server, shut it down
 	cl.worldmodel = NULL; // This makes sure ambient sounds remain silent
 
-// stop all intermissions (the intermission screen prints the map name so
-// this is important for preventing a crash)
+// stop all intermissions 
+// (the intermission screen prints the map name so this is important for preventing a crash)
 	cl.intermission = 0; // Baker: So critical.  SCR_UpdateScreen uses this.
 
 // remove all center prints
@@ -144,15 +157,6 @@ void CL_Disconnect (void)
 	cls.demoplayback = cls.timedemo = false;
 	cls.signon = 0;
 }
-
-void CL_Disconnect_f (void)
-{
-	CL_Disconnect ();
-	if (sv.active)
-		Host_ShutdownServer (false);
-//	Host_Error ("Disconnected from server");
-}
-
 
 /*
 =====================
@@ -909,7 +913,6 @@ void CL_Init (void)
 	Cvar_RegisterVariable (&m_side, NULL);
 
 	Cmd_AddCommand ("entities", CL_PrintEntities_f);
-	Cmd_AddCommand ("disconnect", CL_Disconnect_f);
 	Cmd_AddCommand ("record", CL_Record_f);
 	Cmd_AddCommand ("stop", CL_Stop_f);
 	Cmd_AddCommand ("playdemo", CL_PlayDemo_f);
