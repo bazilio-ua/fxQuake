@@ -363,7 +363,9 @@ void Key_Console (int key)
 				key_linepos++;
 			return;
 		}
-		if ((int)strlen(key_lines[edit_line]) == key_linepos)
+		if (key_linepos < strlen(key_lines[edit_line]))
+			key_linepos++; 		
+/* 		if ((int)strlen(key_lines[edit_line]) == key_linepos)
 		{
 			if ((int)strlen(key_lines[(edit_line + (CMDLINES-1)) & (CMDLINES-1)]) <= key_linepos)
 				return; // no character to get
@@ -375,7 +377,7 @@ void Key_Console (int key)
 		else
 		{
 			key_linepos++;
-		}
+		} */
 		return;
 
 	case K_UPARROW:
@@ -816,6 +818,14 @@ void Key_Init (void)
 	int		i;
 
 // Baker ... we are now reading history instead of doing this
+/*
+	for (i=0 ; i<CMDLINES ; i++)
+	{
+		key_lines[i][0] = ']';
+		key_lines[i][1] = 0;
+	}
+	key_linepos = 1;
+*/
 	
 //
 // init ascii characters in console mode
