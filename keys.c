@@ -934,16 +934,15 @@ void Key_Event (int key, qboolean down)
 // so the user knew what to do.  But if someone does "playdemo" that isn't the intro.
 // So we want this behavior ONLY when startdemos are in action.  If startdemos are
 // not in action, cls.demonum == -1
-/*
-	if (cls.demonum >= 0) // We are in startdemos intro.  Bring up menu for keys.
+/*	if (cls.demonum >= 0) // We are in startdemos intro.  Bring up menu for keys.
 	{
 		if (cls.demoplayback && down && consolekeys[key] && key_dest == key_game)
 		{
 			M_ToggleMenu_f ();
 			return;
 		}
-	}
-*/
+	}*/
+
 //
 // if not a consolekey, send to the interpreter no matter what mode is
 //
