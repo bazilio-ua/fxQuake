@@ -33,7 +33,6 @@ char		key_lines[CMDLINES][MAX_CMDLINE];
 int		key_linepos;
 int		key_lastpress;
 
-int		shift_down = false;
 int		edit_line = 0;
 int		history_line = 0;
 
@@ -112,6 +111,8 @@ keyname_t keynames[] =
 	{"PGUP", K_PGUP},
 	{"HOME", K_HOME},
 	{"END", K_END},
+
+	{"COMMAND", K_COMMAND},
 
 	{"MOUSE1", K_MOUSE1},
 	{"MOUSE2", K_MOUSE2},
@@ -230,6 +231,7 @@ void Key_Console (int key)
 		return;
 
 	case K_INS:
+		// joe: toggle insert mode -- from [sons]Quake
 		key_insert ^= 1;
 		return;
 
@@ -778,6 +780,8 @@ void Key_Init (void)
 	consolekeys[K_END] = true;
 	consolekeys[K_PGUP] = true;
 	consolekeys[K_PGDN] = true;
+	consolekeys[K_ALT] = true; // EER1
+	consolekeys[K_CTRL] = true; // EER1
 	consolekeys[K_SHIFT] = true;
 	consolekeys[K_MWHEELUP] = true;
 	consolekeys[K_MWHEELDOWN] = true;
@@ -870,18 +874,19 @@ void Key_Event (int key, qboolean down)
 	keydown[key] = down;
 
 //
-// handle shift key
-//
-	if (key == K_SHIFT)
-		shift_down = down;
-
-//
 // handle escape specialy, so the user can never unbind it
 //
 	if (key == K_ESCAPE)
 	{
 		if (!down)
 			return;
+
+		if (keydown[K_SHIFT])
+		{
+			Con_ToggleConsole_f();
+			return;
+		}
+
 		switch (key_dest)
 		{
 		case key_message:
@@ -970,7 +975,7 @@ void Key_Event (int key, qboolean down)
 	if (!down)
 		return;		// other systems only care about key down events
 
-	if (shift_down)
+	if (keydown[K_SHIFT])
 		key = keyshift[key];
 
 	switch (key_dest)
@@ -1011,8 +1016,5 @@ void Key_ClearStates (void)
 		if (keydown[i])
 			Key_Event (i, false);
 	}
-
-	// Baker 3.87: Clear the shift as well.
-	shift_down = false;
 }
 
