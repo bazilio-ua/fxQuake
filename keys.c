@@ -851,7 +851,9 @@ void Key_Event (int key, qboolean down)
 	if (key_count <= 0)
 		return;		// just catching keys for Con_NotifyBox
 
+//
 // handle autorepeats and stray key up events
+//
 	if (down)
 	{
 		if (keydown[key])
@@ -866,12 +868,7 @@ void Key_Event (int key, qboolean down)
 		return; // ignore stray key up events
 
 	keydown[key] = down;
-	
-/*
-	if (keydown[K_CTRL] && keydown[K_ALT] && keydown[K_DEL])
-		Sys_Error ("ctrl-alt-del pressed");
-*/
-	
+
 //
 // handle shift key
 //
@@ -971,7 +968,6 @@ void Key_Event (int key, qboolean down)
 		return;
 	}
 
-	// Baker: I think this next line is unreachable!
 	if (!down)
 		return;		// other systems only care about key down events
 
