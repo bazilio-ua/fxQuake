@@ -921,7 +921,7 @@ void Host_Shutdown(void)
 	scr_disabled_for_loading = true;
 
 	Host_WriteConfiguration ("config.cfg"); 
-	History_Close ();
+	History_Shutdown ();
 	NET_Shutdown ();
 
 	if (cls.state != ca_dedicated)
