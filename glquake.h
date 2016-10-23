@@ -222,6 +222,8 @@ extern inline void GL_EndRendering (void);
 // gl_main.c
 extern inline qboolean R_CullBox (vec3_t mins, vec3_t maxs);
 extern inline qboolean R_CullModelForEntity (entity_t *e);
+void R_DrawAliasModel (entity_t *e);
+void R_DrawSpriteModel (entity_t *e);
 
 // gl_draw.c
 void GL_Upload8 (gltexture_t *glt, byte *data);

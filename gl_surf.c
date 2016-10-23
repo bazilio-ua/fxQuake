@@ -904,7 +904,7 @@ void R_DrawBrushModel (entity_t *e)
 		if (((psurf->flags & SURF_PLANEBACK) && (dot < -BACKFACE_EPSILON)) ||
 			(!(psurf->flags & SURF_PLANEBACK) && (dot > BACKFACE_EPSILON)))
 		{
-			if (alpha < 1.0 || (psurf->flags & SURF_DRAWTURB) && (alpha = R_GetTurbAlpha(psurf)) < 1.0 || psurf->flags & SURF_DRAWFENCE)
+			if (alpha < 1.0 || ((psurf->flags & SURF_DRAWTURB) && (alpha = R_GetTurbAlpha(psurf)) < 1.0) || psurf->flags & SURF_DRAWFENCE)
 			{
 				vec3_t	midp;
 				vec_t	midp_dist;
@@ -1054,7 +1054,7 @@ restart:
 				surf->texturechain = skychain;
 				skychain = surf;
 			}
-			else if ((surf->flags & SURF_DRAWTURB) && (alpha = R_GetTurbAlpha(surf)) < 1.0 || surf->flags & SURF_DRAWFENCE)
+			else if (((surf->flags & SURF_DRAWTURB) && (alpha = R_GetTurbAlpha(surf)) < 1.0) || surf->flags & SURF_DRAWFENCE)
 			{
 				vec_t midp_dist;
 
