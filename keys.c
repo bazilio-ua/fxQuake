@@ -72,25 +72,23 @@ keyname_t keynames[] =
 	{"CTRL", K_CTRL},
 	{"SHIFT", K_SHIFT},
 
-	//johnfitz -- keypad
-	{"KP_NUMLOCK",		KP_NUMLOCK},
-	{"KP_SLASH",		KP_SLASH },
-	{"KP_STAR",			KP_STAR },
-	{"KP_MINUS",		KP_MINUS },
-	{"KP_HOME",			KP_HOME },
-	{"KP_UPARROW",		KP_UPARROW },
-	{"KP_PGUP",			KP_PGUP },
-	{"KP_PLUS",			KP_PLUS },
-	{"KP_LEFTARROW",	KP_LEFTARROW },
-	{"KP_5",			KP_5 },
-	{"KP_RIGHTARROW",	KP_RIGHTARROW },
-	{"KP_END",			KP_END },
-	{"KP_DOWNARROW",	KP_DOWNARROW },
-	{"KP_PGDN",			KP_PGDN },
-	{"KP_ENTER",		KP_ENTER },
-	{"KP_INS",			KP_INS },
-	{"KP_DEL",			KP_DEL },
-	//johnfitz
+	// keypad
+	{"KP_HOME",			K_KP_HOME },
+	{"KP_UPARROW",		K_KP_UPARROW },
+	{"KP_PGUP",			K_KP_PGUP },
+	{"KP_LEFTARROW",	K_KP_LEFTARROW },
+	{"KP_5",			K_KP_5 },
+	{"KP_RIGHTARROW",	K_KP_RIGHTARROW },
+	{"KP_END",			K_KP_END },
+	{"KP_DOWNARROW",	K_KP_DOWNARROW },
+	{"KP_PGDN",			K_KP_PGDN },
+	{"KP_ENTER",		K_KP_ENTER },
+	{"KP_INS",			K_KP_INS },
+	{"KP_DEL",			K_KP_DEL },
+	{"KP_SLASH",		K_KP_SLASH },
+	{"KP_MINUS",		K_KP_MINUS },
+	{"KP_PLUS",			K_KP_PLUS },
+	{"KP_STAR",			K_KP_STAR },
 
 	{"F1", K_F1},
 	{"F2", K_F2},
@@ -201,7 +199,7 @@ void Key_Console (int key)
 	switch (key)
 	{
 	case K_ENTER:
-	case KP_ENTER:
+	case K_KP_ENTER:
 		key_tabpartial[0] = 0;
 		Cbuf_AddText (key_lines[edit_line]+1);	// skip the prompt '>'
 		Cbuf_AddText ("\n");
@@ -425,7 +423,7 @@ void Key_Message (int key)
 	switch (key)
 	{
 	case K_ENTER:
-	case KP_ENTER:
+	case K_KP_ENTER:
 		if (team_message)
 			Cbuf_AddText ("say_team \"");
 		else
@@ -767,7 +765,7 @@ void Key_Init (void)
 	for (i=32 ; i<127 ; i++) // ascii characters in console mode
 		consolekeys[i] = true;
 	consolekeys[K_ENTER] = true;
-	consolekeys[KP_ENTER] = true;
+	consolekeys[K_KP_ENTER] = true;
 	consolekeys[K_TAB] = true;
 	consolekeys[K_LEFTARROW] = true;
 	consolekeys[K_RIGHTARROW] = true;
