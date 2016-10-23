@@ -79,11 +79,11 @@ int XLateKey (XKeyEvent *ev)
 	int key;
 	char buf[64];
 	KeySym keysym;
-	int XLookupRet;
+	int lookupRet;
 
 	key = 0;
 
-	XLookupRet = XLookupString(ev, buf, sizeof(buf), &keysym, 0);
+	lookupRet = XLookupString(ev, buf, sizeof(buf), &keysym, 0);
 
 	switch(keysym)
 	{
@@ -257,18 +257,18 @@ int XLateKey (XKeyEvent *ev)
 		break;
 
 	default:
-		if (XLookupRet == 0)
-		{
-			Con_DWarning ("XLookupString failed on KeySym %d\n", keysym);
-		}
-		else
+		if (lookupRet > 0)
 		{
 			key = *(byte *)buf;
 			if (key >= 'A' && key <= 'Z')
 				key = key - 'A' + 'a';
-			//Clipboard	
+			// clipboard
 			if (key >= 1 && key <= 26)
 				key = key + 'a' - 1;
+		}
+		else
+		{
+            key = scantokey[ev->keycode];
 		}
 		break;
 	} 
