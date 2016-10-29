@@ -253,7 +253,7 @@ int XLateKey (XKeyEvent *ev)
 		break;
 
 	case XK_Num_Lock: 
-		key = KP_NUMLOCK; 
+		key = K_KP_NUMLOCK; 
 		break;
 
 	default:

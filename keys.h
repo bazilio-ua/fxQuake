@@ -57,6 +57,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define	K_END			152
 
 // keypad
+#define K_KP_NUMLOCK	153 
 #define K_KP_HOME		160
 #define K_KP_UPARROW	161
 #define K_KP_PGUP		162
