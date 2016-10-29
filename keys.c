@@ -185,6 +185,25 @@ extern float scr_con_current;
 ==============================================================================
 */
 
+void K_PasteFromClipboard (void)
+{
+    // clipboard pasting
+    char	*clipboardtext;
+    int		len;
+    
+    if ((clipboardtext = Sys_GetClipboardData())) // chars < ' ' removed
+    {
+        len = strlen (clipboardtext);
+        if (len + strlen(key_lines[edit_line]) > MAX_CMDLINE - 1)
+            len = MAX_CMDLINE - 1 - strlen(key_lines[edit_line]);
+        if (len > 0)
+        {	// insert the string
+            memmove (key_lines[edit_line] + key_linepos + len, key_lines[edit_line] + key_linepos, strlen(key_lines[edit_line]) - key_linepos + 1);
+            memcpy (key_lines[edit_line] + key_linepos, clipboardtext, len);
+            key_linepos += len;
+        }
+    }
+}
 
 /*
 ====================
@@ -357,22 +376,7 @@ void Key_Console (int key)
 	case 'V':
 		if (keydown[K_CTRL])
 		{
-			// clipboard pasting
-			char	*cliptext;
-			int		len;
-			
-			if ((cliptext = Sys_GetClipboardData())) // chars < ' ' removed
-			{
-				len = strlen (cliptext);
-				if (len + strlen(key_lines[edit_line]) > MAX_CMDLINE - 1)
-					len = MAX_CMDLINE - 1 - strlen(key_lines[edit_line]);
-				if (len > 0)
-				{	// insert the string
-					memmove (key_lines[edit_line] + key_linepos + len, key_lines[edit_line] + key_linepos, strlen(key_lines[edit_line]) - key_linepos + 1);
-					memcpy (key_lines[edit_line] + key_linepos, cliptext, len);
-					key_linepos += len;
-				}
-			}
+			K_PasteFromClipboard ();
 			return;
 		}
 		break;	
