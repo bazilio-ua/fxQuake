@@ -274,7 +274,7 @@ char *Sys_GetClipboardData (void)
 //				clipboard = strdup((char *)data); // orig.
 				size_t size;
 
-				cliptext = (char *)data
+				cliptext = (char *)data;
 				size = strlen(cliptext) + 1;
 				/* this is intended for simple small text copies
 				 * such as an ip address, etc:  do chop the size
