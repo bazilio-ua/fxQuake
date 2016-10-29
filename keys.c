@@ -763,9 +763,10 @@ void Key_Init (void)
 //
 	for (i=32 ; i<127 ; i++) // ascii characters in console mode
 		consolekeys[i] = true;
-	consolekeys[K_ENTER] = true;
-	consolekeys[K_KP_ENTER] = true;
 	consolekeys[K_TAB] = true;
+	consolekeys[K_ENTER] = true;
+	consolekeys[K_ESCAPE] = true;
+    
 	consolekeys[K_LEFTARROW] = true;
 	consolekeys[K_RIGHTARROW] = true;
 	consolekeys[K_UPARROW] = true;
@@ -780,6 +781,26 @@ void Key_Init (void)
 	consolekeys[K_ALT] = true; // EER1
 	consolekeys[K_CTRL] = true; // EER1
 	consolekeys[K_SHIFT] = true;
+    
+	consolekeys[K_KP_ENTER] = true;
+	consolekeys[K_KP_SLASH] = true;
+	consolekeys[K_KP_STAR] = true;
+	consolekeys[K_KP_MINUS] = true;
+	consolekeys[K_KP_HOME] = true;
+	consolekeys[K_KP_UPARROW] = true;
+	consolekeys[K_KP_PGUP] = true;
+	consolekeys[K_KP_PLUS] = true;
+	consolekeys[K_KP_LEFTARROW] = true;
+	consolekeys[K_KP_5] = true;
+	consolekeys[K_KP_RIGHTARROW] = true;
+	consolekeys[K_KP_END] = true;
+	consolekeys[K_KP_DOWNARROW] = true;
+	consolekeys[K_KP_PGDN] = true;
+	consolekeys[K_KP_INS] = true;
+	consolekeys[K_KP_DEL] = true;
+    
+//	consolekeys[K_COMMAND] = true; // macos
+    
 	consolekeys[K_MWHEELUP] = true;
 	consolekeys[K_MWHEELDOWN] = true;
 	consolekeys['`'] = false;
