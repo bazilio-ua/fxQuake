@@ -626,6 +626,11 @@ void Key_Unbind_f (void)
 	Key_SetBinding (b, NULL);
 }
 
+/*
+===================
+Key_Unbindall_f
+===================
+*/
 void Key_Unbindall_f (void)
 {
 	int		i;
