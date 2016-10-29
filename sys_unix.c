@@ -230,6 +230,8 @@ Sys_GetClipboardData
 Clipboard function, thx quake2 icculus
 ================
 */
+#define	SYS_CLIPBOARD_SIZE	MAX_CMDLINE		// 256
+
 char *Sys_GetClipboardData (void)
 {
 	Window owner;
@@ -237,8 +239,9 @@ char *Sys_GetClipboardData (void)
 	unsigned long len, bytes_left, tmp;
 	byte *data;
 	int format, result;
-	char *ret = NULL;
-
+	char *clipboard = NULL;
+	char *cliptext;
+	
 	owner = XGetSelectionOwner(x_disp, XA_PRIMARY);
 
 	if (owner != None)
@@ -268,13 +271,25 @@ char *Sys_GetClipboardData (void)
 
 			if (result == Success)
 			{
-				ret = strdup((char *)data);
+//				clipboard = strdup((char *)data); // orig.
+				size_t size;
+
+				cliptext = (char *)data
+				size = strlen(cliptext) + 1;
+				/* this is intended for simple small text copies
+				 * such as an ip address, etc:  do chop the size
+				 * here, otherwise we may experience Z_Malloc()
+				 * failures and all other not-oh-so-fun stuff. */
+				size = min(SYS_CLIPBOARD_SIZE, size);
+				clipboard = Z_Malloc(size);
+				strcpy (clipboard, cliptext);
 			}
 
 			XFree(data);
 		}
 	}
-	return ret;
+	
+	return clipboard;
 } 
 
 void Sys_Sleep (void)

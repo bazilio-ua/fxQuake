@@ -401,11 +401,40 @@ Sys_GetClipboardData
 Clipboard function
 ================
 */
-#define	SYS_CLIPBOARD_SIZE	256
+#define	SYS_CLIPBOARD_SIZE	MAX_CMDLINE		// 256
 
 char *Sys_GetClipboardData (void)
 {
-	HANDLE		th;
+	char *clipboard = NULL;
+	char *cliptext;
+	
+	if (OpenClipboard(NULL) != 0)
+	{
+		HANDLE hClipboardData;
+		
+		if ((hClipboardData = GetClipboardData(CF_TEXT)) != NULL)
+		{
+			cliptext = (char *)GlobalLock(hClipboardData);
+			if (cliptext != NULL)
+			{
+				size_t size = GlobalSize(hClipboardData) + 1;
+				/* this is intended for simple small text copies
+				 * such as an ip address, etc:  do chop the size
+				 * here, otherwise we may experience Z_Malloc()
+				 * failures and all other not-oh-so-fun stuff. */
+				size = min(SYS_CLIPBOARD_SIZE, size);
+				clipboard = Z_Malloc(size);
+				strcpy (clipboard, cliptext);
+				GlobalUnlock (hClipboardData);
+			}
+		}
+		CloseClipboard ();
+	}
+	
+	return clipboard; 	
+	
+	
+/*	HANDLE		th;
 	char		*cliptext, *s, *t;
 	static	char	clipboard[SYS_CLIPBOARD_SIZE];
 
@@ -433,7 +462,7 @@ char *Sys_GetClipboardData (void)
 	GlobalUnlock (th);
 	CloseClipboard ();
 
-	return clipboard;
+	return clipboard;	*/
 } 
 
 void Sys_Sleep (void)

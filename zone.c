@@ -263,7 +263,7 @@ Z_Strdup
 char *Z_Strdup (char *s)
 {
 	int size = strlen(s) + 1;
-	char *ptr = (char *) Z_Malloc (size);
+	char *ptr = Z_Malloc (size);
 	memcpy (ptr, s, size);
     
 	return ptr;

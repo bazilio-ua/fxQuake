@@ -187,6 +187,54 @@ extern float scr_con_current;
 
 void K_PasteFromClipboard (void)
 {
+	char *clipboardtext, *p, *keyeditline;
+	int mvlen, inslen;
+	
+	if (key_linepos == MAX_CMDLINE-1)
+		return;
+	
+	if ((clipboardtext = Sys_GetClipboardData()) == NULL)
+		return;
+	
+	p = clipboardtext;
+	while (*p)
+	{
+		if (*p == '\n' || *p == '\r' || *p == '\b')
+		{
+			*p = 0;
+			break;
+		}
+		p++;
+	}
+	
+	inslen = (int)(p - clipboardtext);
+	if (inslen + key_linepos > MAX_CMDLINE-1)
+		inslen = MAX_CMDLINE-1 - key_linepos;
+	if (inslen <= 0) 
+		goto done;
+	
+	keyeditline = key_lines[edit_line];
+	keyeditline += key_linepos;
+	mvlen = (int)strlen(keyeditline);
+	if (mvlen + inslen + key_linepos > MAX_CMDLINE-1)
+	{
+		mvlen = MAX_CMDLINE-1 - key_linepos - inslen;
+		if (mvlen < 0) 
+			mvlen = 0;
+	}
+	
+	// insert the string
+	if (mvlen != 0)
+		memmove (keyeditline + inslen, keyeditline, mvlen);
+	memcpy (keyeditline, clipboardtext, inslen);
+	key_linepos += inslen;
+	keyeditline[mvlen + inslen] = '\0';
+	
+done:
+	Z_Free(clipboardtext);
+	
+	
+/*	
     // clipboard pasting
     char	*clipboardtext;
     int		len;
@@ -202,7 +250,7 @@ void K_PasteFromClipboard (void)
             memcpy (key_lines[edit_line] + key_linepos, clipboardtext, len);
             key_linepos += len;
         }
-    }
+    }	*/
 }
 
 /*
