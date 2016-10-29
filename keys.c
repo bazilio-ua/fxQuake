@@ -214,17 +214,25 @@ Interactive line editing and console scrollback
 */
 void Key_Console (int key)
 {
+	static	char currentline[MAX_CMDLINE] = "";
+	int		history_line_last;
+	size_t	len;
+	char	*keyeditline = key_lines[edit_line];
+	
 	switch (key)
 	{
 	case K_ENTER:
 	case K_KP_ENTER:
 		key_tabpartial[0] = 0;
-		Cbuf_AddText (key_lines[edit_line]+1);	// skip the prompt '>'
+		Cbuf_AddText (keyeditline+1);	// skip the prompt '>'
 		Cbuf_AddText ("\n");
-		Con_Printf ("%s\n",key_lines[edit_line]);
-		// don't save same commands multiple times
-		if (strcmp(key_lines[edit_line-1], key_lines[edit_line]))
+		Con_Printf ("%s\n", keyeditline);
+		
+		// If the last two lines are identical, skip storing this line in history 
+		// by not incrementing edit_line (don't save same commands multiple times)
+		if (strcmp(keyeditline, key_lines[(edit_line-1)&(CMDLINES-1)]))
 			edit_line = (edit_line + 1) & (CMDLINES-1);
+		
 		history_line = edit_line;
 		key_lines[edit_line][0] = ']';
 		key_lines[edit_line][1] = 0; //johnfitz -- otherwise old history items show up in the new edit line
@@ -232,44 +240,63 @@ void Key_Console (int key)
 		if (cls.state == ca_disconnected)
 			SCR_UpdateScreen ();	// force an update, because the command may take some time
 		return;
-
+		
 	case K_TAB:
 		Con_TabComplete ();
 		return;
-
+		
 	case K_BACKSPACE:
 		key_tabpartial[0] = 0;
 		if (key_linepos > 1)
 		{
-			strcpy(key_lines[edit_line] + key_linepos - 1, key_lines[edit_line] + key_linepos);
+			keyeditline += key_linepos - 1;
+			if (keyeditline[1])
+			{
+				len = strlen(keyeditline);
+				memmove (keyeditline, keyeditline + 1, len);
+			}
+			else
+				*keyeditline = 0;
 			key_linepos--;
 		}
 		return;
-
+		
 	case K_INS:
-		// joe: toggle insert mode -- from [sons]Quake
-		key_insert ^= 1;
+		if (keydown[K_SHIFT])	/* Shift-Ins paste */
+			K_PasteFromClipboard ();
+		else
+			key_insert ^= 1; // joe: toggle insert mode
 		return;
-
+		
 	case K_DEL:
 		key_tabpartial[0] = 0;
-		if (key_linepos < (int)strlen(key_lines[edit_line]))
-			strcpy(key_lines[edit_line] + key_linepos, key_lines[edit_line] + key_linepos + 1);
+		keyeditline += key_linepos;
+		if (*keyeditline)
+		{
+			if (keyeditline[1])
+			{
+				len = strlen(keyeditline);
+				memmove (keyeditline, keyeditline + 1, len);
+			}
+			else
+				*keyeditline = 0;
+		}
 		return;
-
+		
 	case K_HOME:
 		if (keydown[K_CTRL])
-		{
-			//skip initial empty lines
+		{	//skip initial empty lines
 			int		i, x;
 			char	*line;
-
+			
 			for (i = con_current - con_totallines + 1 ; i <= con_current ; i++)
 			{
 				line = con_text + (i%con_totallines)*con_linewidth;
 				for (x=0 ; x<con_linewidth ; x++)
+				{
 					if (line[x] != ' ')
 						break;
+				}
 				if (x != con_linewidth)
 					break;
 			}
@@ -278,28 +305,28 @@ void Key_Console (int key)
 		else
 			key_linepos = 1;
 		return;
-
+		
 	case K_END:
 		if (keydown[K_CTRL])
 			con_backscroll = 0;
 		else
-			key_linepos = strlen(key_lines[edit_line]);
+			key_linepos = strlen(keyeditline);
 		return;
-
+		
 	case K_PGUP:
 	case K_MWHEELUP:
 		con_backscroll += keydown[K_CTRL] ? ((con_vislines>>3) - 4) : 2;
 		if (con_backscroll > con_totallines - (vid.height>>3) - 1)
 			con_backscroll = con_totallines - (vid.height>>3) - 1;
 		return;
-
+		
 	case K_PGDN:
 	case K_MWHEELDOWN:
 		con_backscroll -= keydown[K_CTRL] ? ((con_vislines>>3) - 4) : 2;
 		if (con_backscroll < 0)
 			con_backscroll = 0;
 		return;
-
+		
 	case K_LEFTARROW:
 		if (keydown[K_CTRL])
 		{
@@ -313,7 +340,7 @@ void Key_Console (int key)
 		if (key_linepos > 1)
 			key_linepos--;
 		return;
-
+		
 	case K_RIGHTARROW:
 		if (keydown[K_CTRL])
 		{
@@ -330,46 +357,39 @@ void Key_Console (int key)
 		if (key_linepos < strlen(key_lines[edit_line]))
 			key_linepos++; 		
 		return;
-
+		
 	case K_UPARROW:
-		key_tabpartial[0] = 0;
+		if (history_line == edit_line)
+			strcpy(currentline, keyeditline);
+		history_line_last = history_line;
 		do
 		{
 			history_line = (history_line - 1) & (CMDLINES-1);
-		} while (history_line != edit_line
-				&& !key_lines[history_line][1]);
-		if (history_line == edit_line)
-			history_line = (edit_line + 1) & (CMDLINES-1);
-		strcpy(key_lines[edit_line], key_lines[history_line]);
-		key_linepos = strlen(key_lines[edit_line]);
-		return;
-
-	case K_DOWNARROW:
-		key_tabpartial[0] = 0;
-
+		} while (history_line != edit_line && !key_lines[history_line][1]);
 		if (history_line == edit_line)
 		{
-			//clear editline
-			key_lines[edit_line][1] = 0;
-			key_linepos = 1;
+			history_line = history_line_last;
 			return;
 		}
-
-		do 
+		key_tabpartial[0] = 0;
+		strcpy(keyeditline, key_lines[history_line]);
+		key_linepos = strlen(keyeditline);
+		return;
+		
+	case K_DOWNARROW:
+		if (history_line == edit_line)
+			return;
+		key_tabpartial[0] = 0;
+		do
 		{
 			history_line = (history_line + 1) & (CMDLINES-1);
-		} while (history_line != edit_line
-			&& !key_lines[history_line][1]);
+		} while (history_line != edit_line && !key_lines[history_line][1]);
+
 		if (history_line == edit_line)
-		{
-			key_lines[edit_line][0] = ']';
-			key_linepos = 1;
-		}
+			strcpy(keyeditline, currentline);
 		else
-		{
-			strcpy(key_lines[edit_line], key_lines[history_line]);
-			key_linepos = strlen(key_lines[edit_line]);
-		}
+			strcpy(keyeditline, key_lines[history_line]);
+		key_linepos = strlen(keyeditline);
 		return;
 		
 	case 'v':
@@ -379,46 +399,55 @@ void Key_Console (int key)
 			K_PasteFromClipboard ();
 			return;
 		}
-		break;	
+		break;
+		
+	case 'c':
+	case 'C':
+		if (keydown[K_CTRL])
+		{	/* Ctrl+C: abort the line -- S.A */
+			Con_Printf ("%s\n", keyeditline);
+			keyeditline[0] = ']';
+			keyeditline[1] = 0;
+			key_linepos = 1;
+			history_line = edit_line;
+			return;
+		}
+		break;
 	}
 	
 	if (key < 32 || key > 127)
 		return;	// non printable
-
+	
 	if (key_linepos < MAX_CMDLINE-1)
 	{
-		int i;
-
+		qboolean endpos = !keyeditline[key_linepos];
+		
 		key_tabpartial[0] = 0; //johnfitz
-
-		if (key_insert)	// check insert mode
+		// if inserting, move the text to the right
+		if (key_insert && !endpos)
 		{
-			// can't do strcpy to move string to right
-			i = strlen(key_lines[edit_line]) - 1;
-
-			if (i == (MAX_CMDLINE-2))
-				i--;
-
-			for (; i >= key_linepos; i--)
-				key_lines[edit_line][i + 1] = key_lines[edit_line][i];
+			keyeditline[MAX_CMDLINE-2] = 0;
+			keyeditline += key_linepos;
+			len = strlen(keyeditline) + 1;
+			memmove (keyeditline + 1, keyeditline, len);
+			*keyeditline = key;
 		}
-
-		// only null terminate if at the end
-		i = key_lines[edit_line][key_linepos];
-		key_lines[edit_line][key_linepos] = key;
+		else
+		{
+			keyeditline += key_linepos;
+			*keyeditline = key;
+			// null terminate if at the end
+			if (endpos)
+				keyeditline[1] = 0;
+		}
 		key_linepos++;
-
-		if (!i)
-			key_lines[edit_line][key_linepos] = 0;
 	}
-
 }
 
 //============================================================================
 
-#define	MAX_CHAT_SIZE	45
 qboolean	team_message = false;
-char		chat_buffer[MAX_CHAT_SIZE];
+char		chat_buffer[MAX_CMDLINE];
 static int	chat_bufferlen = 0;
 
 void Key_Message (int key)
@@ -454,7 +483,7 @@ void Key_Message (int key)
 	if (key < 32 || key > 127)
 		return;	// non printable
 
-	if (chat_bufferlen == MAX_CHAT_SIZE - (team_message ? 6 : 1)) // 6 vs 1 = so same amount of text onscreen in "say" versus "say_team"
+	if (chat_bufferlen == sizeof(chat_buffer) - 1)
 		return; // all full
 
 	chat_buffer[chat_bufferlen++] = key;
@@ -528,9 +557,6 @@ Key_SetBinding
 */
 void Key_SetBinding (int keynum, char *binding)
 {
-	char	*new;
-	int		l;
-			
 	if (keynum == -1)
 		return;
 
@@ -542,11 +568,8 @@ void Key_SetBinding (int keynum, char *binding)
 	}
 	
 // allocate memory for new binding
-	l = strlen (binding);	
-	new = Z_Malloc (l+1);
-	strcpy (new, binding);
-	new[l] = 0;
-	keybindings[keynum] = new;	
+	if (binding)
+		keybindings[keynum] = Z_Strdup(binding);
 }
 
 /*
@@ -571,7 +594,7 @@ void Key_Unbind_f (void)
 		return;
 	}
 
-	Key_SetBinding (b, "");
+	Key_SetBinding (b, NULL);
 }
 
 void Key_Unbindall_f (void)
@@ -580,7 +603,7 @@ void Key_Unbindall_f (void)
 	
 	for (i=0 ; i<MAX_KEYS ; i++)
 		if (keybindings[i])
-			Key_SetBinding (i, "");
+			Key_SetBinding (i, NULL);
 }
 
 /*
@@ -694,7 +717,7 @@ void History_Init (void)
 				key_lines[edit_line][i++] = c;
 			} while (c != '\r' && c != '\n' && c != EOF && i < MAX_CMDLINE);
 			key_lines[edit_line][i - 1] = 0;
-			edit_line = (edit_line + 1) & (CMDLINES - 1);
+			edit_line = (edit_line + 1) & (CMDLINES-1);
 			/* for people using a windows-generated history file on unix: */
 			if (c == '\r' || c == '\n')
 			{
@@ -708,7 +731,7 @@ void History_Init (void)
 		} while (c != EOF && edit_line < CMDLINES);
 		fclose(hf);
 
-		history_line = edit_line = (edit_line - 1) & (CMDLINES - 1);
+		history_line = edit_line = (edit_line - 1) & (CMDLINES-1);
 		key_lines[edit_line][0] = ']';
 		key_lines[edit_line][1] = 0;
 	}
@@ -723,7 +746,6 @@ void History_Shutdown (void)
 {
 	int i;
 	FILE *hf;
-	char lastentry[1024] = {0};
 
 	if (!con_initialized)
 		return;
@@ -733,18 +755,13 @@ void History_Shutdown (void)
 		i = edit_line;
 		do
 		{
-			i = (i + 1) & (CMDLINES - 1);
+			i = (i + 1) & (CMDLINES-1);
 		} while (i != edit_line && !key_lines[i][1]);
 
 		while (i != edit_line && key_lines[i][1])
 		{
-			if (lastentry[0]==0 || strcasecmp (lastentry, key_lines[i] + 1) != 0) // Baker: prevent saving the same line multiple times in a row
-				if (strncasecmp(key_lines[i]+1, "quit", 4) != 0) // Baker: why save quit to the history file
-					fprintf(hf, "%s\n", key_lines[i] + 1);
-
-			strcpy (lastentry, key_lines[i] + 1);
-			i = (i + 1) & (CMDLINES - 1);
-
+			fprintf(hf, "%s\n", key_lines[i] + 1);
+			i = (i + 1) & (CMDLINES-1);
 		}
 		fclose(hf);
 	}
