@@ -432,37 +432,6 @@ char *Sys_GetClipboardData (void)
 	}
 	
 	return clipboard; 	
-	
-	
-/*	HANDLE		th;
-	char		*cliptext, *s, *t;
-	static	char	clipboard[SYS_CLIPBOARD_SIZE];
-
-	if (!OpenClipboard(NULL))
-		return NULL;
-
-	if (!(th = GetClipboardData(CF_TEXT)))
-	{
-		CloseClipboard ();
-		return NULL;
-	}
-
-	if (!(cliptext = GlobalLock(th)))
-	{
-		CloseClipboard ();
-		return NULL;
-	}
-
-	s = cliptext;
-	t = clipboard;
-	while (*s && t - clipboard < SYS_CLIPBOARD_SIZE - 1 && *s != '\n' && *s != '\r' && *s != '\b')
-		*t++ = *s++;
-	*t = 0;
-
-	GlobalUnlock (th);
-	CloseClipboard ();
-
-	return clipboard;	*/
 } 
 
 void Sys_Sleep (void)

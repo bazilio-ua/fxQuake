@@ -271,9 +271,8 @@ char *Sys_GetClipboardData (void)
 
 			if (result == Success)
 			{
-//				clipboard = strdup((char *)data); // orig.
 				size_t size;
-
+				
 				cliptext = (char *)data;
 				size = strlen(cliptext) + 1;
 				/* this is intended for simple small text copies
@@ -284,7 +283,7 @@ char *Sys_GetClipboardData (void)
 				clipboard = Z_Malloc(size);
 				strcpy (clipboard, cliptext);
 			}
-
+			
 			XFree(data);
 		}
 	}

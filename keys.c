@@ -232,25 +232,6 @@ void K_PasteFromClipboard (void)
 	
 done:
 	Z_Free(clipboardtext);
-	
-	
-/*	
-    // clipboard pasting
-    char	*clipboardtext;
-    int		len;
-    
-    if ((clipboardtext = Sys_GetClipboardData())) // chars < ' ' removed
-    {
-        len = strlen (clipboardtext);
-        if (len + strlen(key_lines[edit_line]) > MAX_CMDLINE - 1)
-            len = MAX_CMDLINE - 1 - strlen(key_lines[edit_line]);
-        if (len > 0)
-        {	// insert the string
-            memmove (key_lines[edit_line] + key_linepos + len, key_lines[edit_line] + key_linepos, strlen(key_lines[edit_line]) - key_linepos + 1);
-            memcpy (key_lines[edit_line] + key_linepos, clipboardtext, len);
-            key_linepos += len;
-        }
-    }	*/
 }
 
 /*
