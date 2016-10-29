@@ -46,6 +46,8 @@ qboolean	consolekeys[MAX_KEYS];	// if true, can't be rebound while in console
 qboolean	menubound[MAX_KEYS];	// if true, can't be rebound while in menu
 qboolean	keydown[MAX_KEYS];
 
+int		keyshift[MAX_KEYS];		// key to map to if shift held down in console
+
 typedef struct
 {
 	char	*name;
@@ -861,14 +863,43 @@ void Key_Init (void)
 	consolekeys[K_MWHEELDOWN] = true;
 	consolekeys['`'] = false;
 	consolekeys['~'] = false;
-
+	
+//
+// initialize keyshift[]
+//
+	for (i=0 ; i<MAX_KEYS ; i++)
+		keyshift[i] = i;
+	for (i='a' ; i<='z' ; i++)
+		keyshift[i] = i - 'a' + 'A';
+	keyshift['1'] = '!';
+	keyshift['2'] = '@';
+	keyshift['3'] = '#';
+	keyshift['4'] = '$';
+	keyshift['5'] = '%';
+	keyshift['6'] = '^';
+	keyshift['7'] = '&';
+	keyshift['8'] = '*';
+	keyshift['9'] = '(';
+	keyshift['0'] = ')';
+	keyshift['-'] = '_';
+	keyshift['='] = '+';
+	keyshift[','] = '<';
+	keyshift['.'] = '>';
+	keyshift['/'] = '?';
+	keyshift[';'] = ':';
+	keyshift['\''] = '"';
+	keyshift['['] = '{';
+	keyshift[']'] = '}';
+	keyshift['`'] = '~';
+	keyshift['\\'] = '|';
+	
 //
 // initialize menubound[]
 //
 	menubound[K_ESCAPE] = true;
 	for (i=0 ; i<12 ; i++)
 		menubound[K_F1+i] = true;
-
+	
 //
 // register our functions
 //
@@ -965,6 +996,15 @@ void Key_Event (int key, qboolean down)
 			sprintf (cmd, "-%s %i\n", kb+1, key);
 			Cbuf_AddText (cmd);
 		}
+		if (keyshift[key] != key)
+		{
+			kb = keybindings[keyshift[key]];
+			if (kb && kb[0] == '+')
+			{
+				sprintf (cmd, "-%s %i\n", kb+1, key);
+				Cbuf_AddText (cmd);
+			}
+		}
 		return;
 	}
 
@@ -1011,6 +1051,9 @@ void Key_Event (int key, qboolean down)
 	if (!down)
 		return;		// other systems only care about key down events
 
+	if (keydown[K_SHIFT])
+		key = keyshift[key];
+	
 	switch (key_dest)
 	{
 	case key_message:
