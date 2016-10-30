@@ -220,6 +220,8 @@ extern qboolean team_message;
 
 void Con_MessageMode_f (void)
 {
+	if (cls.state != ca_connected || cls.demoplayback)
+		return;
 	key_dest = key_message;
 	team_message = false;
 }
@@ -231,6 +233,8 @@ Con_MessageMode2_f
 */
 void Con_MessageMode2_f (void)
 {
+	if (cls.state != ca_connected || cls.demoplayback)
+		return;
 	key_dest = key_message;
 	team_message = true;
 }
@@ -350,8 +354,7 @@ void Con_Linefeed (void)
 
 	con_x = 0;
 	con_current++;
-	memset (&con_text[(con_current%con_totallines)*con_linewidth]
-	, ' ', con_linewidth);
+	memset (&con_text[(con_current%con_totallines)*con_linewidth] , ' ', con_linewidth);
 }
 
 /*
@@ -369,14 +372,14 @@ void Con_Print (char *txt)
 	int		c, l;
 	static int	cr;
 	int		mask;
+	qboolean	boundary;
 	
 //	con_backscroll = 0; //johnfitz -- better console scrolling
 
 	if (txt[0] == 1)
 	{
 		mask = 128;		// go to colored text
-		S_LocalSound ("misc/talk.wav");
-	// play talk wav
+		S_LocalSound ("misc/talk.wav"); // play talk wav
 		txt++;
 	}
 	else if (txt[0] == 2)
@@ -387,17 +390,27 @@ void Con_Print (char *txt)
 	else
 		mask = 0;
 
+	boundary = true;
 
 	while ( (c = *txt) )
 	{
-	// count word length
-		for (l=0 ; l< con_linewidth ; l++)
-			if ( txt[l] <= ' ')
-				break;
+		if (c <= ' ')
+		{
+			boundary = true;
+		}
+		else if (boundary)
+		{
+		// count word length
+			for (l=0 ; l< con_linewidth ; l++)
+				if ( txt[l] <= ' ')
+					break;
 
-	// word wrap
-		if (l != con_linewidth && (con_x + l > con_linewidth) )
-			con_x = 0;
+		// word wrap
+			if (l != con_linewidth && (con_x + l > con_linewidth) )
+				con_x = 0;
+
+			boundary = false;
+		}
 
 		txt++;
 
@@ -407,7 +420,6 @@ void Con_Print (char *txt)
 			cr = false;
 		}
 
-		
 		if (!con_x)
 		{
 			Con_Linefeed ();
@@ -440,7 +452,6 @@ void Con_Print (char *txt)
 				con_x = 0;
 			break;
 		}
-		
 	}
 }
 
