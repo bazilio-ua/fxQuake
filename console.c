@@ -131,9 +131,10 @@ Con_Clear_f
 void Con_Clear_f (void)
 {
 	if (con_text)
-		memset (con_text, ' ', CON_TEXTSIZE);
+//		memset (con_text, ' ', CON_TEXTSIZE);
+		memset (con_text, ' ', con_buffersize); //johnfitz -- con_buffersize replaces CON_TEXTSIZE
 
-	con_backscroll = 0; // if console is empty, being scrolled up is confusing
+	con_backscroll = 0; //johnfitz -- if console is empty, being scrolled up is confusing
 }
 
 /*
@@ -196,7 +197,7 @@ void Con_Dump_f (void)
 	fclose (f);
 	Con_Printf ("Dumped console text to %s.\n", name);
 }
-						
+
 /*
 ================
 Con_ClearNotify
@@ -210,7 +211,7 @@ void Con_ClearNotify (void)
 		con_times[i] = 0;
 }
 
-						
+
 /*
 ================
 Con_MessageMode_f
@@ -224,7 +225,6 @@ void Con_MessageMode_f (void)
 	team_message = false;
 }
 
-						
 /*
 ================
 Con_MessageMode2_f
@@ -236,7 +236,7 @@ void Con_MessageMode2_f (void)
 	team_message = true;
 }
 
-						
+
 /*
 ================
 Con_CheckResize
@@ -247,14 +247,17 @@ If the line width has changed, reformat the buffer.
 void Con_CheckResize (void)
 {
 	int	i, j, width, oldwidth, oldtotallines, numlines, numchars;
-	char	tbuf[CON_TEXTSIZE];
+//	char	tbuf[CON_TEXTSIZE];
+	char	*tbuf; //johnfitz -- tbuf no longer a static array
+	int		mark; //johnfitz
 
-	width = (vid.width >> 3) - 2;
+//	width = (vid.width >> 3) - 2;
+	width = (vid.conwidth >> 3) - 2; //johnfitz -- use vid.conwidth instead of vid.width
 
 	if (width == con_linewidth)
 		return;
 
-	if (width < 1)			// video hasn't been initialized yet
+/*	if (width < 1)			// video hasn't been initialized yet
 	{
 		width = 38;
 		con_linewidth = width;
@@ -262,11 +265,12 @@ void Con_CheckResize (void)
 		memset (con_text, ' ', CON_TEXTSIZE);
 	}
 	else
-	{
+*/	{
 		oldwidth = con_linewidth;
 		con_linewidth = width;
 		oldtotallines = con_totallines;
-		con_totallines = CON_TEXTSIZE / con_linewidth;
+//		con_totallines = CON_TEXTSIZE / con_linewidth;
+		con_totallines = con_buffersize / con_linewidth; //johnfitz -- con_buffersize replaces CON_TEXTSIZE
 		numlines = oldtotallines;
 
 		if (con_totallines < numlines)
@@ -277,19 +281,25 @@ void Con_CheckResize (void)
 		if (con_linewidth < numchars)
 			numchars = con_linewidth;
 
-		memcpy (tbuf, con_text, CON_TEXTSIZE);
-		memset (con_text, ' ', CON_TEXTSIZE);
+		mark = Hunk_LowMark (); //johnfitz
+		tbuf = Hunk_Alloc (con_buffersize); //johnfitz
+		
+//		memcpy (tbuf, con_text, CON_TEXTSIZE);
+//		memset (con_text, ' ', CON_TEXTSIZE);
+		memcpy (tbuf, con_text, con_buffersize); //johnfitz -- con_buffersize replaces CON_TEXTSIZE
+		memset (con_text, ' ', con_buffersize); //johnfitz -- con_buffersize replaces CON_TEXTSIZE
 
 		for (i=0 ; i<numlines ; i++)
 		{
 			for (j=0 ; j<numchars ; j++)
 			{
 				con_text[(con_totallines - 1 - i) * con_linewidth + j] =
-						tbuf[((con_current - i + oldtotallines) %
-							  oldtotallines) * oldwidth + j];
+						tbuf[((con_current - i + oldtotallines) % oldtotallines) * oldwidth + j];
 			}
 		}
-
+		
+		Hunk_FreeToLowMark (mark); //johnfitz
+		
 		Con_ClearNotify ();
 	}
 
@@ -305,11 +315,32 @@ Con_Init
 */
 void Con_Init (void)
 {
-	con_text = Hunk_AllocName (CON_TEXTSIZE, "context");
-	memset (con_text, ' ', CON_TEXTSIZE);
-	con_linewidth = -1;
-	Con_CheckResize ();
+	int i;
 
+	//johnfitz -- user settable console buffer size
+	i = COM_CheckParm("-consize");
+	if (i && i < com_argc-1)
+		con_buffersize = max(CON_MINSIZE, atoi(com_argv[i+1]) * 1024);
+//	if (COM_CheckParm("-consize"))
+//		con_buffersize = max(CON_MINSIZE, atoi(com_argv[COM_CheckParm("-consize")+1]) * 1024);
+	else
+		con_buffersize = CON_TEXTSIZE;
+	//johnfitz
+	
+//	con_text = Hunk_AllocName (CON_TEXTSIZE, "context");
+//	memset (con_text, ' ', CON_TEXTSIZE);
+	con_text = Hunk_AllocName (con_buffersize, "context"); //johnfitz -- con_buffersize replaces CON_TEXTSIZE
+	memset (con_text, ' ', con_buffersize); //johnfitz -- con_buffersize replaces CON_TEXTSIZE
+	
+//	con_linewidth = -1;
+	//johnfitz -- no need to run Con_CheckResize() here
+	con_linewidth = 38;
+//	con_totallines = CON_TEXTSIZE / con_linewidth;
+	con_totallines = con_buffersize / con_linewidth; //johnfitz -- con_buffersize replaces CON_TEXTSIZE
+	con_backscroll = 0;
+	con_current = con_totallines - 1;
+//	memset (con_text, ' ', CON_TEXTSIZE);
+	
 	con_initialized = true;
 	Con_Printf ("Console initialized\n");
 
@@ -324,7 +355,7 @@ void Con_Init (void)
 	Cmd_AddCommand ("messagemode", Con_MessageMode_f);
 	Cmd_AddCommand ("messagemode2", Con_MessageMode2_f);
 	Cmd_AddCommand ("clear", Con_Clear_f);
-	Cmd_AddCommand ("con_dump", Con_Dump_f);
+	Cmd_AddCommand ("condump", Con_Dump_f);
 }
 
 
@@ -363,7 +394,7 @@ void Con_Print (char *txt)
 	static int	cr;
 	int		mask;
 	
-//	con_backscroll = 0; // better console scrolling
+//	con_backscroll = 0; //johnfitz -- better console scrolling
 
 	if (txt[0] == 1)
 	{
