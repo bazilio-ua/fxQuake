@@ -104,8 +104,7 @@ void Host_EndGame (char *message, ...)
 
 	if (cls.demonum != -1)
 		CL_NextDemo ();
-
-	if (cls.demonum == -1)
+	else
 		CL_Disconnect ();
 
 	longjmp (host_abortserver, 1);
