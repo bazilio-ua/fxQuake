@@ -42,11 +42,11 @@ int		key_insert = 1;		//johnfitz -- insert key toggle (for editing)
 int		key_count;			// incremented every key event
 
 char	*keybindings[MAX_KEYS];
+int		keyshift[MAX_KEYS];		// key to map to if shift held down in console
 qboolean	consolekeys[MAX_KEYS];	// if true, can't be rebound while in console
 qboolean	menubound[MAX_KEYS];	// if true, can't be rebound while in menu
 qboolean	keydown[MAX_KEYS];
 
-int		keyshift[MAX_KEYS];		// key to map to if shift held down in console
 
 typedef struct
 {

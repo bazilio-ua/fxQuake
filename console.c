@@ -25,7 +25,10 @@ int 		con_linewidth;
 
 float		con_cursorspeed = 4;
 
-#define		CON_TEXTSIZE	0x40000 //16384
+#define		CON_TEXTSIZE	0x40000 //new default size
+#define		CON_MINSIZE		16384 //johnfitz -- old default, now the minimum size
+
+int			con_buffersize; //johnfitz -- user can now override default
 
 qboolean 	con_forcedup;		// because no entities to refresh
 
@@ -33,7 +36,7 @@ int			con_totallines;		// total lines in console scrollback
 int			con_backscroll;		// lines up from bottom to display
 int			con_current;		// where next message will be printed
 int			con_x;				// offset in current line for next print
-char		*con_text=0;
+char		*con_text = NULL;
 
 cvar_t		con_notifytime = {"con_notifytime","3"};		//seconds
 cvar_t		con_logcenterprint = {"con_logcenterprint", "1"};	// log centerprints to console
@@ -99,13 +102,14 @@ void Con_ToggleConsole_f (void)
 {
 	if (key_dest == key_console)
 	{
+		key_lines[edit_line][1] = 0;	// clear any typing
+		key_linepos = 1;
+		con_backscroll = 0; //johnfitz -- toggleconsole should return you to the bottom of the scrollback
+		history_line = edit_line; //johnfitz -- it should also return you to the bottom of the command history
+		
 		if (cls.state == ca_connected)
 		{
 			key_dest = key_game;
-			key_lines[edit_line][1] = 0;	// clear any typing
-			key_linepos = 1;
-			con_backscroll = 0; // toggleconsole should return you to the bottom of the scrollback
-			history_line = edit_line; // it should also return you to the bottom of the command history
 		}
 		else
 		{
