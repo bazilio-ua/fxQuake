@@ -1144,7 +1144,7 @@ void Con_DrawConsole (int lines, qboolean drawinput)
 	if (drawinput)
 		Con_DrawInput ();
 
-//draw version number in bottom right
+// draw version number in bottom right
 	y += 8;
 	sprintf (ver, "fxQuake %4.2f", (float)VERSION);
 	len = strlen (ver);
