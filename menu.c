@@ -245,7 +245,16 @@ void M_ToggleMenu_f (void)
 	}
 	else
 	{
-		M_Menu_Main_f ();
+		if (cls.state == ca_disconnected)
+		{
+			key_dest = key_console;
+			Con_ToggleConsole_f ();
+		}
+		else
+		{
+			M_Menu_Main_f ();
+		}
+//		M_Menu_Main_f ();
 	}
 }
 
