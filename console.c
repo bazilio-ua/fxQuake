@@ -46,7 +46,7 @@ char		con_lastcenterstring[MAX_PRINTMSG];
 
 #define	NUM_CON_TIMES 5
 float		con_times[NUM_CON_TIMES];	// realtime time the line was generated
-								// for transparent notify lines
+										// for transparent notify lines
 
 int			con_vislines;
 
