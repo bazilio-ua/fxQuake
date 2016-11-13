@@ -1804,7 +1804,7 @@ void COM_InitFilesystem (void)
 
 //
 // -path <dir or packfile> [<dir or packfile>] ...
-// Fully specifies the exact serach path, overriding the generated one
+// Fully specifies the exact search path, overriding the generated one
 //
 	i = COM_CheckParm ("-path");
 	if (i)

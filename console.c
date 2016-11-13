@@ -346,7 +346,7 @@ Con_Linefeed
 */
 void Con_Linefeed (void)
 {
-	// improved scrolling
+	//johnfitz -- improved scrolling
 	if (con_backscroll)
 		con_backscroll++;
 
