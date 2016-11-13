@@ -598,7 +598,9 @@ nextmsg:
 					ret = 1;
 				else if (strncasecmp(s, "qcexec", 6) == 0)
 					ret = 1; // qcexec command for qc testing
-
+				else if (strncasecmp(s, "setpos", 6) == 0)
+					ret = 1;
+				
 				if (ret == 1)
 					Cmd_ExecuteString (s, src_client);
 				else

@@ -2509,7 +2509,6 @@ void Host_InitCommands (void)
 	
 	Cmd_AddCommand ("name", Host_Name_f);
 	Cmd_AddCommand (nehahra ? "wraith" : "noclip", Host_Noclip_f);
-	Cmd_AddCommand ("setpos", Host_SetPos_f); //QuakeSpasm
 	Cmd_AddCommand ("version", Host_Version_f);
 
 	Cmd_AddCommand ("say", Host_Say_f);
@@ -2540,4 +2539,6 @@ void Host_InitCommands (void)
 
 	Cmd_AddCommand ("qcexec", Host_QC_Exec_f); // qcexec console command
 	Cmd_AddCommand ("qclist", Host_QC_List_f); // qclist console command
+
+	Cmd_AddCommand ("setpos", Host_SetPos_f); //QuakeSpasm
 }
