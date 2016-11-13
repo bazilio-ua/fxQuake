@@ -33,12 +33,12 @@ void Mod_Print (void);
 
 /*
 ==================
-Host_QC_Exec
+Host_QC_Exec_f
 
 Execute QC commands from the console
 ==================
 */
-void Host_QC_Exec (void)
+void Host_QC_Exec_f (void)
 {
 	dfunction_t *f;
 
@@ -61,6 +61,34 @@ void Host_QC_Exec (void)
 	}
 	else
 		Con_Printf("bad function\n");
+}
+
+/*
+==================
+Host_QC_List_f
+
+Print all QC functions into console
+==================
+*/
+void Host_QC_List_f (void)
+{
+	if (sv.active)
+	{
+		int			i;
+		dfunction_t	*f;
+		char		*name;
+		
+		Con_Printf ("QuakeC Functions:\n");
+		for (i=0 ; i<progs->numfunctions ; i++)
+		{
+			f = &pr_functions[i];
+			name = pr_strings + f->s_name;
+			if ('A' <= name[0] && name[0] <= 'Z')
+				Con_Printf ("%i: %s\n", i, pr_strings + f->s_name);
+		}
+	}
+	else
+		Con_Printf ("No active server\n");
 }
 
 /*
@@ -2510,5 +2538,6 @@ void Host_InitCommands (void)
 
 	Cmd_AddCommand ("mcache", Mod_Print);
 
-	Cmd_AddCommand ("qcexec", Host_QC_Exec); // qcexec console command
+	Cmd_AddCommand ("qcexec", Host_QC_Exec_f); // qcexec console command
+	Cmd_AddCommand ("qclist", Host_QC_List_f); // qclist console command
 }
