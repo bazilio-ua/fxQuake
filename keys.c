@@ -904,7 +904,6 @@ void Key_Init (void)
 // register our functions
 //
 	Cmd_AddCommand ("bindlist",Key_Bindlist_f); //johnfitz
-	Cmd_AddCommand ("binds",Key_Bindlist_f); // Baker --- alternate way to get here
 	Cmd_AddCommand ("bind",Key_Bind_f);
 	Cmd_AddCommand ("unbind",Key_Unbind_f);
 	Cmd_AddCommand ("unbindall",Key_Unbindall_f);

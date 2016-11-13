@@ -237,6 +237,7 @@ void Host_InitLocal (void)
 {
 	int		i;
 
+	Host_InitFilelist ();
 	Host_InitCommands ();
 
 	Cmd_AddCommand ("saveconfig", Host_SaveConfig_f);

@@ -163,6 +163,7 @@ void COM_InitArgv (int argc, char **argv);
 
 char *COM_SkipPath (char *pathname);
 void COM_StripExtension (char *in, char *out);
+char *COM_FileExtension (char *in);
 void COM_FileBase (char *in, char *out);
 void COM_DefaultExtension (char *path, char *extension);
 
@@ -188,12 +189,45 @@ int Sys_FileWrite (int handle, void *src, int count);
 int Sys_FileTime (char *path);
 
 //============================================================================
+//	QUAKE FILESYSTEM
+//============================================================================
 
 extern int com_filesize;
+
+//
+// in memory
+//
+
+typedef struct
+{
+	char    name[MAX_QPATH];
+	int             filepos, filelen;
+} packfile_t;
+
+typedef struct pack_s
+{
+	char    filename[MAX_OSPATH];
+	int             handle;
+	int             numfiles;
+	packfile_t      *files;
+} pack_t;
+
 struct cache_user_s;
 
 extern	char	com_gamedir[MAX_OSPATH];
 extern	char	com_basedir[MAX_OSPATH];
+
+typedef struct searchpath_s
+{
+	unsigned int path_id;	// identifier assigned to the game directory
+							// Note that <install_dir>/game1 and
+							// <userdir>/game1 have the same id.
+	char    filename[MAX_OSPATH];
+	pack_t  *pack;          // only one of filename / pack will be used
+	struct searchpath_s *next;
+} searchpath_t;
+
+extern	searchpath_t    *com_searchpaths;
 
 void COM_WriteFile (char *filename, void *data, int len);
 int COM_OpenFile (char *filename, int *handle, unsigned int *path_id);

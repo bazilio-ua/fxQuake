@@ -1112,26 +1112,9 @@ QUAKE FILESYSTEM
 int     com_filesize;
 
 //
-// in memory
-//
-
-typedef struct
-{
-	char    name[MAX_QPATH];
-	int             filepos, filelen;
-} packfile_t;
-
-typedef struct pack_s
-{
-	char    filename[MAX_OSPATH];
-	int             handle;
-	int             numfiles;
-	packfile_t      *files;
-} pack_t;
-
-//
 // on disk
 //
+
 typedef struct
 {
 	char    name[56];
@@ -1151,16 +1134,6 @@ char    com_cachedir[MAX_OSPATH];
 char    com_gamedir[MAX_OSPATH];
 char    com_basedir[MAX_OSPATH];
 char    *home;
-
-typedef struct searchpath_s
-{
-	unsigned int path_id;	// identifier assigned to the game directory
-							// Note that <install_dir>/game1 and
-							// <userdir>/game1 have the same id.
-	char    filename[MAX_OSPATH];
-	pack_t  *pack;          // only one of filename / pack will be used
-	struct searchpath_s *next;
-} searchpath_t;
 
 searchpath_t    *com_searchpaths;
 

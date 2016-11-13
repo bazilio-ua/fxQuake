@@ -21,6 +21,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "quakedef.h"
 
+#ifndef _WIN32
+#include <dirent.h>
+#endif 
+
 extern cvar_t	pausable;
 
 int	current_skill;
@@ -64,8 +68,6 @@ void Host_QC_Exec (void)
 Host_Quit_f
 ==================
 */
-extern void M_Menu_Quit_f (void);
-
 void Host_Quit_f (void)
 {
 	if (key_dest != key_console && cls.state != ca_dedicated)
@@ -78,6 +80,517 @@ void Host_Quit_f (void)
 
 	Sys_Quit (0);
 }
+
+//==============================================================================
+//
+// FileList support
+//
+//==============================================================================
+
+// ericw -- was extralevel_t, renamed and now used with mods list as well
+// to simplify completion code
+typedef struct filelist_item_s
+{
+	char			name[32];
+	struct filelist_item_s	*next;
+} filelist_item_t;
+
+/*
+==================
+FileList_Add
+==================
+*/
+void FileList_Add (const char *name, filelist_item_t **list)
+{
+	filelist_item_t	*item, *cursor, *prev;
+
+	// ignore duplicate
+	for (item = *list; item; item = item->next)
+	{
+		if (!strcmp (name, item->name))
+			return;
+	}
+
+	item = (filelist_item_t *) Z_Malloc(sizeof(filelist_item_t));
+	strcpy (item->name, name);
+
+	// insert each entry in alphabetical order
+	if (*list == NULL ||
+	    strcasecmp(item->name, (*list)->name) < 0) //insert at front
+	{
+		item->next = *list;
+		*list = item;
+	}
+	else //insert later
+	{
+		prev = *list;
+		cursor = (*list)->next;
+		while (cursor && (strcasecmp(item->name, cursor->name) > 0))
+		{
+			prev = cursor;
+			cursor = cursor->next;
+		}
+		item->next = prev->next;
+		prev->next = item;
+	}
+}
+
+static void FileList_Clear (filelist_item_t **list)
+{
+	filelist_item_t *item;
+	
+	while (*list)
+	{
+		item = (*list)->next;
+		Z_Free(*list);
+		*list = item;
+	}
+}
+
+//==============================================================================
+//johnfitz -- extramaps management
+//==============================================================================
+
+filelist_item_t	*extralevels;
+
+void ExtraMaps_Add (const char *name)
+{
+	FileList_Add(name, &extralevels);
+}
+
+void ExtraMaps_Init (void)
+{
+#ifdef _WIN32
+	WIN32_FIND_DATA	fdat;
+	HANDLE		fhnd;
+#else
+	DIR		*dir_p;
+	struct dirent	*dir_t;
+#endif
+	char		filestring[MAX_OSPATH];
+	char		mapname[32];
+	char		ignorepakdir[32];
+	searchpath_t	*search;
+	pack_t		*pak;
+	int		i;
+
+	// we don't want to list the maps in id1 pakfiles,
+	// because these are not "add-on" levels
+	snprintf (ignorepakdir, sizeof(ignorepakdir), "/%s/", GAMENAME);
+
+	for (search = com_searchpaths; search; search = search->next)
+	{
+		if (*search->filename) //directory
+		{
+#ifdef _WIN32
+			snprintf (filestring, sizeof(filestring), "%s/maps/*.bsp", search->filename);
+			fhnd = FindFirstFile(filestring, &fdat);
+			if (fhnd == INVALID_HANDLE_VALUE)
+				continue;
+			do
+			{
+				COM_StripExtension(fdat.cFileName, mapname);
+				ExtraMaps_Add (mapname);
+			} while (FindNextFile(fhnd, &fdat));
+			FindClose(fhnd);
+#else
+			snprintf (filestring, sizeof(filestring), "%s/maps/", search->filename);
+			dir_p = opendir(filestring);
+			if (dir_p == NULL)
+				continue;
+			while ((dir_t = readdir(dir_p)) != NULL)
+			{
+				if (strcasecmp(COM_FileExtension(dir_t->d_name), "bsp") != 0)
+					continue;
+				COM_StripExtension(dir_t->d_name, mapname);
+				ExtraMaps_Add (mapname);
+			}
+			closedir(dir_p);
+#endif
+		}
+		else //pakfile
+		{
+			if (!strstr(search->pack->filename, ignorepakdir))
+			{ //don't list standard id maps
+				for (i = 0, pak = search->pack; i < pak->numfiles; i++)
+				{
+					if (!strcmp(COM_FileExtension(pak->files[i].name), "bsp"))
+					{
+						if (pak->files[i].filelen > 32*1024)
+						{ // don't list files under 32k (ammo boxes etc)
+							COM_StripExtension(pak->files[i].name + 5, mapname);
+							ExtraMaps_Add (mapname);
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+static void ExtraMaps_Clear (void)
+{
+	FileList_Clear(&extralevels);
+}
+
+void ExtraMaps_Rebuild (void) // for new game
+{
+	ExtraMaps_Clear ();
+	ExtraMaps_Init ();
+}
+
+/*
+==================
+Host_Maplist_f
+==================
+*/
+void Host_Maplist_f (void)
+{
+	int i;
+	filelist_item_t	*level;
+
+	for (level = extralevels, i = 0; level; level = level->next, i++)
+		Con_SafePrintf ("   %s\n", level->name);
+
+	if (i)
+		Con_SafePrintf ("%i map(s)\n", i);
+	else
+		Con_SafePrintf ("no maps found\n");
+}
+
+//==============================================================================
+//ericw -- demo list management
+//==============================================================================
+
+filelist_item_t	*demolist;
+
+// TODO: Factor out to a general-purpose file searching function
+void DemoList_Init (void)
+{
+#ifdef _WIN32
+	WIN32_FIND_DATA	fdat;
+	HANDLE		fhnd;
+#else
+	DIR		*dir_p;
+	struct dirent	*dir_t;
+#endif
+	char		filestring[MAX_OSPATH];
+	char		demname[32];
+	char		ignorepakdir[32];
+	searchpath_t	*search;
+	pack_t		*pak;
+	int		i;
+	
+	// we don't want to list the demos in id1 pakfiles,
+	// because these are not "add-on" demos
+	snprintf (ignorepakdir, sizeof(ignorepakdir), "/%s/", GAMENAME);
+	
+	for (search = com_searchpaths; search; search = search->next)
+	{
+		if (*search->filename) //directory
+		{
+#ifdef _WIN32
+			snprintf (filestring, sizeof(filestring), "%s/*.dem", search->filename);
+			fhnd = FindFirstFile(filestring, &fdat);
+			if (fhnd == INVALID_HANDLE_VALUE)
+				continue;
+			do
+			{
+				COM_StripExtension(fdat.cFileName, demname);
+				FileList_Add (demname, &demolist);
+			} while (FindNextFile(fhnd, &fdat));
+			FindClose(fhnd);
+#else
+			snprintf (filestring, sizeof(filestring), "%s/", search->filename);
+			dir_p = opendir(filestring);
+			if (dir_p == NULL)
+				continue;
+			while ((dir_t = readdir(dir_p)) != NULL)
+			{
+				if (strcasecmp(COM_FileExtension(dir_t->d_name), "dem") != 0)
+					continue;
+				COM_StripExtension(dir_t->d_name, demname);
+				FileList_Add (demname, &demolist);
+			}
+			closedir(dir_p);
+#endif
+		}
+		else //pakfile
+		{
+			if (!strstr(search->pack->filename, ignorepakdir))
+			{ //don't list standard id demos
+				for (i = 0, pak = search->pack; i < pak->numfiles; i++)
+				{
+					if (!strcmp(COM_FileExtension(pak->files[i].name), "dem"))
+					{
+						COM_StripExtension(pak->files[i].name, demname);
+						FileList_Add (demname, &demolist);
+					}
+				}
+			}
+		}
+	}
+}
+
+static void DemoList_Clear (void)
+{
+	FileList_Clear (&demolist);
+}
+
+void DemoList_Rebuild (void) // for new game
+{
+	DemoList_Clear ();
+	DemoList_Init ();
+}
+
+/*
+==================
+Host_Demolist_f
+==================
+*/
+void Host_Demolist_f (void)
+{
+	int i;
+	filelist_item_t	*demo;
+
+	for (demo = demolist, i = 0; demo; demo = demo->next, i++)
+		Con_SafePrintf ("   %s\n", demo->name);
+
+	if (i)
+		Con_SafePrintf ("%i demo(s)\n", i);
+	else
+		Con_SafePrintf ("no demos found\n");
+}
+
+//==============================================================================
+//EER1 -- save list management
+//==============================================================================
+
+filelist_item_t	*savelist;
+
+// TODO: Factor out to a general-purpose file searching function
+void SaveList_Init (void)
+{
+#ifdef _WIN32
+	WIN32_FIND_DATA	fdat;
+	HANDLE		fhnd;
+#else
+	DIR		*dir_p;
+	struct dirent	*dir_t;
+#endif
+	char		filestring[MAX_OSPATH];
+	char		savname[32];
+	char		ignorepakdir[32];
+	searchpath_t	*search;
+	pack_t		*pak;
+	int		i;
+	
+	// we don't want to list the saves in id1 pakfiles,
+	// because these are not "add-on" saves
+	snprintf (ignorepakdir, sizeof(ignorepakdir), "/%s/", GAMENAME);
+	
+	for (search = com_searchpaths; search; search = search->next)
+	{
+		if (*search->filename) //directory
+		{
+#ifdef _WIN32
+			snprintf (filestring, sizeof(filestring), "%s/*.sav", search->filename);
+			fhnd = FindFirstFile(filestring, &fdat);
+			if (fhnd == INVALID_HANDLE_VALUE)
+				continue;
+			do
+			{
+				COM_StripExtension(fdat.cFileName, savname);
+				FileList_Add (savname, &savelist);
+			} while (FindNextFile(fhnd, &fdat));
+			FindClose(fhnd);
+#else
+			snprintf (filestring, sizeof(filestring), "%s/", search->filename);
+			dir_p = opendir(filestring);
+			if (dir_p == NULL)
+				continue;
+			while ((dir_t = readdir(dir_p)) != NULL)
+			{
+				if (strcasecmp(COM_FileExtension(dir_t->d_name), "sav") != 0)
+					continue;
+				COM_StripExtension(dir_t->d_name, savname);
+				FileList_Add (savname, &savelist);
+			}
+			closedir(dir_p);
+#endif
+		}
+		else //pakfile
+		{
+			if (!strstr(search->pack->filename, ignorepakdir))
+			{ //don't list standard id saves
+				for (i = 0, pak = search->pack; i < pak->numfiles; i++)
+				{
+					if (!strcmp(COM_FileExtension(pak->files[i].name), "sav"))
+					{
+						COM_StripExtension(pak->files[i].name, savname);
+						FileList_Add (savname, &savelist);
+					}
+				}
+			}
+		}
+	}
+}
+
+static void SaveList_Clear (void)
+{
+	FileList_Clear (&savelist);
+}
+
+void SaveList_Rebuild (void) // for new game
+{
+	SaveList_Clear ();
+	SaveList_Init ();
+}
+
+/*
+==================
+Host_Savelist_f
+==================
+*/
+void Host_Savelist_f (void)
+{
+	int i;
+	filelist_item_t	*save;
+
+	for (save = savelist, i = 0; save; save = save->next, i++)
+		Con_SafePrintf ("   %s\n", save->name);
+
+	if (i)
+		Con_SafePrintf ("%i save(s)\n", i);
+	else
+		Con_SafePrintf ("no saves found\n");
+}
+
+//==============================================================================
+//EER1 -- config list management
+//==============================================================================
+
+filelist_item_t	*configlist;
+
+// TODO: Factor out to a general-purpose file searching function
+void ConfigList_Init (void)
+{
+#ifdef _WIN32
+	WIN32_FIND_DATA	fdat;
+	HANDLE		fhnd;
+#else
+	DIR		*dir_p;
+	struct dirent	*dir_t;
+#endif
+	char		filestring[MAX_OSPATH];
+	char		cfgname[32];
+	char		ignorepakdir[32];
+	searchpath_t	*search;
+	pack_t		*pak;
+	int		i;
+	
+	// we don't want to list the configs in id1 pakfiles,
+	// because these are not "add-on" configs
+	snprintf (ignorepakdir, sizeof(ignorepakdir), "/%s/", GAMENAME);
+	
+	for (search = com_searchpaths; search; search = search->next)
+	{
+		if (*search->filename) //directory
+		{
+#ifdef _WIN32
+			// .cfg case
+			snprintf (filestring, sizeof(filestring), "%s/*.cfg", search->filename);
+			fhnd = FindFirstFile(filestring, &fdat);
+			if (fhnd == INVALID_HANDLE_VALUE)
+				continue;
+			do
+			{
+//				COM_StripExtension(fdat.cFileName, cfgname);
+				strcpy(cfgname, fdat.cFileName);
+				FileList_Add (cfgname, &configlist);
+			} while (FindNextFile(fhnd, &fdat));
+			FindClose(fhnd);
+			
+			// .rc case TODO: compact this
+			snprintf (filestring, sizeof(filestring), "%s/*.rc", search->filename);
+			fhnd = FindFirstFile(filestring, &fdat);
+			if (fhnd == INVALID_HANDLE_VALUE)
+				continue;
+			do
+			{
+//				COM_StripExtension(fdat.cFileName, cfgname);
+				strcpy(cfgname, fdat.cFileName);
+				FileList_Add (cfgname, &configlist);
+			} while (FindNextFile(fhnd, &fdat));
+			FindClose(fhnd);
+#else
+			snprintf (filestring, sizeof(filestring), "%s/", search->filename);
+			dir_p = opendir(filestring);
+			if (dir_p == NULL)
+				continue;
+			while ((dir_t = readdir(dir_p)) != NULL)
+			{
+				if (strcasecmp(COM_FileExtension(dir_t->d_name), "cfg") != 0 || strcasecmp(COM_FileExtension(dir_t->d_name), "rc") != 0)
+					continue;
+//				COM_StripExtension(dir_t->d_name, cfgname);
+				strcpy(cfgname, dir_t->d_name);
+				FileList_Add (cfgname, &configlist);
+			}
+			closedir(dir_p);
+#endif
+		}
+		else //pakfile
+		{
+			if (!strstr(search->pack->filename, ignorepakdir))
+			{ //don't list standard id configs
+				for (i = 0, pak = search->pack; i < pak->numfiles; i++)
+				{
+					if (!strcmp(COM_FileExtension(pak->files[i].name), "cfg") || !strcmp(COM_FileExtension(pak->files[i].name), "rc"))
+					{
+//						COM_StripExtension(pak->files[i].name, cfgname);
+						strcpy(cfgname, pak->files[i].name);
+						FileList_Add (cfgname, &configlist);
+					}
+				}
+			}
+		}
+	}
+}
+
+static void ConfigList_Clear (void)
+{
+	FileList_Clear (&configlist);
+}
+
+void ConfigList_Rebuild (void) // for new game
+{
+	ConfigList_Clear ();
+	ConfigList_Init ();
+}
+
+/*
+==================
+Host_Configlist_f
+==================
+*/
+void Host_Configlist_f (void)
+{
+	int i;
+	filelist_item_t	*config;
+
+	for (config = configlist, i = 0; config; config = config->next, i++)
+		Con_SafePrintf ("   %s\n", config->name);
+
+	if (i)
+		Con_SafePrintf ("%i config(s)\n", i);
+	else
+		Con_SafePrintf ("no configs found\n");
+}
+
+
+//
+// host cmd
+//
 
 /*
 =============
@@ -226,6 +739,67 @@ void Host_Noclip_f (void)
 		sv_player->v.movetype = MOVETYPE_WALK;
 		SV_ClientPrintf ("noclip OFF\n");
 	}
+}
+
+/*
+====================
+Host_SetPos_f
+
+adapted from fteqw, originally by Alex Shadowalker
+====================
+*/
+void Host_SetPos_f (void)
+{
+	if (cmd_source == src_command)
+	{
+		Cmd_ForwardToServer ();
+		return;
+	}
+	
+	if (pr_global_struct->deathmatch || pr_global_struct->coop)
+		return;
+	
+	if (Cmd_Argc() != 7 && Cmd_Argc() != 4)
+	{
+		SV_ClientPrintf("usage:\n");
+		SV_ClientPrintf("   setpos <x> <y> <z>\n");
+		SV_ClientPrintf("   setpos <x> <y> <z> <pitch> <yaw> <roll>\n");
+		SV_ClientPrintf("current values:\n");
+		SV_ClientPrintf("   %i %i %i %i %i %i\n",
+			(int)sv_player->v.origin[0],
+			(int)sv_player->v.origin[1],
+			(int)sv_player->v.origin[2],
+			(int)sv_player->v.v_angle[0],
+			(int)sv_player->v.v_angle[1],
+			(int)sv_player->v.v_angle[2]);
+		return;
+	}
+	
+	if (sv_player->v.movetype != MOVETYPE_NOCLIP)
+	{
+		cl.noclip_anglehack = true;
+		sv_player->v.movetype = MOVETYPE_NOCLIP;
+		SV_ClientPrintf ("noclip ON\n");
+	}
+	
+	//make sure they're not going to whizz away from it
+	sv_player->v.velocity[0] = 0;
+	sv_player->v.velocity[1] = 0;
+	sv_player->v.velocity[2] = 0;
+	
+	sv_player->v.origin[0] = atof(Cmd_Argv(1));
+	sv_player->v.origin[1] = atof(Cmd_Argv(2));
+	sv_player->v.origin[2] = atof(Cmd_Argv(3));
+	
+	if (Cmd_Argc() == 7)
+	{
+		sv_player->v.angles[0] = atof(Cmd_Argv(4));
+		sv_player->v.angles[1] = atof(Cmd_Argv(5));
+		sv_player->v.angles[2] = atof(Cmd_Argv(6));
+		sv_player->v.fixangle = 1;
+	}
+	
+	SV_LinkEdict (sv_player, false);
 }
 
 /*
@@ -428,9 +1002,13 @@ void Host_Changelevel_f (void)
 	if (COM_OpenFile (level, &i, NULL) == -1)
 		Host_Error ("cannot find map %s", level);
 
+	key_dest = key_game;	// remove console or menu
 	SV_SaveSpawnparms ();
 	strcpy (level, Cmd_Argv(1));
 	SV_SpawnServer (level);
+	// also issue an error if spawn failed -- O.S.
+	if (!sv.active)
+		Host_Error ("cannot run map %s", level);
 }
 
 /*
@@ -450,10 +1028,12 @@ void Host_Restart_f (void)
 	if (cmd_source != src_command)
 		return;
 
-	strcpy (mapname, sv.name);	// must copy out, because it gets cleared
-								// in sv_spawnserver
+	strcpy (mapname, sv.name);	// must copy out, because it gets cleared in sv_spawnserver
 
 	SV_SpawnServer (mapname);
+	// also issue an error if spawn failed
+	if (!sv.active)
+		Host_Error ("cannot restart map %s", mapname);
 }
 
 /*
@@ -560,7 +1140,7 @@ Host_Savegame_f
 */
 void Host_Savegame_f (void)
 {
-	char	name[256];
+	char	name[MAX_OSPATH];
 	FILE	*f;
 	int		i;
 	char	comment[SAVEGAME_COMMENT_LENGTH+1];
@@ -1862,11 +2442,29 @@ void Host_Stopdemo_f (void)
 
 /*
 ==================
+Host_InitFilelist
+==================
+*/
+void Host_InitFilelist (void)
+{
+	ExtraMaps_Init ();
+	DemoList_Init ();
+	SaveList_Init ();
+	ConfigList_Init ();
+}
+
+/*
+==================
 Host_InitCommands
 ==================
 */
 void Host_InitCommands (void)
 {
+	Cmd_AddCommand ("maplist", Host_Maplist_f); //johnfitz (maplist)
+	Cmd_AddCommand ("demolist", Host_Demolist_f); // EER1
+	Cmd_AddCommand ("savelist", Host_Savelist_f); // EER1
+	Cmd_AddCommand ("configlist", Host_Configlist_f); // EER1
+	
 	Cmd_AddCommand ("mapname", Host_Mapname_f);
 	Cmd_AddCommand ("status", Host_Status_f);
 	Cmd_AddCommand ("quit", Host_Quit_f);
@@ -1883,6 +2481,7 @@ void Host_InitCommands (void)
 	
 	Cmd_AddCommand ("name", Host_Name_f);
 	Cmd_AddCommand (nehahra ? "wraith" : "noclip", Host_Noclip_f);
+	Cmd_AddCommand ("setpos", Host_SetPos_f); //QuakeSpasm
 	Cmd_AddCommand ("version", Host_Version_f);
 
 	Cmd_AddCommand ("say", Host_Say_f);
