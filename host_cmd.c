@@ -179,6 +179,32 @@ static void FileList_Clear (filelist_item_t **list)
 //johnfitz -- extramaps management
 //==============================================================================
 
+void Sys_ScanDir(char *path, char *pattern, qboolean stripext, filelist_item_t **list)
+{
+	WIN32_FIND_DATA	fdat;
+	HANDLE		fhnd;
+	
+	char		filename[32];
+	char		filestring[MAX_OSPATH];
+	
+	snprintf (filestring, sizeof(filestring), pattern, path);
+	fhnd = FindFirstFile(filestring, &fdat);
+	if (fhnd == INVALID_HANDLE_VALUE)
+		return;
+	do
+	{
+		if (stripext)
+			COM_StripExtension(fdat.cFileName, filename);
+		else
+			strcpy(filename, fdat.cFileName);
+		
+//		FileList_Add(filename, &(*list));
+		FileList_Add(filename, list);
+	} while (FindNextFile(fhnd, &fdat));
+	FindClose(fhnd);
+}
+
+
 filelist_item_t	*extralevels;
 
 void ExtraMaps_Add (const char *name)
@@ -211,7 +237,10 @@ void ExtraMaps_Init (void)
 		if (*search->filename) //directory
 		{
 #ifdef _WIN32
-			snprintf (filestring, sizeof(filestring), "%s/maps/*.bsp", search->filename);
+
+			Sys_ScanDir(search->filename, "%s/maps/*.bsp", true, &extralevels);
+
+/*			snprintf (filestring, sizeof(filestring), "%s/maps/*.bsp", search->filename);
 			fhnd = FindFirstFile(filestring, &fdat);
 			if (fhnd == INVALID_HANDLE_VALUE)
 				continue;
@@ -220,7 +249,7 @@ void ExtraMaps_Init (void)
 				COM_StripExtension(fdat.cFileName, mapname);
 				ExtraMaps_Add (mapname);
 			} while (FindNextFile(fhnd, &fdat));
-			FindClose(fhnd);
+			FindClose(fhnd);*/
 #else
 			snprintf (filestring, sizeof(filestring), "%s/maps/", search->filename);
 			dir_p = opendir(filestring);
