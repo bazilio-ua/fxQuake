@@ -179,15 +179,16 @@ static void FileList_Clear (filelist_item_t **list)
 //johnfitz -- extramaps management
 //==============================================================================
 
-void Sys_ScanDir(char *path, char *pattern, qboolean stripext, filelist_item_t **list)
+#ifdef _WIN32
+
+void Sys_ScanDir(char *path, char *subdir, char *ext, qboolean stripext, filelist_item_t **list)
 {
 	WIN32_FIND_DATA	fdat;
 	HANDLE		fhnd;
-	
 	char		filename[32];
 	char		filestring[MAX_OSPATH];
 	
-	snprintf (filestring, sizeof(filestring), pattern, path);
+	snprintf (filestring, sizeof(filestring), "%s/%s*.%s", path, subdir, ext);
 	fhnd = FindFirstFile(filestring, &fdat);
 	if (fhnd == INVALID_HANDLE_VALUE)
 		return;
@@ -198,12 +199,41 @@ void Sys_ScanDir(char *path, char *pattern, qboolean stripext, filelist_item_t *
 		else
 			strcpy(filename, fdat.cFileName);
 		
-//		FileList_Add(filename, &(*list));
-		FileList_Add(filename, list);
-	} while (FindNextFile(fhnd, &fdat));
+		FileList_Add (filename, list);
+	}
+	while (FindNextFile(fhnd, &fdat));
 	FindClose(fhnd);
 }
 
+#else
+
+void Sys_ScanDir(char *path, char *subdir, char *ext, qboolean stripext, filelist_item_t **list)
+{
+	DIR		*dir_p;
+	struct dirent	*dir_t;
+	char		filename[32];
+	char		filestring[MAX_OSPATH];
+	
+	snprintf (filestring, sizeof(filestring), "%s/%s", path, subdir);
+	dir_p = opendir(filestring);
+	if (dir_p == NULL)
+		return;
+	while ((dir_t = readdir(dir_p)) != NULL)
+	{
+		if (strcasecmp(COM_FileExtension(dir_t->d_name), ext) != 0)
+			continue;
+		
+		if (stripext)
+			COM_StripExtension(dir_t->d_name, filename);
+		else
+			strcpy(filename, dir_t->d_name);
+		
+		FileList_Add (filename, list);
+	}
+	closedir(dir_p);
+}
+
+#endif
 
 filelist_item_t	*extralevels;
 
@@ -236,9 +266,11 @@ void ExtraMaps_Init (void)
 	{
 		if (*search->filename) //directory
 		{
+			Sys_ScanDir(search->filename, "maps/", "bsp", true, &extralevels);
+
 #ifdef _WIN32
 
-			Sys_ScanDir(search->filename, "%s/maps/*.bsp", true, &extralevels);
+//			Sys_ScanDir(search->filename, "maps/", "bsp", true, &extralevels);
 
 /*			snprintf (filestring, sizeof(filestring), "%s/maps/*.bsp", search->filename);
 			fhnd = FindFirstFile(filestring, &fdat);
@@ -251,7 +283,7 @@ void ExtraMaps_Init (void)
 			} while (FindNextFile(fhnd, &fdat));
 			FindClose(fhnd);*/
 #else
-			snprintf (filestring, sizeof(filestring), "%s/maps/", search->filename);
+/*			snprintf (filestring, sizeof(filestring), "%s/maps/", search->filename);
 			dir_p = opendir(filestring);
 			if (dir_p == NULL)
 				continue;
@@ -262,7 +294,7 @@ void ExtraMaps_Init (void)
 				COM_StripExtension(dir_t->d_name, mapname);
 				ExtraMaps_Add (mapname);
 			}
-			closedir(dir_p);
+			closedir(dir_p);*/
 #endif
 		}
 		else //pakfile
