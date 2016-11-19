@@ -280,11 +280,7 @@ void Host_ConfigListInit (void)
 		if (*search->filename) //directory
 		{
 			COM_ScanDirFileList(search->filename, NULL, exts, false, &configlist);
-			
-//			COM_ScanDirFileList(search->filename, NULL, "cfg", false, &configlist);
-//			COM_ScanDirFileList(search->filename, NULL, "rc", false, &configlist);
-//			COM_ScanDirFileList(search->filename, "configs/", "cfg", false, &configlist);
-//			COM_ScanDirFileList(search->filename, "configs/", "rc", false, &configlist);
+			COM_ScanDirFileList(search->filename, "configs/", exts, false, &configlist);
 		}
 		else //pakfile
 		{
