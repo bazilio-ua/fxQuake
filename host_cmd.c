@@ -188,7 +188,7 @@ void Sys_ScanDirFileList(char *path, char *subdir, char *ext, qboolean stripext,
 	char		filename[32];
 	char		filestring[MAX_OSPATH];
 	
-	snprintf (filestring, sizeof(filestring), "%s/%s*.%s", path, subdir, ext);
+	snprintf (filestring, sizeof(filestring), "%s/%s*.%s", path, subdir ? subdir : "", ext);
 	fhnd = FindFirstFile(filestring, &fdat);
 	if (fhnd == INVALID_HANDLE_VALUE)
 		return;
@@ -214,7 +214,7 @@ void Sys_ScanDirFileList(char *path, char *subdir, char *ext, qboolean stripext,
 	char		filename[32];
 	char		filestring[MAX_OSPATH];
 	
-	snprintf (filestring, sizeof(filestring), "%s/%s", path, subdir);
+	snprintf (filestring, sizeof(filestring), "%s/%s", path, subdir ? subdir : "");
 	dir_p = opendir(filestring);
 	if (dir_p == NULL)
 		return;
@@ -267,7 +267,7 @@ void COM_ScanPakFileList(pack_t *pack, char *subdir, char *ext, qboolean stripex
 }
 
 //==============================================================================
-//johnfitz -- maplist management
+//johnfitz -- map list management
 //==============================================================================
 
 filelist_t	*maplist;
@@ -326,71 +326,16 @@ void Host_Maplist_f (void)
 
 filelist_t	*demolist;
 
-// TODO: Factor out to a general-purpose file searching function
 void DemoList_Init (void)
 {
-#ifdef _WIN32
-	WIN32_FIND_DATA	fdat;
-	HANDLE		fhnd;
-#else
-	DIR		*dir_p;
-	struct dirent	*dir_t;
-#endif
-	char		filestring[MAX_OSPATH];
-	char		demname[32];
-	char		ignorepakdir[32];
 	searchpath_t	*search;
-	pack_t		*pak;
-	int		i;
-	
-	// we don't want to list the demos in id1 pakfiles,
-	// because these are not "add-on" demos
-	snprintf (ignorepakdir, sizeof(ignorepakdir), "/%s/", GAMENAME);
 	
 	for (search = com_searchpaths; search; search = search->next)
 	{
 		if (*search->filename) //directory
-		{
-#ifdef _WIN32
-			snprintf (filestring, sizeof(filestring), "%s/*.dem", search->filename);
-			fhnd = FindFirstFile(filestring, &fdat);
-			if (fhnd == INVALID_HANDLE_VALUE)
-				continue;
-			do
-			{
-				COM_StripExtension(fdat.cFileName, demname);
-				COM_FileListAdd (demname, &demolist);
-			} while (FindNextFile(fhnd, &fdat));
-			FindClose(fhnd);
-#else
-			snprintf (filestring, sizeof(filestring), "%s/", search->filename);
-			dir_p = opendir(filestring);
-			if (dir_p == NULL)
-				continue;
-			while ((dir_t = readdir(dir_p)) != NULL)
-			{
-				if (strcasecmp(COM_FileExtension(dir_t->d_name), "dem") != 0)
-					continue;
-				COM_StripExtension(dir_t->d_name, demname);
-				COM_FileListAdd (demname, &demolist);
-			}
-			closedir(dir_p);
-#endif
-		}
+			COM_ScanDirFileList(search->filename, NULL, "dem", true, &demolist);
 		else //pakfile
-		{
-			if (!strstr(search->pack->filename, ignorepakdir))
-			{ //don't list standard id demos
-				for (i = 0, pak = search->pack; i < pak->numfiles; i++)
-				{
-					if (!strcmp(COM_FileExtension(pak->files[i].name), "dem"))
-					{
-						COM_StripExtension(pak->files[i].name, demname);
-						COM_FileListAdd (demname, &demolist);
-					}
-				}
-			}
-		}
+			COM_ScanPakFileList(search->pack, NULL, "dem", true, &demolist);
 	}
 }
 
