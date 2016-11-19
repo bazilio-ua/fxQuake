@@ -251,20 +251,18 @@ void COM_ScanPakFileList(pack_t *pack, char *subdir, char *ext, qboolean stripex
 	{
 		if (!strcmp(COM_FileExtension(pak->files[i].name), ext))
 		{
-			if (pak->files[i].filelen > 32*1024)
-			{ // don't list files under 32k (ammo boxes etc)
-				if (subdir)
-					len = strlen(subdir);
-				if (stripext)
-					COM_StripExtension(pak->files[i].name + len, filename);
-				else
-					strcpy(filename, pak->files[i].name + len);
-				
-				COM_FileListAdd (filename, list);
-			}
+			if (subdir)
+				len = strlen(subdir);
+			if (stripext)
+				COM_StripExtension(pak->files[i].name + len, filename);
+			else
+				strcpy(filename, pak->files[i].name + len);
+			
+			COM_FileListAdd (filename, list);
 		}
 	}
 }
+
 
 //==============================================================================
 //johnfitz -- map list management
@@ -375,71 +373,16 @@ void Host_Demolist_f (void)
 
 filelist_t	*savelist;
 
-// TODO: Factor out to a general-purpose file searching function
 void SaveList_Init (void)
 {
-#ifdef _WIN32
-	WIN32_FIND_DATA	fdat;
-	HANDLE		fhnd;
-#else
-	DIR		*dir_p;
-	struct dirent	*dir_t;
-#endif
-	char		filestring[MAX_OSPATH];
-	char		savname[32];
-	char		ignorepakdir[32];
 	searchpath_t	*search;
-	pack_t		*pak;
-	int		i;
-	
-	// we don't want to list the saves in id1 pakfiles,
-	// because these are not "add-on" saves
-	snprintf (ignorepakdir, sizeof(ignorepakdir), "/%s/", GAMENAME);
 	
 	for (search = com_searchpaths; search; search = search->next)
 	{
 		if (*search->filename) //directory
-		{
-#ifdef _WIN32
-			snprintf (filestring, sizeof(filestring), "%s/*.sav", search->filename);
-			fhnd = FindFirstFile(filestring, &fdat);
-			if (fhnd == INVALID_HANDLE_VALUE)
-				continue;
-			do
-			{
-				COM_StripExtension(fdat.cFileName, savname);
-				COM_FileListAdd (savname, &savelist);
-			} while (FindNextFile(fhnd, &fdat));
-			FindClose(fhnd);
-#else
-			snprintf (filestring, sizeof(filestring), "%s/", search->filename);
-			dir_p = opendir(filestring);
-			if (dir_p == NULL)
-				continue;
-			while ((dir_t = readdir(dir_p)) != NULL)
-			{
-				if (strcasecmp(COM_FileExtension(dir_t->d_name), "sav") != 0)
-					continue;
-				COM_StripExtension(dir_t->d_name, savname);
-				COM_FileListAdd (savname, &savelist);
-			}
-			closedir(dir_p);
-#endif
-		}
+			COM_ScanDirFileList(search->filename, NULL, "sav", true, &savelist);
 		else //pakfile
-		{
-			if (!strstr(search->pack->filename, ignorepakdir))
-			{ //don't list standard id saves
-				for (i = 0, pak = search->pack; i < pak->numfiles; i++)
-				{
-					if (!strcmp(COM_FileExtension(pak->files[i].name), "sav"))
-					{
-						COM_StripExtension(pak->files[i].name, savname);
-						COM_FileListAdd (savname, &savelist);
-					}
-				}
-			}
-		}
+			COM_ScanPakFileList(search->pack, NULL, "sav", true, &savelist);
 	}
 }
 
@@ -479,87 +422,21 @@ void Host_Savelist_f (void)
 
 filelist_t	*configlist;
 
-// TODO: Factor out to a general-purpose file searching function
 void ConfigList_Init (void)
 {
-#ifdef _WIN32
-	WIN32_FIND_DATA	fdat;
-	HANDLE		fhnd;
-#else
-	DIR		*dir_p;
-	struct dirent	*dir_t;
-#endif
-	char		filestring[MAX_OSPATH];
-	char		cfgname[32];
-	char		ignorepakdir[32];
 	searchpath_t	*search;
-	pack_t		*pak;
-	int		i;
-	
-	// we don't want to list the configs in id1 pakfiles,
-	// because these are not "add-on" configs
-	snprintf (ignorepakdir, sizeof(ignorepakdir), "/%s/", GAMENAME);
 	
 	for (search = com_searchpaths; search; search = search->next)
 	{
 		if (*search->filename) //directory
 		{
-#ifdef _WIN32
-			// .cfg case
-			snprintf (filestring, sizeof(filestring), "%s/*.cfg", search->filename);
-			fhnd = FindFirstFile(filestring, &fdat);
-			if (fhnd == INVALID_HANDLE_VALUE)
-				continue;
-			do
-			{
-//				COM_StripExtension(fdat.cFileName, cfgname);
-				strcpy(cfgname, fdat.cFileName);
-				COM_FileListAdd (cfgname, &configlist);
-			} while (FindNextFile(fhnd, &fdat));
-			FindClose(fhnd);
-			
-			// .rc case TODO: compact this
-			snprintf (filestring, sizeof(filestring), "%s/*.rc", search->filename);
-			fhnd = FindFirstFile(filestring, &fdat);
-			if (fhnd == INVALID_HANDLE_VALUE)
-				continue;
-			do
-			{
-//				COM_StripExtension(fdat.cFileName, cfgname);
-				strcpy(cfgname, fdat.cFileName);
-				COM_FileListAdd (cfgname, &configlist);
-			} while (FindNextFile(fhnd, &fdat));
-			FindClose(fhnd);
-#else
-			snprintf (filestring, sizeof(filestring), "%s/", search->filename);
-			dir_p = opendir(filestring);
-			if (dir_p == NULL)
-				continue;
-			while ((dir_t = readdir(dir_p)) != NULL)
-			{
-				if (strcasecmp(COM_FileExtension(dir_t->d_name), "cfg") != 0 || strcasecmp(COM_FileExtension(dir_t->d_name), "rc") != 0)
-					continue;
-//				COM_StripExtension(dir_t->d_name, cfgname);
-				strcpy(cfgname, dir_t->d_name);
-				COM_FileListAdd (cfgname, &configlist);
-			}
-			closedir(dir_p);
-#endif
+			COM_ScanDirFileList(search->filename, NULL, "cfg", false, &configlist);
+			COM_ScanDirFileList(search->filename, NULL, "rc", false, &configlist);
 		}
 		else //pakfile
 		{
-			if (!strstr(search->pack->filename, ignorepakdir))
-			{ //don't list standard id configs
-				for (i = 0, pak = search->pack; i < pak->numfiles; i++)
-				{
-					if (!strcmp(COM_FileExtension(pak->files[i].name), "cfg") || !strcmp(COM_FileExtension(pak->files[i].name), "rc"))
-					{
-//						COM_StripExtension(pak->files[i].name, cfgname);
-						strcpy(cfgname, pak->files[i].name);
-						COM_FileListAdd (cfgname, &configlist);
-					}
-				}
-			}
+			COM_ScanPakFileList(search->pack, NULL, "cfg", false, &configlist);
+			COM_ScanPakFileList(search->pack, NULL, "rc", false, &configlist);
 		}
 	}
 }
