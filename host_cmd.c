@@ -105,6 +105,13 @@ void Host_Quit_f (void)
 	Sys_Quit (0);
 }
 
+/*
+===============================================================================
+
+	FILELIST MANAGEMENT
+
+===============================================================================
+*/
 
 //==============================================================================
 //johnfitz -- map list management
@@ -265,6 +272,7 @@ void Host_ConfigListInit (void)
 	
 	for (search = com_searchpaths; search; search = search->next)
 	{
+		// configs\levelord.cfg
 		if (*search->filename) //directory
 		{
 			COM_ScanDirFileList(search->filename, NULL, "cfg", false, &configlist);
@@ -308,10 +316,13 @@ void Host_Configlist_f (void)
 		Con_SafePrintf ("no configs found\n");
 }
 
+/*
+===============================================================================
 
-//
-// host cmd
-//
+	HOST COMMANDS
+
+===============================================================================
+*/
 
 /*
 =============
