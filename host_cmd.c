@@ -176,7 +176,7 @@ static void FileList_Clear (filelist_item_t **list)
 }
 
 //==============================================================================
-//johnfitz -- extramaps management
+//filelists
 //==============================================================================
 
 #ifdef _WIN32
@@ -234,6 +234,33 @@ void Sys_ScanDir(char *path, char *subdir, char *ext, qboolean stripext, filelis
 }
 
 #endif
+
+void COM_ScanPak(pack_t *pack, char *ext, qboolean stripext, filelist_item_t **list)
+{
+	int			i;
+	pack_t		*pak;
+	char		filename[32];
+	
+	for (i=0, pak = pack ; i<pak->numfiles ; i++)
+	{
+		if (!strcmp(COM_FileExtension(pak->files[i].name), ext))
+		{
+			if (pak->files[i].filelen > 32*1024)
+			{ // don't list files under 32k (ammo boxes etc)
+				if (stripext)
+					COM_StripExtension(pak->files[i].name + 5, filename);
+				else
+					strcpy(filename, pak->files[i].name + 5);
+				
+				FileList_Add (filename, list);
+			}
+		}
+	}
+}
+
+//==============================================================================
+//johnfitz -- extramaps management
+//==============================================================================
 
 filelist_item_t	*extralevels;
 
@@ -299,7 +326,10 @@ void ExtraMaps_Init (void)
 		}
 		else //pakfile
 		{
-			if (!strstr(search->pack->filename, ignorepakdir))
+			COM_ScanPak(search->pack, "bsp", true, &extralevels);
+
+			
+/*			if (!strstr(search->pack->filename, ignorepakdir))
 			{ //don't list standard id maps
 				for (i = 0, pak = search->pack; i < pak->numfiles; i++)
 				{
@@ -312,7 +342,7 @@ void ExtraMaps_Init (void)
 						}
 					}
 				}
-			}
+			}*/
 		}
 	}
 }
