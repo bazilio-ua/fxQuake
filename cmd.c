@@ -308,7 +308,7 @@ void Cmd_Exec_f (void)
 {
 	char	*f;
 	int		mark;
-	char	config[MAX_QPATH]; 
+	char	cfg[MAX_QPATH]; 
 
 	if (Cmd_Argc () != 2)
 	{
@@ -321,8 +321,8 @@ void Cmd_Exec_f (void)
 	
 	if (!f)
 	{
-		sprintf (config, "configs/%s", Cmd_Argv(1));
-		f = (char *)COM_LoadHunkFile (config, NULL);
+		sprintf (cfg, "configs/%s", Cmd_Argv(1));
+		f = (char *)COM_LoadHunkFile (cfg, NULL);
 	}
 	
 	if (!f)
