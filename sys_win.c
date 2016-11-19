@@ -73,28 +73,34 @@ void Sys_mkdir (char *path)
 Sys_ScanDirFileList
 ================
 */
-void Sys_ScanDirFileList(char *path, char *subdir, char *ext, qboolean stripext, filelist_t **list)
+void Sys_ScanDirFileList(char *path, char *subdir, char *exts[], qboolean stripext, filelist_t **list)
 {
 	WIN32_FIND_DATA	data;
 	HANDLE		handle;
 	char		filename[32];
 	char		filestring[MAX_OSPATH];
+	int 		i, len;
 	
-	snprintf (filestring, sizeof(filestring), "%s/%s*.%s", path, subdir ? subdir : "", ext);
-	handle = FindFirstFile(filestring, &data);
-	if (handle == INVALID_HANDLE_VALUE)
-		return;
-	do
+	len = sizeof(exts) / sizeof(exts[0]);
+	for (i=0 ; i<len && exts[i] != NULL ; i++)
 	{
-		if (stripext)
-			COM_StripExtension(data.cFileName, filename);
-		else
-			strcpy(filename, data.cFileName);
-		
-		COM_FileListAdd (filename, list);
+		char *ext = exts[i];
+		snprintf (filestring, sizeof(filestring), "%s/%s*.%s", path, subdir ? subdir : "", ext);
+		handle = FindFirstFile(filestring, &data);
+		if (handle == INVALID_HANDLE_VALUE)
+			return;
+		do
+		{
+			if (stripext)
+				COM_StripExtension(data.cFileName, filename);
+			else
+				strcpy(filename, data.cFileName);
+			
+			COM_FileListAdd (filename, list);
+		}
+		while (FindNextFile(handle, &data));
+		FindClose(handle);
 	}
-	while (FindNextFile(handle, &data));
-	FindClose(handle);
 }
 
 /*

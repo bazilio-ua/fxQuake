@@ -121,12 +121,13 @@ filelist_t	*maplist;
 
 void Host_MapListInit (void)
 {
+	char *exts[] = {"bsp"};
 	searchpath_t	*search;
 
 	for (search = com_searchpaths; search; search = search->next)
 	{
 		if (*search->filename) //directory
-			COM_ScanDirFileList(search->filename, "maps/", "bsp", true, &maplist);
+			COM_ScanDirFileList(search->filename, "maps/", exts, true, &maplist);
 		else //pakfile
 			COM_ScanPakFileList(search->pack, "maps/", "bsp", true, &maplist);
 	}
@@ -170,12 +171,13 @@ filelist_t	*demolist;
 
 void Host_DemoListInit (void)
 {
+	char *exts[] = {"dem"};
 	searchpath_t	*search;
 	
 	for (search = com_searchpaths; search; search = search->next)
 	{
 		if (*search->filename) //directory
-			COM_ScanDirFileList(search->filename, NULL, "dem", true, &demolist);
+			COM_ScanDirFileList(search->filename, NULL, exts, true, &demolist);
 		else //pakfile
 			COM_ScanPakFileList(search->pack, NULL, "dem", true, &demolist);
 	}
@@ -219,12 +221,13 @@ filelist_t	*savelist;
 
 void Host_SaveListInit (void)
 {
+	char *exts[] = {"sav"};
 	searchpath_t	*search;
 	
 	for (search = com_searchpaths; search; search = search->next)
 	{
 		if (*search->filename) //directory
-			COM_ScanDirFileList(search->filename, NULL, "sav", true, &savelist);
+			COM_ScanDirFileList(search->filename, NULL, exts, true, &savelist);
 		else //pakfile
 			COM_ScanPakFileList(search->pack, NULL, "sav", true, &savelist);
 	}
@@ -268,6 +271,7 @@ filelist_t	*configlist;
 
 void Host_ConfigListInit (void)
 {
+	char *exts[] = {"cfg", "rc"};
 	searchpath_t	*search;
 	
 	for (search = com_searchpaths; search; search = search->next)
@@ -275,10 +279,12 @@ void Host_ConfigListInit (void)
 		// configs\levelord.cfg
 		if (*search->filename) //directory
 		{
-			COM_ScanDirFileList(search->filename, NULL, "cfg", false, &configlist);
-			COM_ScanDirFileList(search->filename, NULL, "rc", false, &configlist);
-			COM_ScanDirFileList(search->filename, "configs/", "cfg", false, &configlist);
-			COM_ScanDirFileList(search->filename, "configs/", "rc", false, &configlist);
+			COM_ScanDirFileList(search->filename, NULL, exts, false, &configlist);
+			
+//			COM_ScanDirFileList(search->filename, NULL, "cfg", false, &configlist);
+//			COM_ScanDirFileList(search->filename, NULL, "rc", false, &configlist);
+//			COM_ScanDirFileList(search->filename, "configs/", "cfg", false, &configlist);
+//			COM_ScanDirFileList(search->filename, "configs/", "rc", false, &configlist);
 		}
 		else //pakfile
 		{

@@ -1854,9 +1854,9 @@ void COM_FileListClear (filelist_t **list)
 COM_ScanDirFileList
 ==================
 */
-void COM_ScanDirFileList(char *path, char *subdir, char *ext, qboolean stripext, filelist_t **list)
+void COM_ScanDirFileList(char *path, char *subdir, char *exts[], qboolean stripext, filelist_t **list)
 {
-	Sys_ScanDirFileList(path, subdir, ext, stripext, list);
+	Sys_ScanDirFileList(path, subdir, exts, stripext, list);
 }
 
 /*
