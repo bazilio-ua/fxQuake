@@ -75,26 +75,26 @@ Sys_ScanDirFileList
 */
 void Sys_ScanDirFileList(char *path, char *subdir, char *ext, qboolean stripext, filelist_t **list)
 {
-	WIN32_FIND_DATA	fdat;
-	HANDLE		fhnd;
+	WIN32_FIND_DATA	data;
+	HANDLE		handle;
 	char		filename[32];
 	char		filestring[MAX_OSPATH];
 	
 	snprintf (filestring, sizeof(filestring), "%s/%s*.%s", path, subdir ? subdir : "", ext);
-	fhnd = FindFirstFile(filestring, &fdat);
-	if (fhnd == INVALID_HANDLE_VALUE)
+	handle = FindFirstFile(filestring, &data);
+	if (handle == INVALID_HANDLE_VALUE)
 		return;
 	do
 	{
 		if (stripext)
-			COM_StripExtension(fdat.cFileName, filename);
+			COM_StripExtension(data.cFileName, filename);
 		else
-			strcpy(filename, fdat.cFileName);
+			strcpy(filename, data.cFileName);
 		
 		COM_FileListAdd (filename, list);
 	}
-	while (FindNextFile(fhnd, &fdat));
-	FindClose(fhnd);
+	while (FindNextFile(handle, &data));
+	FindClose(handle);
 }
 
 /*
