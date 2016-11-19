@@ -308,6 +308,7 @@ void Cmd_Exec_f (void)
 {
 	char	*f;
 	int		mark;
+	char	config[MAX_QPATH]; 
 
 	if (Cmd_Argc () != 2)
 	{
@@ -317,6 +318,13 @@ void Cmd_Exec_f (void)
 
 	mark = Hunk_LowMark ();
 	f = (char *)COM_LoadHunkFile (Cmd_Argv(1), NULL);
+	
+	if (!f)
+	{
+		sprintf (config, "configs/%s", Cmd_Argv(1));
+		f = (char *)COM_LoadHunkFile (config, NULL);
+	}
+	
 	if (!f)
 	{
 		Con_Printf ("couldn't exec %s\n",Cmd_Argv(1));
