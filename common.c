@@ -1876,6 +1876,7 @@ void COM_ScanPakFileList(pack_t *pack, char *subdir, char *ext, qboolean stripex
 		{
 			if (subdir)
 				len = strlen(subdir);
+			
 			if (stripext)
 				COM_StripExtension(pak->files[i].name + len, filename);
 			else
