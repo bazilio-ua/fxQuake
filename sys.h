@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // file IO
 //
 void Sys_mkdir (char *path);
+void Sys_ScanDirFileList(char *path, char *subdir, char *ext, qboolean stripext, filelist_t **list);
 
 //
 // system IO

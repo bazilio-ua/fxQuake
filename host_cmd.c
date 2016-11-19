@@ -21,10 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "quakedef.h"
 
-#ifndef _WIN32
-#include <dirent.h>
-#endif 
-
 extern cvar_t	pausable;
 
 int	current_skill;
@@ -109,160 +105,6 @@ void Host_Quit_f (void)
 	Sys_Quit (0);
 }
 
-//==============================================================================
-//
-// FileList support
-//
-//==============================================================================
-
-// ericw -- was extralevel_t, renamed and now used with mods list as well
-// to simplify completion code
-typedef struct filelist_s
-{
-	char			name[32];
-	struct filelist_s	*next;
-} filelist_t;
-
-/*
-==================
-COM_FileListAdd
-==================
-*/
-void COM_FileListAdd (const char *name, filelist_t **list)
-{
-	filelist_t	*item, *cursor, *prev;
-
-	// ignore duplicate
-	for (item = *list; item; item = item->next)
-	{
-		if (!strcmp (name, item->name))
-			return;
-	}
-
-	item = (filelist_t *) Z_Malloc(sizeof(filelist_t));
-	strcpy (item->name, name);
-
-	// insert each entry in alphabetical order
-	if (*list == NULL ||
-	    strcasecmp(item->name, (*list)->name) < 0) //insert at front
-	{
-		item->next = *list;
-		*list = item;
-	}
-	else //insert later
-	{
-		prev = *list;
-		cursor = (*list)->next;
-		while (cursor && (strcasecmp(item->name, cursor->name) > 0))
-		{
-			prev = cursor;
-			cursor = cursor->next;
-		}
-		item->next = prev->next;
-		prev->next = item;
-	}
-}
-
-void COM_FileListClear (filelist_t **list)
-{
-	filelist_t *item;
-	
-	while (*list)
-	{
-		item = (*list)->next;
-		Z_Free(*list);
-		*list = item;
-	}
-}
-
-//==============================================================================
-//filelists
-//==============================================================================
-
-#ifdef _WIN32
-
-void Sys_ScanDirFileList(char *path, char *subdir, char *ext, qboolean stripext, filelist_t **list)
-{
-	WIN32_FIND_DATA	fdat;
-	HANDLE		fhnd;
-	char		filename[32];
-	char		filestring[MAX_OSPATH];
-	
-	snprintf (filestring, sizeof(filestring), "%s/%s*.%s", path, subdir ? subdir : "", ext);
-	fhnd = FindFirstFile(filestring, &fdat);
-	if (fhnd == INVALID_HANDLE_VALUE)
-		return;
-	do
-	{
-		if (stripext)
-			COM_StripExtension(fdat.cFileName, filename);
-		else
-			strcpy(filename, fdat.cFileName);
-		
-		COM_FileListAdd (filename, list);
-	}
-	while (FindNextFile(fhnd, &fdat));
-	FindClose(fhnd);
-}
-
-#else
-
-void Sys_ScanDirFileList(char *path, char *subdir, char *ext, qboolean stripext, filelist_t **list)
-{
-	DIR		*dir_p;
-	struct dirent	*dir_t;
-	char		filename[32];
-	char		filestring[MAX_OSPATH];
-	
-	snprintf (filestring, sizeof(filestring), "%s/%s", path, subdir ? subdir : "");
-	dir_p = opendir(filestring);
-	if (dir_p == NULL)
-		return;
-	while ((dir_t = readdir(dir_p)) != NULL)
-	{
-		if (strcasecmp(COM_FileExtension(dir_t->d_name), ext) != 0)
-			continue;
-		
-		if (stripext)
-			COM_StripExtension(dir_t->d_name, filename);
-		else
-			strcpy(filename, dir_t->d_name);
-		
-		COM_FileListAdd (filename, list);
-	}
-	closedir(dir_p);
-}
-
-#endif
-
-void COM_ScanDirFileList(char *path, char *subdir, char *ext, qboolean stripext, filelist_t **list)
-{
-	Sys_ScanDirFileList(path, subdir, ext, stripext, list);
-}
-
-
-void COM_ScanPakFileList(pack_t *pack, char *subdir, char *ext, qboolean stripext, filelist_t **list)
-{
-	int			i, len = 0;
-	pack_t		*pak;
-	char		filename[32];
-	
-	for (i=0, pak = pack ; i<pak->numfiles ; i++)
-	{
-		if (!strcmp(COM_FileExtension(pak->files[i].name), ext))
-		{
-			if (subdir)
-				len = strlen(subdir);
-			if (stripext)
-				COM_StripExtension(pak->files[i].name + len, filename);
-			else
-				strcpy(filename, pak->files[i].name + len);
-			
-			COM_FileListAdd (filename, list);
-		}
-	}
-}
-
 
 //==============================================================================
 //johnfitz -- map list management
@@ -270,12 +112,7 @@ void COM_ScanPakFileList(pack_t *pack, char *subdir, char *ext, qboolean stripex
 
 filelist_t	*maplist;
 
-void MapList_Add (const char *name)
-{
-	COM_FileListAdd(name, &maplist);
-}
-
-void MapList_Init (void)
+void Host_MapListInit (void)
 {
 	searchpath_t	*search;
 
@@ -288,15 +125,15 @@ void MapList_Init (void)
 	}
 }
 
-void MapList_Clear (void)
+void Host_MapListClear (void)
 {
 	COM_FileListClear(&maplist);
 }
 
-void MapList_Rebuild (void) // for new game
+void Host_MapListRebuild (void) // for new game
 {
-	MapList_Clear ();
-	MapList_Init ();
+	Host_MapListClear ();
+	Host_MapListInit ();
 }
 
 /*
@@ -324,7 +161,7 @@ void Host_Maplist_f (void)
 
 filelist_t	*demolist;
 
-void DemoList_Init (void)
+void Host_DemoListInit (void)
 {
 	searchpath_t	*search;
 	
@@ -337,15 +174,15 @@ void DemoList_Init (void)
 	}
 }
 
-void DemoList_Clear (void)
+void Host_DemoListClear (void)
 {
 	COM_FileListClear (&demolist);
 }
 
-void DemoList_Rebuild (void) // for new game
+void Host_DemoListRebuild (void) // for new game
 {
-	DemoList_Clear ();
-	DemoList_Init ();
+	Host_DemoListClear ();
+	Host_DemoListInit ();
 }
 
 /*
@@ -373,7 +210,7 @@ void Host_Demolist_f (void)
 
 filelist_t	*savelist;
 
-void SaveList_Init (void)
+void Host_SaveListInit (void)
 {
 	searchpath_t	*search;
 	
@@ -386,15 +223,15 @@ void SaveList_Init (void)
 	}
 }
 
-void SaveList_Clear (void)
+void Host_SaveListClear (void)
 {
 	COM_FileListClear (&savelist);
 }
 
-void SaveList_Rebuild (void) // for new game
+void Host_SaveListRebuild (void) // for new game
 {
-	SaveList_Clear ();
-	SaveList_Init ();
+	Host_SaveListClear ();
+	Host_SaveListInit ();
 }
 
 /*
@@ -422,7 +259,7 @@ void Host_Savelist_f (void)
 
 filelist_t	*configlist;
 
-void ConfigList_Init (void)
+void Host_ConfigListInit (void)
 {
 	searchpath_t	*search;
 	
@@ -441,15 +278,15 @@ void ConfigList_Init (void)
 	}
 }
 
-void ConfigList_Clear (void)
+void Host_ConfigListClear (void)
 {
 	COM_FileListClear (&configlist);
 }
 
-void ConfigList_Rebuild (void) // for new game
+void Host_ConfigListRebuild (void) // for new game
 {
-	ConfigList_Clear ();
-	ConfigList_Init ();
+	Host_ConfigListClear ();
+	Host_ConfigListInit ();
 }
 
 /*
@@ -2326,15 +2163,15 @@ void Host_Stopdemo_f (void)
 
 /*
 ==================
-Host_InitFilelist
+Host_InitFileList
 ==================
 */
-void Host_InitFilelist (void)
+void Host_InitFileList (void)
 {
-	MapList_Init ();
-	DemoList_Init ();
-	SaveList_Init ();
-	ConfigList_Init ();
+	Host_MapListInit ();
+	Host_DemoListInit ();
+	Host_SaveListInit ();
+	Host_ConfigListInit ();
 }
 
 /*

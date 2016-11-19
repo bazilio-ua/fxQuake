@@ -69,6 +69,35 @@ void Sys_mkdir (char *path)
 }
 
 /*
+================
+Sys_ScanDirFileList
+================
+*/
+void Sys_ScanDirFileList(char *path, char *subdir, char *ext, qboolean stripext, filelist_t **list)
+{
+	WIN32_FIND_DATA	fdat;
+	HANDLE		fhnd;
+	char		filename[32];
+	char		filestring[MAX_OSPATH];
+	
+	snprintf (filestring, sizeof(filestring), "%s/%s*.%s", path, subdir ? subdir : "", ext);
+	fhnd = FindFirstFile(filestring, &fdat);
+	if (fhnd == INVALID_HANDLE_VALUE)
+		return;
+	do
+	{
+		if (stripext)
+			COM_StripExtension(fdat.cFileName, filename);
+		else
+			strcpy(filename, fdat.cFileName);
+		
+		COM_FileListAdd (filename, list);
+	}
+	while (FindNextFile(fhnd, &fdat));
+	FindClose(fhnd);
+}
+
+/*
 ===============================================================================
 
 SYSTEM IO

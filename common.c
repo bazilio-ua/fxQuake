@@ -1111,25 +1111,6 @@ QUAKE FILESYSTEM
 
 int     com_filesize;
 
-//
-// on disk
-//
-
-typedef struct
-{
-	char    name[56];
-	int             filepos, filelen;
-} dpackfile_t;
-
-typedef struct
-{
-	char    id[4];
-	int             dirofs;
-	int             dirlen;
-} dpackheader_t;
-
-#define MAX_FILES_IN_PACK       2048
-
 char    com_cachedir[MAX_OSPATH];
 char    com_gamedir[MAX_OSPATH];
 char    com_basedir[MAX_OSPATH];
@@ -1799,6 +1780,106 @@ void COM_InitFilesystem (void)
 				strcpy (search->filename, com_argv[i]);
 			search->next = com_searchpaths;
 			com_searchpaths = search;
+		}
+	}
+}
+
+//==============================================================================
+//
+//	FILELIST
+//
+//==============================================================================
+
+/*
+==================
+COM_FileListAdd
+==================
+*/
+void COM_FileListAdd (const char *name, filelist_t **list)
+{
+	filelist_t	*item, *cursor, *prev;
+
+	// ignore duplicate
+	for (item = *list; item; item = item->next)
+	{
+		if (!strcmp (name, item->name))
+			return;
+	}
+
+	item = (filelist_t *) Z_Malloc(sizeof(filelist_t));
+	strcpy (item->name, name);
+
+	// insert each entry in alphabetical order
+	if (*list == NULL ||
+	    strcasecmp(item->name, (*list)->name) < 0) //insert at front
+	{
+		item->next = *list;
+		*list = item;
+	}
+	else //insert later
+	{
+		prev = *list;
+		cursor = (*list)->next;
+		while (cursor && (strcasecmp(item->name, cursor->name) > 0))
+		{
+			prev = cursor;
+			cursor = cursor->next;
+		}
+		item->next = prev->next;
+		prev->next = item;
+	}
+}
+
+/*
+==================
+COM_FileListClear
+==================
+*/
+void COM_FileListClear (filelist_t **list)
+{
+	filelist_t *item;
+	
+	while (*list)
+	{
+		item = (*list)->next;
+		Z_Free(*list);
+		*list = item;
+	}
+}
+
+/*
+==================
+COM_ScanDirFileList
+==================
+*/
+void COM_ScanDirFileList(char *path, char *subdir, char *ext, qboolean stripext, filelist_t **list)
+{
+	Sys_ScanDirFileList(path, subdir, ext, stripext, list);
+}
+
+/*
+==================
+COM_ScanPakFileList
+==================
+*/
+void COM_ScanPakFileList(pack_t *pack, char *subdir, char *ext, qboolean stripext, filelist_t **list)
+{
+	int			i, len = 0;
+	pack_t		*pak;
+	char		filename[32];
+	
+	for (i=0, pak = pack ; i<pak->numfiles ; i++)
+	{
+		if (!strcmp(COM_FileExtension(pak->files[i].name), ext))
+		{
+			if (subdir)
+				len = strlen(subdir);
+			if (stripext)
+				COM_StripExtension(pak->files[i].name + len, filename);
+			else
+				strcpy(filename, pak->files[i].name + len);
+			
+			COM_FileListAdd (filename, list);
 		}
 	}
 }

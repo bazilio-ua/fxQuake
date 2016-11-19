@@ -212,8 +212,26 @@ typedef struct pack_s
 	packfile_t      *files;
 } pack_t;
 
-struct cache_user_s;
+//
+// on disk
+//
 
+typedef struct
+{
+	char    name[56];
+	int             filepos, filelen;
+} dpackfile_t;
+
+typedef struct
+{
+	char    id[4];
+	int             dirofs;
+	int             dirlen;
+} dpackheader_t;
+
+#define MAX_FILES_IN_PACK       2048
+
+extern	char	com_cachedir[MAX_OSPATH];
 extern	char	com_gamedir[MAX_OSPATH];
 extern	char	com_basedir[MAX_OSPATH];
 
@@ -234,6 +252,8 @@ int COM_OpenFile (char *filename, int *handle, unsigned int *path_id);
 int COM_FOpenFile (char *filename, FILE **file, unsigned int *path_id);
 void COM_CloseFile (int h);
 
+struct cache_user_s;
+
 byte *COM_LoadMallocFile (char *path, void *buffer, unsigned int *path_id);
 byte *COM_LoadStackFile (char *path, void *buffer, int bufsize, unsigned int *path_id);
 byte *COM_LoadTempFile (char *path, unsigned int *path_id);
@@ -246,3 +266,19 @@ void COM_CreatePath (char *path);
 extern	struct cvar_s	registered;
 
 extern qboolean		standard_quake, rogue, hipnotic, nehahra, quoth;
+
+//==============================================================================
+//	FILELIST
+//==============================================================================
+
+typedef struct filelist_s
+{
+	char			name[32];
+	struct filelist_s	*next;
+} filelist_t;
+
+void COM_FileListAdd (const char *name, filelist_t **list);
+void COM_FileListClear (filelist_t **list);
+void COM_ScanDirFileList(char *path, char *subdir, char *ext, qboolean stripext, filelist_t **list);
+void COM_ScanPakFileList(pack_t *pack, char *subdir, char *ext, qboolean stripext, filelist_t **list);
+
