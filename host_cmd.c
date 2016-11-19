@@ -235,9 +235,9 @@ void Sys_ScanDir(char *path, char *subdir, char *ext, qboolean stripext, filelis
 
 #endif
 
-void COM_ScanPak(pack_t *pack, char *ext, qboolean stripext, filelist_item_t **list)
+void COM_ScanPak(pack_t *pack, char *subdir, char *ext, qboolean stripext, filelist_item_t **list)
 {
-	int			i;
+	int			i, len = 0;
 	pack_t		*pak;
 	char		filename[32];
 	
@@ -247,10 +247,12 @@ void COM_ScanPak(pack_t *pack, char *ext, qboolean stripext, filelist_item_t **l
 		{
 			if (pak->files[i].filelen > 32*1024)
 			{ // don't list files under 32k (ammo boxes etc)
+				if (subdir)
+					len = strlen(subdir);
 				if (stripext)
-					COM_StripExtension(pak->files[i].name + 5, filename);
+					COM_StripExtension(pak->files[i].name + len, filename);
 				else
-					strcpy(filename, pak->files[i].name + 5);
+					strcpy(filename, pak->files[i].name + len);
 				
 				FileList_Add (filename, list);
 			}
@@ -326,8 +328,9 @@ void ExtraMaps_Init (void)
 		}
 		else //pakfile
 		{
-			COM_ScanPak(search->pack, "bsp", true, &extralevels);
+			COM_ScanPak(search->pack, "maps/", "bsp", true, &extralevels);
 
+//			COM_ScanPak(search->pack, NULL, "bsp", true, &extralevels);
 			
 /*			if (!strstr(search->pack->filename, ignorepakdir))
 			{ //don't list standard id maps
