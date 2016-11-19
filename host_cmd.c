@@ -117,20 +117,20 @@ void Host_Quit_f (void)
 
 // ericw -- was extralevel_t, renamed and now used with mods list as well
 // to simplify completion code
-typedef struct filelist_item_s
+typedef struct filelist_s
 {
 	char			name[32];
-	struct filelist_item_s	*next;
-} filelist_item_t;
+	struct filelist_s	*next;
+} filelist_t;
 
 /*
 ==================
-FileList_Add
+COM_FileListAdd
 ==================
 */
-void FileList_Add (const char *name, filelist_item_t **list)
+void COM_FileListAdd (const char *name, filelist_t **list)
 {
-	filelist_item_t	*item, *cursor, *prev;
+	filelist_t	*item, *cursor, *prev;
 
 	// ignore duplicate
 	for (item = *list; item; item = item->next)
@@ -139,7 +139,7 @@ void FileList_Add (const char *name, filelist_item_t **list)
 			return;
 	}
 
-	item = (filelist_item_t *) Z_Malloc(sizeof(filelist_item_t));
+	item = (filelist_t *) Z_Malloc(sizeof(filelist_t));
 	strcpy (item->name, name);
 
 	// insert each entry in alphabetical order
@@ -163,9 +163,9 @@ void FileList_Add (const char *name, filelist_item_t **list)
 	}
 }
 
-static void FileList_Clear (filelist_item_t **list)
+void COM_FileListClear (filelist_t **list)
 {
-	filelist_item_t *item;
+	filelist_t *item;
 	
 	while (*list)
 	{
@@ -181,7 +181,7 @@ static void FileList_Clear (filelist_item_t **list)
 
 #ifdef _WIN32
 
-void Sys_ScanDir(char *path, char *subdir, char *ext, qboolean stripext, filelist_item_t **list)
+void Sys_ScanDir(char *path, char *subdir, char *ext, qboolean stripext, filelist_t **list)
 {
 	WIN32_FIND_DATA	fdat;
 	HANDLE		fhnd;
@@ -199,7 +199,7 @@ void Sys_ScanDir(char *path, char *subdir, char *ext, qboolean stripext, filelis
 		else
 			strcpy(filename, fdat.cFileName);
 		
-		FileList_Add (filename, list);
+		COM_FileListAdd (filename, list);
 	}
 	while (FindNextFile(fhnd, &fdat));
 	FindClose(fhnd);
@@ -207,7 +207,7 @@ void Sys_ScanDir(char *path, char *subdir, char *ext, qboolean stripext, filelis
 
 #else
 
-void Sys_ScanDir(char *path, char *subdir, char *ext, qboolean stripext, filelist_item_t **list)
+void Sys_ScanDir(char *path, char *subdir, char *ext, qboolean stripext, filelist_t **list)
 {
 	DIR		*dir_p;
 	struct dirent	*dir_t;
@@ -228,14 +228,20 @@ void Sys_ScanDir(char *path, char *subdir, char *ext, qboolean stripext, filelis
 		else
 			strcpy(filename, dir_t->d_name);
 		
-		FileList_Add (filename, list);
+		COM_FileListAdd (filename, list);
 	}
 	closedir(dir_p);
 }
 
 #endif
 
-void COM_ScanPak(pack_t *pack, char *subdir, char *ext, qboolean stripext, filelist_item_t **list)
+void COM_ScanDirFileList(char *path, char *subdir, char *ext, qboolean stripext, filelist_t **list)
+{
+	Sys_ScanDir(path, subdir, ext, stripext, list);
+}
+
+
+void COM_ScanPakFileList(pack_t *pack, char *subdir, char *ext, qboolean stripext, filelist_t **list)
 {
 	int			i, len = 0;
 	pack_t		*pak;
@@ -254,111 +260,45 @@ void COM_ScanPak(pack_t *pack, char *subdir, char *ext, qboolean stripext, filel
 				else
 					strcpy(filename, pak->files[i].name + len);
 				
-				FileList_Add (filename, list);
+				COM_FileListAdd (filename, list);
 			}
 		}
 	}
 }
 
 //==============================================================================
-//johnfitz -- extramaps management
+//johnfitz -- maplist management
 //==============================================================================
 
-filelist_item_t	*extralevels;
+filelist_t	*maplist;
 
-void ExtraMaps_Add (const char *name)
+void MapList_Add (const char *name)
 {
-	FileList_Add(name, &extralevels);
+	COM_FileListAdd(name, &maplist);
 }
 
-void ExtraMaps_Init (void)
+void MapList_Init (void)
 {
-#ifdef _WIN32
-	WIN32_FIND_DATA	fdat;
-	HANDLE		fhnd;
-#else
-	DIR		*dir_p;
-	struct dirent	*dir_t;
-#endif
-	char		filestring[MAX_OSPATH];
-	char		mapname[32];
-	char		ignorepakdir[32];
 	searchpath_t	*search;
-	pack_t		*pak;
-	int		i;
-
-	// we don't want to list the maps in id1 pakfiles,
-	// because these are not "add-on" levels
-	snprintf (ignorepakdir, sizeof(ignorepakdir), "/%s/", GAMENAME);
 
 	for (search = com_searchpaths; search; search = search->next)
 	{
 		if (*search->filename) //directory
-		{
-			Sys_ScanDir(search->filename, "maps/", "bsp", true, &extralevels);
-
-#ifdef _WIN32
-
-//			Sys_ScanDir(search->filename, "maps/", "bsp", true, &extralevels);
-
-/*			snprintf (filestring, sizeof(filestring), "%s/maps/*.bsp", search->filename);
-			fhnd = FindFirstFile(filestring, &fdat);
-			if (fhnd == INVALID_HANDLE_VALUE)
-				continue;
-			do
-			{
-				COM_StripExtension(fdat.cFileName, mapname);
-				ExtraMaps_Add (mapname);
-			} while (FindNextFile(fhnd, &fdat));
-			FindClose(fhnd);*/
-#else
-/*			snprintf (filestring, sizeof(filestring), "%s/maps/", search->filename);
-			dir_p = opendir(filestring);
-			if (dir_p == NULL)
-				continue;
-			while ((dir_t = readdir(dir_p)) != NULL)
-			{
-				if (strcasecmp(COM_FileExtension(dir_t->d_name), "bsp") != 0)
-					continue;
-				COM_StripExtension(dir_t->d_name, mapname);
-				ExtraMaps_Add (mapname);
-			}
-			closedir(dir_p);*/
-#endif
-		}
+			COM_ScanDirFileList(search->filename, "maps/", "bsp", true, &maplist);
 		else //pakfile
-		{
-			COM_ScanPak(search->pack, "maps/", "bsp", true, &extralevels);
-
-//			COM_ScanPak(search->pack, NULL, "bsp", true, &extralevels);
-			
-/*			if (!strstr(search->pack->filename, ignorepakdir))
-			{ //don't list standard id maps
-				for (i = 0, pak = search->pack; i < pak->numfiles; i++)
-				{
-					if (!strcmp(COM_FileExtension(pak->files[i].name), "bsp"))
-					{
-						if (pak->files[i].filelen > 32*1024)
-						{ // don't list files under 32k (ammo boxes etc)
-							COM_StripExtension(pak->files[i].name + 5, mapname);
-							ExtraMaps_Add (mapname);
-						}
-					}
-				}
-			}*/
-		}
+			COM_ScanPakFileList(search->pack, "maps/", "bsp", true, &maplist);
 	}
 }
 
-static void ExtraMaps_Clear (void)
+void MapList_Clear (void)
 {
-	FileList_Clear(&extralevels);
+	COM_FileListClear(&maplist);
 }
 
-void ExtraMaps_Rebuild (void) // for new game
+void MapList_Rebuild (void) // for new game
 {
-	ExtraMaps_Clear ();
-	ExtraMaps_Init ();
+	MapList_Clear ();
+	MapList_Init ();
 }
 
 /*
@@ -369,9 +309,9 @@ Host_Maplist_f
 void Host_Maplist_f (void)
 {
 	int i;
-	filelist_item_t	*level;
+	filelist_t	*level;
 
-	for (level = extralevels, i = 0; level; level = level->next, i++)
+	for (level = maplist, i = 0; level; level = level->next, i++)
 		Con_SafePrintf ("   %s\n", level->name);
 
 	if (i)
@@ -384,7 +324,7 @@ void Host_Maplist_f (void)
 //ericw -- demo list management
 //==============================================================================
 
-filelist_item_t	*demolist;
+filelist_t	*demolist;
 
 // TODO: Factor out to a general-purpose file searching function
 void DemoList_Init (void)
@@ -419,7 +359,7 @@ void DemoList_Init (void)
 			do
 			{
 				COM_StripExtension(fdat.cFileName, demname);
-				FileList_Add (demname, &demolist);
+				COM_FileListAdd (demname, &demolist);
 			} while (FindNextFile(fhnd, &fdat));
 			FindClose(fhnd);
 #else
@@ -432,7 +372,7 @@ void DemoList_Init (void)
 				if (strcasecmp(COM_FileExtension(dir_t->d_name), "dem") != 0)
 					continue;
 				COM_StripExtension(dir_t->d_name, demname);
-				FileList_Add (demname, &demolist);
+				COM_FileListAdd (demname, &demolist);
 			}
 			closedir(dir_p);
 #endif
@@ -446,7 +386,7 @@ void DemoList_Init (void)
 					if (!strcmp(COM_FileExtension(pak->files[i].name), "dem"))
 					{
 						COM_StripExtension(pak->files[i].name, demname);
-						FileList_Add (demname, &demolist);
+						COM_FileListAdd (demname, &demolist);
 					}
 				}
 			}
@@ -454,9 +394,9 @@ void DemoList_Init (void)
 	}
 }
 
-static void DemoList_Clear (void)
+void DemoList_Clear (void)
 {
-	FileList_Clear (&demolist);
+	COM_FileListClear (&demolist);
 }
 
 void DemoList_Rebuild (void) // for new game
@@ -473,7 +413,7 @@ Host_Demolist_f
 void Host_Demolist_f (void)
 {
 	int i;
-	filelist_item_t	*demo;
+	filelist_t	*demo;
 
 	for (demo = demolist, i = 0; demo; demo = demo->next, i++)
 		Con_SafePrintf ("   %s\n", demo->name);
@@ -488,7 +428,7 @@ void Host_Demolist_f (void)
 //EER1 -- save list management
 //==============================================================================
 
-filelist_item_t	*savelist;
+filelist_t	*savelist;
 
 // TODO: Factor out to a general-purpose file searching function
 void SaveList_Init (void)
@@ -523,7 +463,7 @@ void SaveList_Init (void)
 			do
 			{
 				COM_StripExtension(fdat.cFileName, savname);
-				FileList_Add (savname, &savelist);
+				COM_FileListAdd (savname, &savelist);
 			} while (FindNextFile(fhnd, &fdat));
 			FindClose(fhnd);
 #else
@@ -536,7 +476,7 @@ void SaveList_Init (void)
 				if (strcasecmp(COM_FileExtension(dir_t->d_name), "sav") != 0)
 					continue;
 				COM_StripExtension(dir_t->d_name, savname);
-				FileList_Add (savname, &savelist);
+				COM_FileListAdd (savname, &savelist);
 			}
 			closedir(dir_p);
 #endif
@@ -550,7 +490,7 @@ void SaveList_Init (void)
 					if (!strcmp(COM_FileExtension(pak->files[i].name), "sav"))
 					{
 						COM_StripExtension(pak->files[i].name, savname);
-						FileList_Add (savname, &savelist);
+						COM_FileListAdd (savname, &savelist);
 					}
 				}
 			}
@@ -558,9 +498,9 @@ void SaveList_Init (void)
 	}
 }
 
-static void SaveList_Clear (void)
+void SaveList_Clear (void)
 {
-	FileList_Clear (&savelist);
+	COM_FileListClear (&savelist);
 }
 
 void SaveList_Rebuild (void) // for new game
@@ -577,7 +517,7 @@ Host_Savelist_f
 void Host_Savelist_f (void)
 {
 	int i;
-	filelist_item_t	*save;
+	filelist_t	*save;
 
 	for (save = savelist, i = 0; save; save = save->next, i++)
 		Con_SafePrintf ("   %s\n", save->name);
@@ -592,7 +532,7 @@ void Host_Savelist_f (void)
 //EER1 -- config list management
 //==============================================================================
 
-filelist_item_t	*configlist;
+filelist_t	*configlist;
 
 // TODO: Factor out to a general-purpose file searching function
 void ConfigList_Init (void)
@@ -629,7 +569,7 @@ void ConfigList_Init (void)
 			{
 //				COM_StripExtension(fdat.cFileName, cfgname);
 				strcpy(cfgname, fdat.cFileName);
-				FileList_Add (cfgname, &configlist);
+				COM_FileListAdd (cfgname, &configlist);
 			} while (FindNextFile(fhnd, &fdat));
 			FindClose(fhnd);
 			
@@ -642,7 +582,7 @@ void ConfigList_Init (void)
 			{
 //				COM_StripExtension(fdat.cFileName, cfgname);
 				strcpy(cfgname, fdat.cFileName);
-				FileList_Add (cfgname, &configlist);
+				COM_FileListAdd (cfgname, &configlist);
 			} while (FindNextFile(fhnd, &fdat));
 			FindClose(fhnd);
 #else
@@ -656,7 +596,7 @@ void ConfigList_Init (void)
 					continue;
 //				COM_StripExtension(dir_t->d_name, cfgname);
 				strcpy(cfgname, dir_t->d_name);
-				FileList_Add (cfgname, &configlist);
+				COM_FileListAdd (cfgname, &configlist);
 			}
 			closedir(dir_p);
 #endif
@@ -671,7 +611,7 @@ void ConfigList_Init (void)
 					{
 //						COM_StripExtension(pak->files[i].name, cfgname);
 						strcpy(cfgname, pak->files[i].name);
-						FileList_Add (cfgname, &configlist);
+						COM_FileListAdd (cfgname, &configlist);
 					}
 				}
 			}
@@ -679,9 +619,9 @@ void ConfigList_Init (void)
 	}
 }
 
-static void ConfigList_Clear (void)
+void ConfigList_Clear (void)
 {
-	FileList_Clear (&configlist);
+	COM_FileListClear (&configlist);
 }
 
 void ConfigList_Rebuild (void) // for new game
@@ -698,7 +638,7 @@ Host_Configlist_f
 void Host_Configlist_f (void)
 {
 	int i;
-	filelist_item_t	*config;
+	filelist_t	*config;
 
 	for (config = configlist, i = 0; config; config = config->next, i++)
 		Con_SafePrintf ("   %s\n", config->name);
@@ -2569,7 +2509,7 @@ Host_InitFilelist
 */
 void Host_InitFilelist (void)
 {
-	ExtraMaps_Init ();
+	MapList_Init ();
 	DemoList_Init ();
 	SaveList_Init ();
 	ConfigList_Init ();
