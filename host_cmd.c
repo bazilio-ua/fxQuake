@@ -181,7 +181,7 @@ void COM_FileListClear (filelist_t **list)
 
 #ifdef _WIN32
 
-void Sys_ScanDir(char *path, char *subdir, char *ext, qboolean stripext, filelist_t **list)
+void Sys_ScanDirFileList(char *path, char *subdir, char *ext, qboolean stripext, filelist_t **list)
 {
 	WIN32_FIND_DATA	fdat;
 	HANDLE		fhnd;
@@ -207,7 +207,7 @@ void Sys_ScanDir(char *path, char *subdir, char *ext, qboolean stripext, filelis
 
 #else
 
-void Sys_ScanDir(char *path, char *subdir, char *ext, qboolean stripext, filelist_t **list)
+void Sys_ScanDirFileList(char *path, char *subdir, char *ext, qboolean stripext, filelist_t **list)
 {
 	DIR		*dir_p;
 	struct dirent	*dir_t;
@@ -237,7 +237,7 @@ void Sys_ScanDir(char *path, char *subdir, char *ext, qboolean stripext, filelis
 
 void COM_ScanDirFileList(char *path, char *subdir, char *ext, qboolean stripext, filelist_t **list)
 {
-	Sys_ScanDir(path, subdir, ext, stripext, list);
+	Sys_ScanDirFileList(path, subdir, ext, stripext, list);
 }
 
 
