@@ -168,7 +168,7 @@ keyname_t keynames[] =
 	// allow binding of backquote/tilde to toggleconsole after unbind all
 	{"BACKQUOTE", '`'},	// because a raw backquote may toggle the console
 	{"TILDE", '`'},		// because a raw tilde may toggle the console
-	{"TILDE", '~'},		// because a raw tilde may toggle the console
+//	{"TILDE", '~'},		// because a raw tilde may toggle the console (shiftkey)
 
 	{NULL, 0} // Baker: Note that this list has null termination
 };
