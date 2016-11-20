@@ -838,7 +838,7 @@ void Key_Init (void)
 	consolekeys[K_ALT] = true; // EER1
 	consolekeys[K_CTRL] = true; // EER1
 	consolekeys[K_SHIFT] = true;
-
+	
     consolekeys[K_KP_NUMLOCK] = true;
 	consolekeys[K_KP_ENTER] = true;
 	consolekeys[K_KP_SLASH] = true;
