@@ -64,28 +64,29 @@ void Sys_ScanDirFileList(char *path, char *subdir, char *exts[], qboolean stripe
 	struct dirent	*dir_t;
 	char		filename[32];
 	char		filestring[MAX_OSPATH];
-	int 		i, len;
+	int 		j, c;
+	char		*ext
 	
-	snprintf (filestring, sizeof(filestring), "%s/%s", path, subdir ? subdir : "");
+	snprintf (filestring, sizeof(filestring), "%s/%s", path, subdir);
 	dir_p = opendir(filestring);
 	if (dir_p == NULL)
 		return;
 	
-	len = sizeof(exts) / sizeof(exts[0]);
-	for (i=0 ; i<len && exts[i] != NULL ; i++)
+	c = sizeof(exts) / sizeof(exts[0]);
+	while ((dir_t = readdir(dir_p)) != NULL)
 	{
-		char *ext = exts[i];
-		while ((dir_t = readdir(dir_p)) != NULL)
+		for (j=0 ; j<c && exts[j] != NULL ; j++)
 		{
-			if (strcasecmp(COM_FileExtension(dir_t->d_name), ext) != 0)
-				continue;
-			
-			if (stripext)
-				COM_StripExtension(dir_t->d_name, filename);
-			else
-				strcpy(filename, dir_t->d_name);
-			
-			COM_FileListAdd (filename, list);
+			ext = exts[j];
+			if (!strcasecmp(COM_FileExtension(dir_t->d_name), ext))
+			{
+				if (stripext)
+					COM_StripExtension(dir_t->d_name, filename);
+				else
+					strcpy(filename, dir_t->d_name);
+				
+				COM_FileListAdd (filename, list);
+			}
 		}
 	}
 	

@@ -113,10 +113,11 @@ void Host_Quit_f (void)
 ===============================================================================
 */
 
-//==============================================================================
-//johnfitz -- map list management
-//==============================================================================
-
+/*
+==============================================================================
+	johnfitz -- map list management
+==============================================================================
+*/
 filelist_t	*maplist;
 
 void Host_MapListInit (void)
@@ -129,7 +130,7 @@ void Host_MapListInit (void)
 		if (*search->filename) //directory
 			COM_ScanDirFileList(search->filename, "maps/", exts, true, &maplist);
 		else //pakfile
-			COM_ScanPakFileList(search->pack, "maps/", "bsp", true, &maplist);
+			COM_ScanPakFileList(search->pack, exts, true, &maplist);
 	}
 }
 
@@ -163,10 +164,11 @@ void Host_Maplist_f (void)
 		Con_SafePrintf ("no maps found\n");
 }
 
-//==============================================================================
-//ericw -- demo list management
-//==============================================================================
-
+/*
+==============================================================================
+	ericw -- demo list management
+==============================================================================
+*/
 filelist_t	*demolist;
 
 void Host_DemoListInit (void)
@@ -177,9 +179,9 @@ void Host_DemoListInit (void)
 	for (search = com_searchpaths; search; search = search->next)
 	{
 		if (*search->filename) //directory
-			COM_ScanDirFileList(search->filename, NULL, exts, true, &demolist);
+			COM_ScanDirFileList(search->filename, "", exts, true, &demolist);
 		else //pakfile
-			COM_ScanPakFileList(search->pack, NULL, "dem", true, &demolist);
+			COM_ScanPakFileList(search->pack, exts, true, &demolist);
 	}
 }
 
@@ -213,10 +215,11 @@ void Host_Demolist_f (void)
 		Con_SafePrintf ("no demos found\n");
 }
 
-//==============================================================================
-//EER1 -- save list management
-//==============================================================================
-
+/*
+==============================================================================
+	EER1 -- save list management
+==============================================================================
+*/
 filelist_t	*savelist;
 
 void Host_SaveListInit (void)
@@ -227,9 +230,9 @@ void Host_SaveListInit (void)
 	for (search = com_searchpaths; search; search = search->next)
 	{
 		if (*search->filename) //directory
-			COM_ScanDirFileList(search->filename, NULL, exts, true, &savelist);
+			COM_ScanDirFileList(search->filename, "", exts, true, &savelist);
 		else //pakfile
-			COM_ScanPakFileList(search->pack, NULL, "sav", true, &savelist);
+			COM_ScanPakFileList(search->pack, exts, true, &savelist);
 	}
 }
 
@@ -263,30 +266,29 @@ void Host_Savelist_f (void)
 		Con_SafePrintf ("no saves found\n");
 }
 
-//==============================================================================
-//EER1 -- config list management
-//==============================================================================
-
+/*
+==============================================================================
+	EER1 -- config list management
+==============================================================================
+*/
 filelist_t	*configlist;
 
 void Host_ConfigListInit (void)
 {
 	char *exts[] = {"cfg", "rc"};
 	searchpath_t	*search;
+
+	int	c = sizeof(exts) / sizeof(exts[0]);
 	
 	for (search = com_searchpaths; search; search = search->next)
 	{
-		// configs\levelord.cfg
 		if (*search->filename) //directory
 		{
-			COM_ScanDirFileList(search->filename, NULL, exts, false, &configlist);
-			COM_ScanDirFileList(search->filename, "configs/", exts, false, &configlist);
+			COM_ScanDirFileList(search->filename, "", exts, false, &configlist);
+			COM_ScanDirFileList(search->filename, "configs/", exts, false, &configlist); /* hipnotic configs\levelord.cfg */
 		}
 		else //pakfile
-		{
-			COM_ScanPakFileList(search->pack, NULL, "cfg", false, &configlist);
-			COM_ScanPakFileList(search->pack, NULL, "rc", false, &configlist);
-		}
+			COM_ScanPakFileList(search->pack, exts, false, &configlist);
 	}
 }
 

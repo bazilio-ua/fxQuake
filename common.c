@@ -1864,25 +1864,30 @@ void COM_ScanDirFileList(char *path, char *subdir, char *exts[], qboolean stripe
 COM_ScanPakFileList
 ==================
 */
-void COM_ScanPakFileList(pack_t *pack, char *subdir, char *ext, qboolean stripext, filelist_t **list)
+void COM_ScanPakFileList(pack_t *pack, char *exts[], qboolean stripext, filelist_t **list)
 {
-	int			i, len = 0;
 	pack_t		*pak;
 	char		filename[32];
+	int			i, j, c;
+	char		*ext;
+	char		*pathname;
 	
+	c = sizeof(exts) / sizeof(exts[0]);
 	for (i=0, pak = pack ; i<pak->numfiles ; i++)
 	{
-		if (!strcmp(COM_FileExtension(pak->files[i].name), ext))
+		for (j=0 ; j<c && exts[j] != NULL ; j++)
 		{
-			if (subdir)
-				len = strlen(subdir);
-			
-			if (stripext)
-				COM_StripExtension(pak->files[i].name + len, filename);
-			else
-				strcpy(filename, pak->files[i].name + len);
-			
-			COM_FileListAdd (filename, list);
+			ext = exts[j];
+			if (!strcasecmp(COM_FileExtension(pak->files[i].name), ext))
+			{
+				pathname = COM_SkipPath(pak->files[i].name);
+				if (stripext)
+					COM_StripExtension(pathname, filename);
+				else
+					strcpy(filename, pathname);
+				
+				COM_FileListAdd (filename, list);
+			}
 		}
 	}
 }

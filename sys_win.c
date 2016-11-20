@@ -79,16 +79,18 @@ void Sys_ScanDirFileList(char *path, char *subdir, char *exts[], qboolean stripe
 	HANDLE		handle;
 	char		filename[32];
 	char		filestring[MAX_OSPATH];
-	int 		i, len;
+	int 		j, c;
+	char		*ext;
 	
-	len = sizeof(exts) / sizeof(exts[0]);
-	for (i=0 ; i<len && exts[i] != NULL ; i++)
+	c = sizeof(exts) / sizeof(exts[0]);
+	for (j=0 ; j<c && exts[j] != NULL ; j++)
 	{
-		char *ext = exts[i];
-		snprintf (filestring, sizeof(filestring), "%s/%s*.%s", path, subdir ? subdir : "", ext);
+		ext = exts[j];
+		snprintf (filestring, sizeof(filestring), "%s/%s*.%s", path, subdir, ext);
 		handle = FindFirstFile(filestring, &data);
 		if (handle == INVALID_HANDLE_VALUE)
-			return;
+			continue;
+		
 		do
 		{
 			if (stripext)
@@ -99,6 +101,7 @@ void Sys_ScanDirFileList(char *path, char *subdir, char *exts[], qboolean stripe
 			COM_FileListAdd (filename, list);
 		}
 		while (FindNextFile(handle, &data));
+		
 		FindClose(handle);
 	}
 }
