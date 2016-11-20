@@ -1854,9 +1854,9 @@ void COM_FileListClear (filelist_t **list)
 COM_ScanDirFileList
 ==================
 */
-void COM_ScanDirFileList(char *path, char *subdir, char *exts[], qboolean stripext, filelist_t **list)
+void COM_ScanDirFileList(char *path, char *subdir, char *ext, qboolean stripext, filelist_t **list)
 {
-	Sys_ScanDirFileList(path, subdir, exts, stripext, list);
+	Sys_ScanDirFileList(path, subdir, ext, stripext, list);
 }
 
 /*
@@ -1864,30 +1864,24 @@ void COM_ScanDirFileList(char *path, char *subdir, char *exts[], qboolean stripe
 COM_ScanPakFileList
 ==================
 */
-void COM_ScanPakFileList(pack_t *pack, char *exts[], qboolean stripext, filelist_t **list)
+void COM_ScanPakFileList(pack_t *pack, char *ext, qboolean stripext, filelist_t **list)
 {
+	int			i;
 	pack_t		*pak;
-	char		filename[32];
-	int			i, j, c;
-	char		*ext;
 	char		*pathname;
+	char		filename[32];
 	
-	c = sizeof(exts) / sizeof(exts[0]);
 	for (i=0, pak = pack ; i<pak->numfiles ; i++)
 	{
-		for (j=0 ; j<c && exts[j] != NULL ; j++)
+		if (!strcasecmp(COM_FileExtension(pak->files[i].name), ext))
 		{
-			ext = exts[j];
-			if (!strcasecmp(COM_FileExtension(pak->files[i].name), ext))
-			{
-				pathname = COM_SkipPath(pak->files[i].name);
-				if (stripext)
-					COM_StripExtension(pathname, filename);
-				else
-					strcpy(filename, pathname);
-				
-				COM_FileListAdd (filename, list);
-			}
+			pathname = COM_SkipPath(pak->files[i].name);
+			if (stripext)
+				COM_StripExtension(pathname, filename);
+			else
+				strcpy(filename, pathname);
+			
+			COM_FileListAdd (filename, list);
 		}
 	}
 }

@@ -58,35 +58,28 @@ void Sys_mkdir (char *path)
 Sys_ScanDirFileList
 ================
 */
-void Sys_ScanDirFileList(char *path, char *subdir, char *exts[], qboolean stripext, filelist_t **list)
+void Sys_ScanDirFileList(char *path, char *subdir, char *ext, qboolean stripext, filelist_t **list)
 {
 	DIR		*dir_p;
 	struct dirent	*dir_t;
 	char		filename[32];
 	char		filestring[MAX_OSPATH];
-	int 		j, c;
-	char		*ext
 	
 	snprintf (filestring, sizeof(filestring), "%s/%s", path, subdir);
 	dir_p = opendir(filestring);
 	if (dir_p == NULL)
 		return;
 	
-	c = sizeof(exts) / sizeof(exts[0]);
 	while ((dir_t = readdir(dir_p)) != NULL)
 	{
-		for (j=0 ; j<c && exts[j] != NULL ; j++)
+		if (!strcasecmp(COM_FileExtension(dir_t->d_name), ext))
 		{
-			ext = exts[j];
-			if (!strcasecmp(COM_FileExtension(dir_t->d_name), ext))
-			{
-				if (stripext)
-					COM_StripExtension(dir_t->d_name, filename);
-				else
-					strcpy(filename, dir_t->d_name);
-				
-				COM_FileListAdd (filename, list);
-			}
+			if (stripext)
+				COM_StripExtension(dir_t->d_name, filename);
+			else
+				strcpy(filename, dir_t->d_name);
+			
+			COM_FileListAdd (filename, list);
 		}
 	}
 	
