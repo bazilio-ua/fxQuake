@@ -280,5 +280,5 @@ typedef struct filelist_s
 void COM_FileListAdd (const char *name, filelist_t **list);
 void COM_FileListClear (filelist_t **list);
 void COM_ScanDirFileList(char *path, char *subdir, char *ext, qboolean stripext, filelist_t **list);
-void COM_ScanPakFileList(pack_t *pack, char *ext, qboolean stripext, filelist_t **list);
+void COM_ScanPakFileList(pack_t *pack, char *subdir, char *ext, qboolean stripext, filelist_t **list);
 

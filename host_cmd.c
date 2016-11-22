@@ -130,7 +130,7 @@ void Host_MapListInit (void)
 		if (*search->filename) //directory
 			COM_ScanDirFileList(search->filename, "maps/", ext, true, &maplist);
 		else //pakfile
-			COM_ScanPakFileList(search->pack, ext, true, &maplist);
+			COM_ScanPakFileList(search->pack, "maps/", ext, true, &maplist);
 	}
 }
 
@@ -181,7 +181,7 @@ void Host_DemoListInit (void)
 		if (*search->filename) //directory
 			COM_ScanDirFileList(search->filename, "", ext, true, &demolist);
 		else //pakfile
-			COM_ScanPakFileList(search->pack, ext, true, &demolist);
+			COM_ScanPakFileList(search->pack, "", ext, true, &demolist);
 	}
 }
 
@@ -232,7 +232,7 @@ void Host_SaveListInit (void)
 		if (*search->filename) //directory
 			COM_ScanDirFileList(search->filename, "", ext, true, &savelist);
 		else //pakfile
-			COM_ScanPakFileList(search->pack, ext, true, &savelist);
+			COM_ScanPakFileList(search->pack, "", ext, true, &savelist);
 	}
 }
 
@@ -288,10 +288,10 @@ void Host_ConfigListInit (void)
 			if (*search->filename) //directory
 			{
 				COM_ScanDirFileList(search->filename, "", ext, false, &configlist);
-				COM_ScanDirFileList(search->filename, "configs/", ext, false, &configlist); /* hipnotic configs\levelord.cfg */
+//				COM_ScanDirFileList(search->filename, "configs/", ext, false, &configlist); /* hipnotic configs\levelord.cfg */
 			}
 			else //pakfile
-				COM_ScanPakFileList(search->pack, ext, false, &configlist);
+				COM_ScanPakFileList(search->pack, "", ext, false, &configlist);
 		}
 	}
 }
