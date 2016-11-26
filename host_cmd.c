@@ -122,15 +122,16 @@ filelist_t	*maplist;
 
 void Host_MapListInit (void)
 {
-	char *ext = "bsp";
+	char	*ext = "bsp";
+	char 	*subdir = "maps/";
 	searchpath_t	*search;
 	
 	for (search = com_searchpaths; search; search = search->next)
 	{
 		if (*search->filename) //directory
-			COM_ScanDirFileList(search->filename, "maps/", ext, true, &maplist);
+			COM_ScanDirFileList(search->filename, subdir, ext, true, &maplist);
 		else //pakfile
-			COM_ScanPakFileList(search->pack, "maps/", ext, true, &maplist);
+			COM_ScanPakFileList(search->pack, subdir, ext, true, &maplist);
 	}
 }
 
@@ -173,15 +174,16 @@ filelist_t	*demolist;
 
 void Host_DemoListInit (void)
 {
-	char *ext = "dem";
+	char 	*ext = "dem";
+	char 	*subdir = "";
 	searchpath_t	*search;
 	
 	for (search = com_searchpaths; search; search = search->next)
 	{
 		if (*search->filename) //directory
-			COM_ScanDirFileList(search->filename, "", ext, true, &demolist);
+			COM_ScanDirFileList(search->filename, subdir, ext, true, &demolist);
 		else //pakfile
-			COM_ScanPakFileList(search->pack, "", ext, true, &demolist);
+			COM_ScanPakFileList(search->pack, subdir, ext, true, &demolist);
 	}
 }
 
@@ -224,15 +226,16 @@ filelist_t	*savelist;
 
 void Host_SaveListInit (void)
 {
-	char *ext = "sav";
+	char 	*ext = "sav";
+	char 	*subdir = "";
 	searchpath_t	*search;
 	
 	for (search = com_searchpaths; search; search = search->next)
 	{
 		if (*search->filename) //directory
-			COM_ScanDirFileList(search->filename, "", ext, true, &savelist);
+			COM_ScanDirFileList(search->filename, subdir, ext, true, &savelist);
 		else //pakfile
-			COM_ScanPakFileList(search->pack, "", ext, true, &savelist);
+			COM_ScanPakFileList(search->pack, subdir, ext, true, &savelist);
 	}
 }
 
@@ -275,10 +278,11 @@ filelist_t	*configlist;
 
 void Host_ConfigListInit (void)
 {
-	searchpath_t	*search;
-	char	*exts[] = {"cfg", "rc"};
-	int 	j, c = sizeof(exts) / sizeof(exts[0]);
+	char 	*exts[] = {"cfg", "rc"};
 	char	*ext;
+	char 	*subdir = "";
+	int		j, c = sizeof(exts) / sizeof(exts[0]);
+	searchpath_t	*search;
 	
 	for (search = com_searchpaths; search; search = search->next)
 	{
@@ -286,12 +290,9 @@ void Host_ConfigListInit (void)
 		{
 			ext = exts[j];
 			if (*search->filename) //directory
-			{
-				COM_ScanDirFileList(search->filename, "", ext, false, &configlist);
-//				COM_ScanDirFileList(search->filename, "configs/", ext, false, &configlist); /* hipnotic configs\levelord.cfg */
-			}
+				COM_ScanDirFileList(search->filename, subdir, ext, false, &configlist);
 			else //pakfile
-				COM_ScanPakFileList(search->pack, "", ext, false, &configlist);
+				COM_ScanPakFileList(search->pack, subdir, ext, false, &configlist);
 		}
 	}
 }
