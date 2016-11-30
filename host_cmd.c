@@ -126,12 +126,12 @@ void Host_MapListInit (void)
 	char 	*subdir = "maps/";
 	searchpath_t	*search;
 	
-	for (search = com_searchpaths; search; search = search->next)
+	for (search = com_searchpaths ; search ; search = search->next)
 	{
-		if (*search->filename) //directory
-			COM_ScanDirFileList(search->filename, subdir, ext, true, &maplist);
-		else //pakfile
+		if (search->pack) //pakfile
 			COM_ScanPakFileList(search->pack, subdir, ext, true, &maplist);
+		else //directory
+			COM_ScanDirFileList(search->filename, subdir, ext, true, &maplist);
 	}
 }
 
@@ -178,12 +178,12 @@ void Host_DemoListInit (void)
 	char 	*subdir = "";
 	searchpath_t	*search;
 	
-	for (search = com_searchpaths; search; search = search->next)
+	for (search = com_searchpaths ; search ; search = search->next)
 	{
-		if (*search->filename) //directory
-			COM_ScanDirFileList(search->filename, subdir, ext, true, &demolist);
-		else //pakfile
+		if (search->pack) //pakfile
 			COM_ScanPakFileList(search->pack, subdir, ext, true, &demolist);
+		else //directory
+			COM_ScanDirFileList(search->filename, subdir, ext, true, &demolist);
 	}
 }
 
@@ -230,12 +230,12 @@ void Host_SaveListInit (void)
 	char 	*subdir = "";
 	searchpath_t	*search;
 	
-	for (search = com_searchpaths; search; search = search->next)
+	for (search = com_searchpaths ; search ; search = search->next)
 	{
-		if (*search->filename) //directory
-			COM_ScanDirFileList(search->filename, subdir, ext, true, &savelist);
-		else //pakfile
+		if (search->pack) //pakfile
 			COM_ScanPakFileList(search->pack, subdir, ext, true, &savelist);
+		else //directory
+			COM_ScanDirFileList(search->filename, subdir, ext, true, &savelist);
 	}
 }
 
@@ -284,15 +284,15 @@ void Host_ConfigListInit (void)
 	int		j, c = sizeof(exts) / sizeof(exts[0]);
 	searchpath_t	*search;
 	
-	for (search = com_searchpaths; search; search = search->next)
+	for (search = com_searchpaths ; search ; search = search->next)
 	{
 		for (j=0 ; j<c && exts[j] != NULL ; j++)
 		{
 			ext = exts[j];
-			if (*search->filename) //directory
-				COM_ScanDirFileList(search->filename, subdir, ext, false, &configlist);
-			else //pakfile
+			if (search->pack) //pakfile
 				COM_ScanPakFileList(search->pack, subdir, ext, false, &configlist);
+			else //directory
+				COM_ScanDirFileList(search->filename, subdir, ext, false, &configlist);
 		}
 	}
 }
