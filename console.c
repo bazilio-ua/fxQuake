@@ -1027,6 +1027,7 @@ void Con_TabComplete (void)
 	}
 	for (i = 0; c + i < key_lines[edit_line] + key_linepos; i++)
 		partial[i] = c[i];
+	
 	partial[i] = 0;
 
 // Map autocomplete function -- S.A
@@ -1044,6 +1045,7 @@ void Con_TabComplete (void)
 			const char *matched_map = FindCompletion(partial, *arg_completion.filelist, &nummatches);
 			if (!*matched_map)
 				return;
+			
 			strcpy (partial, matched_map);
 			*c = '\0';
 			strcat (key_lines[edit_line], partial);
@@ -1059,6 +1061,7 @@ void Con_TabComplete (void)
 				key_lines[edit_line][key_linepos] = 0;
 			}
 			c = key_lines[edit_line] + key_linepos;
+			
 			return;
 		}
 	}
