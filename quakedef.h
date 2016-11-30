@@ -292,6 +292,11 @@ extern int			current_skill;		// skill level for currently loaded level (in case
 										//  the user changes the cvar while the level is
 										//  running, this reflects the level actually in use)
 
+extern filelist_t	*maplist;
+extern filelist_t	*demolist;
+extern filelist_t	*savelist;
+extern filelist_t	*configlist;
+
 //
 // chase
 //

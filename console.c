@@ -822,9 +822,35 @@ AddToTabList
 tablist is a doubly-linked loop, alphabetized by name
 ============
 */
+// bash_partial is the string that can be expanded,
+// aka Linux Bash shell. -- S.A.
+static char	bash_partial[80];
+static qboolean	bash_singlematch;
+
 void AddToTabList (char *name, char *type)
 {
 	tab_t	*t, *insert;
+	char	*i_bash;
+	const char *i_name;
+
+	if (!*bash_partial)
+	{
+		strncpy (bash_partial, name, 79);
+		bash_partial[79] = '\0';
+	}
+	else
+	{
+		bash_singlematch = 0;
+		// find max common between bash_partial and name
+		i_bash = bash_partial;
+		i_name = name;
+		while (*i_bash && (*i_bash == *i_name))
+		{
+			i_bash++;
+			i_name++;
+		}
+		*i_bash = 0;
+	}
 
 	t = Hunk_AllocName (sizeof(tab_t), "tablist");
 	t->name = name;
@@ -864,6 +890,84 @@ void AddToTabList (char *name, char *type)
 	}
 }
 
+
+// filelist completions
+typedef struct arg_completion_type_s
+{
+	const char		*command;
+	filelist_t		**filelist;
+} arg_completion_type_t;
+
+static const arg_completion_type_t arg_completion_types[] =
+{
+	{ "map ", &maplist },
+	{ "changelevel ", &maplist },
+	{ "save ", &savelist },
+	{ "load ", &savelist },
+	{ "record ", &demolist },
+	{ "playdemo ", &demolist },
+	{ "exec ", &configlist }
+};
+
+static const int num_arg_completion_types =
+	sizeof(arg_completion_types)/sizeof(arg_completion_types[0]);
+
+/*
+============
+FindCompletion -- stevenaaus
+============
+*/
+const char *FindCompletion (const char *partial, filelist_t *filelist, int *nummatches_out)
+{
+	static char matched[32];
+	char *i_matched, *i_name;
+	filelist_t	*file;
+	int   init, match, plen;
+
+	memset(matched, 0, sizeof(matched));
+	plen = strlen(partial);
+	match = 0;
+
+	for (file = filelist, init = 0 ; file ; file = file->next)
+	{
+		if (!strncmp(file->name, partial, plen))
+		{
+			if (init == 0)
+			{
+				init = 1;
+				strncpy (matched, file->name, sizeof(matched)-1);
+				matched[sizeof(matched)-1] = '\0';
+			}
+			else
+			{ // find max common
+				i_matched = matched;
+				i_name = file->name;
+				while (*i_matched && (*i_matched == *i_name))
+				{
+					i_matched++;
+					i_name++;
+				}
+				*i_matched = 0;
+			}
+			match++;
+		}
+	}
+
+	*nummatches_out = match;
+
+	if (match > 1)
+	{
+		for (file = filelist; file; file = file->next)
+		{
+			if (!strncmp(file->name, partial, plen))
+				Con_SafePrintf ("   %s\n", file->name);
+		}
+		Con_SafePrintf ("\n");
+	}
+
+	return matched;
+}
+
 /*
 ============
 BuildTabList
@@ -878,6 +982,9 @@ void BuildTabList (char *partial)
 
 	tablist = NULL;
 	len = strlen(partial);
+
+	bash_partial[0] = 0;
+	bash_singlematch = 1;
 
 	for (cvar=cvar_vars ; cvar ; cvar=cvar->next)
 		if (!strncmp (partial, cvar->name, len))
@@ -910,17 +1017,51 @@ void Con_TabComplete (void)
 		return;
 
 // get partial string (space -> cursor)
-	if (!strlen(key_tabpartial)) // first time through, find new insert point. (otherwise, use previous.)
+	if (!key_tabpartial[0]) // first time through, find new insert point. (otherwise, use previous.)
 	{
 		// work back from cursor until you find a space, quote, semicolon, or prompt
 		c = key_lines[edit_line] + key_linepos - 1; // start one space left of cursor
 		while (*c!=' ' && *c!='\"' && *c!=';' && c!=key_lines[edit_line])
 			c--;
-		c++; // start 1 char after the seperator we just found
+		c++; // start 1 char after the separator we just found
 	}
 	for (i = 0; c + i < key_lines[edit_line] + key_linepos; i++)
 		partial[i] = c[i];
 	partial[i] = 0;
+
+// Map autocomplete function -- S.A
+// Since we don't have argument completion, this hack will do for now...
+	for (i=0; i<num_arg_completion_types; i++)
+	{
+	// arg_completion contains a command we can complete the arguments
+	// for (like "map ") and a list of all the maps.
+		arg_completion_type_t arg_completion = arg_completion_types[i];
+		const char *command_name = arg_completion.command;
+		
+		if (!strncmp (key_lines[edit_line] + 1, command_name, strlen(command_name)))
+		{
+			int nummatches = 0;
+			const char *matched_map = FindCompletion(partial, *arg_completion.filelist, &nummatches);
+			if (!*matched_map)
+				return;
+			strcpy (partial, matched_map);
+			*c = '\0';
+			strcat (key_lines[edit_line], partial);
+			key_linepos = c - key_lines[edit_line] + strlen(matched_map); //set new cursor position
+			if (key_linepos >= MAX_CMDLINE)
+				key_linepos = MAX_CMDLINE - 1;
+			// if only one match, append a space
+			if (key_linepos < MAX_CMDLINE - 1 &&
+			    key_lines[edit_line][key_linepos] == 0 && (nummatches == 1))
+			{
+				key_lines[edit_line][key_linepos] = ' ';
+				key_linepos++;
+				key_lines[edit_line][key_linepos] = 0;
+			}
+			c = key_lines[edit_line] + key_linepos;
+			return;
+		}
+	}
 
 // if partial is empty, return
 	if (partial[0] == 0)
@@ -932,8 +1073,7 @@ void Con_TabComplete (void)
 
 // find a match
 	mark = Hunk_LowMark ();
-	
-	if (!strlen(key_tabpartial)) // first time through
+	if (!key_tabpartial[0]) // first time through
 	{
 		strcpy (key_tabpartial, partial);
 		BuildTabList (key_tabpartial);
@@ -941,16 +1081,23 @@ void Con_TabComplete (void)
 		if (!tablist)
 			return;
 
-		// print list
-		t = tablist;
-		do
+		// print list if length > 1
+		if (tablist->next != tablist)
 		{
-			Con_SafePrintf("   %s (%s)\n", t->name, t->type);
-			t = t->next;
-		} while (t != tablist);
+			t = tablist;
+			Con_SafePrintf("\n");
+			do
+			{
+				Con_SafePrintf("   %s (%s)\n", t->name, t->type);
+				t = t->next;
+			} while (t != tablist);
+			Con_SafePrintf("\n");
+		}
 
-		// get first match
-		match = tablist->name;
+	// get first match
+	//	match = tablist->name;
+	// First time, just show maximum matching chars -- S.A.
+		match = bash_partial;
 	}
 	else
 	{
@@ -961,15 +1108,17 @@ void Con_TabComplete (void)
 
 		// find current match -- can't save a pointer because the list will be rebuilt each time
 		t = tablist;
+		match = keydown[K_SHIFT] ? t->prev->name : t->name;
 		do
 		{
 			if (!strcmp(t->name, partial))
+			{
+				// use prev or next to find next match
+				match = keydown[K_SHIFT] ? t->prev->name : t->next->name;
 				break;
+			}
 			t = t->next;
 		} while (t != tablist);
-
-		// use prev or next to find next match
-		match = keydown[K_SHIFT] ? t->prev->name : t->next->name;
 	}
 	
 	Hunk_FreeToLowMark (mark); // it's okay to free it here because match is a pointer to persistent data
@@ -977,15 +1126,26 @@ void Con_TabComplete (void)
 // insert new match into edit line
 	strcpy (partial, match); // first copy match string
 	strcat (partial, key_lines[edit_line] + key_linepos); // then add chars after cursor
-	strcpy (c, partial); // now copy all of this into edit line
+//	strcpy (c, partial); // now copy all of this into edit line
+	*c = '\0';	//now copy all of this into edit line
+	strcat (key_lines[edit_line], partial);
 	key_linepos = c - key_lines[edit_line] + strlen(match); // set new cursor position
+	if (key_linepos >= MAX_CMDLINE)
+		key_linepos = MAX_CMDLINE - 1;
 
 // if cursor is at end of string, let's append a space to make life easier
-	if (key_lines[edit_line][key_linepos] == 0)
+//	if (key_lines[edit_line][key_linepos] == 0)
+	if (key_linepos < MAX_CMDLINE - 1 &&
+	    key_lines[edit_line][key_linepos] == 0 && bash_singlematch)
 	{
 		key_lines[edit_line][key_linepos] = ' ';
 		key_linepos++;
 		key_lines[edit_line][key_linepos] = 0;
+	// S.A.: the map argument completion (may be in combination with the bash-style
+	// display behavior changes, causes weirdness when completing the arguments for
+	// the changelevel command. the line below "fixes" it, although I'm not sure about
+	// the reason, yet, neither do I know any possible side effects of it:
+		c = key_lines[edit_line] + key_linepos;
 	}
 }
 
