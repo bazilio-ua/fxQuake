@@ -1224,7 +1224,7 @@ The input line scrolls horizontally if typing goes beyond the right edge
 */
 void Con_DrawInput (void)
 {
-	int		i;
+	int		i, len;
 	char	*text, temp[MAX_CMDLINE];
 
 	if (key_dest != key_console && !con_forcedup)
@@ -1233,8 +1233,13 @@ void Con_DrawInput (void)
 	text = strcpy (temp, key_lines[edit_line]);
 
 // fill out remainder with spaces
-	for (i = strlen(text) ; i < MAX_CMDLINE ; i++)
-		text[i] = ' ';
+/*	for (i = strlen(text) ; i < MAX_CMDLINE ; i++)
+		text[i] = ' ';	*/
+
+// pad with one space so we can draw one past the string (in case the cursor is there)
+	len = strlen(key_lines[edit_line]);
+	text[len] = ' ';
+	text[len+1] = 0;
 
 // add the cursor frame
 	if ((int)(realtime * con_cursorspeed) & 1)	// cursor is visible
@@ -1245,8 +1250,12 @@ void Con_DrawInput (void)
 		text += 1 + key_linepos - con_linewidth;
 	
 // draw it
-	for (i=0 ; i < con_linewidth ; i++)
-		Draw_Character ( (i+1)<<3, con_vislines - 16, text[i]);
+/*	for (i=0 ; i < con_linewidth ; i++)
+		Draw_Character ( (i+1)<<3, con_vislines - 16, text[i]);	*/
+	
+// draw input string
+	for (i=0 ; i <= (int)(strlen(text) - 1) ; i++) // only write enough letters to go from *text to cursor
+		Draw_Character ((i+1)<<3, con_vislines - 16, text[i]);
 }
 
 
@@ -1277,9 +1286,10 @@ void Con_DrawConsole (int lines, qboolean drawinput)
 	rows = (con_vislines + 7) / 8;	// rows of text to draw
 	y = con_vislines - rows * 8;	// may start slightly negative
 	rows -= 2;			// for input and version lines
-	sb = con_backscroll ? 1 : 0;	// > 1 generates blank lines in arrow printout below
+//	sb = con_backscroll ? 1 : 0;	// > 1 generates blank lines in arrow printout below
+	sb = (con_backscroll) ? 2 : 0;
 
-	for (i= con_current - rows + 1 ; i<=con_current - sb ; i++, y+=8 )
+	for (i=con_current - rows + 1 ; i<=con_current - sb ; i++, y+=8 )
 	{
 		j = i - con_backscroll;
 		if (j<0)
@@ -1293,7 +1303,8 @@ void Con_DrawConsole (int lines, qboolean drawinput)
 // draw scrollback arrows
 	if (con_backscroll)
 	{
-		y += (sb - 1) * 8; // 0 or more blank lines
+//		y += (sb - 1) * 8; // 0 or more blank lines
+		y += 8; // blank line
 		for (x=0 ; x<con_linewidth ; x+=4)
 			Draw_Character ((x+1)<<3, y, '^');
 		y+=8;
