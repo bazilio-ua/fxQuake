@@ -401,7 +401,7 @@ void Con_Print (char *txt)
 		else if (boundary)
 		{
 		// count word length
-			for (l=0 ; l< con_linewidth ; l++)
+			for (l=0 ; l<con_linewidth ; l++)
 				if ( txt[l] <= ' ')
 					break;
 
@@ -817,7 +817,7 @@ extern	cmdalias_t	*cmd_alias;
 
 /*
 ============
-AddToTabList
+Con_AddToTabList -- johnfitz
 
 tablist is a doubly-linked loop, alphabetized by name
 ============
@@ -827,7 +827,7 @@ tablist is a doubly-linked loop, alphabetized by name
 static char	bash_partial[80];
 static qboolean	bash_singlematch;
 
-void AddToTabList (char *name, char *type)
+void Con_AddToTabList (char *name, char *type)
 {
 	tab_t	*t, *insert;
 	char	*i_bash;
@@ -894,11 +894,11 @@ void AddToTabList (char *name, char *type)
 // filelist completions
 typedef struct arg_completion_type_s
 {
-	const char		*command;
+	char		*command;
 	filelist_t		**filelist;
 } arg_completion_type_t;
 
-static const arg_completion_type_t arg_completion_types[] =
+static arg_completion_type_t arg_completion_types[] =
 {
 	{ "map ", &maplist },
 	{ "changelevel ", &maplist },
@@ -909,15 +909,15 @@ static const arg_completion_type_t arg_completion_types[] =
 	{ "exec ", &configlist }
 };
 
-static const int num_arg_completion_types =
+static int num_arg_completion_types =
 	sizeof(arg_completion_types)/sizeof(arg_completion_types[0]);
 
 /*
 ============
-FindCompletion -- stevenaaus
+Con_FindCompletion -- stevenaaus
 ============
 */
-const char *FindCompletion (const char *partial, filelist_t *filelist, int *nummatches_out)
+char *Con_FindCompletion (char *partial, filelist_t *filelist, int *nummatches_out)
 {
 	static char matched[32];
 	char *i_matched, *i_name;
@@ -970,10 +970,10 @@ const char *FindCompletion (const char *partial, filelist_t *filelist, int *numm
 
 /*
 ============
-BuildTabList
+Con_BuildTabList -- johnfitz
 ============
 */
-void BuildTabList (char *partial)
+void Con_BuildTabList (char *partial)
 {
 	cmdalias_t		*alias;
 	cvar_t			*cvar;
@@ -988,15 +988,15 @@ void BuildTabList (char *partial)
 
 	for (cvar=cvar_vars ; cvar ; cvar=cvar->next)
 		if (!strncmp (partial, cvar->name, len))
-			AddToTabList (cvar->name, "cvar");
+			Con_AddToTabList (cvar->name, "cvar");
 
 	for (cmd=cmd_functions ; cmd ; cmd=cmd->next)
 		if (!strncmp (partial,cmd->name, len))
-			AddToTabList (cmd->name, "command");
+			Con_AddToTabList (cmd->name, "command");
 
 	for (alias=cmd_alias ; alias ; alias=alias->next)
 		if (!strncmp (partial, alias->name, len))
-			AddToTabList (alias->name, "alias");
+			Con_AddToTabList (alias->name, "alias");
 }
 
 /*
@@ -1037,12 +1037,12 @@ void Con_TabComplete (void)
 	// arg_completion contains a command we can complete the arguments
 	// for (like "map ") and a list of all the maps.
 		arg_completion_type_t arg_completion = arg_completion_types[i];
-		const char *command_name = arg_completion.command;
+		char *command_name = arg_completion.command;
 		
 		if (!strncmp (key_lines[edit_line] + 1, command_name, strlen(command_name)))
 		{
 			int nummatches = 0;
-			const char *matched_map = FindCompletion(partial, *arg_completion.filelist, &nummatches);
+			char *matched_map = Con_FindCompletion(partial, *arg_completion.filelist, &nummatches);
 			if (!*matched_map)
 				return;
 			
@@ -1079,7 +1079,7 @@ void Con_TabComplete (void)
 	if (!key_tabpartial[0]) // first time through
 	{
 		strcpy (key_tabpartial, partial);
-		BuildTabList (key_tabpartial);
+		Con_BuildTabList (key_tabpartial);
 
 		if (!tablist)
 			return;
@@ -1098,13 +1098,12 @@ void Con_TabComplete (void)
 		}
 
 	// get first match
-	//	match = tablist->name;
 	// First time, just show maximum matching chars -- S.A.
 		match = bash_partial;
 	}
 	else
 	{
-		BuildTabList (key_tabpartial);
+		Con_BuildTabList (key_tabpartial);
 
 		if (!tablist)
 			return;
@@ -1129,15 +1128,13 @@ void Con_TabComplete (void)
 // insert new match into edit line
 	strcpy (partial, match); // first copy match string
 	strcat (partial, key_lines[edit_line] + key_linepos); // then add chars after cursor
-//	strcpy (c, partial); // now copy all of this into edit line
-	*c = '\0';	//now copy all of this into edit line
+	*c = '\0';	// now copy all of this into edit line
 	strcat (key_lines[edit_line], partial);
 	key_linepos = c - key_lines[edit_line] + strlen(match); // set new cursor position
 	if (key_linepos >= MAX_CMDLINE)
 		key_linepos = MAX_CMDLINE - 1;
 
 // if cursor is at end of string, let's append a space to make life easier
-//	if (key_lines[edit_line][key_linepos] == 0)
 	if (key_linepos < MAX_CMDLINE - 1 &&
 	    key_lines[edit_line][key_linepos] == 0 && bash_singlematch)
 	{
@@ -1176,7 +1173,7 @@ void Con_DrawNotify (void)
 	float	time;
 
 	v = 0;
-	for (i= con_current-NUM_CON_TIMES+1 ; i<=con_current ; i++)
+	for (i=con_current-NUM_CON_TIMES+1 ; i<=con_current ; i++)
 	{
 		if (i < 0)
 			continue;
