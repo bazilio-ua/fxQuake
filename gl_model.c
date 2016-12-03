@@ -44,14 +44,24 @@ cvar_t	external_ent = {"external_ent","1"};
 
 /*
 ===============
+Mod_External
+===============
+*/
+void Mod_External (void)
+{
+	Con_Printf ("external resources change takes effect on map restart/change.\n");
+}
+
+/*
+===============
 Mod_Init
 ===============
 */
 void Mod_Init (void)
 {
-	Cvar_RegisterVariable (&external_lit, NULL);
-	Cvar_RegisterVariable (&external_vis, NULL);
-	Cvar_RegisterVariable (&external_ent, NULL);
+	Cvar_RegisterVariable (&external_lit, Mod_External);
+	Cvar_RegisterVariable (&external_vis, Mod_External);
+	Cvar_RegisterVariable (&external_ent, Mod_External);
 
 	memset (mod_novis, 0xff, sizeof(mod_novis));
 }
