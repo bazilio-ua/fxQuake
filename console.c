@@ -1126,7 +1126,7 @@ void Con_TabComplete (void)
 
 // insert new match into edit line
 	strcpy (partial, match); // first copy match string
-	strcat (partial, key_lines[edit_line] + key_linepos); // then add chars after cursor
+//	strcat (partial, key_lines[edit_line] + key_linepos); // then add chars after cursor
 	*c = '\0';	// now copy all of this into edit line
 	strcat (key_lines[edit_line], partial);
 	key_linepos = c - key_lines[edit_line] + strlen(match); // set new cursor position
