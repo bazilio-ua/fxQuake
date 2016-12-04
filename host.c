@@ -214,7 +214,7 @@ void Host_SaveConfig_f (void)
 
 	if (Cmd_Argc() != 2)
 	{
-		Con_Printf ("saveConfig <savename> : save a config file\n");
+		Con_Printf ("saveconfig <savename> : save a config file\n");
 		return;
 	}
 
