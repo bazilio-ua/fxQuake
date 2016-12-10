@@ -30,7 +30,6 @@ Atom wm_delete_window_atom;
 
 viddef_t vid; // global video state
 
-cvar_t		vid_mode = {"vid_mode","0",false};
 cvar_t		vid_gamma = {"gamma", "1", true};
 
 int window_x, window_y, window_width, window_height;
@@ -211,8 +210,6 @@ void VID_Init (void)
 	qboolean vidmode_ext = false;
 	qboolean VidMode = false;
 	int MajorVersion = 0, MinorVersion = 0;
-
-	Cvar_RegisterVariable (&vid_mode, NULL);
 
 // set vid parameters
 	vid.width = 640;
