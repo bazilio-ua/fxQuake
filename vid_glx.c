@@ -215,6 +215,7 @@ void VID_Init (void)
 	vid.width = 640;
 	vid.height = 480;
 	vid.numpages = 2;
+
 // open the display
 	x_disp = XOpenDisplay(NULL);
 	if (!x_disp) 
