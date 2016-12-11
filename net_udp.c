@@ -20,7 +20,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // net_udp.c
 
 #include "quakedef.h"
+
+#ifdef __APPLE__ && __MACH__
+#include "macquake.h"
+#else
 #include "xquake.h"
+#endif
+
 #include "net_udp.h"
 
 // socket for fielding new connections

@@ -1,0 +1,136 @@
+
+#
+# fxQuake Makefile for Darwin
+#
+
+DEBUG?=N
+
+MOUNT_DIR=.
+ifeq ($(DEBUG),Y)
+BUILD_DIR=build_debug
+else
+BUILD_DIR=build_release
+endif
+QBASE_DIR?=.
+
+#
+# SETUP ENVIRONMENT
+#
+
+ifneq (,$(findstring Darwin,$(shell uname -s)))
+UNIX=mac
+endif
+
+CC=gcc
+STRIP=strip
+
+CPUFLAGS=-m32
+LDFLAGS=-L/usr/lib -F/System/Library/Frameworks -Wl,-framework,Cocoa -Wl,-framework,IOKit -Wl,-framework,OpenGL
+BASE_CFLAGS=-I/usr/include -DQBASEDIR="$(QBASE_DIR)" -Wall -Wno-trigraphs
+
+ifeq ($(DEBUG),Y)
+CFLAGS=$(BASE_CFLAGS) -DDEBUG -g
+do_strip=
+else
+CFLAGS=$(BASE_CFLAGS) -DNDEBUG -O2 -ffast-math -frename-registers -fweb
+cmd_strip=$(STRIP) $(1)
+define do_strip
+	$(call cmd_strip,$(1))
+endef
+endif
+
+CFLAGS+=$(CPUFLAGS) 
+
+DO_OBJ_CC=$(CC) $(CFLAGS) -o $@ -c $<
+
+#
+# RULES FOR MAKE
+#
+
+OBJ_DIR=$(BUILD_DIR)/obj
+
+BIN=fxquake
+
+.PHONY: default clean
+default: all
+all: $(OBJ_DIR) $(BIN)
+
+$(OBJ_DIR):
+	mkdir -p $@
+
+$(OBJ_DIR)/%.o: $(MOUNT_DIR)/%.c
+	$(DO_OBJ_CC)
+
+#
+# OBJS
+#
+
+OBJS= \
+	cd_$(UNIX).o \
+	chase.o \
+	cl_demo.o \
+	cl_input.o \
+	cl_main.o \
+	cl_parse.o \
+	cl_tent.o \
+	cmd.o \
+	common.o \
+	console.o \
+	crc.o \
+	cvar.o \
+	gl_anim.o \
+	gl_draw.o \
+	gl_efrag.o \
+	gl_light.o \
+	gl_main.o \
+	gl_mesh.o \
+	gl_misc.o \
+	gl_model.o \
+	gl_part.o \
+	gl_screen.o \
+	gl_surf.o \
+	host.o \
+	host_cmd.o \
+	in_mac.o \
+	keys.o \
+	mathlib.o \
+	menu.o \
+	net_dgrm.o \
+	net_loop.o \
+	net_main.o \
+	net_bsd.o \
+	net_udp.o \
+	pr_cmds.o \
+	pr_edict.o \
+	pr_exec.o \
+	sbar.o \
+	snd_dma.o \
+	snd_mem.o \
+	snd_mix.o \
+	snd_mac.o \
+	sv_main.o \
+	sv_move.o \
+	sv_phys.o \
+	sv_user.o \
+	sys_mac.o \
+	vid_cgl.o \
+	view.o \
+	wad.o \
+	world.o \
+	zone.o
+
+#
+# BUILD PROJECT
+#
+
+$(BIN): $(OBJ_DIR) $(addprefix $(OBJ_DIR)/,$(OBJS))
+	$(CC) $(CFLAGS) -o $@ $(addprefix $(OBJ_DIR)/,$(OBJS)) $(LDFLAGS)
+	$(call do_strip,$@)
+	mv $@ $(BUILD_DIR)/
+
+#
+# CLEAN PROJECT
+#
+
+clean:
+	rm -rf $(BUILD_DIR)

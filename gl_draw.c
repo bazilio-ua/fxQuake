@@ -288,7 +288,9 @@ void GL_CheckExtensions (void)
 	//
 #ifdef _WIN32
 	SWAPcontrol = strstr (gl_extensions, SWAPCONTROLSTRING) != NULL;
-#else
+#elif __APPLE__ && __MACH__
+	SWAPcontrol = false;
+#elif GLX_GLXEXT_PROTOTYPES
 	SWAPcontrol = strstr (glx_extensions, SWAPCONTROLSTRING) != NULL;
 #endif
 
@@ -392,13 +394,13 @@ GL_Info_f
 void GL_Info_f (void)
 {
 	static char *gl_extensions_nice = NULL;
-#ifndef _WIN32
+#ifdef GLX_GLXEXT_PROTOTYPES
 	static char *glx_extensions_nice = NULL;
 #endif
 
 	if (!gl_extensions_nice)
 		gl_extensions_nice = GL_MakeExtensionsList (gl_extensions);
-#ifndef _WIN32
+#ifdef GLX_GLXEXT_PROTOTYPES
 	if (!glx_extensions_nice)
 		glx_extensions_nice = GL_MakeExtensionsList (glx_extensions);
 #endif
@@ -407,7 +409,7 @@ void GL_Info_f (void)
 	Con_SafePrintf ("GL_RENDERER: %s\n", gl_renderer);
 	Con_SafePrintf ("GL_VERSION: %s\n", gl_version);
 	Con_SafePrintf ("GL_EXTENSIONS: %s\n", gl_extensions_nice);
-#ifndef _WIN32
+#ifdef GLX_GLXEXT_PROTOTYPES
 	Con_SafePrintf ("GLX_EXTENSIONS: %s\n", glx_extensions_nice);
 #endif
 }

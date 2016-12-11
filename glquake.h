@@ -19,12 +19,20 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // glquake.h
 
+#ifdef __APPLE__ && __MACH__
+#include 	<OpenGL/gl.h>
+#include	<OpenGL/glext.h>
+#include	<dlfcn.h>
+#else
+
 #include <GL/gl.h>
 
 #ifndef _WIN32
 #define GLX_GLXEXT_PROTOTYPES
 #include <GL/glx.h>
 #endif
+
+#endif /* __APPLE__ && __MACH__ */
 
 extern unsigned int d_8to24table[256];
 extern unsigned int d_8to24table_fbright[256];
@@ -45,7 +53,9 @@ extern unsigned int d_8to24table_conchars[256];
 
 #ifdef _WIN32
 #define qglGetProcAddress wglGetProcAddress
-#else
+#elif __APPLE__ && __MACH__
+#define qglGetProcAddress(x) dlsym(RTLD_DEFAULT, (x))
+#elif GLX_GLXEXT_PROTOTYPES
 #define glXGetProcAddress glXGetProcAddressARB
 #define qglGetProcAddress(x) glXGetProcAddress((const GLubyte *)(x))
 #endif
@@ -116,7 +126,7 @@ extern const char *gl_vendor;
 extern const char *gl_renderer;
 extern const char *gl_version;
 extern const char *gl_extensions;
-#ifndef _WIN32
+#ifdef GLX_GLXEXT_PROTOTYPES
 extern const char *glx_extensions;
 #endif
 
@@ -137,7 +147,10 @@ GLint (GLAPIENTRY *qglSwapInterval)(GLint interval);
 #ifdef _WIN32
 #define SWAPCONTROLSTRING "WGL_EXT_swap_control"
 #define SWAPINTERVALFUNC "wglSwapIntervalEXT"
-#else
+#elif __APPLE__ && __MACH__
+#define SWAPCONTROLSTRING ""
+#define SWAPINTERVALFUNC ""
+#elif GLX_GLXEXT_PROTOTYPES
 #define SWAPCONTROLSTRING "GLX_SGI_swap_control"
 #define SWAPINTERVALFUNC "glXSwapIntervalSGI"
 #endif
