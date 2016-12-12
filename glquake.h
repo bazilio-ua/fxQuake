@@ -20,9 +20,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // glquake.h
 
 #if defined __APPLE__ && defined __MACH__
-#include 	<OpenGL/gl.h>
-#include	<OpenGL/glext.h>
-#include	<dlfcn.h>
+#include <OpenGL/gl.h>
+#include <OpenGL/glext.h>
+#include <dlfcn.h>
 #else
 
 #include <GL/gl.h>
@@ -55,7 +55,7 @@ extern unsigned int d_8to24table_conchars[256];
 #define qglGetProcAddress wglGetProcAddress
 #elif defined __APPLE__ && defined __MACH__
 #define qglGetProcAddress(x) dlsym(RTLD_DEFAULT, (x))
-#elif GLX_GLXEXT_PROTOTYPES
+#elif defined GLX_GLXEXT_PROTOTYPES
 #define glXGetProcAddress glXGetProcAddressARB
 #define qglGetProcAddress(x) glXGetProcAddress((const GLubyte *)(x))
 #endif
@@ -150,7 +150,7 @@ GLint (GLAPIENTRY *qglSwapInterval)(GLint interval);
 #elif defined __APPLE__ && defined __MACH__
 #define SWAPCONTROLSTRING ""
 #define SWAPINTERVALFUNC ""
-#elif GLX_GLXEXT_PROTOTYPES
+#elif defined GLX_GLXEXT_PROTOTYPES
 #define SWAPCONTROLSTRING "GLX_SGI_swap_control"
 #define SWAPINTERVALFUNC "glXSwapIntervalSGI"
 #endif
