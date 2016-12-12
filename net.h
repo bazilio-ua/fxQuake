@@ -72,7 +72,10 @@ typedef int	sys_socket_t;
 
 struct qsockaddr
 {
-#ifdef __FreeBSD__
+/* struct sockaddr has unsigned char 'dummy' as the first member in BSD variants 
+ and the family member is also an unsigned char instead of an unsigned short. 
+ This should matter only when UNIX is defined */
+#if defined __FreeBSD__ || defined __OpenBSD__ || defined __NetBSD__ || defined __APPLE__ && defined __MACH__ || defined __GNU__
 	byte dummy;
 	byte qsa_family;
 #else
