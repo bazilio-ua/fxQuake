@@ -23,7 +23,7 @@ void IN_Init (void);
 
 void IN_Shutdown (void);
 
-void IN_ProcessEvents (void);
+void IN_ProcessEvents (void); // renamed from Sys_SendKeyEvents
 // perform Key_Event () callbacks until the input que is empty
 
 void IN_Commands (void);
