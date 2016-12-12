@@ -32,7 +32,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <GL/glx.h>
 #endif
 
-#endif /* __APPLE__ && __MACH__ */
+#endif
 
 extern unsigned int d_8to24table[256];
 extern unsigned int d_8to24table_fbright[256];
@@ -53,7 +53,7 @@ extern unsigned int d_8to24table_conchars[256];
 
 #ifdef _WIN32
 #define qglGetProcAddress wglGetProcAddress
-#elif __APPLE__ && __MACH__
+#elif defined __APPLE__ && defined __MACH__
 #define qglGetProcAddress(x) dlsym(RTLD_DEFAULT, (x))
 #elif GLX_GLXEXT_PROTOTYPES
 #define glXGetProcAddress glXGetProcAddressARB
@@ -147,7 +147,7 @@ GLint (GLAPIENTRY *qglSwapInterval)(GLint interval);
 #ifdef _WIN32
 #define SWAPCONTROLSTRING "WGL_EXT_swap_control"
 #define SWAPINTERVALFUNC "wglSwapIntervalEXT"
-#elif __APPLE__ && __MACH__
+#elif defined __APPLE__ && defined __MACH__
 #define SWAPCONTROLSTRING ""
 #define SWAPINTERVALFUNC ""
 #elif GLX_GLXEXT_PROTOTYPES
