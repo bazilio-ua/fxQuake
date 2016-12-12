@@ -45,7 +45,7 @@ qboolean vid_activewindow;
 // if window is hidden, don't update screen
 qboolean vid_hiddenwindow;
 // if mouse entered/leaved window
-qboolean vid_notifywindow;
+qboolean notifywindow = false;
 
 static const byte scantokey[128] = 
 {
@@ -884,7 +884,7 @@ void IN_ProcessEvents (void)
 
 			case EnterNotify: // mouse entered window
 			case LeaveNotify: // mouse left window
-				vid_notifywindow = (x_event.type == EnterNotify);
+				notifywindow = (x_event.type == EnterNotify);
 				break;
 			}
 		}
