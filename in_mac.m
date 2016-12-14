@@ -103,6 +103,13 @@ IN_ProcessEvents
 */
 void IN_ProcessEvents (void)
 {
+	NSEvent *event;
+    NSDate *date;
+    date = [NSDate date];
+    do
+    {
+        //        event = [NSApp next];
+    } while (event);
 	
 }
 
