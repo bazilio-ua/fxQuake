@@ -20,7 +20,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // snd_unix.c
 
 #include "quakedef.h"
-//#include "xquake.h"
 #include "unixquake.h"
 
 int audio_fd;
