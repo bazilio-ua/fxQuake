@@ -26,6 +26,7 @@ STRIP=mingw32-strip
 WINDRES=mingw32-windres
 endif
 
+CPUFLAGS=-m32
 LDFLAGS=-L/mingw/lib -L/mingw/lib/w32api -mwindows -ldxguid -ldinput -ldsound -lwinmm -lwsock32 -lopengl32
 BASE_CFLAGS=-I/mingw/include -I/mingw/include/w32api -Wall -Wno-trigraphs
 
@@ -39,6 +40,8 @@ define do_strip
 	$(call cmd_strip,$(1))
 endef
 endif
+
+CFLAGS+=$(CPUFLAGS)
 
 DO_OBJ_CC=$(CC) $(CFLAGS) -o $@ -c $<
 DO_RES_WINDRES=$(WINDRES) -J rc -i $< -O coff -o $@

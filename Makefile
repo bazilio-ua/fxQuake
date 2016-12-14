@@ -28,6 +28,7 @@ endif
 CC=gcc
 STRIP=strip
 
+CPUFLAGS=-m32
 LDFLAGS=-L/usr/local/lib -lm -lX11 -lXpm -lXext -lXxf86dga -lXxf86vm -lGL
 BASE_CFLAGS=-I/usr/local/include -DQBASEDIR="$(QBASE_DIR)" -Wall -Wno-trigraphs
 
@@ -41,6 +42,8 @@ define do_strip
 	$(call cmd_strip,$(1))
 endef
 endif
+
+CFLAGS+=$(CPUFLAGS)
 
 DO_OBJ_CC=$(CC) $(CFLAGS) -o $@ -c $<
 
