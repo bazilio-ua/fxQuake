@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // snd_mac.m
 
 #include "quakedef.h"
+#include "unixquake.h"
 #include "macquake.h"
 
 

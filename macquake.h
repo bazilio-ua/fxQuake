@@ -23,22 +23,5 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #import <Cocoa/Cocoa.h>
 #import <Foundation/Foundation.h>
 
-#include <unistd.h>
-#include <fcntl.h>
-#include <paths.h>
-#include <dirent.h>
-
-#include <sys/ioctl.h>
-#include <sys/stat.h>
-#include <sys/mman.h>
-#include <sys/file.h>
-#include <sys/param.h>
-#include <sys/socket.h>
-
-#include <arpa/inet.h>
-#include <netinet/in.h>
-#include <net/if.h>
-#include <netdb.h>
-
 #import <dlfcn.h> 
 
