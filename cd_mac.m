@@ -17,80 +17,68 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-// snd_mac.c
+// cd_mac.m
 
 #include "quakedef.h"
 #include "macquake.h"
 
 
-/*
-==================
-S_BlockSound
-==================
-*/
-void S_BlockSound (void)
+static void CDAudio_Eject(void)
 {
-	snd_blocked++;
+	
 }
 
-/*
-==================
-S_UnblockSound
-==================
-*/
-void S_UnblockSound (void)
+static void CDAudio_CloseDoor(void)
 {
-	snd_blocked--;
+	
 }
 
-/*
-===============
-SNDDMA_Init
-===============
-*/
-qboolean SNDDMA_Init(void)
-{
-	return false;
-}
-
-/*
-===============
-SNDDMA_GetDMAPos
-===============
-*/
-int SNDDMA_GetDMAPos(void)
+static int CDAudio_GetAudioDiskInfo(void)
 {
 	return 0;
 }
 
-/*
-===============
-SNDDMA_BeginPainting
-===============
-*/
-void SNDDMA_BeginPainting(void)
+void CDAudio_Play(byte track, qboolean looping)
 {
 	
 }
 
-/*
-===============
-SNDDMA_Submit
-
-Send sound to device if buffer isn't really the dma buffer
-===============
-*/
-void SNDDMA_Submit(void)
+void CDAudio_Stop(void)
 {
 	
 }
 
-/*
-===============
-SNDDMA_Shutdown
-===============
-*/
-void SNDDMA_Shutdown(void)
+void CDAudio_Pause(void)
+{
+	
+}
+
+void CDAudio_Resume(void)
+{
+	
+}
+
+static void CD_f (void)
+{
+	
+}
+
+static qboolean CDAudio_SetVolume (cvar_t *var)
+{
+	return false;
+}
+
+void CDAudio_Update(void)
+{
+	
+}
+
+int CDAudio_Init(void)
+{
+	return 0;
+}
+
+void CDAudio_Shutdown(void)
 {
 	
 }

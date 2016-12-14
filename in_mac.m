@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-// in_x.c -- Mac input/output driver code
+// in_mac.m -- Mac input/output driver code
 
 #include "quakedef.h"
 #include "macquake.h"

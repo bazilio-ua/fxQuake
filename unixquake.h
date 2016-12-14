@@ -17,11 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-// macquake.h -- Mac specific Quake header file
-
-#import <AppKit/AppKit.h>
-#import <Cocoa/Cocoa.h>
-#import <Foundation/Foundation.h>
+// unixquake.h -- Unix System specific Quake header file
 
 #include <unistd.h>
 #include <fcntl.h>
@@ -35,10 +31,24 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <sys/param.h>
 #include <sys/socket.h>
 
+#ifdef __linux__
+#include <sys/vt.h>
+#endif
+
+#if defined __FreeBSD__ || defined __OpenBSD__ || defined __NetBSD__
+#include <sys/cdio.h>
+#include <sys/soundcard.h>
+#elif defined __linux__
+#include <linux/cdrom.h>
+#include <linux/soundcard.h>
+#endif
+
+#ifdef __OpenBSD__
+#include <util.h>
+#endif
+
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <net/if.h>
 #include <netdb.h>
-
-#import <dlfcn.h> 
 

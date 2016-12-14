@@ -23,10 +23,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #ifdef _WIN32
 #include "winquake.h"
-#elif defined __APPLE__ && defined __MACH__
-#include "macquake.h"
+//#elif defined __APPLE__ && defined __MACH__
+//#include "macquake.h"
 #else
-#include "xquake.h"
+//#include "xquake.h"
+#include "unixquake.h"
+
 #endif
 
 #include "net_dgrm.h"

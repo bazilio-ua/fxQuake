@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // in_x.c -- X Window System input/output driver code
 
 #include "quakedef.h"
+#include "unixquake.h"
 #include "xquake.h"
 
 Display *x_disp = NULL;

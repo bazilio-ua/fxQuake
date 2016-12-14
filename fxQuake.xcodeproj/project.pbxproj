@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		4273FB0D1DFF2EDA005DC9A7 /* cd_mac.c in Sources */ = {isa = PBXBuildFile; fileRef = 4273FAB31DFF2EDA005DC9A7 /* cd_mac.c */; };
 		4273FB0E1DFF2EDA005DC9A7 /* chase.c in Sources */ = {isa = PBXBuildFile; fileRef = 4273FAB51DFF2EDA005DC9A7 /* chase.c */; };
 		4273FB0F1DFF2EDA005DC9A7 /* cl_demo.c in Sources */ = {isa = PBXBuildFile; fileRef = 4273FAB61DFF2EDA005DC9A7 /* cl_demo.c */; };
 		4273FB101DFF2EDA005DC9A7 /* cl_input.c in Sources */ = {isa = PBXBuildFile; fileRef = 4273FAB71DFF2EDA005DC9A7 /* cl_input.c */; };
@@ -32,7 +31,6 @@
 		4273FB231DFF2EDA005DC9A7 /* gl_surf.c in Sources */ = {isa = PBXBuildFile; fileRef = 4273FAD11DFF2EDA005DC9A7 /* gl_surf.c */; };
 		4273FB241DFF2EDA005DC9A7 /* host_cmd.c in Sources */ = {isa = PBXBuildFile; fileRef = 4273FAD41DFF2EDA005DC9A7 /* host_cmd.c */; };
 		4273FB251DFF2EDA005DC9A7 /* host.c in Sources */ = {isa = PBXBuildFile; fileRef = 4273FAD51DFF2EDA005DC9A7 /* host.c */; };
-		4273FB261DFF2EDA005DC9A7 /* in_mac.c in Sources */ = {isa = PBXBuildFile; fileRef = 4273FAD61DFF2EDA005DC9A7 /* in_mac.c */; };
 		4273FB271DFF2EDA005DC9A7 /* keys.c in Sources */ = {isa = PBXBuildFile; fileRef = 4273FAD81DFF2EDA005DC9A7 /* keys.c */; };
 		4273FB281DFF2EDA005DC9A7 /* mathlib.c in Sources */ = {isa = PBXBuildFile; fileRef = 4273FADB1DFF2EDA005DC9A7 /* mathlib.c */; };
 		4273FB291DFF2EDA005DC9A7 /* menu.c in Sources */ = {isa = PBXBuildFile; fileRef = 4273FADD1DFF2EDA005DC9A7 /* menu.c */; };
@@ -46,15 +44,12 @@
 		4273FB311DFF2EDA005DC9A7 /* pr_exec.c in Sources */ = {isa = PBXBuildFile; fileRef = 4273FAED1DFF2EDA005DC9A7 /* pr_exec.c */; };
 		4273FB321DFF2EDA005DC9A7 /* sbar.c in Sources */ = {isa = PBXBuildFile; fileRef = 4273FAF31DFF2EDA005DC9A7 /* sbar.c */; };
 		4273FB331DFF2EDA005DC9A7 /* snd_dma.c in Sources */ = {isa = PBXBuildFile; fileRef = 4273FAF71DFF2EDA005DC9A7 /* snd_dma.c */; };
-		4273FB341DFF2EDA005DC9A7 /* snd_mac.c in Sources */ = {isa = PBXBuildFile; fileRef = 4273FAF81DFF2EDA005DC9A7 /* snd_mac.c */; };
 		4273FB351DFF2EDA005DC9A7 /* snd_mem.c in Sources */ = {isa = PBXBuildFile; fileRef = 4273FAF91DFF2EDA005DC9A7 /* snd_mem.c */; };
 		4273FB361DFF2EDA005DC9A7 /* snd_mix.c in Sources */ = {isa = PBXBuildFile; fileRef = 4273FAFA1DFF2EDA005DC9A7 /* snd_mix.c */; };
 		4273FB371DFF2EDA005DC9A7 /* sv_main.c in Sources */ = {isa = PBXBuildFile; fileRef = 4273FAFD1DFF2EDA005DC9A7 /* sv_main.c */; };
 		4273FB381DFF2EDA005DC9A7 /* sv_move.c in Sources */ = {isa = PBXBuildFile; fileRef = 4273FAFE1DFF2EDA005DC9A7 /* sv_move.c */; };
 		4273FB391DFF2EDA005DC9A7 /* sv_phys.c in Sources */ = {isa = PBXBuildFile; fileRef = 4273FAFF1DFF2EDA005DC9A7 /* sv_phys.c */; };
 		4273FB3A1DFF2EDA005DC9A7 /* sv_user.c in Sources */ = {isa = PBXBuildFile; fileRef = 4273FB001DFF2EDA005DC9A7 /* sv_user.c */; };
-		4273FB3B1DFF2EDA005DC9A7 /* sys_mac.c in Sources */ = {isa = PBXBuildFile; fileRef = 4273FB011DFF2EDA005DC9A7 /* sys_mac.c */; };
-		4273FB3C1DFF2EDA005DC9A7 /* vid_cgl.c in Sources */ = {isa = PBXBuildFile; fileRef = 4273FB031DFF2EDA005DC9A7 /* vid_cgl.c */; };
 		4273FB3D1DFF2EDA005DC9A7 /* view.c in Sources */ = {isa = PBXBuildFile; fileRef = 4273FB051DFF2EDA005DC9A7 /* view.c */; };
 		4273FB3E1DFF2EDA005DC9A7 /* wad.c in Sources */ = {isa = PBXBuildFile; fileRef = 4273FB071DFF2EDA005DC9A7 /* wad.c */; };
 		4273FB3F1DFF2EDA005DC9A7 /* world.c in Sources */ = {isa = PBXBuildFile; fileRef = 4273FB091DFF2EDA005DC9A7 /* world.c */; };
@@ -63,6 +58,11 @@
 		428D9EDD1DFF2800000ACF30 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 428D9EDA1DFF2782000ACF30 /* OpenGL.framework */; };
 		428D9EDE1DFF2808000ACF30 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 428D9ED31DFF275C000ACF30 /* IOKit.framework */; };
 		428D9EDF1DFF2810000ACF30 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 428D9ED51DFF2769000ACF30 /* Cocoa.framework */; };
+		42F16D191E01DC28001659BD /* cd_mac.m in Sources */ = {isa = PBXBuildFile; fileRef = 42F16D141E01DC28001659BD /* cd_mac.m */; };
+		42F16D1A1E01DC28001659BD /* in_mac.m in Sources */ = {isa = PBXBuildFile; fileRef = 42F16D151E01DC28001659BD /* in_mac.m */; };
+		42F16D1B1E01DC28001659BD /* snd_mac.m in Sources */ = {isa = PBXBuildFile; fileRef = 42F16D161E01DC28001659BD /* snd_mac.m */; };
+		42F16D1C1E01DC28001659BD /* sys_mac.m in Sources */ = {isa = PBXBuildFile; fileRef = 42F16D171E01DC28001659BD /* sys_mac.m */; };
+		42F16D1D1E01DC28001659BD /* vid_cgl.m in Sources */ = {isa = PBXBuildFile; fileRef = 42F16D181E01DC28001659BD /* vid_cgl.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -81,7 +81,6 @@
 		4273FAB01DFF2EDA005DC9A7 /* anorm_dots.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = anorm_dots.h; sourceTree = SOURCE_ROOT; };
 		4273FAB11DFF2EDA005DC9A7 /* anorms.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = anorms.h; sourceTree = SOURCE_ROOT; };
 		4273FAB21DFF2EDA005DC9A7 /* bspfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bspfile.h; sourceTree = SOURCE_ROOT; };
-		4273FAB31DFF2EDA005DC9A7 /* cd_mac.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cd_mac.c; sourceTree = SOURCE_ROOT; };
 		4273FAB41DFF2EDA005DC9A7 /* cdaudio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cdaudio.h; sourceTree = SOURCE_ROOT; };
 		4273FAB51DFF2EDA005DC9A7 /* chase.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = chase.c; sourceTree = SOURCE_ROOT; };
 		4273FAB61DFF2EDA005DC9A7 /* cl_demo.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cl_demo.c; sourceTree = SOURCE_ROOT; };
@@ -116,7 +115,6 @@
 		4273FAD31DFF2EDA005DC9A7 /* glquake.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glquake.h; sourceTree = SOURCE_ROOT; };
 		4273FAD41DFF2EDA005DC9A7 /* host_cmd.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = host_cmd.c; sourceTree = SOURCE_ROOT; };
 		4273FAD51DFF2EDA005DC9A7 /* host.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = host.c; sourceTree = SOURCE_ROOT; };
-		4273FAD61DFF2EDA005DC9A7 /* in_mac.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = in_mac.c; sourceTree = SOURCE_ROOT; };
 		4273FAD71DFF2EDA005DC9A7 /* input.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = input.h; sourceTree = SOURCE_ROOT; };
 		4273FAD81DFF2EDA005DC9A7 /* keys.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = keys.c; sourceTree = SOURCE_ROOT; };
 		4273FAD91DFF2EDA005DC9A7 /* keys.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = keys.h; sourceTree = SOURCE_ROOT; };
@@ -150,7 +148,6 @@
 		4273FAF51DFF2EDA005DC9A7 /* screen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = screen.h; sourceTree = SOURCE_ROOT; };
 		4273FAF61DFF2EDA005DC9A7 /* server.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = server.h; sourceTree = SOURCE_ROOT; };
 		4273FAF71DFF2EDA005DC9A7 /* snd_dma.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = snd_dma.c; sourceTree = SOURCE_ROOT; };
-		4273FAF81DFF2EDA005DC9A7 /* snd_mac.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = snd_mac.c; sourceTree = SOURCE_ROOT; };
 		4273FAF91DFF2EDA005DC9A7 /* snd_mem.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = snd_mem.c; sourceTree = SOURCE_ROOT; };
 		4273FAFA1DFF2EDA005DC9A7 /* snd_mix.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = snd_mix.c; sourceTree = SOURCE_ROOT; };
 		4273FAFB1DFF2EDA005DC9A7 /* sound.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sound.h; sourceTree = SOURCE_ROOT; };
@@ -159,9 +156,7 @@
 		4273FAFE1DFF2EDA005DC9A7 /* sv_move.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sv_move.c; sourceTree = SOURCE_ROOT; };
 		4273FAFF1DFF2EDA005DC9A7 /* sv_phys.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sv_phys.c; sourceTree = SOURCE_ROOT; };
 		4273FB001DFF2EDA005DC9A7 /* sv_user.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sv_user.c; sourceTree = SOURCE_ROOT; };
-		4273FB011DFF2EDA005DC9A7 /* sys_mac.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sys_mac.c; sourceTree = SOURCE_ROOT; };
 		4273FB021DFF2EDA005DC9A7 /* sys.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sys.h; sourceTree = SOURCE_ROOT; };
-		4273FB031DFF2EDA005DC9A7 /* vid_cgl.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = vid_cgl.c; sourceTree = SOURCE_ROOT; };
 		4273FB041DFF2EDA005DC9A7 /* vid.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vid.h; sourceTree = SOURCE_ROOT; };
 		4273FB051DFF2EDA005DC9A7 /* view.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = view.c; sourceTree = SOURCE_ROOT; };
 		4273FB061DFF2EDA005DC9A7 /* view.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = view.h; sourceTree = SOURCE_ROOT; };
@@ -178,6 +173,12 @@
 		428D9ED81DFF2778000ACF30 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		428D9EDA1DFF2782000ACF30 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		42ED563B1DFF23F800012B3F /* progdefs.q1 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = progdefs.q1; sourceTree = SOURCE_ROOT; };
+		42F16D141E01DC28001659BD /* cd_mac.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = cd_mac.m; sourceTree = SOURCE_ROOT; };
+		42F16D151E01DC28001659BD /* in_mac.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = in_mac.m; sourceTree = SOURCE_ROOT; };
+		42F16D161E01DC28001659BD /* snd_mac.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = snd_mac.m; sourceTree = SOURCE_ROOT; };
+		42F16D171E01DC28001659BD /* sys_mac.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = sys_mac.m; sourceTree = SOURCE_ROOT; };
+		42F16D181E01DC28001659BD /* vid_cgl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = vid_cgl.m; sourceTree = SOURCE_ROOT; };
+		42F16D1F1E01E299001659BD /* unixquake.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = unixquake.h; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -239,7 +240,7 @@
 				4273FAB01DFF2EDA005DC9A7 /* anorm_dots.h */,
 				4273FAB11DFF2EDA005DC9A7 /* anorms.h */,
 				4273FAB21DFF2EDA005DC9A7 /* bspfile.h */,
-				4273FAB31DFF2EDA005DC9A7 /* cd_mac.c */,
+				42F16D141E01DC28001659BD /* cd_mac.m */,
 				4273FAB41DFF2EDA005DC9A7 /* cdaudio.h */,
 				4273FAB51DFF2EDA005DC9A7 /* chase.c */,
 				4273FAB61DFF2EDA005DC9A7 /* cl_demo.c */,
@@ -274,7 +275,7 @@
 				4273FAD31DFF2EDA005DC9A7 /* glquake.h */,
 				4273FAD41DFF2EDA005DC9A7 /* host_cmd.c */,
 				4273FAD51DFF2EDA005DC9A7 /* host.c */,
-				4273FAD61DFF2EDA005DC9A7 /* in_mac.c */,
+				42F16D151E01DC28001659BD /* in_mac.m */,
 				4273FAD71DFF2EDA005DC9A7 /* input.h */,
 				4273FAD81DFF2EDA005DC9A7 /* keys.c */,
 				4273FAD91DFF2EDA005DC9A7 /* keys.h */,
@@ -308,7 +309,7 @@
 				4273FAF51DFF2EDA005DC9A7 /* screen.h */,
 				4273FAF61DFF2EDA005DC9A7 /* server.h */,
 				4273FAF71DFF2EDA005DC9A7 /* snd_dma.c */,
-				4273FAF81DFF2EDA005DC9A7 /* snd_mac.c */,
+				42F16D161E01DC28001659BD /* snd_mac.m */,
 				4273FAF91DFF2EDA005DC9A7 /* snd_mem.c */,
 				4273FAFA1DFF2EDA005DC9A7 /* snd_mix.c */,
 				4273FAFB1DFF2EDA005DC9A7 /* sound.h */,
@@ -317,9 +318,10 @@
 				4273FAFE1DFF2EDA005DC9A7 /* sv_move.c */,
 				4273FAFF1DFF2EDA005DC9A7 /* sv_phys.c */,
 				4273FB001DFF2EDA005DC9A7 /* sv_user.c */,
-				4273FB011DFF2EDA005DC9A7 /* sys_mac.c */,
+				42F16D171E01DC28001659BD /* sys_mac.m */,
 				4273FB021DFF2EDA005DC9A7 /* sys.h */,
-				4273FB031DFF2EDA005DC9A7 /* vid_cgl.c */,
+				42F16D1F1E01E299001659BD /* unixquake.h */,
+				42F16D181E01DC28001659BD /* vid_cgl.m */,
 				4273FB041DFF2EDA005DC9A7 /* vid.h */,
 				4273FB051DFF2EDA005DC9A7 /* view.c */,
 				4273FB061DFF2EDA005DC9A7 /* view.h */,
@@ -391,7 +393,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4273FB0D1DFF2EDA005DC9A7 /* cd_mac.c in Sources */,
 				4273FB0E1DFF2EDA005DC9A7 /* chase.c in Sources */,
 				4273FB0F1DFF2EDA005DC9A7 /* cl_demo.c in Sources */,
 				4273FB101DFF2EDA005DC9A7 /* cl_input.c in Sources */,
@@ -416,7 +417,6 @@
 				4273FB231DFF2EDA005DC9A7 /* gl_surf.c in Sources */,
 				4273FB241DFF2EDA005DC9A7 /* host_cmd.c in Sources */,
 				4273FB251DFF2EDA005DC9A7 /* host.c in Sources */,
-				4273FB261DFF2EDA005DC9A7 /* in_mac.c in Sources */,
 				4273FB271DFF2EDA005DC9A7 /* keys.c in Sources */,
 				4273FB281DFF2EDA005DC9A7 /* mathlib.c in Sources */,
 				4273FB291DFF2EDA005DC9A7 /* menu.c in Sources */,
@@ -430,19 +430,21 @@
 				4273FB311DFF2EDA005DC9A7 /* pr_exec.c in Sources */,
 				4273FB321DFF2EDA005DC9A7 /* sbar.c in Sources */,
 				4273FB331DFF2EDA005DC9A7 /* snd_dma.c in Sources */,
-				4273FB341DFF2EDA005DC9A7 /* snd_mac.c in Sources */,
 				4273FB351DFF2EDA005DC9A7 /* snd_mem.c in Sources */,
 				4273FB361DFF2EDA005DC9A7 /* snd_mix.c in Sources */,
 				4273FB371DFF2EDA005DC9A7 /* sv_main.c in Sources */,
 				4273FB381DFF2EDA005DC9A7 /* sv_move.c in Sources */,
 				4273FB391DFF2EDA005DC9A7 /* sv_phys.c in Sources */,
 				4273FB3A1DFF2EDA005DC9A7 /* sv_user.c in Sources */,
-				4273FB3B1DFF2EDA005DC9A7 /* sys_mac.c in Sources */,
-				4273FB3C1DFF2EDA005DC9A7 /* vid_cgl.c in Sources */,
 				4273FB3D1DFF2EDA005DC9A7 /* view.c in Sources */,
 				4273FB3E1DFF2EDA005DC9A7 /* wad.c in Sources */,
 				4273FB3F1DFF2EDA005DC9A7 /* world.c in Sources */,
 				4273FB401DFF2EDA005DC9A7 /* zone.c in Sources */,
+				42F16D191E01DC28001659BD /* cd_mac.m in Sources */,
+				42F16D1A1E01DC28001659BD /* in_mac.m in Sources */,
+				42F16D1B1E01DC28001659BD /* snd_mac.m in Sources */,
+				42F16D1C1E01DC28001659BD /* sys_mac.m in Sources */,
+				42F16D1D1E01DC28001659BD /* vid_cgl.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -502,6 +504,7 @@
 		427469BD1DFF1F0700B436A0 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INSTALL_PATH = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -510,6 +513,7 @@
 		427469BE1DFF1F0700B436A0 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INSTALL_PATH = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
