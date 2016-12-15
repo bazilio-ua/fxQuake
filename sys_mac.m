@@ -119,12 +119,61 @@ void Sys_Init(void)
 
 void Sys_Printf (char *fmt, ...)
 {
-	
+	va_list		argptr;
+	char		text[MAX_PRINTMSG]; // was 1024 
+	byte		*p;
+    
+	va_start (argptr, fmt);
+	vsnprintf (text, sizeof(text), fmt, argptr);
+	va_end (argptr);
+    
+	if (strlen(text) > sizeof(text))
+		Sys_Error("memory overwrite in Sys_Printf");
+    
+	if (nostdout)
+		return;
+    
+	for (p = (byte *)text; *p; p++) 
+	{
+		*p &= 0x7f;
+		if ((*p > 128 || *p < 32) && *p != 10 && *p != 13 && *p != 9)
+			printf("[%02x]", *p);
+        //			printf("*");
+		else
+			putc(*p, stdout);
+	}
+    
+	// rcon (64 doesn't mean anything special, but we need some extra space because NET_MAXMESSAGE == RCON_BUFF_SIZE)
+	if (rcon_active && (rcon_message.cursize < rcon_message.maxsize - (int)strlen(text) - 64))
+	{
+		rcon_message.cursize--;
+		MSG_WriteString(&rcon_message, text);
+	}
 }
 
 void Sys_Error (char *error, ...)
 { 
-	
+	va_list     argptr;
+	char        string[MAX_PRINTMSG]; // was 1024
+    
+    // change stdin to non blocking
+	fcntl (STDIN_FILENO, F_SETFL, fcntl(STDIN_FILENO, F_GETFL, 0) & ~O_NONBLOCK);
+    
+	va_start (argptr, error);
+	vsnprintf (string, sizeof(string), error, argptr);
+	va_end (argptr);
+    
+	fprintf (stderr, "Quake Error: %s\n", string);
+    
+	Host_Shutdown ();
+    
+	Sys_Shutdown ();
+    
+    NSString *message = [NSString stringWithCString:string encoding:NSASCIIStringEncoding];
+    NSRunCriticalAlertPanel(@"Quake Error", message, @"OK", nil, nil);
+    NSLog(@"Quake Error: %@", message);
+    
+	exit (1);
 } 
 
 void Sys_Shutdown (void)
@@ -173,7 +222,28 @@ Sys_ConsoleInput
 */
 char *Sys_ConsoleInput(void)
 {
-	return NULL;
+	static char text[256];
+	int     len;
+	fd_set	fdset;
+	struct timeval timeout;
+    
+	if (cls.state != ca_dedicated) 
+		return NULL;
+    
+	FD_ZERO(&fdset);
+	FD_SET(STDIN_FILENO, &fdset);	// stdin
+	timeout.tv_sec = 0;
+	timeout.tv_usec = 0;
+	if (select(STDIN_FILENO + 1, &fdset, NULL, NULL, &timeout) == -1 || !FD_ISSET(STDIN_FILENO, &fdset))
+		return NULL;
+    
+	len = read(STDIN_FILENO, text, sizeof(text));
+	if (len < 1)
+		return NULL;
+    
+	text[len - 1] = 0;    // rip off the /n and terminate
+    
+	return text;
 }
 
 /*
@@ -188,6 +258,19 @@ Clipboard function, thx quake2 icculus
 char *Sys_GetClipboardData (void)
 {
 	char *clipboard = NULL;
+    NSPasteboard *pasteboard = [NSPasteboard generalPasteboard];
+    NSArray *types = [pasteboard types];
+    
+    if ([types containsObject:NSStringPboardType]) {
+        NSString *clipboardText = [pasteboard stringForType:NSStringPboardType];
+        NSUInteger length = [clipboardText length];
+        if (length > 0) {
+            size_t size = length + 1;
+            size = min(SYS_CLIPBOARD_SIZE, size);
+            clipboard = (char *)Z_Malloc(size);
+            strcpy(clipboard, [clipboardText cStringUsingEncoding:NSASCIIStringEncoding]);
+        }
+    }
 	
 	return clipboard;
 } 
