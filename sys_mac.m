@@ -169,8 +169,9 @@ void Sys_Error (char *error, ...)
     
 	Sys_Shutdown ();
     
+//    [NSApplication sharedApplication];
     NSString *message = [NSString stringWithCString:string encoding:NSASCIIStringEncoding];
-    NSRunCriticalAlertPanel(@"Quake Error", message, @"OK", nil, nil);
+//    NSRunCriticalAlertPanel(@"Quake Error", message, @"OK", nil, nil);
     NSLog(@"Quake Error: %@", message);
     
 	exit (1);
@@ -293,6 +294,7 @@ int main (int argc, char **argv)
 	double time, oldtime, newtime;
 	quakeparms_t parms;
 	int t;
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     
 	signal(SIGFPE, SIG_IGN);
     
@@ -376,6 +378,8 @@ int main (int argc, char **argv)
         
 		Host_Frame (time);
 	}
+    
+    [pool release];
     
 	// return success of application
 	return 1;

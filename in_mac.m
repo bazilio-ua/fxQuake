@@ -23,8 +23,63 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "unixquake.h"
 #include "macquake.h"
 
+
+qboolean mouse_available;		// Mouse available for use
+qboolean keyboard_available;	// Keyboard available for use
+
+qboolean mouse_grab_active, keyboard_grab_active;
+qboolean dga_mouse_available, dga_keyboard_available;
+qboolean dga_mouse_active, dga_keyboard_active;
+
+float mouse_x=0, mouse_y=0;
+static float old_mouse_x, old_mouse_y;
+
+cvar_t m_filter = {"m_filter", "0", true};
+
+qboolean vidmode_fullscreen = false; // was vidmode_active
+
 qboolean	vid_activewindow;
 qboolean	vid_hiddenwindow;
+
+/*
+ ===========
+ IN_GrabMouse
+ ===========
+ */
+void IN_GrabMouse (void)
+{
+    
+}
+
+/*
+ ===========
+ IN_UngrabMouse
+ ===========
+ */
+void IN_UngrabMouse (void)
+{
+    
+}
+
+/*
+ ===========
+ IN_GrabKeyboard
+ ===========
+ */
+void IN_GrabKeyboard (void)
+{
+    
+}
+
+/*
+ ===========
+ IN_UngrabKeyboard
+ ===========
+ */
+void IN_UngrabKeyboard (void)
+{
+    
+}
 
 /*
 ===========
@@ -103,12 +158,35 @@ IN_ProcessEvents
 */
 void IN_ProcessEvents (void)
 {
+	// handle the mouse state when windowed if that's changed
+	if (!vidmode_fullscreen)
+	{
+		if ( key_dest == key_game && !mouse_grab_active && vid_activewindow )
+//		if ( key_dest != key_console && !mouse_grab_active && vid_activewindow )
+		{
+			IN_GrabMouse ();
+		}
+		else if ( key_dest != key_game && mouse_grab_active ) 
+//		else if ( key_dest == key_console && mouse_grab_active ) 
+		{
+			IN_UngrabMouse ();
+		}
+	}
+    
 	NSEvent *event;
     NSDate *date;
+    
+//    date = distantPast;
+    
     date = [NSDate date];
-    do
-    {
-        //        event = [NSApp next];
+    do {
+        event = [NSApp nextEventMatchingMask:NSAnyEventMask 
+                                   untilDate:[NSDate distantPast]//date 
+                                      inMode:NSDefaultRunLoopMode 
+                                     dequeue:YES];
+        if (event) {
+            [NSApp sendEvent:event];
+        }
     } while (event);
 	
 }
