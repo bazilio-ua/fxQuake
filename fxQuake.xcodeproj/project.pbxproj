@@ -504,6 +504,10 @@
 		427469BD1DFF1F0700B436A0 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"QBASEDIR=\".\"",
+				);
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INSTALL_PATH = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -513,6 +517,7 @@
 		427469BE1DFF1F0700B436A0 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = "QBASEDIR=\".\"";
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INSTALL_PATH = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
