@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "unixquake.h"
 #include "macquake.h"
 
+CGDirectDisplayID displayToUse;
 
 viddef_t vid; // global video state
 
@@ -125,6 +126,8 @@ inline void GL_EndRendering (void)
 
 //====================================
 
+#define MAX_DISPLAYS 128
+
 /*
 ===============
 VID_Init
@@ -132,6 +135,17 @@ VID_Init
 */
 void VID_Init (void)
 {
+    CGError err;
+    CGDirectDisplayID displays[MAX_DISPLAYS];
+    uint32_t displayCount;
+    uint32_t displayIndex;
+
+    err = CGGetActiveDisplayList(MAX_DISPLAYS, displays, &displayCount);
+    if (err != CGDisplayNoErr)
+        Sys_Error("Cannot get display list -- CGGetActiveDisplayList returned %d.\n", err);
+    
+    displayToUse = displays[0];
+    
 	VID_Gamma_Init ();
 }
 
