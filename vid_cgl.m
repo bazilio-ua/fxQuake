@@ -23,7 +23,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "unixquake.h"
 #include "macquake.h"
 
-CGDirectDisplayID displayToUse;
+CGDirectDisplayID   display;
+NSOpenGLContext     *context = nil;
+NSWindow            *window = nil;
 
 viddef_t vid; // global video state
 
@@ -135,16 +137,48 @@ VID_Init
 */
 void VID_Init (void)
 {
-    CGError err;
+    CGDisplayErr err;
     CGDirectDisplayID displays[MAX_DISPLAYS];
     uint32_t displayCount;
     uint32_t displayIndex;
 
+    NSOpenGLPixelFormatAttribute pixelAttributes[] = {
+        NSOpenGLPFAMinimumPolicy,
+        NSOpenGLPFAAccelerated,
+        NSOpenGLPFADoubleBuffer,
+        NSOpenGLPFADepthSize, 24,
+        NSOpenGLPFAAlphaSize, 8,
+        NSOpenGLPFAStencilSize, 8,
+        NSOpenGLPFAColorSize, 32,
+        NSOpenGLPFASampleBuffers, 1,
+        NSOpenGLPFASamples, 8,
+        0
+    };
+    
+    NSOpenGLPixelFormat *pixelFormat = nil;
+    
+    // set vid parameters
+	vid.width = 640;
+	vid.height = 480;
+	vid.numpages = 2;
+    
+    // Get the active display list
     err = CGGetActiveDisplayList(MAX_DISPLAYS, displays, &displayCount);
     if (err != CGDisplayNoErr)
-        Sys_Error("Cannot get display list -- CGGetActiveDisplayList returned %d.\n", err);
+        Sys_Error("Cannot get display list -- CGGetActiveDisplayList returned %d.", err);
     
-    displayToUse = displays[0];
+    // By default, we use the main screen
+    display = displays[0];
+    
+    // Get the GL pixel format
+    pixelFormat = [[NSOpenGLPixelFormat alloc] initWithAttributes:pixelAttributes];
+    if (!pixelFormat) {
+        Sys_Error("No pixel format found");
+    }
+    
+    // Create a context with the desired pixel attributes
+    context = [[NSOpenGLContext alloc] initWithFormat:pixelFormat shareContext:nil];
+    
     
 	VID_Gamma_Init ();
 }
