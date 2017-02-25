@@ -141,7 +141,7 @@ void VID_Init (void)
     CGDirectDisplayID displays[MAX_DISPLAYS];
     uint32_t displayCount;
     uint32_t displayIndex;
-
+    
     NSOpenGLPixelFormatAttribute pixelAttributes[] = {
         NSOpenGLPFAMinimumPolicy,
         NSOpenGLPFAAccelerated,
