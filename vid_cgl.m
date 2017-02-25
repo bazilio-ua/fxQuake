@@ -26,6 +26,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 CGDirectDisplayID   display;
 NSOpenGLContext     *context = nil;
 NSWindow            *window = nil;
+CGDisplayModeRef    desktopMode;
+CGDisplayModeRef    gameMode;
 
 viddef_t vid; // global video state
 
@@ -137,6 +139,9 @@ VID_Init
 */
 void VID_Init (void)
 {
+    int i;
+	qboolean fullscreen = true;
+    
     CGDisplayErr err;
     CGDirectDisplayID displays[MAX_DISPLAYS];
     uint32_t displayCount;
@@ -169,6 +174,56 @@ void VID_Init (void)
     
     // By default, we use the main screen
     display = displays[0];
+    
+    desktopMode = CGDisplayCopyDisplayMode(display);
+    if (!desktopMode) {
+        Sys_Error("Could not get current graphics mode for display 0x%08x\n", display);
+    }
+    
+    // check for command-line size parameters
+	if ((i = COM_CheckParm("-width"))) 
+	{
+		if (i >= com_argc-1)
+			Sys_Error("VID_Init: -width <width>");
+        
+		vid.width = atoi(com_argv[i+1]);
+		if (!vid.width)
+			Sys_Error("VID_Init: Bad width");
+		if (vid.width < 320)
+			Sys_Error("VID_Init: width < 320 is not supported");
+	}
+	if ((i = COM_CheckParm("-height"))) 
+	{
+		if (i >= com_argc-1)
+			Sys_Error("VID_Init: -height <height>");
+        
+		vid.height = atoi(com_argv[i+1]);
+		if (!vid.height)
+			Sys_Error("VID_Init: Bad height");
+		if (vid.height < 200)
+			Sys_Error("VID_Init: height < 200 is not supported");
+	}
+    
+    // check for command-line video parameters
+	if (COM_CheckParm("-current"))
+	{
+		vid.width = CGDisplayModeGetWidth(desktopMode);
+		vid.height = CGDisplayModeGetHeight(desktopMode);
+	}
+	else if (COM_CheckParm("-window"))
+	{
+		fullscreen = false;
+	}
+    
+    
+    // get video mode list
+    CFArrayRef modes = CGDisplayCopyAllDisplayModes(display, NULL);
+    
+    if (fullscreen) {
+        //
+    } else {
+        gameMode = desktopMode;
+    }
     
     // Get the GL pixel format
     pixelFormat = [[NSOpenGLPixelFormat alloc] initWithAttributes:pixelAttributes];
