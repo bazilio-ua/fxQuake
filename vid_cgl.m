@@ -175,9 +175,10 @@ void VID_Init (void)
     // By default, we use the main screen
     display = displays[0];
     
+    // get current mode
     desktopMode = CGDisplayCopyDisplayMode(display);
     if (!desktopMode) {
-        Sys_Error("Could not get current graphics mode for display 0x%08x\n", display);
+        Sys_Error("Could not get current graphics mode for display 0x%0x", display);
     }
     
     // check for command-line size parameters
@@ -215,11 +216,29 @@ void VID_Init (void)
 		fullscreen = false;
 	}
     
-    
     // get video mode list
-    CFArrayRef modes = CGDisplayCopyAllDisplayModes(display, NULL);
+    CFArrayRef displayModes = CGDisplayCopyAllDisplayModes(display, NULL);
+    if (!displayModes) {
+        Sys_Error("CGDisplayCopyAllDisplayModes returned NULL -- 0x%0x is an invalid display", display);
+    }
     
     if (fullscreen) {
+        CGDisplayModeRef mode;
+        CFIndex modeCount, modeIndex, bestModeIndex;
+        modeCount = CFArrayGetCount(displayModes);
+        
+        // Default to the current desktop mode
+        bestModeIndex = 0xFFFFFFFF;
+        for (modeIndex = 0; modeIndex < modeCount; modeIndex++) {
+            mode = (CGDisplayModeRef)CFArrayGetValueAtIndex(displayModes, modeIndex);
+            // Make sure we get the right size
+            if (CGDisplayModeGetWidth(mode) != vid.width || CGDisplayModeGetHeight(mode) != vid.height) {
+                continue;
+            }
+        }
+        
+        
+//        gameMode = 
         //
     } else {
         gameMode = desktopMode;
