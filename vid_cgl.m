@@ -183,6 +183,14 @@ void VID_Init (void)
         Sys_Error("Could not get current graphics mode for display");
     }
     
+//    CGDisplayPixelsHigh
+//    bitsPerPixelForDisplay
+    
+    if (CFStringCompare(CGDisplayModeCopyPixelEncoding(desktopMode), CFSTR(IO32BitDirectPixels), kCFCompareCaseInsensitive) == kCFCompareEqualTo)
+    {
+        NSLog(@"");
+    }
+    
     // check for command-line size parameters
 	if ((i = COM_CheckParm("-width"))) 
 	{
@@ -214,7 +222,7 @@ void VID_Init (void)
         
         colorDepth = atoi(com_argv[i+1]);
     } else {
-        colorDepth = [[(NSDictionary *)desktopMode objectForKey:(id)kCGDisplayBitsPerPixel] intValue];
+//        colorDepth = [[(NSDictionary *)desktopMode objectForKey:(id)kCGDisplayBitsPerPixel] intValue];
     }
     
 	if ((i = COM_CheckParm("-refreshrate"))) 
@@ -224,14 +232,14 @@ void VID_Init (void)
         
         refreshRate = atoi(com_argv[i+1]);
     } else {
-        refreshRate = [[(NSDictionary *)desktopMode objectForKey:(id)kCGDisplayRefreshRate] intValue];
+//        refreshRate = [[(NSDictionary *)desktopMode objectForKey:(id)kCGDisplayRefreshRate] intValue];
     }
     
 	if ((i = COM_CheckParm("-stretched"))) 
     {
         isStretched = true;
     } else {
-        isStretched = [[(NSDictionary *)desktopMode objectForKey:(id)kCGDisplayModeIsStretched] boolValue];
+//        isStretched = [[(NSDictionary *)desktopMode objectForKey:(id)kCGDisplayModeIsStretched] boolValue];
     }
     
     // check for command-line video parameters
