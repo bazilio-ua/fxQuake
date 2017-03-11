@@ -26,8 +26,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 CGDirectDisplayID   display;
 NSOpenGLContext     *context = nil;
 NSWindow            *window = nil;
-CGDisplayModeRef    desktopMode;
-CGDisplayModeRef    gameMode;
+NSDictionary        *desktopMode;
+NSDictionary        *gameMode;
 
 viddef_t vid; // global video state
 
@@ -145,7 +145,9 @@ void VID_Init (void)
     CGDisplayErr err;
     CGDirectDisplayID displays[MAX_DISPLAYS];
     uint32_t displayCount;
-    uint32_t displayIndex;
+    __unused uint32_t displayIndex;
+    int colorDepth = 32, refreshRate = 0;
+    qboolean isStretched = false;
     
     NSOpenGLPixelFormatAttribute pixelAttributes[] = {
         NSOpenGLPFAMinimumPolicy,
@@ -170,15 +172,15 @@ void VID_Init (void)
     // Get the active display list
     err = CGGetActiveDisplayList(MAX_DISPLAYS, displays, &displayCount);
     if (err != CGDisplayNoErr)
-        Sys_Error("Cannot get display list -- CGGetActiveDisplayList returned %d.", err);
+        Sys_Error("Cannot get display list");
     
     // By default, we use the main screen
     display = displays[0];
     
     // get current mode
-    desktopMode = CGDisplayCopyDisplayMode(display);
+    desktopMode = (NSDictionary *)CGDisplayCopyDisplayMode(display);
     if (!desktopMode) {
-        Sys_Error("Could not get current graphics mode for display 0x%0x", display);
+        Sys_Error("Could not get current graphics mode for display");
     }
     
     // check for command-line size parameters
@@ -205,11 +207,41 @@ void VID_Init (void)
 			Sys_Error("VID_Init: height < 200 is not supported");
 	}
     
+	if ((i = COM_CheckParm("-bpp"))) 
+    {
+		if (i >= com_argc-1)
+			Sys_Error("VID_Init: -bpp <bpp>");
+        
+        colorDepth = atoi(com_argv[i+1]);
+    } else {
+        colorDepth = [[(NSDictionary *)desktopMode objectForKey:(id)kCGDisplayBitsPerPixel] intValue];
+    }
+    
+	if ((i = COM_CheckParm("-refreshrate"))) 
+    {
+		if (i >= com_argc-1)
+			Sys_Error("VID_Init: -refreshrate <refreshrate>");
+        
+        refreshRate = atoi(com_argv[i+1]);
+    } else {
+        refreshRate = [[(NSDictionary *)desktopMode objectForKey:(id)kCGDisplayRefreshRate] intValue];
+    }
+    
+	if ((i = COM_CheckParm("-stretched"))) 
+    {
+        isStretched = true;
+    } else {
+        isStretched = [[(NSDictionary *)desktopMode objectForKey:(id)kCGDisplayModeIsStretched] boolValue];
+    }
+    
     // check for command-line video parameters
 	if (COM_CheckParm("-current"))
 	{
-		vid.width = CGDisplayModeGetWidth(desktopMode);
-		vid.height = CGDisplayModeGetHeight(desktopMode);
+		vid.width = [[(NSDictionary *)desktopMode objectForKey:(id)kCGDisplayWidth] intValue];
+		vid.height = [[(NSDictionary *)desktopMode objectForKey:(id)kCGDisplayHeight] intValue];
+        colorDepth = [[(NSDictionary *)desktopMode objectForKey:(id)kCGDisplayBitsPerPixel] intValue];
+        refreshRate = [[(NSDictionary *)desktopMode objectForKey:(id)kCGDisplayRefreshRate] intValue];
+        isStretched = [[(NSDictionary *)desktopMode objectForKey:(id)kCGDisplayModeIsStretched] boolValue];
 	}
 	else if (COM_CheckParm("-window"))
 	{
@@ -217,29 +249,53 @@ void VID_Init (void)
 	}
     
     // get video mode list
-    CFArrayRef displayModes = CGDisplayCopyAllDisplayModes(display, NULL);
+    NSArray *displayModes = (NSArray *)CGDisplayCopyAllDisplayModes(display, NULL);
     if (!displayModes) {
-        Sys_Error("CGDisplayCopyAllDisplayModes returned NULL -- 0x%0x is an invalid display", display);
+        Sys_Error("Display available modes returned NULL");
     }
     
     if (fullscreen) {
-        CGDisplayModeRef mode;
-        CFIndex modeCount, modeIndex, bestModeIndex;
-        modeCount = CFArrayGetCount(displayModes);
+        NSDictionary *mode;
+        NSUInteger modeCount, modeIndex, bestModeIndex;
+        modeCount = [displayModes count];
         
         // Default to the current desktop mode
         bestModeIndex = 0xFFFFFFFF;
+        
         for (modeIndex = 0; modeIndex < modeCount; modeIndex++) {
-            mode = (CGDisplayModeRef)CFArrayGetValueAtIndex(displayModes, modeIndex);
+            mode = [displayModes objectAtIndex:modeIndex];
+            
             // Make sure we get the right size
-            if (CGDisplayModeGetWidth(mode) != vid.width || CGDisplayModeGetHeight(mode) != vid.height) {
+            if ([[mode objectForKey:(id)kCGDisplayWidth] intValue] != vid.width || 
+                [[mode objectForKey:(id)kCGDisplayHeight] intValue] != vid.height) 
+            {
                 continue;
             }
+            
+            if ([[mode objectForKey:(id)kCGDisplayBitsPerPixel] intValue] != colorDepth) {
+                continue;
+            }
+            
+            if ([[mode objectForKey:(id)kCGDisplayRefreshRate] intValue] != refreshRate) {
+                continue;
+            }
+            
+            if ([[mode objectForKey:(id)kCGDisplayModeIsStretched] boolValue] != isStretched) {
+                continue;
+            }
+            
+            bestModeIndex = modeIndex;
         }
         
+        if (bestModeIndex == 0xFFFFFFFF) {
+            Sys_Error("No suitable display mode available");
+        }
         
-//        gameMode = 
-        //
+        if (!mode) {
+            Sys_Error("Unable to find requested display mode");
+        }
+        
+        gameMode = mode;
     } else {
         gameMode = desktopMode;
     }
@@ -252,7 +308,37 @@ void VID_Init (void)
     
     // Create a context with the desired pixel attributes
     context = [[NSOpenGLContext alloc] initWithFormat:pixelFormat shareContext:nil];
+    if (!context) {
+        Sys_Error("Cannot create OpenGL context");
+    }
     
+    if (!fullscreen) {
+        NSRect windowRect;
+        
+        // Create a window of the desired size
+        windowRect.origin.x = ([[(NSDictionary *)desktopMode objectForKey:(id)kCGDisplayWidth] intValue] - vid.width) / 2;
+        windowRect.origin.y = ([[(NSDictionary *)desktopMode objectForKey:(id)kCGDisplayHeight] intValue] - vid.height) / 2;
+        windowRect.size.width = vid.width;
+        windowRect.size.height = vid.height;
+        
+        window = [[NSWindow alloc] initWithContentRect:windowRect 
+                                             styleMask:NSTitledWindowMask 
+                                               backing:NSBackingStoreRetained 
+                                                 defer:NO];
+        [window setTitle:@"fxQuake"];
+        [window orderFront:nil];
+        // Always get mouse moved events (if mouse support is turned off (rare) the event system will filter them out.
+        [window setAcceptsMouseMovedEvents:YES];
+        
+        // Direct the context to draw in this window
+        [context setView:[window contentView]];
+    } else {
+        CGError err;
+        err = CGLSetFullScreenOnDisplay([context CGLContextObj], CGDisplayIDToOpenGLDisplayMask(display));
+        if (err) {
+            Sys_Error("Cannot set fullscreen");
+        }
+    }
     
 	VID_Gamma_Init ();
 }
