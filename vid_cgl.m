@@ -183,12 +183,14 @@ void VID_Init (void)
         Sys_Error("Could not get current graphics mode for display");
     }
     
-//    CGDisplayPixelsHigh
-//    bitsPerPixelForDisplay
+    CGDisplayModeRef originalMode = CGDisplayCopyDisplayMode(display);
+    CFDictionaryRef dict = (CFDictionaryRef)*((int32_t *)originalMode + 2);
+    NSDictionary *dictionary = (NSDictionary *)*((int32_t *)originalMode + 2);
+    
     
     if (CFStringCompare(CGDisplayModeCopyPixelEncoding(desktopMode), CFSTR(IO32BitDirectPixels), kCFCompareCaseInsensitive) == kCFCompareEqualTo)
     {
-        NSLog(@"");
+        NSLog(@" ");
     }
     
     // check for command-line size parameters
@@ -222,7 +224,7 @@ void VID_Init (void)
         
         colorDepth = atoi(com_argv[i+1]);
     } else {
-//        colorDepth = [[(NSDictionary *)desktopMode objectForKey:(id)kCGDisplayBitsPerPixel] intValue];
+        colorDepth = [[(NSDictionary *)desktopMode objectForKey:(id)kCGDisplayBitsPerPixel] intValue];
     }
     
 	if ((i = COM_CheckParm("-refreshrate"))) 
