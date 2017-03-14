@@ -26,8 +26,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 CGDirectDisplayID   display;
 NSOpenGLContext     *context = nil;
 NSWindow            *window = nil;
-NSDictionary        *desktopMode;
-NSDictionary        *gameMode;
+CGDisplayModeRef    desktopMode;
+CGDisplayModeRef    gameMode;
 
 viddef_t vid; // global video state
 
@@ -178,19 +178,9 @@ void VID_Init (void)
     display = displays[0];
     
     // get current mode
-    desktopMode = (NSDictionary *)CGDisplayCopyDisplayMode(display);
+    desktopMode = CGDisplayCopyDisplayMode(display);
     if (!desktopMode) {
         Sys_Error("Could not get current graphics mode for display");
-    }
-    
-    CGDisplayModeRef originalMode = CGDisplayCopyDisplayMode(display);
-    CFDictionaryRef dict = (CFDictionaryRef)*((int32_t *)originalMode + 2);
-    NSDictionary *dictionary = (NSDictionary *)*((int32_t *)originalMode + 2);
-    
-    
-    if (CFStringCompare(CGDisplayModeCopyPixelEncoding(desktopMode), CFSTR(IO32BitDirectPixels), kCFCompareCaseInsensitive) == kCFCompareEqualTo)
-    {
-        NSLog(@" ");
     }
     
     // check for command-line size parameters
@@ -224,7 +214,7 @@ void VID_Init (void)
         
         colorDepth = atoi(com_argv[i+1]);
     } else {
-        colorDepth = [[(NSDictionary *)desktopMode objectForKey:(id)kCGDisplayBitsPerPixel] intValue];
+        colorDepth = (int)[[(NSDictionary *)*((long *)desktopMode + 2) objectForKey:(id)kCGDisplayBitsPerPixel] intValue];
     }
     
 	if ((i = COM_CheckParm("-refreshrate"))) 
@@ -234,24 +224,24 @@ void VID_Init (void)
         
         refreshRate = atoi(com_argv[i+1]);
     } else {
-//        refreshRate = [[(NSDictionary *)desktopMode objectForKey:(id)kCGDisplayRefreshRate] intValue];
+        refreshRate = (int)CGDisplayModeGetRefreshRate(desktopMode);
     }
     
 	if ((i = COM_CheckParm("-stretched"))) 
     {
         isStretched = true;
     } else {
-//        isStretched = [[(NSDictionary *)desktopMode objectForKey:(id)kCGDisplayModeIsStretched] boolValue];
+        isStretched = (qboolean)(CGDisplayModeGetIOFlags(desktopMode) & kDisplayModeStretchedFlag) == kDisplayModeStretchedFlag;
     }
     
     // check for command-line video parameters
 	if (COM_CheckParm("-current"))
 	{
-		vid.width = [[(NSDictionary *)desktopMode objectForKey:(id)kCGDisplayWidth] intValue];
-		vid.height = [[(NSDictionary *)desktopMode objectForKey:(id)kCGDisplayHeight] intValue];
-        colorDepth = [[(NSDictionary *)desktopMode objectForKey:(id)kCGDisplayBitsPerPixel] intValue];
-        refreshRate = [[(NSDictionary *)desktopMode objectForKey:(id)kCGDisplayRefreshRate] intValue];
-        isStretched = [[(NSDictionary *)desktopMode objectForKey:(id)kCGDisplayModeIsStretched] boolValue];
+		vid.width = (int)CGDisplayModeGetWidth(desktopMode);
+		vid.height = (int)CGDisplayModeGetHeight(desktopMode);
+        colorDepth = (int)[[(NSDictionary *)*((long *)desktopMode + 2) objectForKey:(id)kCGDisplayBitsPerPixel] intValue];
+        refreshRate = (int)CGDisplayModeGetRefreshRate(desktopMode);
+        isStretched = (qboolean)(CGDisplayModeGetIOFlags(desktopMode) & kDisplayModeStretchedFlag) == kDisplayModeStretchedFlag;
 	}
 	else if (COM_CheckParm("-window"))
 	{
@@ -259,38 +249,36 @@ void VID_Init (void)
 	}
     
     // get video mode list
-    NSArray *displayModes = (NSArray *)CGDisplayCopyAllDisplayModes(display, NULL);
+    CFArrayRef displayModes = CGDisplayCopyAllDisplayModes(display, NULL);
     if (!displayModes) {
         Sys_Error("Display available modes returned NULL");
     }
     
     if (fullscreen) {
-        NSDictionary *mode;
-        NSUInteger modeCount, modeIndex, bestModeIndex;
-        modeCount = [displayModes count];
+        CGDisplayModeRef mode;
+        CFIndex modeCount, modeIndex, bestModeIndex;
+        modeCount = CFArrayGetCount(displayModes);
         
         // Default to the current desktop mode
         bestModeIndex = 0xFFFFFFFF;
         
         for (modeIndex = 0; modeIndex < modeCount; modeIndex++) {
-            mode = [displayModes objectAtIndex:modeIndex];
+            mode = (CGDisplayModeRef)CFArrayGetValueAtIndex(displayModes, modeIndex);
             
             // Make sure we get the right size
-            if ([[mode objectForKey:(id)kCGDisplayWidth] intValue] != vid.width || 
-                [[mode objectForKey:(id)kCGDisplayHeight] intValue] != vid.height) 
-            {
+            if ((int)CGDisplayModeGetWidth(mode) != vid.width || (int)CGDisplayModeGetHeight(mode) != vid.height) {
                 continue;
             }
             
-            if ([[mode objectForKey:(id)kCGDisplayBitsPerPixel] intValue] != colorDepth) {
+            if ((int)[[(NSDictionary *)*((long *)mode + 2) objectForKey:(id)kCGDisplayBitsPerPixel] intValue] != colorDepth) {
                 continue;
             }
             
-            if ([[mode objectForKey:(id)kCGDisplayRefreshRate] intValue] != refreshRate) {
+            if ((int)CGDisplayModeGetRefreshRate(mode) != refreshRate) {
                 continue;
             }
             
-            if ([[mode objectForKey:(id)kCGDisplayModeIsStretched] boolValue] != isStretched) {
+            if ((qboolean)((CGDisplayModeGetIOFlags(mode) & kDisplayModeStretchedFlag) == kDisplayModeStretchedFlag) != isStretched) {
                 continue;
             }
             
@@ -326,8 +314,8 @@ void VID_Init (void)
         NSRect windowRect;
         
         // Create a window of the desired size
-        windowRect.origin.x = ([[(NSDictionary *)desktopMode objectForKey:(id)kCGDisplayWidth] intValue] - vid.width) / 2;
-        windowRect.origin.y = ([[(NSDictionary *)desktopMode objectForKey:(id)kCGDisplayHeight] intValue] - vid.height) / 2;
+        windowRect.origin.x = ((int)CGDisplayModeGetWidth(desktopMode) - vid.width) / 2;
+        windowRect.origin.y = ((int)CGDisplayModeGetHeight(desktopMode) - vid.height) / 2;
         windowRect.size.width = vid.width;
         windowRect.size.height = vid.height;
         
