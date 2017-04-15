@@ -320,7 +320,7 @@ void VID_Init (void)
         windowRect.size.height = vid.height;
         
         window = [[NSWindow alloc] initWithContentRect:windowRect 
-                                             styleMask:NSTitledWindowMask 
+                                             styleMask:NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask
                                                backing:NSBackingStoreBuffered // NSBackingStoreRetained 
                                                  defer:NO];
         [window setTitle:@"fxQuake"];
