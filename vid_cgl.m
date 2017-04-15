@@ -321,7 +321,7 @@ void VID_Init (void)
         
         window = [[NSWindow alloc] initWithContentRect:windowRect 
                                              styleMask:NSTitledWindowMask 
-                                               backing:NSBackingStoreRetained 
+                                               backing:NSBackingStoreBuffered // NSBackingStoreRetained 
                                                  defer:NO];
         [window setTitle:@"fxQuake"];
         [window orderFront:nil];
@@ -338,7 +338,15 @@ void VID_Init (void)
         }
     }
     
+    vid.conwidth = vid.width;
+	vid.conheight = vid.height;
+
 	VID_Gamma_Init ();
+    
+    vid.recalc_refdef = true; // force a surface cache flush
+    
+	if (COM_CheckParm("-fullsbar"))
+		fullsbardraw = true;
 }
 
 /*

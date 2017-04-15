@@ -24,20 +24,20 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "macquake.h"
 
 
-static void CDAudio_Eject(void)
-{
-	
-}
-
-static void CDAudio_CloseDoor(void)
-{
-	
-}
-
-static int CDAudio_GetAudioDiskInfo(void)
-{
-	return 0;
-}
+//static void CDAudio_Eject(void)
+//{
+//	
+//}
+//
+//static void CDAudio_CloseDoor(void)
+//{
+//	
+//}
+//
+//static int CDAudio_GetAudioDiskInfo(void)
+//{
+//	return 0;
+//}
 
 void CDAudio_Play(byte track, qboolean looping)
 {
@@ -59,15 +59,15 @@ void CDAudio_Resume(void)
 	
 }
 
-static void CD_f (void)
-{
-	
-}
-
-static qboolean CDAudio_SetVolume (cvar_t *var)
-{
-	return false;
-}
+//static void CD_f (void)
+//{
+//	
+//}
+//
+//static qboolean CDAudio_SetVolume (cvar_t *var)
+//{
+//	return false;
+//}
 
 void CDAudio_Update(void)
 {

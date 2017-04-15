@@ -295,6 +295,7 @@ int main (int argc, char **argv)
 	quakeparms_t parms;
 	int t;
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+    [NSApplication sharedApplication];
     
 	signal(SIGFPE, SIG_IGN);
     
@@ -384,5 +385,6 @@ int main (int argc, char **argv)
 	// return success of application
 	return 1;
 //    return NSApplicationMain(argc, argv);
+//    return NSApplicationMain(argc, (const char **)argv);
 }
 
