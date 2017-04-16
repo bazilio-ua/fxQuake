@@ -10,4 +10,6 @@
 
 @interface QController : NSObject <NSApplicationDelegate>
 
+- (void)quakeMain;
+
 @end
