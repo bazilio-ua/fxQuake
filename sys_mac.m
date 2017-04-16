@@ -291,11 +291,27 @@ main
 
 int main (int argc, char **argv)
 {
+    char *basepath;
 	double time, oldtime, newtime;
 	quakeparms_t parms;
 	int t;
+    
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     [NSApplication sharedApplication];
+    
+    // temporary for debug
+	static char cwd[MAX_OSPATH];
+    
+	getcwd( cwd, sizeof( cwd ) - 1 );
+	cwd[MAX_OSPATH-1] = 0;
+    NSLog(@"cwd %s\n", cwd);
+    
+    basepath = (char *)[[[[NSBundle mainBundle] bundlePath] stringByDeletingLastPathComponent] UTF8String];
+    NSLog(@"basepath %s\n", basepath);
+    if (*basepath && strstr(basepath, cwd)) {
+        chdir(basepath);
+    }
+    // temporary for debug
     
 	signal(SIGFPE, SIG_IGN);
     
