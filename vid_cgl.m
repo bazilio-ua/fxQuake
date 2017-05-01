@@ -130,76 +130,76 @@ inline void GL_EndRendering (void)
 
 //====================================
 
-#define MAX_RENDERER_INFO_COUNT 128
-
-// Returns zero if there are no hardware renderers.
-// Otherwise, returns the max memory across all renderers (on the presumption that the screen that we'll use has the most memory).
-static GLint GL_QueryVideoMemory (void)
-{
-    CGLError err;
-    CGLRendererInfoObj rendererInfo, rendererInfos[MAX_RENDERER_INFO_COUNT];
-    GLint rendererInfoIndex, rendererInfoCount = MAX_RENDERER_INFO_COUNT;
-    GLint rendererIndex, rendererCount;
-    GLint maxVRAM = 0, vram;
-    GLint accelerated;
-    GLint rendererID;
-    GLint totalRenderers = 0;
-
-    err = CGLQueryRendererInfo(CGDisplayIDToOpenGLDisplayMask(display), rendererInfos, &rendererInfoCount);
-    if (err) {
-        Con_Printf ("CGLQueryRendererInfo -> %d\n", err);
-        return vram;
-    }
-
-    for (rendererInfoIndex = 0; rendererInfoIndex < rendererInfoCount && totalRenderers < rendererInfoCount; rendererInfoIndex++) {
-        rendererInfo = rendererInfos[rendererInfoIndex];
-        
-        err = CGLDescribeRenderer(rendererInfo, 0, kCGLRPRendererCount, &rendererCount);
-        if (err) {
-            Con_Printf ("CGLDescribeRenderer(kCGLRPRendererID) -> %d\n", err);
-            continue;
-        }
-
-        for (rendererIndex = 0; rendererIndex < rendererCount; rendererIndex++) {
-            totalRenderers++;
-            
-            rendererID = 0xffffffff;
-            err = CGLDescribeRenderer(rendererInfo, rendererIndex, kCGLRPRendererID, &rendererID);
-            if (err) {
-                Con_Printf ("CGLDescribeRenderer(kCGLRPRendererID) -> %d\n", err);
-                continue;
-            }
-            
-            accelerated = 0;
-            err = CGLDescribeRenderer(rendererInfo, rendererIndex, kCGLRPAccelerated, &accelerated);
-            if (err) {
-                Con_Printf ("CGLDescribeRenderer(kCGLRPAccelerated) -> %d\n", err);
-                continue;
-            }
-            if (!accelerated)
-                continue;
-            
-            vram = 0;
-            err = CGLDescribeRenderer(rendererInfo, rendererIndex, kCGLRPVideoMemory, &vram);
-            if (err) {
-                Con_Printf ("CGLDescribeRenderer -> %d\n", err);
-                continue;
-            }
-            
-            // presumably we'll be running on the best card, so we'll take the max of the vrams
-            if (vram > maxVRAM)
-                maxVRAM = vram;
-        }
-
-        err = CGLDestroyRendererInfo(rendererInfo);
-        if (err) {
-            Con_Printf ("CGLDestroyRendererInfo -> %d\n", err);
-        }
-
-    }
-
-    return maxVRAM;
-}
+//#define MAX_RENDERER_INFO_COUNT 128
+//
+//// Returns zero if there are no hardware renderers.
+//// Otherwise, returns the max memory across all renderers (on the presumption that the screen that we'll use has the most memory).
+//static GLint GL_QueryVideoMemory (void)
+//{
+//    CGLError err;
+//    CGLRendererInfoObj rendererInfo, rendererInfos[MAX_RENDERER_INFO_COUNT];
+//    GLint rendererInfoIndex, rendererInfoCount = MAX_RENDERER_INFO_COUNT;
+//    GLint rendererIndex, rendererCount;
+//    GLint maxVRAM = 0, vram;
+//    GLint accelerated;
+//    GLint rendererID;
+//    GLint totalRenderers = 0;
+//
+//    err = CGLQueryRendererInfo(CGDisplayIDToOpenGLDisplayMask(display), rendererInfos, &rendererInfoCount);
+//    if (err) {
+//        Con_Printf ("CGLQueryRendererInfo -> %d\n", err);
+//        return vram;
+//    }
+//
+//    for (rendererInfoIndex = 0; rendererInfoIndex < rendererInfoCount && totalRenderers < rendererInfoCount; rendererInfoIndex++) {
+//        rendererInfo = rendererInfos[rendererInfoIndex];
+//        
+//        err = CGLDescribeRenderer(rendererInfo, 0, kCGLRPRendererCount, &rendererCount);
+//        if (err) {
+//            Con_Printf ("CGLDescribeRenderer(kCGLRPRendererID) -> %d\n", err);
+//            continue;
+//        }
+//
+//        for (rendererIndex = 0; rendererIndex < rendererCount; rendererIndex++) {
+//            totalRenderers++;
+//            
+//            rendererID = 0xffffffff;
+//            err = CGLDescribeRenderer(rendererInfo, rendererIndex, kCGLRPRendererID, &rendererID);
+//            if (err) {
+//                Con_Printf ("CGLDescribeRenderer(kCGLRPRendererID) -> %d\n", err);
+//                continue;
+//            }
+//            
+//            accelerated = 0;
+//            err = CGLDescribeRenderer(rendererInfo, rendererIndex, kCGLRPAccelerated, &accelerated);
+//            if (err) {
+//                Con_Printf ("CGLDescribeRenderer(kCGLRPAccelerated) -> %d\n", err);
+//                continue;
+//            }
+//            if (!accelerated)
+//                continue;
+//            
+//            vram = 0;
+//            err = CGLDescribeRenderer(rendererInfo, rendererIndex, kCGLRPVideoMemory, &vram);
+//            if (err) {
+//                Con_Printf ("CGLDescribeRenderer -> %d\n", err);
+//                continue;
+//            }
+//            
+//            // presumably we'll be running on the best card, so we'll take the max of the vrams
+//            if (vram > maxVRAM)
+//                maxVRAM = vram;
+//        }
+//
+//        err = CGLDestroyRendererInfo(rendererInfo);
+//        if (err) {
+//            Con_Printf ("CGLDestroyRendererInfo -> %d\n", err);
+//        }
+//
+//    }
+//
+//    return maxVRAM;
+//}
 
 #define MAX_DISPLAYS 128
 
@@ -414,9 +414,9 @@ void VID_Init (void)
     vid.conwidth = vid.width;
 	vid.conheight = vid.height;
 
-    if (GL_QueryVideoMemory() == 0) {
-        Sys_Error ("Could not initialize OpenGL. There does not appear to be an OpenGL-supported video card in your system.");
-    }
+//    if (GL_QueryVideoMemory() == 0) {
+//        Sys_Error ("Could not initialize OpenGL. There does not appear to be an OpenGL-supported video card in your system.");
+//    }
 
     GL_Init();
     

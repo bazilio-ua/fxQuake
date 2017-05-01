@@ -424,6 +424,8 @@ int main (int argc, char *argv[])
 		printf ("fxQuake %4.2f\n", (float)VERSION);
 	}
     
+    [NSApp activateIgnoringOtherApps:YES];
+    
 	oldtime = Sys_DoubleTime () - 0.1;
 	// main message loop
 	while (1)
