@@ -20,8 +20,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // glquake.h
 
 #if defined __APPLE__ && defined __MACH__
+#include <OpenGL/OpenGL.h>
 #include <OpenGL/gl.h>
+#ifndef GL_EXT_abgr
 #include <OpenGL/glext.h>
+#endif
 #include <dlfcn.h>
 #else
 
