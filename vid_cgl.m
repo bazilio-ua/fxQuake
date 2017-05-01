@@ -293,6 +293,8 @@ void VID_Init (void)
             Sys_Error("Unable to find requested display mode");
         }
         
+        vidmode_fullscreen = true;
+        
         gameMode = mode;
     } else {
         gameMode = desktopMode;
@@ -310,7 +312,7 @@ void VID_Init (void)
         Sys_Error("Cannot create OpenGL context");
     }
     
-    if (!fullscreen) {
+    if (!vidmode_fullscreen) {
         NSRect windowRect;
         
         // Create a window of the desired size
@@ -325,12 +327,13 @@ void VID_Init (void)
                                                  defer:NO];
         [window setTitle:@"fxQuake"];
 //        [window orderFront:nil];
-        [window setBackgroundColor:[NSColor darkGrayColor]];
+//        [window setBackgroundColor:[NSColor darkGrayColor]];
         [window useOptimizedDrawing:YES];
         // Always get mouse moved events (if mouse support is turned off (rare) the event system will filter them out.
         [window setAcceptsMouseMovedEvents:YES];
         [window makeKeyAndOrderFront:nil];
         [window makeMainWindow];
+        [window flushWindow];
         
         // Direct the context to draw in this window
         [context setView:[window contentView]];
@@ -343,10 +346,10 @@ void VID_Init (void)
     }
     
     [context makeCurrentContext];
-
+    
     vid.conwidth = vid.width;
 	vid.conheight = vid.height;
-
+    
     GL_Init();
     
 	VID_Gamma_Init ();
@@ -355,6 +358,8 @@ void VID_Init (void)
     
 	if (COM_CheckParm("-fullsbar"))
 		fullsbardraw = true;
+    
+	Con_SafePrintf ("Video mode %dx%d %s initialized\n", vid.width, vid.height, vidmode_fullscreen ? "fullscreen" : "windowed");
 }
 
 /*
@@ -366,6 +371,34 @@ called at shutdown
 */
 void VID_Shutdown (void)
 {
-	
+    if (display) {
+        if (context) {
+            [NSOpenGLContext clearCurrentContext];
+            CGLClearDrawable([context CGLContextObj]);
+            [context clearDrawable];
+            [context release];
+            context = nil;
+        }
+        
+        VID_Gamma_Shutdown ();
+        
+        if (window) {
+            [window close];
+            [window release];
+            window = nil;
+        }
+        
+        if (vidmode_fullscreen) {
+            if (desktopMode) {
+                CGDisplaySetDisplayMode(display, desktopMode, NULL);
+            }
+        }
+        
+        CGDisplayRelease(display);
+        
+    }
+    
+    vidmode_fullscreen = false;
+    
 }
 
