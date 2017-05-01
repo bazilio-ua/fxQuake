@@ -60,7 +60,6 @@
 		42B718691EA2C12E00BD51E1 /* wad.c in Sources */ = {isa = PBXBuildFile; fileRef = 4273FB071DFF2EDA005DC9A7 /* wad.c */; };
 		42B7186A1EA2C12E00BD51E1 /* world.c in Sources */ = {isa = PBXBuildFile; fileRef = 4273FB091DFF2EDA005DC9A7 /* world.c */; };
 		42B7186B1EA2C12E00BD51E1 /* zone.c in Sources */ = {isa = PBXBuildFile; fileRef = 4273FB0B1DFF2EDA005DC9A7 /* zone.c */; };
-		42B7186C1EA2C12E00BD51E1 /* QController.m in Sources */ = {isa = PBXBuildFile; fileRef = 42A7FC5C1EA2B730002A1C29 /* QController.m */; };
 		42B7186D1EA2C13200BD51E1 /* fxQuake.xib in Resources */ = {isa = PBXBuildFile; fileRef = 42A7FC5E1EA2B730002A1C29 /* fxQuake.xib */; };
 		42B718721EA2C15900BD51E1 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 42A7FC5D1EA2B730002A1C29 /* Credits.rtf */; };
 		42B718751EA2C18E00BD51E1 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 427630261E7E714600F71B32 /* AppKit.framework */; };
@@ -164,9 +163,7 @@
 		428D9ED51DFF2769000ACF30 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		428D9ED81DFF2778000ACF30 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		428D9EDA1DFF2782000ACF30 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
-		42A7FC5A1EA2B730002A1C29 /* QController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QController.h; sourceTree = SOURCE_ROOT; };
 		42A7FC5B1EA2B730002A1C29 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = SOURCE_ROOT; };
-		42A7FC5C1EA2B730002A1C29 /* QController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QController.m; sourceTree = SOURCE_ROOT; };
 		42A7FC5D1EA2B730002A1C29 /* Credits.rtf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.rtf; path = Credits.rtf; sourceTree = SOURCE_ROOT; };
 		42A7FC5E1EA2B730002A1C29 /* fxQuake.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = fxQuake.xib; sourceTree = SOURCE_ROOT; };
 		42A7FC5F1EA2B730002A1C29 /* Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Prefix.pch; sourceTree = SOURCE_ROOT; };
@@ -178,6 +175,7 @@
 		42F16D171E01DC28001659BD /* sys_mac.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = sys_mac.m; sourceTree = SOURCE_ROOT; };
 		42F16D181E01DC28001659BD /* vid_cgl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = vid_cgl.m; sourceTree = SOURCE_ROOT; };
 		42F16D1F1E01E299001659BD /* unixquake.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = unixquake.h; sourceTree = SOURCE_ROOT; };
+		42F47EA81EB72ECA00713636 /* qinterfaces.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = qinterfaces.h; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -196,19 +194,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		425094A01EA2D24E00F91285 /* MacOSX */ = {
-			isa = PBXGroup;
-			children = (
-				42A7FC5D1EA2B730002A1C29 /* Credits.rtf */,
-				42A7FC5B1EA2B730002A1C29 /* Info.plist */,
-				42A7FC5F1EA2B730002A1C29 /* Prefix.pch */,
-				42A7FC5A1EA2B730002A1C29 /* QController.h */,
-				42A7FC5C1EA2B730002A1C29 /* QController.m */,
-				42A7FC5E1EA2B730002A1C29 /* fxQuake.xib */,
-			);
-			name = MacOSX;
-			sourceTree = "<group>";
-		};
 		427469A71DFF1F0700B436A0 = {
 			isa = PBXGroup;
 			children = (
@@ -230,7 +215,6 @@
 			isa = PBXGroup;
 			children = (
 				42A8359D1DFF2DA800DAF7F7 /* QuakeSrc */,
-				425094A01EA2D24E00F91285 /* MacOSX */,
 				42ED55A71DFF223900012B3F /* Resources */,
 				42ED563B1DFF23F800012B3F /* progdefs.q1 */,
 			);
@@ -334,6 +318,7 @@
 				4273FAFF1DFF2EDA005DC9A7 /* sv_phys.c */,
 				4273FB001DFF2EDA005DC9A7 /* sv_user.c */,
 				42F16D171E01DC28001659BD /* sys_mac.m */,
+				42F47EA81EB72ECA00713636 /* qinterfaces.h */,
 				4273FB021DFF2EDA005DC9A7 /* sys.h */,
 				42F16D1F1E01E299001659BD /* unixquake.h */,
 				42F16D181E01DC28001659BD /* vid_cgl.m */,
@@ -353,6 +338,10 @@
 		42ED55A71DFF223900012B3F /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				42A7FC5D1EA2B730002A1C29 /* Credits.rtf */,
+				42A7FC5B1EA2B730002A1C29 /* Info.plist */,
+				42A7FC5F1EA2B730002A1C29 /* Prefix.pch */,
+				42A7FC5E1EA2B730002A1C29 /* fxQuake.xib */,
 				4273FB421DFF2F2B005DC9A7 /* quake.icns */,
 			);
 			name = Resources;
@@ -473,7 +462,6 @@
 				42B718691EA2C12E00BD51E1 /* wad.c in Sources */,
 				42B7186A1EA2C12E00BD51E1 /* world.c in Sources */,
 				42B7186B1EA2C12E00BD51E1 /* zone.c in Sources */,
-				42B7186C1EA2C12E00BD51E1 /* QController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
