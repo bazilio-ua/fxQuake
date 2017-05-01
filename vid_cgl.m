@@ -142,7 +142,7 @@ void VID_Init (void)
     int i;
 	qboolean fullscreen = true;
     
-    CGDisplayErr err;
+    CGError err;
     CGDirectDisplayID displays[MAX_DISPLAYS];
     uint32_t displayCount;
     __unused uint32_t displayIndex;
@@ -264,6 +264,9 @@ void VID_Init (void)
         
         for (modeIndex = 0; modeIndex < modeCount; modeIndex++) {
             mode = (CGDisplayModeRef)CFArrayGetValueAtIndex(displayModes, modeIndex);
+            if (!mode) {
+                Sys_Error("Unable to find requested display mode");
+            }
             
             // Make sure we get the right size
             if ((int)CGDisplayModeGetWidth(mode) != vid.width || (int)CGDisplayModeGetHeight(mode) != vid.height) {
@@ -289,13 +292,18 @@ void VID_Init (void)
             Sys_Error("No suitable display mode available");
         }
         
-        if (!mode) {
-            Sys_Error("Unable to find requested display mode");
-        }
+        gameMode = mode;
+        
+        err = CGDisplayCapture(display);
+        if (err != CGDisplayNoErr)
+            Sys_Error("Unable to capture display");
+        
+        err = CGDisplaySetDisplayMode(display, gameMode, NULL);
+        if (err != CGDisplayNoErr)
+            Sys_Error("Unable to set display mode");
         
         vidmode_fullscreen = true;
         
-        gameMode = mode;
     } else {
         gameMode = desktopMode;
     }
@@ -326,21 +334,21 @@ void VID_Init (void)
                                                backing:NSBackingStoreBuffered // NSBackingStoreRetained 
                                                  defer:NO];
         [window setTitle:@"fxQuake"];
-//        [window orderFront:nil];
+        [window orderFront:nil];
 //        [window setBackgroundColor:[NSColor darkGrayColor]];
         [window useOptimizedDrawing:YES];
         // Always get mouse moved events (if mouse support is turned off (rare) the event system will filter them out.
         [window setAcceptsMouseMovedEvents:YES];
-        [window makeKeyAndOrderFront:nil];
-        [window makeMainWindow];
-        [window flushWindow];
+//        [window makeKeyAndOrderFront:nil];
+//        [window makeMainWindow];
+//        [window flushWindow];
         
         // Direct the context to draw in this window
         [context setView:[window contentView]];
     } else {
-        CGError err;
-        err = CGLSetFullScreenOnDisplay([context CGLContextObj], CGDisplayIDToOpenGLDisplayMask(display));
-        if (err) {
+        CGLError glerr;
+        glerr = CGLSetFullScreenOnDisplay([context CGLContextObj], CGDisplayIDToOpenGLDisplayMask(display));
+        if (glerr) {
             Sys_Error("Cannot set fullscreen");
         }
     }
@@ -394,11 +402,11 @@ void VID_Shutdown (void)
             }
         }
         
-        CGDisplayRelease(display);
-        
+        if (CGDisplayIsCaptured(display)) {
+            CGDisplayRelease(display);
+        }
     }
     
     vidmode_fullscreen = false;
-    
 }
 
