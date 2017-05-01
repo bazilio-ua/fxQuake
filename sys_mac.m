@@ -26,7 +26,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #import "qinterfaces.h"
 
 static qboolean nostdout = false;
-//qboolean nostdout = false;
 
 // =======================================================================
 // General routines
@@ -287,72 +286,21 @@ void Sys_Sleep (void)
 
 /*
 ================
-Sys_MainLoop
-================
-*/
-//void Sys_MainLoop (void)
-//{
-//    double time, oldtime, newtime;
-//    
-//	oldtime = Sys_DoubleTime () - 0.1;
-//	// main message loop
-//	while (1)
-//	{
-//		// find time spent rendering last frame
-//		newtime = Sys_DoubleTime ();
-//		time = newtime - oldtime;
-//        
-//		if (cls.state == ca_dedicated)
-//		{
-//			if (time < sys_ticrate.value)
-//			{
-//				Sys_Sleep ();
-//				continue; // not time to run a server only tic yet
-//			}
-//			time = sys_ticrate.value;
-//		}
-//		else
-//		{
-//			// yield the CPU for a little while when minimized, not the focus or blocked for drawing
-//			if (!vid_activewindow || vid_hiddenwindow || block_drawing)
-//				Sys_Sleep (); // Prevent CPU hogging
-//		}
-//        
-//		if (time > sys_ticrate.value * 2)
-//			oldtime = newtime;
-//		else
-//			oldtime += time;
-//        
-//		Host_Frame (time);
-//	}
-//}
-
-
-//void Sys_Main (void) 
-//{
-//}
-
-/*
-================
 main
 ================
 */
 //char *qbasedir = ".";
 //char *qcachedir = "/tmp";
 
-//int main (int argc, char **argv)
 int main (int argc, char *argv[])
 {
-    
-	// return success of application
-//	return 1;
-//    return NSApplicationMain(argc, argv);
-//    return NSApplicationMain(argc, (const char **)argv);
-    
     return NSApplicationMain(argc, (const char **)argv);
 }
 
 
+//
+// Quake Controller
+//
 @interface QController (Private)
 
 @end
@@ -364,7 +312,6 @@ int main (int argc, char *argv[])
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notification {
-    // Insert code here to initialize your application
     NS_DURING {
         [self quakeMain];
     } NS_HANDLER {
@@ -387,19 +334,8 @@ int main (int argc, char *argv[])
 }
 
 - (void)quakeMain {
-    //    Sys_MainLoop();
-    //    Sys_Main();
-    
     int argc = 0;
-    //    const char **argv;//[MAX_ARGC];
-    //    char **argv;//[MAX_ARGC];
-    
     char *argv[MAX_NUM_ARGVS];
-    
-    
-//    processInfo;
-//    arguments;
-//    NSUInteger argumentIndex, argumentCount;
     
     char *basepath;
 	double time, oldtime, newtime;
@@ -467,9 +403,9 @@ int main (int argc, char *argv[])
 	if (!parms.membase)
 		Sys_Error ("Not enough memory free, check disk space");
 	
-    //	parms.basedir = qbasedir;
-    // caching is disabled by default, use -cachedir to enable
-    //	parms.cachedir = qcachedir;
+//	parms.basedir = qbasedir;
+// caching is disabled by default, use -cachedir to enable
+//	parms.cachedir = qcachedir;
 	parms.basedir = stringify(QBASEDIR); 
 	parms.cachedir = NULL;
     
@@ -520,11 +456,7 @@ int main (int argc, char *argv[])
 		Host_Frame (time);
 	}
     
-    //    Sys_MainLoop();
-    
     [pool release];
-    
-    
 }
 
 @end

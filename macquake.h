@@ -29,8 +29,3 @@ extern CGDirectDisplayID display;
 
 extern qboolean vidmode_fullscreen; // was vidmode_active
 
-//extern qboolean nostdout;
-
-//void Sys_MainLoop (void);
-//void Sys_Main (void);
-
