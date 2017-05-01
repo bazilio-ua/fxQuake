@@ -34,6 +34,7 @@ void Sys_Error (char *error, ...);
 void Sys_Printf (char *fmt, ...);
 // send text to the console
 
+void Sys_Init (void);
 void Sys_Shutdown (void);
 void Sys_Quit (int code);
 

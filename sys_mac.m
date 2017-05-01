@@ -23,7 +23,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "unixquake.h"
 #include "macquake.h"
 
-static qboolean nostdout = false;
+#import "QController.h"
+
+//static qboolean nostdout = false;
+qboolean nostdout = false;
 
 // =======================================================================
 // General routines
@@ -59,7 +62,7 @@ void Sys_mkdir (char *path)
 Sys_ScanDirFileList
 ================
 */
-void Sys_ScanDirFileList(char *path, char *subdir, char *ext, qboolean stripext, filelist_t **list)
+void Sys_ScanDirFileList (char *path, char *subdir, char *ext, qboolean stripext, filelist_t **list)
 {
 	DIR		*dir_p;
 	struct dirent	*dir_t;
@@ -94,7 +97,7 @@ Sys_EditFile
 currently unused func
 ================
 */
-void Sys_EditFile(char *filename)
+void Sys_EditFile (char *filename)
 {
 	
 }
@@ -112,7 +115,7 @@ SYSTEM IO
 Sys_Init
 ================
 */
-void Sys_Init(void)
+void Sys_Init (void)
 {
 	
 }
@@ -221,7 +224,7 @@ double Sys_DoubleTime (void)
 Sys_ConsoleInput
 ================
 */
-char *Sys_ConsoleInput(void)
+char *Sys_ConsoleInput (void)
 {
 	static char text[256];
 	int     len;
@@ -281,6 +284,54 @@ void Sys_Sleep (void)
 	usleep (1);
 }
 
+
+/*
+================
+Sys_MainLoop
+================
+*/
+//void Sys_MainLoop (void)
+//{
+//    double time, oldtime, newtime;
+//    
+//	oldtime = Sys_DoubleTime () - 0.1;
+//	// main message loop
+//	while (1)
+//	{
+//		// find time spent rendering last frame
+//		newtime = Sys_DoubleTime ();
+//		time = newtime - oldtime;
+//        
+//		if (cls.state == ca_dedicated)
+//		{
+//			if (time < sys_ticrate.value)
+//			{
+//				Sys_Sleep ();
+//				continue; // not time to run a server only tic yet
+//			}
+//			time = sys_ticrate.value;
+//		}
+//		else
+//		{
+//			// yield the CPU for a little while when minimized, not the focus or blocked for drawing
+//			if (!vid_activewindow || vid_hiddenwindow || block_drawing)
+//				Sys_Sleep (); // Prevent CPU hogging
+//		}
+//        
+//		if (time > sys_ticrate.value * 2)
+//			oldtime = newtime;
+//		else
+//			oldtime += time;
+//        
+//		Host_Frame (time);
+//	}
+//}
+
+
+void Sys_Main (void) 
+{
+}
+
 /*
 ================
 main
@@ -289,118 +340,15 @@ main
 //char *qbasedir = ".";
 //char *qcachedir = "/tmp";
 
-int main (int argc, char **argv)
+//int main (int argc, char **argv)
+int main (int argc, char *argv[])
 {
-    char *basepath;
-	double time, oldtime, newtime;
-	quakeparms_t parms;
-	int t;
-    
-    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-    [NSApplication sharedApplication];
-    
-    // temporary for debug
-	static char cwd[MAX_OSPATH];
-    
-	getcwd( cwd, sizeof( cwd ) - 1 );
-	cwd[MAX_OSPATH-1] = 0;
-    NSLog(@"cwd %s\n", cwd);
-    
-    basepath = (char *)[[[[NSBundle mainBundle] bundlePath] stringByDeletingLastPathComponent] UTF8String];
-    NSLog(@"basepath %s\n", basepath);
-    if (*basepath && strstr(basepath, cwd)) {
-        chdir(basepath);
-    }
-    // temporary for debug
-    
-	signal(SIGFPE, SIG_IGN);
-    
-	memset(&parms, 0, sizeof(parms));
-    
-	COM_InitArgv (argc, argv);
-	parms.argc = com_argc;
-	parms.argv = com_argv;
-    
-	parms.memsize = DEFAULT_MEMORY_SIZE * 1024 * 1024;
-    
-	if (COM_CheckParm ("-heapsize"))
-	{
-		t = COM_CheckParm("-heapsize") + 1;
-        
-		if (t < com_argc)
-			parms.memsize = atoi (com_argv[t]) * 1024;
-	}
-	else if (COM_CheckParm ("-mem"))
-	{
-		t = COM_CheckParm("-mem") + 1;
-        
-		if (t < com_argc)
-			parms.memsize = atoi (com_argv[t]) * 1024 * 1024;
-	}
-    
-	parms.membase = malloc (parms.memsize);
-    
-	if (!parms.membase)
-		Sys_Error ("Not enough memory free, check disk space");
-	
-    //	parms.basedir = qbasedir;
-    // caching is disabled by default, use -cachedir to enable
-    //	parms.cachedir = qcachedir;
-	parms.basedir = stringify(QBASEDIR); 
-	parms.cachedir = NULL;
-    
-	if (COM_CheckParm("-nostdout"))
-		nostdout = true;
-    
-	Sys_Init();
-    
-	Sys_Printf ("Host init started\n");
-	Host_Init (&parms);
-    
-	// Make stdin non-blocking
-	if (!nostdout)
-	{
-		fcntl (STDIN_FILENO, F_SETFL, fcntl(STDIN_FILENO, F_GETFL, 0) | O_NONBLOCK);
-		printf ("fxQuake %4.2f\n", (float)VERSION);
-	}
-    
-	oldtime = Sys_DoubleTime () - 0.1;
-	// main message loop
-	while (1)
-	{
-		// find time spent rendering last frame
-		newtime = Sys_DoubleTime ();
-		time = newtime - oldtime;
-        
-		if (cls.state == ca_dedicated)
-		{
-			if (time < sys_ticrate.value)
-			{
-				Sys_Sleep ();
-				continue; // not time to run a server only tic yet
-			}
-			time = sys_ticrate.value;
-		}
-		else
-		{
-			// yield the CPU for a little while when minimized, not the focus or blocked for drawing
-			if (!vid_activewindow || vid_hiddenwindow || block_drawing)
-				Sys_Sleep (); // Prevent CPU hogging
-		}
-        
-		if (time > sys_ticrate.value * 2)
-			oldtime = newtime;
-		else
-			oldtime += time;
-        
-		Host_Frame (time);
-	}
-    
-    [pool release];
     
 	// return success of application
-	return 1;
+//	return 1;
 //    return NSApplicationMain(argc, argv);
 //    return NSApplicationMain(argc, (const char **)argv);
+    
+    return NSApplicationMain(argc, (const char **)argv);
 }
 
