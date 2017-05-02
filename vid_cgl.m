@@ -125,7 +125,11 @@ GL_EndRendering
 */
 inline void GL_EndRendering (void)
 {
-	
+//    [context flushBuffer];
+	CGLFlushDrawable([context CGLContextObj]);
+    
+	if (fullsbardraw)
+		Sbar_Changed();
 }
 
 //====================================
@@ -150,10 +154,10 @@ void VID_Init (void)
     qboolean isStretched = false;
     
     NSOpenGLPixelFormatAttribute pixelAttributes[] = {
-        NSOpenGLPFAMinimumPolicy,
+//        NSOpenGLPFAMinimumPolicy,
         NSOpenGLPFAAccelerated,
         NSOpenGLPFADoubleBuffer,
-        NSOpenGLPFADepthSize, 24,
+        NSOpenGLPFADepthSize, 32,//24,
         NSOpenGLPFAAlphaSize, 8,
         NSOpenGLPFAStencilSize, 8,
         NSOpenGLPFAColorSize, 32,
@@ -331,12 +335,12 @@ void VID_Init (void)
         
         window = [[NSWindow alloc] initWithContentRect:windowRect 
                                              styleMask:NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask
-                                               backing:NSBackingStoreBuffered // NSBackingStoreRetained 
+                                               backing:/*NSBackingStoreBuffered*/  NSBackingStoreRetained 
                                                  defer:NO];
         [window setTitle:@"fxQuake"];
         [window orderFront:nil];
 //        [window setBackgroundColor:[NSColor darkGrayColor]];
-        [window useOptimizedDrawing:YES];
+//        [window useOptimizedDrawing:YES];
         // Always get mouse moved events (if mouse support is turned off (rare) the event system will filter them out.
         [window setAcceptsMouseMovedEvents:YES];
 //        [window makeKeyAndOrderFront:nil];
