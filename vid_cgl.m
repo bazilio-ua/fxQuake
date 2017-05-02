@@ -128,6 +128,10 @@ inline void GL_EndRendering (void)
 //    [context flushBuffer];
 	CGLFlushDrawable([context CGLContextObj]);
     
+//    glClear(GL_DEPTH_BUFFER_BIT);
+//    glClear (GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+
+    
 	if (fullsbardraw)
 		Sbar_Changed();
 }
@@ -154,15 +158,20 @@ void VID_Init (void)
     qboolean isStretched = false;
     
     NSOpenGLPixelFormatAttribute pixelAttributes[] = {
-//        NSOpenGLPFAMinimumPolicy,
+        NSOpenGLPFANoRecovery,
+//        NSOpenGLPFAClosestPolicy,
+        NSOpenGLPFAMinimumPolicy,
         NSOpenGLPFAAccelerated,
         NSOpenGLPFADoubleBuffer,
-        NSOpenGLPFADepthSize, 32,//24,
-        NSOpenGLPFAAlphaSize, 8,
-        NSOpenGLPFAStencilSize, 8,
+//        NSOpenGLPFADepthSize, 32,//24,
+        NSOpenGLPFADepthSize, 24,//24,
+        NSOpenGLPFAAlphaSize, 0,//8,
+        NSOpenGLPFAStencilSize, 0,//8,
+        NSOpenGLPFAAccumSize, 0,
         NSOpenGLPFAColorSize, 32,
-        NSOpenGLPFASampleBuffers, 1,
-        NSOpenGLPFASamples, 8,
+//        NSOpenGLPFAMultisample,
+//        NSOpenGLPFASampleBuffers, 1,
+//        NSOpenGLPFASamples, 4, //8,
         0
     };
     
@@ -335,7 +344,7 @@ void VID_Init (void)
         
         window = [[NSWindow alloc] initWithContentRect:windowRect 
                                              styleMask:NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask
-                                               backing:/*NSBackingStoreBuffered*/  NSBackingStoreRetained 
+                                               backing:NSBackingStoreBuffered  //NSBackingStoreRetained 
                                                  defer:NO];
         [window setTitle:@"fxQuake"];
         [window orderFront:nil];
@@ -359,11 +368,19 @@ void VID_Init (void)
     
     [context makeCurrentContext];
     
+    vid_activewindow = true;
+	vid_hiddenwindow = false;
+
     vid.conwidth = vid.width;
 	vid.conheight = vid.height;
     
     GL_Init();
     
+    CGLError glerr = CGLEnable([context CGLContextObj], kCGLCEMPEngine);
+    if (glerr == kCGLNoError) {
+        Con_Printf("Enable multi-threaded OpenGL\n");
+    }
+
 	VID_Gamma_Init ();
     
     vid.recalc_refdef = true; // force a surface cache flush

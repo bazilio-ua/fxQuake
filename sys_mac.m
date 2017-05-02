@@ -280,7 +280,8 @@ char *Sys_GetClipboardData (void)
 
 void Sys_Sleep (void)
 {
-	usleep (1);
+//	usleep (1);
+    [NSThread sleepForTimeInterval:0.001 /* 0.02*/];
 }
 
 
@@ -303,6 +304,8 @@ int main (int argc, char *argv[])
 //
 @interface QController (Private)
 
+- (void)quakeMain;
+
 @end
 
 @implementation QController
@@ -312,13 +315,13 @@ int main (int argc, char *argv[])
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notification {
-    NS_DURING {
+//    NS_DURING {
         [self quakeMain];
-    } NS_HANDLER {
-        Sys_Error("%@", [localException reason]);
-    } NS_ENDHANDLER;
-    
-    Sys_Quit(0);
+//    } NS_HANDLER {
+//        Sys_Error("%@", [localException reason]);
+//    } NS_ENDHANDLER;
+//    
+//    Sys_Quit(0);
 }
 
 - (void)applicationDidHide:(NSNotification *)notification {
@@ -342,8 +345,8 @@ int main (int argc, char *argv[])
 	quakeparms_t parms;
 	int t;
     
-    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-    [NSApplication sharedApplication];
+//    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+//    [NSApplication sharedApplication];
     
     [NSApp setServicesProvider:self];
     
@@ -450,15 +453,21 @@ int main (int argc, char *argv[])
 				Sys_Sleep (); // Prevent CPU hogging
 		}
         
-		if (time > sys_ticrate.value * 2)
-			oldtime = newtime;
-		else
-			oldtime += time;
+//		if (time > sys_ticrate.value * 2)
+//			oldtime = newtime;
+//		else
+//			oldtime += time;
         
 		Host_Frame (time);
+        
+        if (time < 0.02) {
+            [NSThread sleepForTimeInterval:0.01 /* 0.02*/]; // 0.001
+        }
+        
+        oldtime = newtime;
 	}
     
-    [pool release];
+//    [pool release];
 }
 
 @end
