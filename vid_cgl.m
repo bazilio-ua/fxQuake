@@ -297,6 +297,12 @@ void VID_Init (void)
 		fullscreen = false;
 	}
     
+    if (fullscreen && (vid.width < 640 || vid.height < 480))
+    {
+        Con_Warning ("Fullscreen in low-res mode not available\n");
+        fullscreen = false;
+    }
+
     // get video mode list
     CFArrayRef displayModes = CGDisplayCopyAllDisplayModes(display, NULL);
     if (!displayModes) {
@@ -324,7 +330,7 @@ void VID_Init (void)
                 (int)CGDisplayModeGetRefreshRate(mode) == refreshRate &&
                 (qboolean)((CGDisplayModeGetIOFlags(mode) & kDisplayModeStretchedFlag) == kDisplayModeStretchedFlag) == isStretched) {
                 
-                break;
+                break; // we got it
             }
             
             bestModeIndex = modeIndex;
@@ -443,7 +449,7 @@ void VID_Init (void)
 	if (COM_CheckParm("-fullsbar"))
 		fullsbardraw = true;
     
-	Con_SafePrintf ("Video mode %dx%dx%d %dHz %s %s initialized\n", vid.width, vid.height, colorDepth, refreshRate, isStretched ? "(stretched)" : "", vidmode_fullscreen ? "fullscreen" : "windowed");
+	Con_SafePrintf ("Video mode %dx%dx%d %dHz %s%s initialized\n", vid.width, vid.height, colorDepth, refreshRate, isStretched ? "(stretched) " : "", vidmode_fullscreen ? "fullscreen" : "windowed");
 }
 
 /*
