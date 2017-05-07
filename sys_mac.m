@@ -461,7 +461,7 @@ int main (int argc, char *argv[])
 		Host_Frame (time);
         
         if (time < 0.02) {
-            [NSThread sleepForTimeInterval:0.01 /* 0.02 */]; // 0.001
+            [NSThread sleepForTimeInterval:0.001 /* 0.02 */]; // 0.001
         }
         
         oldtime = newtime;

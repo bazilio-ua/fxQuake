@@ -138,6 +138,51 @@ inline void GL_EndRendering (void)
 
 //====================================
 
+NSOpenGLPixelFormat *OpenGLPixelFormat (int bpp, qboolean fullscreen)
+{
+    NSOpenGLPixelFormat *format = nil;
+    NSOpenGLPixelFormatAttribute attributes[32];
+    int i = 0;
+    
+    if (bpp < 16)
+        bpp = 16;
+    else if (bpp > 16)
+        bpp = 32;
+    
+    attributes[i++] = NSOpenGLPFANoRecovery;
+    attributes[i++] = NSOpenGLPFAMinimumPolicy;
+    attributes[i++] = NSOpenGLPFAAccelerated;
+    attributes[i++] = NSOpenGLPFADoubleBuffer;
+    
+    attributes[i++] = NSOpenGLPFADepthSize;
+    attributes[i++] = 1;
+    
+    attributes[i++] = NSOpenGLPFAAlphaSize;
+    attributes[i++] = 0;
+    
+    attributes[i++] = NSOpenGLPFAStencilSize;
+    attributes[i++] = 0;
+    
+    attributes[i++] = NSOpenGLPFAAccumSize;
+    attributes[i++] = 0;
+    
+    attributes[i++] = NSOpenGLPFAColorSize;
+    attributes[i++] = bpp;
+    
+    if (fullscreen) {
+        attributes[i++] = NSOpenGLPFAFullScreen;
+        attributes[i++] = NSOpenGLPFAScreenMask;
+        attributes[i++] = CGDisplayIDToOpenGLDisplayMask(display);
+    } else
+        attributes[i++] = NSOpenGLPFAWindow;
+    
+    attributes[i++] = 0;
+    
+    format = [[NSOpenGLPixelFormat alloc] initWithAttributes:attributes];
+    
+    return format;
+}
+
 #define MAX_DISPLAYS 128
 
 /*
@@ -153,29 +198,9 @@ void VID_Init (void)
     CGError err;
     CGDirectDisplayID displays[MAX_DISPLAYS];
     uint32_t displayCount;
-    __unused uint32_t displayIndex;
+    uint32_t displayIndex = 0;
     int colorDepth = 32, refreshRate = 0;
     qboolean isStretched = false;
-    
-    NSOpenGLPixelFormatAttribute pixelAttributes[] = {
-        NSOpenGLPFANoRecovery,
-//        NSOpenGLPFAClosestPolicy,
-        NSOpenGLPFAMinimumPolicy,
-        NSOpenGLPFAAccelerated,
-        NSOpenGLPFADoubleBuffer,
-//        NSOpenGLPFADepthSize, 32,//24,
-        NSOpenGLPFADepthSize, 24,//24,
-        NSOpenGLPFAAlphaSize, 0,//8,
-        NSOpenGLPFAStencilSize, 0,//8,
-        NSOpenGLPFAAccumSize, 0,
-        NSOpenGLPFAColorSize, 32,
-//        NSOpenGLPFAMultisample,
-//        NSOpenGLPFASampleBuffers, 1,
-//        NSOpenGLPFASamples, 4, //8,
-        0
-    };
-    
-    NSOpenGLPixelFormat *pixelFormat = nil;
     
     // set vid parameters
 	vid.width = 640;
@@ -187,8 +212,19 @@ void VID_Init (void)
     if (err != CGDisplayNoErr)
         Sys_Error("Cannot get display list");
     
+    // check for command-line display number
+    if ((i = COM_CheckParm("-display"))) 
+    {
+		if (i >= com_argc-1)
+			Sys_Error("VID_Init: -display <display>");
+        
+		displayIndex = atoi(com_argv[i+1]);
+		if (displayIndex >= displayCount)
+			Sys_Error("VID_Init: Bad display number");
+    }
+    
     // By default, we use the main screen
-    display = displays[0];
+    display = displays[displayIndex];
     
     // get current mode
     desktopMode = CGDisplayCopyDisplayMode(display);
@@ -281,21 +317,14 @@ void VID_Init (void)
                 Sys_Error("Unable to find requested display mode");
             }
             
-            // Make sure we get the right size
-            if ((int)CGDisplayModeGetWidth(mode) != vid.width || (int)CGDisplayModeGetHeight(mode) != vid.height) {
-                continue;
-            }
-            
-            if ((int)[[(NSDictionary *)*((long *)mode + 2) objectForKey:(id)kCGDisplayBitsPerPixel] intValue] != colorDepth) {
-                continue;
-            }
-            
-            if ((int)CGDisplayModeGetRefreshRate(mode) != refreshRate) {
-                continue;
-            }
-            
-            if ((qboolean)((CGDisplayModeGetIOFlags(mode) & kDisplayModeStretchedFlag) == kDisplayModeStretchedFlag) != isStretched) {
-                continue;
+            // Make sure we get the right mode
+            if ((int)CGDisplayModeGetWidth(mode) == vid.width && 
+                (int)CGDisplayModeGetHeight(mode) == vid.height && 
+                (int)[[(NSDictionary *)*((long *)mode + 2) objectForKey:(id)kCGDisplayBitsPerPixel] intValue] == colorDepth &&
+                (int)CGDisplayModeGetRefreshRate(mode) == refreshRate &&
+                (qboolean)((CGDisplayModeGetIOFlags(mode) & kDisplayModeStretchedFlag) == kDisplayModeStretchedFlag) == isStretched) {
+                
+                break;
             }
             
             bestModeIndex = modeIndex;
@@ -307,10 +336,12 @@ void VID_Init (void)
         
         gameMode = mode;
         
+        // Capture the main display
         err = CGDisplayCapture(display);
         if (err != CGDisplayNoErr)
             Sys_Error("Unable to capture display");
         
+        // Switch to the correct resolution
         err = CGDisplaySetDisplayMode(display, gameMode, NULL);
         if (err != CGDisplayNoErr)
             Sys_Error("Unable to set display mode");
@@ -322,7 +353,36 @@ void VID_Init (void)
     }
     
     // Get the GL pixel format
-    pixelFormat = [[NSOpenGLPixelFormat alloc] initWithAttributes:pixelAttributes];
+    NSOpenGLPixelFormatAttribute pixelAttributes[] = {
+        NSOpenGLPFANoRecovery,//0
+        NSOpenGLPFAMinimumPolicy,//1
+        NSOpenGLPFAAccelerated,//2
+        NSOpenGLPFADoubleBuffer,//3
+        NSOpenGLPFADepthSize, 1,//4 5
+        NSOpenGLPFAAlphaSize, 0,//6 7
+        NSOpenGLPFAStencilSize, 0,//8 9
+        NSOpenGLPFAAccumSize, 0,//10 11
+        NSOpenGLPFAColorSize, 32,//12 13
+        0, 0, 0, 0, 0//14 15 16 17 18 - reserved
+    };
+    
+    if (colorDepth < 16)
+        colorDepth = 16;
+    else if (colorDepth > 16)
+        colorDepth = 32;
+    
+    pixelAttributes[13] = colorDepth;
+    
+    if (fullscreen) {
+        pixelAttributes[14] = NSOpenGLPFAFullScreen;
+        pixelAttributes[15] = NSOpenGLPFAScreenMask;
+        pixelAttributes[16] = CGDisplayIDToOpenGLDisplayMask(display);
+    } else {
+        pixelAttributes[14] = NSOpenGLPFAWindow;
+    }
+    
+    NSOpenGLPixelFormat *pixelFormat = [[NSOpenGLPixelFormat alloc] initWithAttributes:pixelAttributes];
+//    pixelFormat = OpenGLPixelFormat(colorDepth, fullscreen);
     if (!pixelFormat) {
         Sys_Error("No pixel format found");
     }
@@ -344,23 +404,18 @@ void VID_Init (void)
         
         window = [[NSWindow alloc] initWithContentRect:windowRect 
                                              styleMask:NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask
-                                               backing:NSBackingStoreBuffered  //NSBackingStoreRetained 
+                                               backing:NSBackingStoreBuffered 
                                                  defer:NO];
         [window setTitle:@"fxQuake"];
         [window orderFront:nil];
-//        [window setBackgroundColor:[NSColor darkGrayColor]];
-//        [window useOptimizedDrawing:YES];
         // Always get mouse moved events (if mouse support is turned off (rare) the event system will filter them out.
         [window setAcceptsMouseMovedEvents:YES];
-//        [window makeKeyAndOrderFront:nil];
-//        [window makeMainWindow];
-//        [window flushWindow];
         
         // Direct the context to draw in this window
         [context setView:[window contentView]];
     } else {
-        CGLError glerr;
-        glerr = CGLSetFullScreenOnDisplay([context CGLContextObj], CGDisplayIDToOpenGLDisplayMask(display));
+        // Set the context to full screen
+        CGLError glerr = CGLSetFullScreenOnDisplay([context CGLContextObj], CGDisplayIDToOpenGLDisplayMask(display));
         if (glerr) {
             Sys_Error("Cannot set fullscreen");
         }
@@ -388,7 +443,7 @@ void VID_Init (void)
 	if (COM_CheckParm("-fullsbar"))
 		fullsbardraw = true;
     
-	Con_SafePrintf ("Video mode %dx%d %s initialized\n", vid.width, vid.height, vidmode_fullscreen ? "fullscreen" : "windowed");
+	Con_SafePrintf ("Video mode %dx%dx%d %dHz %s %s initialized\n", vid.width, vid.height, colorDepth, refreshRate, isStretched ? "(stretched)" : "", vidmode_fullscreen ? "fullscreen" : "windowed");
 }
 
 /*
@@ -417,12 +472,14 @@ void VID_Shutdown (void)
             window = nil;
         }
         
+        // Switch back to the original screen resolution
         if (vidmode_fullscreen) {
             if (desktopMode) {
                 CGDisplaySetDisplayMode(display, desktopMode, NULL);
             }
         }
         
+        // Release the main display
         if (CGDisplayIsCaptured(display)) {
             CGDisplayRelease(display);
         }
