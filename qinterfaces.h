@@ -21,7 +21,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-@interface QController : NSObject <NSApplicationDelegate>
+@interface QController : NSObject <NSApplicationDelegate, NSWindowDelegate>
 
 @end
 

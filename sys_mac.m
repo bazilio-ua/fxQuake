@@ -470,5 +470,13 @@ int main (int argc, char *argv[])
 //    [pool release];
 }
 
+- (BOOL)windowShouldClose:(id)sender {
+    return YES;
+}
+
+- (void)windowWillClose:(NSNotification *)notification {
+    
+}
+
 @end
 
