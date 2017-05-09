@@ -180,41 +180,41 @@ void IN_ProcessEvents (void)
                                           inMode:NSDefaultRunLoopMode 
                                          dequeue:YES])) 
     {
-        NSEventType eventType = [event type];
-        switch (eventType) {
-            /* These six event types are ignored since we do all of our mouse down/up process via the uber-mouse system defined event. 
-                We have to accept these events however since they get enqueued and the queue will fill up if we don't. */
-            case NSLeftMouseDown:
-                return;
-            case NSLeftMouseUp:
-                return;
-            case NSRightMouseDown:
-                return;
-            case NSRightMouseUp:
-                return;
-            case NSOtherMouseDown:  // other mouse down
-                return;
-            case NSOtherMouseUp:    // other mouse up
-                return;
-                
-            case NSMouseMoved:
-            case NSLeftMouseDragged:
-            case NSRightMouseDragged:
-            case NSOtherMouseDragged:   // other mouse dragged
-                return;
-            case NSKeyDown:
-            case NSKeyUp:
-                return;
-            case NSFlagsChanged:
-                return;
-            case NSSystemDefined:
-                return;
-            case NSScrollWheel:
-                return;
-                
-            default:
-                break;
-        }
+//        NSEventType eventType = [event type];
+//        switch (eventType) {
+//            /* These six event types are ignored since we do all of our mouse down/up process via the uber-mouse system defined event. 
+//                We have to accept these events however since they get enqueued and the queue will fill up if we don't. */
+//            case NSLeftMouseDown:
+//                return;
+//            case NSLeftMouseUp:
+//                return;
+//            case NSRightMouseDown:
+//                return;
+//            case NSRightMouseUp:
+//                return;
+//            case NSOtherMouseDown:  // other mouse down
+//                return;
+//            case NSOtherMouseUp:    // other mouse up
+//                return;
+//                
+//            case NSMouseMoved:
+//            case NSLeftMouseDragged:
+//            case NSRightMouseDragged:
+//            case NSOtherMouseDragged:   // other mouse dragged
+//                return;
+//            case NSKeyDown:
+//            case NSKeyUp:
+//                return;
+//            case NSFlagsChanged:
+//                return;
+//            case NSSystemDefined:
+//                return;
+//            case NSScrollWheel:
+//                return;
+//                
+//            default:
+//                break;
+//        }
         
         [NSApp sendEvent:event];
     }

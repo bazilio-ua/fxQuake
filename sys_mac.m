@@ -23,8 +23,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "unixquake.h"
 #include "macquake.h"
 
-#import "qinterfaces.h"
-
 static qboolean nostdout = false;
 
 // =======================================================================
@@ -315,13 +313,7 @@ int main (int argc, char *argv[])
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notification {
-//    NS_DURING {
-        [self quakeMain];
-//    } NS_HANDLER {
-//        Sys_Error("%@", [localException reason]);
-//    } NS_ENDHANDLER;
-//    
-//    Sys_Quit(0);
+    [self quakeMain];
 }
 
 - (void)applicationDidHide:(NSNotification *)notification {
@@ -340,7 +332,6 @@ int main (int argc, char *argv[])
     int argc = 0;
     char *argv[MAX_NUM_ARGVS];
     
-    char *basepath;
 	double time, oldtime, newtime;
 	quakeparms_t parms;
 	int t;
@@ -362,19 +353,11 @@ int main (int argc, char *argv[])
         argv[argc++] = strdup([arg cStringUsingEncoding:NSASCIIStringEncoding]);
     }
     
-    // temporary for debug
-	static char cwd[MAX_OSPATH];
+    NSString *basepath = [[[NSBundle mainBundle] bundlePath] stringByDeletingLastPathComponent];
+//    NSLog(@"basepath %@", basepath);
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    [fileManager changeCurrentDirectoryPath:basepath];
     
-	getcwd( cwd, sizeof( cwd ) - 1 );
-	cwd[MAX_OSPATH-1] = 0;
-    NSLog(@"cwd %s\n", cwd);
-    
-    basepath = (char *)[[[[NSBundle mainBundle] bundlePath] stringByDeletingLastPathComponent] UTF8String];
-    NSLog(@"basepath %s\n", basepath);
-    if (*basepath && strstr(basepath, cwd)) {
-        chdir(basepath);
-    }
-    // temporary for debug
     
 	signal(SIGFPE, SIG_IGN);
     
@@ -475,7 +458,7 @@ int main (int argc, char *argv[])
 }
 
 - (void)windowWillClose:(NSNotification *)notification {
-    
+    Sys_Quit(0);
 }
 
 @end

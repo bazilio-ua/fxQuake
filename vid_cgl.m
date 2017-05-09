@@ -360,16 +360,16 @@ void VID_Init (void)
     
     // Get the GL pixel format
     NSOpenGLPixelFormatAttribute pixelAttributes[] = {
-        NSOpenGLPFANoRecovery,//0
-        NSOpenGLPFAMinimumPolicy,//1
-        NSOpenGLPFAAccelerated,//2
-        NSOpenGLPFADoubleBuffer,//3
-        NSOpenGLPFADepthSize, 1,//4 5
-        NSOpenGLPFAAlphaSize, 0,//6 7
-        NSOpenGLPFAStencilSize, 0,//8 9
-        NSOpenGLPFAAccumSize, 0,//10 11
-        NSOpenGLPFAColorSize, 32,//12 13
-        0, 0, 0, 0, 0//14 15 16 17 18 - reserved
+        NSOpenGLPFANoRecovery,      //0
+        NSOpenGLPFAMinimumPolicy,   //1
+        NSOpenGLPFAAccelerated,     //2
+        NSOpenGLPFADoubleBuffer,    //3
+        NSOpenGLPFADepthSize, 1,    //4 5
+        NSOpenGLPFAAlphaSize, 0,    //6 7
+        NSOpenGLPFAStencilSize, 0,  //8 9
+        NSOpenGLPFAAccumSize, 0,    //10 11
+        NSOpenGLPFAColorSize, 32,   //12 13
+        0, 0, 0, 0                  //14 15 16 17 - reserved
     };
     
     if (colorDepth < 16)
@@ -416,14 +416,7 @@ void VID_Init (void)
         [window orderFront:nil];
         // Always get mouse moved events (if mouse support is turned off (rare) the event system will filter them out.
         [window setAcceptsMouseMovedEvents:YES];
-        
-        
-        
-        [window setReleasedWhenClosed:YES];
-        
-        id windowDelegate = [[NSApplication sharedApplication] delegate];
-        [window setDelegate:windowDelegate];
-        
+        [window setDelegate:(id<NSWindowDelegate>)[[NSApplication sharedApplication] delegate]];
         
         // Direct the context to draw in this window
         [context setView:[window contentView]];
