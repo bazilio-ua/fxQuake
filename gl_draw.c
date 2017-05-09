@@ -189,7 +189,9 @@ void GL_CheckExtensions (void)
 	qboolean ARB = false;
 	qboolean EXTcombine, ARBcombine;
 	qboolean EXTadd, ARBadd;
+#if !defined __APPLE__ && !defined __MACH__
 	qboolean SWAPcontrol;
+#endif
 	qboolean anisotropy;
 	int units;
 
@@ -288,12 +290,13 @@ void GL_CheckExtensions (void)
 	//
 #ifdef _WIN32
 	SWAPcontrol = strstr (gl_extensions, SWAPCONTROLSTRING) != NULL;
-#elif defined __APPLE__ && defined __MACH__
-	SWAPcontrol = false;
+//#elif defined __APPLE__ && defined __MACH__
+//	SWAPcontrol = false;
 #elif defined GLX_GLXEXT_PROTOTYPES
 	SWAPcontrol = strstr (glx_extensions, SWAPCONTROLSTRING) != NULL;
 #endif
 
+#if !defined __APPLE__ && !defined __MACH__
 	if (COM_CheckParm("-novsync"))
 	{
 		Con_Warning ("Vertical sync disabled at command line\n");
@@ -317,6 +320,7 @@ void GL_CheckExtensions (void)
 	}
 	else
 		Con_Warning ("Vertical sync not supported (extension not found)\n");
+#endif
 
 	//
 	// Anisotropic filtering
@@ -419,8 +423,13 @@ void GL_Info_f (void)
 GL_SwapInterval
 ===============
 */
+#if defined __APPLE__ && defined __MACH__
+void CGL_SwapInterval (qboolean enable);
+#endif
+
 void GL_SwapInterval (void)
 {
+#if !defined __APPLE__ && !defined __MACH__    
 	if (gl_swap_control)
 	{
 		if (gl_swapinterval.value)
@@ -434,6 +443,13 @@ void GL_SwapInterval (void)
 				Con_Printf ("GL_SwapInterval: failed on %s\n", SWAPINTERVALFUNC);
 		}
 	}
+#else
+    if (gl_swapinterval.value) {
+        CGL_SwapInterval(true);
+    } else {
+        CGL_SwapInterval(false);
+    }
+#endif
 }
 
 /*

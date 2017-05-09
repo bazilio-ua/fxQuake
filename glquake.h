@@ -150,9 +150,9 @@ GLint (GLAPIENTRY *qglSwapInterval)(GLint interval);
 #ifdef _WIN32
 #define SWAPCONTROLSTRING "WGL_EXT_swap_control"
 #define SWAPINTERVALFUNC "wglSwapIntervalEXT"
-#elif defined __APPLE__ && defined __MACH__
-#define SWAPCONTROLSTRING ""
-#define SWAPINTERVALFUNC ""
+//#elif defined __APPLE__ && defined __MACH__
+//#define SWAPCONTROLSTRING ""
+//#define SWAPINTERVALFUNC ""
 #elif defined GLX_GLXEXT_PROTOTYPES
 #define SWAPCONTROLSTRING "GLX_SGI_swap_control"
 #define SWAPINTERVALFUNC "glXSwapIntervalSGI"

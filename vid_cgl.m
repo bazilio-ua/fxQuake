@@ -183,6 +183,20 @@ NSOpenGLPixelFormat *OpenGLPixelFormat (int bpp, qboolean fullscreen)
     return format;
 }
 
+void CGL_SwapInterval (qboolean enable)
+{
+    const GLint state = (enable) ? 1 : 0;
+    
+    [context makeCurrentContext];
+    
+    CGLError glerr = CGLSetParameter([context CGLContextObj], kCGLCPSwapInterval, &state);
+    if (glerr == kCGLNoError) {
+        Con_Printf ("%s CGL swap interval\n", (state == 1) ? "Enable" : "Disable");
+    } else {
+        Con_Printf ("Failed to set CGL swap interval\n");
+    }
+}
+
 #define MAX_DISPLAYS 128
 
 /*
@@ -443,6 +457,8 @@ void VID_Init (void)
         Con_Printf("Enable multi-threaded OpenGL\n");
     }
 
+//    CGL_SwapInterval(true); // DEBUG
+    
 	VID_Gamma_Init ();
     
     vid.recalc_refdef = true; // force a surface cache flush
