@@ -40,6 +40,9 @@ cvar_t		vid_gamma = {"gamma", "1", true};
 //
 //==========================================================================
 
+CGGammaValue	 vid_gammaramp[3][256];
+CGGammaValue	 vid_systemgammaramp[3][256]; // to restore gamma
+qboolean vid_gammaworks;
 
 /*
 ================
@@ -50,7 +53,15 @@ apply gamma correction
 */
 void VID_Gamma_Set (void)
 {
-	
+	if (!vid_gammaworks)
+		return;
+    
+    CGError err = CGSetDisplayTransferByTable(display, 256, 
+                                              vid_gammaramp[0], 
+                                              vid_gammaramp[1], 
+                                              vid_gammaramp[2]);
+    if (err != kCGErrorSuccess)
+        Con_Printf ("VID_Gamma_Set: Failed to set gamma table ramp\n");
 }
 
 /*
@@ -62,7 +73,15 @@ restore system gamma
 */
 void VID_Gamma_Restore (void)
 {
-	
+	if (!vid_gammaworks)
+		return;
+
+	CGError err = CGSetDisplayTransferByTable(display, 256, 
+                                              vid_systemgammaramp[0], 
+                                              vid_systemgammaramp[1], 
+                                              vid_systemgammaramp[2]);
+    if (err != kCGErrorSuccess)
+        Con_Printf ("VID_Gamma_Restore: Failed to set gamma table ramp\n");
 }
 
 /*
@@ -86,6 +105,30 @@ callback when the cvar changes
 */
 void VID_Gamma (void)
 {
+    int i;
+	static float oldgamma;
+    
+	if (vid_gamma.value == oldgamma)
+		return;
+    
+	oldgamma = vid_gamma.value;
+    
+	// Refresh gamma
+	for (i=0; i<256; i++)
+		vid_gammaramp[0][i] = vid_gammaramp[1][i] = vid_gammaramp[2][i] =
+            (CLAMP(0, (int) (255 * pow ((i+0.5)/255.5, vid_gamma.value) + 0.5), 255) << 8) / 65535.0;
+
+//    float value = vid_gamma.value;
+//    value = CLAMP(0.5, value, 1.0);
+//    value = ((1.4f - value) * 2.5f);
+//    
+//    for (i=0; i<256; i++)
+//    {
+//        vid_gammaramp[0][i] = value * vid_systemgammaramp[0][i];
+//        vid_gammaramp[1][i] = value * vid_systemgammaramp[1][i];
+//        vid_gammaramp[2][i] = value * vid_systemgammaramp[2][i];
+//    }
+    
 	VID_Gamma_Set ();
 }
 
@@ -98,6 +141,21 @@ call on init
 */
 void VID_Gamma_Init (void)
 {
+    uint32_t capacity = CGDisplayGammaTableCapacity(display);
+    uint32_t sampleCount;
+    
+	vid_gammaworks = (capacity == 256);
+    if (vid_gammaworks) {
+        CGError err = CGGetDisplayTransferByTable(display, capacity, 
+                                                  vid_systemgammaramp[0], 
+                                                  vid_systemgammaramp[1], 
+                                                  vid_systemgammaramp[2], &sampleCount);
+        if (err != kCGErrorSuccess)
+            Con_Printf ("VID_Gamma_Init: Failed to get gamma table ramp\n");
+    } else {
+		Con_Printf ("Hardware gamma unavailable\n");
+    }
+    
 	Cvar_RegisterVariable (&vid_gamma, VID_Gamma);
 }
 
@@ -223,7 +281,7 @@ void VID_Init (void)
     
     // Get the active display list
     err = CGGetActiveDisplayList(MAX_DISPLAYS, displays, &displayCount);
-    if (err != CGDisplayNoErr)
+    if (err != kCGErrorSuccess)
         Sys_Error("Cannot get display list");
     
     // check for command-line display number
@@ -358,12 +416,12 @@ void VID_Init (void)
         
         // Capture the main display
         err = CGDisplayCapture(display);
-        if (err != CGDisplayNoErr)
+        if (err != kCGErrorSuccess)
             Sys_Error("Unable to capture display");
         
         // Switch to the correct resolution
         err = CGDisplaySetDisplayMode(display, gameMode, NULL);
-        if (err != CGDisplayNoErr)
+        if (err != kCGErrorSuccess)
             Sys_Error("Unable to set display mode");
         
         vidmode_fullscreen = true;
