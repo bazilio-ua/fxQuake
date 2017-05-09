@@ -114,7 +114,13 @@ Sys_Init
 */
 void Sys_Init (void)
 {
-	
+    int numcpus;
+    
+    numcpus = sysconf(_SC_NPROCESSORS_ONLN);
+    if (numcpus != -1)
+        numcpus = (numcpus < 1) ? 1 : numcpus;
+    
+    Sys_Printf("Detected %d CPUs.\n", numcpus);
 }
 
 void Sys_Printf (char *fmt, ...)
@@ -138,7 +144,7 @@ void Sys_Printf (char *fmt, ...)
 		*p &= 0x7f;
 		if ((*p > 128 || *p < 32) && *p != 10 && *p != 13 && *p != 9)
 			printf("[%02x]", *p);
-        //			printf("*");
+//			printf("*");
 		else
 			putc(*p, stdout);
 	}
@@ -279,7 +285,7 @@ char *Sys_GetClipboardData (void)
 void Sys_Sleep (void)
 {
 //	usleep (1);
-    [NSThread sleepForTimeInterval:0.001 /* 0.02*/];
+    [NSThread sleepForTimeInterval:0.001];
 }
 
 
@@ -444,7 +450,7 @@ int main (int argc, char *argv[])
 		Host_Frame (time);
         
         if (time < 0.02) {
-            [NSThread sleepForTimeInterval:0.001 /* 0.02 */]; // 0.001
+            [NSThread sleepForTimeInterval:0.001];
         }
         
         oldtime = newtime;
