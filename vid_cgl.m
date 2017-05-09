@@ -193,7 +193,7 @@ void CGL_SwapInterval (qboolean enable)
     if (glerr == kCGLNoError) {
         Con_Printf ("%s CGL swap interval\n", (state == 1) ? "Enable" : "Disable");
     } else {
-        Con_Printf ("Failed to set CGL swap interval\n");
+        Con_Warning ("Unable to set CGL swap interval\n");
     }
 }
 
