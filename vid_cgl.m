@@ -113,22 +113,29 @@ void VID_Gamma (void)
     
 	oldgamma = vid_gamma.value;
     
-	// Refresh gamma
-//	for (i=0; i<256; i++)
-//		vid_gammaramp[0][i] = vid_gammaramp[1][i] = vid_gammaramp[2][i] =
-//            (CLAMP(0, (int) (255 * pow ((i+0.5)/255.5, vid_gamma.value) + 0.5), 255) << 8) / 65535.0;
-
+    
+    
+    
+//    vid_gamma.value = 0.7; // DEBUG
+    
+    
+    
     // Refresh gamma (X11)
 //	for (i=0; i<256; i++)
 //		vid_gammaramp[0][i] = vid_gammaramp[1][i] = vid_gammaramp[2][i] =
 //            CLAMP(0, (int) (255 * pow ((i+0.5)/255.5, vid_gamma.value) + 0.5), 255) << 8;
-
     
     
-	for (i=0; i<256; i++)
-		vid_gammaramp[0][i] = vid_gammaramp[1][i] = vid_gammaramp[2][i] =
-        CLAMP(0, (int) (65535 * pow ((i+0.5)/255.5, vid_gamma.value) + 0.5), 65535) / 65535.0;
+//    for (i=0; i<256; i++)
+//        vid_gammaramp[0][i] = vid_gammaramp[1][i] = vid_gammaramp[2][i] =
+//            CLAMP(0, (int)(65535 * pow ((i+0.5)/255.5, vid_gamma.value) + 0.5), 65535) / 65535.0;
 
+//!    work!
+    for (i=0; i<256; i++)
+        vid_gammaramp[0][i] = vid_gammaramp[1][i] = vid_gammaramp[2][i] =
+            CLAMP(0, (int)(255 * pow ((i+0.5)/255.5, vid_gamma.value) + 0.5), 255) / 255.0;
+    
+    
     
 //    float value = vid_gamma.value;
 //    value = CLAMP(0.5, value, 1.0);
