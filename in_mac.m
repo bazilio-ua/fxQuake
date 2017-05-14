@@ -41,6 +41,89 @@ qboolean vidmode_fullscreen = false; // was vidmode_active
 qboolean	vid_activewindow;
 qboolean	vid_hiddenwindow;
 
+
+/*
+ ===========
+ EventToKey
+ 
+ Transform from OSX event to Quake's symbols
+ ===========
+ */
+int EventToKey (NSEvent *event)
+{
+	int key;
+    NSString *characters;
+    NSUInteger characterCount;
+    NSUInteger characterIndex;
+    unichar character;
+    
+    characters = [event charactersIgnoringModifiers];
+    characterCount = [characters length];
+    
+    
+    NSEventType eventType = [event type]; // DEBUG
+
+    
+    for (characterIndex = 0; characterIndex < characterCount; characterIndex++) {
+        character = [characters characterAtIndex:characterIndex];
+        
+        Con_Printf("CHARACTER:  %hu   0x%02x  down=%d\n", character, character, eventType == NSKeyDown); // DEBUG
+
+        switch (character) {
+            case NSPageUpFunctionKey:
+                key = K_PGUP;
+                break;
+                
+            case NSPageDownFunctionKey:
+                key = K_PGDN;
+                break;
+                
+            case NSHomeFunctionKey:
+                key = K_HOME;
+                break;
+                
+            case NSEndFunctionKey:
+                key = K_END;
+                break;
+                
+            case NSUpArrowFunctionKey:
+                key = K_UPARROW;
+                break;
+                
+            case NSDownArrowFunctionKey:
+                key = K_DOWNARROW;
+                break;
+                
+            case NSLeftArrowFunctionKey:
+                key = K_LEFTARROW;
+                break;
+                
+            case NSRightArrowFunctionKey:
+                key = K_RIGHTARROW;
+                break;
+                
+            default:
+                break;
+        }
+        
+        
+        
+//        if (character < 0x80) {
+//            if (character >= 'A' && character <= 'Z') {
+//                character += 'a' - 'A';
+//            }
+//            Key_Event(character, eventType == NSKeyDown);
+//        } else {
+//            Key_Event(MapKey(character), eventType == NSKeyDown);
+//        }
+//        
+//        //                    Key_Event(character, eventType == NSKeyDown);
+        
+    }
+    
+    return key;
+}
+
 /*
  ===========
  IN_GrabMouse
@@ -232,7 +315,20 @@ void IN_ProcessEvents (void)
                 characterCount = [characters length];
                 for (characterIndex = 0; characterIndex < characterCount; characterIndex++) {
                     character = [characters characterAtIndex:characterIndex];
+//                    NSLog(@"%hu", character);
+                    Con_Printf("CHARACTER:  %hu   0x%02x  down=%d\n", character, character, eventType == NSKeyDown);
+                    
+//                    if (character < 0x80) {
+//                        if (character >= 'A' && character <= 'Z') {
+//                            character += 'a' - 'A';
+//                        }
+//                        Key_Event(character, eventType == NSKeyDown);
+//                    } else {
+//                        Key_Event(MapKey(character), eventType == NSKeyDown);
+//                    }
+                    
                     Key_Event(character, eventType == NSKeyDown);
+                    
                 }
 //                NSLog(@"key");
                 return;
