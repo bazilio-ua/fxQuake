@@ -173,6 +173,30 @@ void IN_ProcessEvents (void)
 		}
 	}
     
+    
+    
+//    NSEvent *event = [NSApp nextEventMatchingMask:NSAnyEventMask 
+//                                        untilDate:[NSDate distantPast]
+//                                           inMode:NSDefaultRunLoopMode 
+//                                          dequeue:YES];
+//    
+//    NSEventType eventType = [event type];
+//    
+//    switch (eventType) {
+//            
+//        default:
+//            break;
+//    }
+//    
+//    [NSApp sendEvent:event];
+
+    
+    
+    NSString *characters;
+    NSUInteger characterCount;
+    NSUInteger characterIndex;
+    unichar character;
+    
 	NSEvent *event;
     
     while ((event = [NSApp nextEventMatchingMask:NSAnyEventMask 
@@ -180,8 +204,8 @@ void IN_ProcessEvents (void)
                                           inMode:NSDefaultRunLoopMode 
                                          dequeue:YES])) 
     {
-//        NSEventType eventType = [event type];
-//        switch (eventType) {
+        NSEventType eventType = [event type];
+        switch (eventType) {
 //            /* These six event types are ignored since we do all of our mouse down/up process via the uber-mouse system defined event. 
 //                We have to accept these events however since they get enqueued and the queue will fill up if we don't. */
 //            case NSLeftMouseDown:
@@ -202,19 +226,26 @@ void IN_ProcessEvents (void)
 //            case NSRightMouseDragged:
 //            case NSOtherMouseDragged:   // other mouse dragged
 //                return;
-//            case NSKeyDown:
-//            case NSKeyUp:
-//                return;
+            case NSKeyDown:
+            case NSKeyUp:
+                characters = [event charactersIgnoringModifiers];
+                characterCount = [characters length];
+                for (characterIndex = 0; characterIndex < characterCount; characterIndex++) {
+                    character = [characters characterAtIndex:characterIndex];
+                    Key_Event(character, eventType == NSKeyDown);
+                }
+//                NSLog(@"key");
+                return;
 //            case NSFlagsChanged:
 //                return;
 //            case NSSystemDefined:
 //                return;
 //            case NSScrollWheel:
 //                return;
-//                
-//            default:
-//                break;
-//        }
+                
+            default:
+                break;
+        }
         
         [NSApp sendEvent:event];
     }
