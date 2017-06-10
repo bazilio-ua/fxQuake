@@ -51,7 +51,7 @@ qboolean	vid_hiddenwindow;
  */
 int EventToKey (NSEvent *event)
 {
-	int key;
+	int key = 0;
     NSString *characters;
     NSUInteger characterCount;
     NSUInteger characterIndex;
@@ -60,65 +60,138 @@ int EventToKey (NSEvent *event)
     characters = [event charactersIgnoringModifiers];
     characterCount = [characters length];
     
+//    NSEventType eventType = [event type]; // DEBUG
     
-    NSEventType eventType = [event type]; // DEBUG
-
-    
-    for (characterIndex = 0; characterIndex < characterCount; characterIndex++) {
+    for (characterIndex = 0; characterIndex < characterCount; characterIndex++) 
+    {
         character = [characters characterAtIndex:characterIndex];
         
-        Con_Printf("CHARACTER:  %hu   0x%02x  down=%d\n", character, character, eventType == NSKeyDown); // DEBUG
-
-        switch (character) {
-            case NSPageUpFunctionKey:
-                key = K_PGUP;
-                break;
-                
-            case NSPageDownFunctionKey:
-                key = K_PGDN;
-                break;
-                
-            case NSHomeFunctionKey:
-                key = K_HOME;
-                break;
-                
-            case NSEndFunctionKey:
-                key = K_END;
-                break;
-                
-            case NSUpArrowFunctionKey:
-                key = K_UPARROW;
-                break;
-                
-            case NSDownArrowFunctionKey:
-                key = K_DOWNARROW;
-                break;
-                
-            case NSLeftArrowFunctionKey:
-                key = K_LEFTARROW;
-                break;
-                
-            case NSRightArrowFunctionKey:
-                key = K_RIGHTARROW;
-                break;
-                
-            default:
-                break;
+//        Con_Printf("CHARACTER:  %hu   0x%02x  down=%d\n", character, character, eventType == NSKeyDown); // DEBUG
+        
+        switch (character) 
+        {
+        case NSPageUpFunctionKey:
+            key = K_PGUP;
+            break;
+            
+        case NSPageDownFunctionKey:
+            key = K_PGDN;
+            break;
+            
+        case NSHomeFunctionKey:
+            key = K_HOME;
+            break;
+            
+        case NSEndFunctionKey:
+            key = K_END;
+            break;
+            
+        case NSUpArrowFunctionKey:
+            key = K_UPARROW;
+            break;
+            
+        case NSDownArrowFunctionKey:
+            key = K_DOWNARROW;
+            break;
+            
+        case NSLeftArrowFunctionKey:
+            key = K_LEFTARROW;
+            break;
+            
+        case NSRightArrowFunctionKey:
+            key = K_RIGHTARROW;
+            break;
+            
+        case '\033':
+            key = K_ESCAPE;
+            break;
+            
+        case 0x03:
+        case '\n':
+            key = K_ENTER;
+            break;
+            
+        case '\t':
+            key = K_TAB;
+            break;
+            
+        case NSF1FunctionKey:
+            key = K_F1;
+            break;
+            
+        case NSF2FunctionKey:
+            key = K_F2;
+            break;
+            
+        case NSF3FunctionKey:
+            key = K_F3;
+            break;
+            
+        case NSF4FunctionKey:
+            key = K_F4;
+            break;
+            
+        case NSF5FunctionKey:
+            key = K_F5;
+            break;
+            
+        case NSF6FunctionKey:
+            key = K_F6;
+            break;
+            
+        case NSF7FunctionKey:
+            key = K_F7;
+            break;
+            
+        case NSF8FunctionKey:
+            key = K_F8;
+            break;
+            
+        case NSF9FunctionKey:
+            key = K_F9;
+            break;
+            
+        case NSF10FunctionKey:
+            key = K_F10;
+            break;
+            
+        case NSF11FunctionKey:
+            key = K_F11;
+            break;
+            
+        case NSF12FunctionKey:
+            key = K_F12;
+            break;
+            
+        case '\b':
+        case '\177':
+            key = K_BACKSPACE;
+            break;
+            
+        case NSDeleteFunctionKey:
+            key = K_DEL;
+            break;
+            
+        case NSPauseFunctionKey:
+            key = K_PAUSE;
+            break;
+            
+        case NSInsertFunctionKey:
+            key = K_INS;
+            break;
+            
+        default:
+            key = character;
+            if ((key & 0xFF00) == 0xF700) 
+                key -= 0xF700;
+            else
+            {
+                if (key < 0x80)
+                    if ((key >= 'A') && (key <= 'Z'))
+                        key += 'a' - 'A';
+            }
+            break;
         }
-        
-        
-        
-//        if (character < 0x80) {
-//            if (character >= 'A' && character <= 'Z') {
-//                character += 'a' - 'A';
-//            }
-//            Key_Event(character, eventType == NSKeyDown);
-//        } else {
-//            Key_Event(MapKey(character), eventType == NSKeyDown);
-//        }
-//        
-//        //                    Key_Event(character, eventType == NSKeyDown);
-        
     }
     
     return key;
@@ -283,7 +356,7 @@ void IN_ProcessEvents (void)
 	NSEvent *event;
     
     while ((event = [NSApp nextEventMatchingMask:NSAnyEventMask 
-                                       untilDate:[NSDate distantPast]
+                                       untilDate:[NSDate distantPast] 
                                           inMode:NSDefaultRunLoopMode 
                                          dequeue:YES])) 
     {
@@ -309,6 +382,7 @@ void IN_ProcessEvents (void)
 //            case NSRightMouseDragged:
 //            case NSOtherMouseDragged:   // other mouse dragged
 //                return;
+                
             case NSKeyDown:
             case NSKeyUp:
                 characters = [event charactersIgnoringModifiers];
@@ -316,28 +390,59 @@ void IN_ProcessEvents (void)
                 for (characterIndex = 0; characterIndex < characterCount; characterIndex++) {
                     character = [characters characterAtIndex:characterIndex];
 //                    NSLog(@"%hu", character);
-                    Con_Printf("CHARACTER:  %hu   0x%02x  down=%d\n", character, character, eventType == NSKeyDown);
+//                    Con_Printf("CHARACTER:  %hu   0x%02x  down=%d\n", character, character, eventType == NSKeyDown);
                     
 //                    if (character < 0x80) {
 //                        if (character >= 'A' && character <= 'Z') {
 //                            character += 'a' - 'A';
 //                        }
-//                        Key_Event(character, eventType == NSKeyDown);
+//                        Key_Event (character, eventType == NSKeyDown);
 //                    } else {
-//                        Key_Event(MapKey(character), eventType == NSKeyDown);
+//                        Key_Event (MapKey(character), eventType == NSKeyDown);
 //                    }
                     
-                    Key_Event(character, eventType == NSKeyDown);
+                    Key_Event (character, eventType == NSKeyDown);
                     
                 }
 //                NSLog(@"key");
                 return;
+                
 //            case NSFlagsChanged:
 //                return;
 //            case NSSystemDefined:
 //                return;
 //            case NSScrollWheel:
 //                return;
+                
+                
+            case NSFlagsChanged: // special keys
+                {
+                    static NSUInteger lastFlags = 0;
+                    const NSUInteger flags = [event modifierFlags];
+                    const NSUInteger filteredFlags = flags ^ lastFlags;
+                    
+                    lastFlags = flags;
+                    
+                    if (filteredFlags & NSAlphaShiftKeyMask)
+                        Key_Event (K_CAPSLOCK, (flags & NSAlphaShiftKeyMask) ? true : false);
+                    
+                    if (filteredFlags & NSShiftKeyMask)
+                        Key_Event (K_SHIFT, (flags & NSShiftKeyMask) ? true : false);
+                    
+                    if (filteredFlags & NSControlKeyMask)
+                        Key_Event (K_CTRL, (flags & NSControlKeyMask) ? true : false);
+                    
+                    if (filteredFlags & NSAlternateKeyMask)
+                        Key_Event (K_ALT, (flags & NSAlternateKeyMask) ? true : false);
+                    
+                    if (filteredFlags & NSCommandKeyMask)
+                        Key_Event (K_COMMAND, (flags & NSCommandKeyMask) ? true : false);
+                    
+                    if (filteredFlags & NSNumericPadKeyMask)
+                        Key_Event (K_NUMLOCK, (flags & NSNumericPadKeyMask) ? true : false);
+                }
+                break;
+                
                 
             default:
                 break;
