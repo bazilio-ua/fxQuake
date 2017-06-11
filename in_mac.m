@@ -61,154 +61,6 @@ static const byte scantokey[128] =
 /* 0x78 */  K_F2,           K_PGDN,         K_F1,           K_LEFTARROW,    K_RIGHTARROW,   K_DOWNARROW,    K_UPARROW,      0
 };
 
-/*
- ===========
- EventToKey
- 
- Transform from OSX event to Quake's symbols
- ===========
- */
-int EventToKey (NSEvent *event)
-{
-	int key = 0;
-    NSString *characters;
-    NSUInteger characterCount;
-    NSUInteger characterIndex;
-    unichar character;
-    
-    characters = [event charactersIgnoringModifiers];
-    characterCount = [characters length];
-    for (characterIndex = 0; characterIndex < characterCount; characterIndex++) 
-    {
-        character = [characters characterAtIndex:characterIndex];
-        switch (character) 
-        {
-        case NSPageUpFunctionKey:
-            key = K_PGUP;
-            break;
-            
-        case NSPageDownFunctionKey:
-            key = K_PGDN;
-            break;
-            
-        case NSHomeFunctionKey:
-            key = K_HOME;
-            break;
-            
-        case NSEndFunctionKey:
-            key = K_END;
-            break;
-            
-        case NSUpArrowFunctionKey:
-            key = K_UPARROW;
-            break;
-            
-        case NSDownArrowFunctionKey:
-            key = K_DOWNARROW;
-            break;
-            
-        case NSLeftArrowFunctionKey:
-            key = K_LEFTARROW;
-            break;
-            
-        case NSRightArrowFunctionKey:
-            key = K_RIGHTARROW;
-            break;
-            
-        case '\033':
-            key = K_ESCAPE;
-            break;
-            
-        case 0x03:
-        case '\n':
-            key = K_ENTER;
-            break;
-            
-        case '\t':
-            key = K_TAB;
-            break;
-            
-        case NSF1FunctionKey:
-            key = K_F1;
-            break;
-            
-        case NSF2FunctionKey:
-            key = K_F2;
-            break;
-            
-        case NSF3FunctionKey:
-            key = K_F3;
-            break;
-            
-        case NSF4FunctionKey:
-            key = K_F4;
-            break;
-            
-        case NSF5FunctionKey:
-            key = K_F5;
-            break;
-            
-        case NSF6FunctionKey:
-            key = K_F6;
-            break;
-            
-        case NSF7FunctionKey:
-            key = K_F7;
-            break;
-            
-        case NSF8FunctionKey:
-            key = K_F8;
-            break;
-            
-        case NSF9FunctionKey:
-            key = K_F9;
-            break;
-            
-        case NSF10FunctionKey:
-            key = K_F10;
-            break;
-            
-        case NSF11FunctionKey:
-            key = K_F11;
-            break;
-            
-        case NSF12FunctionKey:
-            key = K_F12;
-            break;
-            
-        case '\b':
-        case '\177':
-            key = K_BACKSPACE;
-            break;
-            
-        case NSDeleteFunctionKey:
-            key = K_DEL;
-            break;
-            
-        case NSPauseFunctionKey:
-            key = K_PAUSE;
-            break;
-            
-        case NSInsertFunctionKey:
-            key = K_INS;
-            break;
-            
-        default:
-            key = character;
-            if ((key & 0xFF00) == 0xF700) 
-                key -= 0xF700;
-            else
-            {
-                if (key < 0x80)
-                    if ((key >= 'A') && (key <= 'Z'))
-                        key += 'a' - 'A';
-            }
-            break;
-        }
-    }
-    
-    return key;
-}
 
 /*
  ===========
@@ -361,10 +213,6 @@ void IN_ProcessEvents (void)
 
     
     
-//    NSString *characters;
-//    NSUInteger characterCount;
-//    NSUInteger characterIndex;
-//    unichar character;
     
 	NSEvent *event;
     while ((event = [NSApp nextEventMatchingMask:NSAnyEventMask 
@@ -400,29 +248,9 @@ void IN_ProcessEvents (void)
             case NSKeyUp: // key released
                 {
                     unsigned short vkey = [event keyCode];
-                    
-//                    if (vkey > 127)
-//                    {
-//                        return;
-//                    }
-//                    
-//                    Con_Printf("vkey: %d\n", vkey);
-                    
                     int key = (byte)scantokey[vkey];
                     
                     Key_Event(key, eventType == NSKeyDown);
-                    
-//                Key_Event(EventToKey(event), eventType == NSKeyDown);
-                
-//                characters = [event charactersIgnoringModifiers];
-//                characterCount = [characters length];
-//                for (characterIndex = 0; characterIndex < characterCount; characterIndex++) 
-//                {
-//                    character = [characters characterAtIndex:characterIndex];
-//                    
-//                    Key_Event (character, eventType == NSKeyDown);
-//                    
-//                }
                 }   
                 return;
                 
@@ -458,7 +286,6 @@ void IN_ProcessEvents (void)
 //                return;
 //            case NSScrollWheel:
 //                return;
-                
                 
             default:
                 break;
