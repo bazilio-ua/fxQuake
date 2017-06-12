@@ -28,8 +28,8 @@ qboolean mouse_available;		// Mouse available for use
 qboolean keyboard_available;	// Keyboard available for use
 
 qboolean mouse_grab_active, keyboard_grab_active;
-qboolean dga_mouse_available, dga_keyboard_available;
-qboolean dga_mouse_active, dga_keyboard_active;
+//qboolean dga_mouse_available, dga_keyboard_available;
+//qboolean dga_mouse_active, dga_keyboard_active;
 
 float mouse_x=0, mouse_y=0;
 static float old_mouse_x, old_mouse_y;
@@ -119,6 +119,27 @@ IN_Init
 */
 void IN_Init (void)
 {
+	Cvar_RegisterVariable (&m_filter, NULL);
+    
+	Cmd_AddCommand ("force_centerview", Force_CenterView_f);
+    
+	if (COM_CheckParm ("-nomouse"))
+		mouse_available = false;
+	else
+		mouse_available = true;
+    
+	mouse_grab_active = false;
+//	dga_mouse_available = false;
+//	dga_mouse_active = false;
+    
+/*  if (COM_CheckParm ("-nokeyb"))
+        keyboard_available = false;
+    else
+*/      keyboard_available = true;
+    
+	keyboard_grab_active = false;
+//	dga_keyboard_available = false;
+//	dga_keyboard_active = false;
 	
 }
 
@@ -159,7 +180,55 @@ IN_MouseMove
 */
 void IN_MouseMove (usercmd_t *cmd)
 {
+	float	mx, my;
+    
+//	if (!mouse_grab_active)
+//		return;
+    
+	// apply m_filter if it is on
+	mx = mouse_x;
+	my = mouse_y;
+    
+	if (m_filter.value)
+	{
+		mouse_x = (mx + old_mouse_x) * 0.5;
+		mouse_y = (my + old_mouse_y) * 0.5;
+	}
+    
+	old_mouse_x = mx;
+	old_mouse_y = my;
+    
+	mouse_x *= sensitivity.value;
+	mouse_y *= sensitivity.value;
+    
+    // add mouse X/Y movement to cmd
+	if ( (in_strafe.state & 1) || (lookstrafe.value && (in_mlook.state & 1) ))
+		cmd->sidemove += m_side.value * mouse_x;
+	else
+		cl.viewangles[YAW] -= m_yaw.value * mouse_x;
 	
+	if (in_mlook.state & 1)
+		V_StopPitchDrift ();
+    
+	if ( (in_mlook.state & 1) && !(in_strafe.state & 1))
+	{
+		cl.viewangles[PITCH] += m_pitch.value * mouse_y;
+		// variable pitch clamping
+		if (cl.viewangles[PITCH] > cl_maxpitch.value)
+			cl.viewangles[PITCH] = cl_maxpitch.value;
+		if (cl.viewangles[PITCH] < cl_minpitch.value)
+			cl.viewangles[PITCH] = cl_minpitch.value;
+	}
+	else
+	{
+		if ((in_strafe.state & 1) && cl.noclip_anglehack)
+			cmd->upmove -= m_forward.value * mouse_y;
+		else
+			cmd->forwardmove -= m_forward.value * mouse_y;
+	}
+    
+	mouse_x = 0;
+	mouse_y = 0;
 }
 
 /*
@@ -169,7 +238,8 @@ IN_Move
 */
 void IN_Move (usercmd_t *cmd)
 {
-	
+	if (vid_activewindow && !vid_hiddenwindow)
+		IN_MouseMove(cmd);
 }
 
 /*
@@ -238,11 +308,22 @@ void IN_ProcessEvents (void)
 //            case NSOtherMouseUp:    // other mouse up
 //                return;
 //                
-//            case NSMouseMoved:
-//            case NSLeftMouseDragged:
-//            case NSRightMouseDragged:
-//            case NSOtherMouseDragged:   // other mouse dragged
-//                return;
+            case NSMouseMoved: // mouse moved
+            case NSLeftMouseDragged:
+            case NSRightMouseDragged:
+            case NSOtherMouseDragged:   // other mouse dragged
+                {
+//                    if (mouse_grab_active) 
+                    {
+                        static int32_t	dx, dy;
+                        
+                        CGGetLastMouseDelta (&dx, &dy);
+                        
+                        mouse_x = (float)dx;
+                        mouse_y = (float)dy;
+                    }
+                }
+                return;
                 
             case NSKeyDown: // key pressed
             case NSKeyUp: // key released
@@ -284,17 +365,21 @@ void IN_ProcessEvents (void)
                 
 //            case NSSystemDefined:
 //                return;
+                
             case NSScrollWheel: // scroll wheel
                 {
-                    if ([event deltaY] < 0.0)
+//                    if (mouse_grab_active) 
                     {
-                        Key_Event (K_MWHEELDOWN, true);
-                        Key_Event (K_MWHEELDOWN, false);
-                    }
-                    else
-                    {
-                        Key_Event (K_MWHEELUP, true);
-                        Key_Event (K_MWHEELUP, false);
+                        if ([event deltaY] < 0.0)
+                        {
+                            Key_Event (K_MWHEELDOWN, true);
+                            Key_Event (K_MWHEELDOWN, false);
+                        }
+                        else
+                        {
+                            Key_Event (K_MWHEELUP, true);
+                            Key_Event (K_MWHEELUP, false);
+                        }
                     }
                 }
                 return;
