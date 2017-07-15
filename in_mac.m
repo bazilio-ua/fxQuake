@@ -321,6 +321,20 @@ void IN_ProcessEvents (void)
                         
                         mouse_x = (float)dx;
                         mouse_y = (float)dy;
+                        
+//						if (mouse_x || mouse_y) // do warp
+//						{
+//							// move the mouse to the window center again
+//                            
+//                            
+//                            CGPoint center;
+//                            // just center at the middle of the screen:
+//                            center = CGPointMake ((float) (vid.width >> 1), (float) (vid.height >> 1));
+//                            // and go:
+//                            CGDisplayMoveCursorToPoint (kCGDirectMainDisplay, center);
+//
+//						}
+                        
                     }
                 }
                 return;
