@@ -504,7 +504,11 @@ void VID_Init (void)
                                                backing:NSBackingStoreBuffered 
                                                  defer:NO];
         [window setTitle:@"fxQuake"];
-        [window orderFront:nil];
+        [window center];
+        
+//        [window orderFront:nil];
+        [window makeKeyAndOrderFront: nil];
+        
         // Always get mouse moved events (if mouse support is turned off (rare) the event system will filter them out.
         [window setAcceptsMouseMovedEvents:YES];
         [window setDelegate:(id<NSWindowDelegate>)[[NSApplication sharedApplication] delegate]];

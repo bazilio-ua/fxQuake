@@ -293,8 +293,8 @@ void IN_ProcessEvents (void)
         NSEventType eventType = [event type];
         switch (eventType) 
         {
-            /* These six event types are ignored since we do all of our mouse down/up process via the uber-mouse system defined event. 
-                We have to accept these events however since they get enqueued and the queue will fill up if we don't. */
+//        These six event types are ignored since we do all of our mouse down/up process via the uber-mouse system defined event. 
+//        We have to accept these events however since they get enqueued and the queue will fill up if we don't. 
 //            case NSLeftMouseDown:
 //                return;
 //            case NSLeftMouseUp:
