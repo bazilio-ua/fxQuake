@@ -322,13 +322,21 @@ int main (int argc, char *argv[])
     [self quakeMain];
 }
 
-- (void)applicationDidHide:(NSNotification *)notification {
-    
-}
-
-- (void)applicationDidUnhide:(NSNotification *)notification {
-    
-}
+//- (void)applicationWillHide:(NSNotification *)notification {
+//    
+//}
+//
+//- (void)applicationDidHide:(NSNotification *)notification {
+//    
+//}
+//
+//- (void)applicationWillUnhide:(NSNotification *)notification {
+//    
+//}
+//
+//- (void)applicationDidUnhide:(NSNotification *)notification {
+//    
+//}
 
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender {
     return NSTerminateNow;
