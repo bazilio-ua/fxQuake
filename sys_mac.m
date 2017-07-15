@@ -468,22 +468,18 @@ int main (int argc, char *argv[])
 }
 
 - (void)windowDidBecomeKey:(NSNotification *)notification {
-    NSLog(@"window active");
     vid_activewindow = true;
 }
 
 - (void)windowDidResignKey:(NSNotification *)notification {
-    NSLog(@"window inactive");
     vid_activewindow = false;
 }
 
 - (void)windowDidMiniaturize:(NSNotification *)notification {
-    NSLog(@"window hide");
     vid_hiddenwindow = true;
 }
 
 - (void)windowDidDeminiaturize:(NSNotification *)notification {
-    NSLog(@"window unhide");
     vid_hiddenwindow = false;
 }
 
