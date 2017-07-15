@@ -477,25 +477,15 @@ int main (int argc, char *argv[])
     vid_activewindow = false;
 }
 
-- (void)windowDidExpose:(NSNotification *)notification {
-    NSLog(@"window expose");
-}
-
-//- (void)windowWillMiniaturize:(NSNotification *)notification {
-//    NSLog(@"window will hide");
-//}
-
 - (void)windowDidMiniaturize:(NSNotification *)notification {
     NSLog(@"window hide");
+    vid_hiddenwindow = true;
 }
 
 - (void)windowDidDeminiaturize:(NSNotification *)notification {
     NSLog(@"window unhide");
+    vid_hiddenwindow = false;
 }
-
-//- (void)windowDidUpdate:(NSNotification *)notification {
-//    NSLog(@"window update");
-//}
 
 @end
 
