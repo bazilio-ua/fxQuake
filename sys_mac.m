@@ -491,5 +491,9 @@ int main (int argc, char *argv[])
     vid_hiddenwindow = false;
 }
 
+- (void)checkWindowActive {
+    
+}
+
 @end
 

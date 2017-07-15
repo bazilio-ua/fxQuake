@@ -23,13 +23,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "unixquake.h"
 #include "macquake.h"
 
-
 qboolean mouse_available;		// Mouse available for use
 qboolean keyboard_available;	// Keyboard available for use
 
 qboolean mouse_grab_active, keyboard_grab_active;
-//qboolean dga_mouse_available, dga_keyboard_available;
-//qboolean dga_mouse_active, dga_keyboard_active;
 
 float mouse_x=0, mouse_y=0;
 static float old_mouse_x, old_mouse_y;
@@ -71,7 +68,18 @@ static const byte scantokey[128] =
  */
 void IN_GrabMouse (void)
 {
-    
+	if (mouse_available && !mouse_grab_active)
+	{
+        [NSApp activateIgnoringOtherApps:YES];
+        // hide cursor
+        if (display) {
+            CGDisplayHideCursor(display);
+        }
+        // grab pointer
+        CGAssociateMouseAndMouseCursorPosition(NO);
+        
+		mouse_grab_active = true;
+	}
 }
 
 /*
@@ -81,7 +89,17 @@ void IN_GrabMouse (void)
  */
 void IN_UngrabMouse (void)
 {
-    
+    if (mouse_available && mouse_grab_active)
+	{
+        // ungrab pointer
+        CGAssociateMouseAndMouseCursorPosition(YES);
+        // show cursor
+        if (display) {
+            CGDisplayShowCursor(display);
+        }
+        
+		mouse_grab_active = false;
+	}
 }
 
 /*
@@ -89,20 +107,20 @@ void IN_UngrabMouse (void)
  IN_GrabKeyboard
  ===========
  */
-void IN_GrabKeyboard (void)
-{
-    
-}
+//void IN_GrabKeyboard (void)
+//{
+//    
+//}
 
 /*
  ===========
  IN_UngrabKeyboard
  ===========
  */
-void IN_UngrabKeyboard (void)
-{
-    
-}
+//void IN_UngrabKeyboard (void)
+//{
+//    
+//}
 
 /*
 ===========
@@ -131,8 +149,6 @@ void IN_Init (void)
 		mouse_available = true;
     
 	mouse_grab_active = false;
-//	dga_mouse_available = false;
-//	dga_mouse_active = false;
     
 /*  if (COM_CheckParm ("-nokeyb"))
         keyboard_available = false;
@@ -140,9 +156,9 @@ void IN_Init (void)
 */      keyboard_available = true;
     
 	keyboard_grab_active = false;
-//	dga_keyboard_available = false;
-//	dga_keyboard_active = false;
-	
+    
+	IN_GrabMouse(); // grab mouse first!
+//	IN_GrabKeyboard();
 }
 
 /*
@@ -152,7 +168,8 @@ IN_Shutdown
 */
 void IN_Shutdown (void)
 {
-	
+	IN_UngrabMouse();
+//	IN_UngrabKeyboard();
 }
 
 /*
@@ -184,8 +201,8 @@ void IN_MouseMove (usercmd_t *cmd)
 {
 	float	mx, my;
     
-//	if (!mouse_grab_active)
-//		return;
+	if (!mouse_grab_active)
+		return;
     
 	// apply m_filter if it is on
 	mx = mouse_x;
@@ -314,7 +331,7 @@ void IN_ProcessEvents (void)
         case NSLeftMouseDragged:
         case NSRightMouseDragged:
         case NSOtherMouseDragged:   // other mouse dragged
-//            if (mouse_grab_active) 
+            if (mouse_grab_active) 
             {
                 static int32_t	dx, dy;
                 
@@ -364,7 +381,7 @@ void IN_ProcessEvents (void)
             return;
             
         case NSSystemDefined:
-//            if (mouse_grab_active)
+            if (mouse_grab_active)
             {
                 static NSInteger oldButtons = 0;
                 NSInteger buttonsDelta;
@@ -407,7 +424,7 @@ void IN_ProcessEvents (void)
             return;
             
         case NSScrollWheel: // scroll wheel
-//            if (mouse_grab_active) 
+            if (mouse_grab_active) 
             {
                 if ([event deltaY] < 0.0)
                 {
