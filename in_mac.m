@@ -293,21 +293,21 @@ void IN_ProcessEvents (void)
         NSEventType eventType = [event type];
         switch (eventType) 
         {
-//            /* These six event types are ignored since we do all of our mouse down/up process via the uber-mouse system defined event. 
-//                We have to accept these events however since they get enqueued and the queue will fill up if we don't. */
-//            case NSLeftMouseDown:
-//                return;
-//            case NSLeftMouseUp:
-//                return;
-//            case NSRightMouseDown:
-//                return;
-//            case NSRightMouseUp:
-//                return;
-//            case NSOtherMouseDown:  // other mouse down
-//                return;
-//            case NSOtherMouseUp:    // other mouse up
-//                return;
-//                
+            /* These six event types are ignored since we do all of our mouse down/up process via the uber-mouse system defined event. 
+                We have to accept these events however since they get enqueued and the queue will fill up if we don't. */
+            case NSLeftMouseDown:
+                return;
+            case NSLeftMouseUp:
+                return;
+            case NSRightMouseDown:
+                return;
+            case NSRightMouseUp:
+                return;
+            case NSOtherMouseDown:  // other mouse down
+                return;
+            case NSOtherMouseUp:    // other mouse up
+                return;
+            
             case NSMouseMoved: // mouse moved
             case NSLeftMouseDragged:
             case NSRightMouseDragged:
@@ -363,8 +363,50 @@ void IN_ProcessEvents (void)
                 }
                 return;
                 
-//            case NSSystemDefined:
-//                return;
+            case NSSystemDefined:
+                {
+                    static NSInteger oldButtons = 0;
+                    NSInteger buttonsDelta;
+                    NSInteger buttons;
+                    qboolean isDown;
+                    
+                    if ([event subtype] == 7) {
+                        
+//                        if (!mouse_grab_active)
+//                            return;
+                        
+                        buttons = [event data2];
+                        buttonsDelta = oldButtons ^ buttons;
+                        
+                        if (buttonsDelta & 1) {
+                            isDown = buttons & 1;
+                            Key_Event(K_MOUSE1, isDown);
+                        }
+                        
+                        if (buttonsDelta & 2) {
+                            isDown = buttons & 2;
+                            Key_Event(K_MOUSE2, isDown);
+                        }
+                        
+                        if (buttonsDelta & 4) {
+                            isDown = buttons & 4;
+                            Key_Event(K_MOUSE3, isDown);
+                        }
+                        
+                        if (buttonsDelta & 8) {
+                            isDown = buttons & 8;
+                            Key_Event(K_MOUSE4, isDown);
+                        }
+                        
+                        if (buttonsDelta & 16) {
+                            isDown = buttons & 16;
+                            Key_Event(K_MOUSE5, isDown);
+                        }
+                        
+                        oldButtons = buttons;
+                    }
+                }
+                return;
                 
             case NSScrollWheel: // scroll wheel
                 {
