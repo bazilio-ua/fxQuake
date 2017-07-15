@@ -467,5 +467,13 @@ int main (int argc, char *argv[])
     Sys_Quit(0);
 }
 
+- (void)windowDidBecomeKey:(NSNotification *)notification {
+    NSLog(@"active");
+}
+
+- (void)windowDidResignKey:(NSNotification *)notification {
+    NSLog(@"inactive");
+}
+
 @end
 

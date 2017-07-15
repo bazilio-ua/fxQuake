@@ -295,18 +295,18 @@ void IN_ProcessEvents (void)
         {
             /* These six event types are ignored since we do all of our mouse down/up process via the uber-mouse system defined event. 
                 We have to accept these events however since they get enqueued and the queue will fill up if we don't. */
-            case NSLeftMouseDown:
-                return;
-            case NSLeftMouseUp:
-                return;
-            case NSRightMouseDown:
-                return;
-            case NSRightMouseUp:
-                return;
-            case NSOtherMouseDown:  // other mouse down
-                return;
-            case NSOtherMouseUp:    // other mouse up
-                return;
+//            case NSLeftMouseDown:
+//                return;
+//            case NSLeftMouseUp:
+//                return;
+//            case NSRightMouseDown:
+//                return;
+//            case NSRightMouseUp:
+//                return;
+//            case NSOtherMouseDown:  // other mouse down
+//                return;
+//            case NSOtherMouseUp:    // other mouse up
+//                return;
             
             case NSMouseMoved: // mouse moved
             case NSLeftMouseDragged:
