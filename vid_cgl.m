@@ -567,7 +567,7 @@ void VID_Shutdown (void)
         VID_Gamma_Shutdown ();
         
         if (window) {
-            [window close];
+//            [window close];
             [window release];
             window = nil;
         }
