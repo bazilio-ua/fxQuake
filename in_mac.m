@@ -365,45 +365,45 @@ void IN_ProcessEvents (void)
                 
             case NSSystemDefined:
                 {
-                    static NSInteger oldButtons = 0;
-                    NSInteger buttonsDelta;
-                    NSInteger buttons;
-                    qboolean isDown;
-                    
-                    if ([event subtype] == 7) {
+//                    if (mouse_grab_active)
+                    {
+                        static NSInteger oldButtons = 0;
+                        NSInteger buttonsDelta;
+                        NSInteger buttons;
+                        qboolean isDown;
                         
-//                        if (!mouse_grab_active)
-//                            return;
-                        
-                        buttons = [event data2];
-                        buttonsDelta = oldButtons ^ buttons;
-                        
-                        if (buttonsDelta & 1) {
-                            isDown = buttons & 1;
-                            Key_Event(K_MOUSE1, isDown);
+                        if ([event subtype] == 7) 
+                        {
+                            buttons = [event data2];
+                            buttonsDelta = oldButtons ^ buttons;
+                            
+                            if (buttonsDelta & 1) {
+                                isDown = buttons & 1;
+                                Key_Event (K_MOUSE1, isDown);
+                            }
+                            
+                            if (buttonsDelta & 2) {
+                                isDown = buttons & 2;
+                                Key_Event (K_MOUSE2, isDown);
+                            }
+                            
+                            if (buttonsDelta & 4) {
+                                isDown = buttons & 4;
+                                Key_Event (K_MOUSE3, isDown);
+                            }
+                            
+                            if (buttonsDelta & 8) {
+                                isDown = buttons & 8;
+                                Key_Event (K_MOUSE4, isDown);
+                            }
+                            
+                            if (buttonsDelta & 16) {
+                                isDown = buttons & 16;
+                                Key_Event (K_MOUSE5, isDown);
+                            }
+                            
+                            oldButtons = buttons;
                         }
-                        
-                        if (buttonsDelta & 2) {
-                            isDown = buttons & 2;
-                            Key_Event(K_MOUSE2, isDown);
-                        }
-                        
-                        if (buttonsDelta & 4) {
-                            isDown = buttons & 4;
-                            Key_Event(K_MOUSE3, isDown);
-                        }
-                        
-                        if (buttonsDelta & 8) {
-                            isDown = buttons & 8;
-                            Key_Event(K_MOUSE4, isDown);
-                        }
-                        
-                        if (buttonsDelta & 16) {
-                            isDown = buttons & 16;
-                            Key_Event(K_MOUSE5, isDown);
-                        }
-                        
-                        oldButtons = buttons;
                     }
                 }
                 return;
