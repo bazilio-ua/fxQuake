@@ -339,6 +339,30 @@ void IN_ProcessEvents (void)
                 
                 mouse_x = (float)dx;
                 mouse_y = (float)dy;
+                
+//                if (mouse_x || mouse_y) // do warp
+//                {
+//                    CGPoint center;
+//                    
+//                    if (vidmode_fullscreen) {
+//                        // just center at the middle of the screen:
+//                        center = CGPointMake((float) (vid.width >> 1), (float) (vid.height >> 1));
+//                        
+//                    } else {
+//                        float		centerX = mouse_x, centerY = -mouse_y;
+//                        
+//                        // calculate the window center:
+//                        centerX += (float) (vid.width >> 1);
+//                        centerY += (float) CGDisplayPixelsHigh (display) - (float) (vid.height >> 1);
+//                        
+//                        center = CGPointMake (centerX, centerY);
+//                        
+//                    }
+//                    
+//                    // move the mouse to the window center again
+//                    CGDisplayMoveCursorToPoint(display, center);
+//                }
+                
             }
             return;
             
@@ -424,7 +448,7 @@ void IN_ProcessEvents (void)
             return;
             
         case NSScrollWheel: // scroll wheel
-            if (mouse_grab_active) 
+//            if (mouse_grab_active) 
             {
                 if ([event deltaY] < 0.0)
                 {

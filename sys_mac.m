@@ -309,6 +309,7 @@ int main (int argc, char *argv[])
 @interface QController (Private)
 
 - (void)quakeMain;
+- (void)checkWindowActive;
 
 @end
 
@@ -477,21 +478,71 @@ int main (int argc, char *argv[])
 
 - (void)windowDidBecomeKey:(NSNotification *)notification {
     vid_activewindow = true;
+    
+//    [self checkWindowActive];
 }
 
 - (void)windowDidResignKey:(NSNotification *)notification {
     vid_activewindow = false;
+    
+//    [self checkWindowActive];
 }
 
 - (void)windowDidMiniaturize:(NSNotification *)notification {
     vid_hiddenwindow = true;
+    
+//    [self checkWindowActive];
 }
 
 - (void)windowDidDeminiaturize:(NSNotification *)notification {
     vid_hiddenwindow = false;
+    
+//    [self checkWindowActive];
 }
 
 - (void)checkWindowActive {
+    static qboolean active = true;
+    
+    if (vidmode_fullscreen)
+    {
+        if (!vid_hiddenwindow)
+        {
+//            // set our video mode
+//            XF86VidModeSwitchToMode(x_disp, scrnum, &game_vidmode);
+//            
+//            // move the viewport to top left
+//            XF86VidModeSetViewPort(x_disp, scrnum, 0, 0);
+        }
+        else if (vid_hiddenwindow)
+        {
+//            // set our video mode
+//            XF86VidModeSwitchToMode(x_disp, scrnum, &init_vidmode);
+        }
+    }
+    else //if (!vidmode_fullscreen)
+    {
+        // enable/disable sound, set/restore gamma and grab/ungrab keyb
+        // on focus gain/loss
+        if (vid_activewindow && !vid_hiddenwindow && !active)
+        {
+            S_UnblockSound ();
+            S_ClearBuffer ();
+            VID_Gamma_Set ();
+//            IN_GrabKeyboard();
+            active = true;
+        }
+        else if (active)
+        {
+            S_BlockSound ();
+            S_ClearBuffer ();
+            VID_Gamma_Restore ();
+//            IN_UngrabKeyboard();
+            active = false;
+        }
+    }
+    
+    // fix the leftover Alt from any Alt-Tab or the like that switched us away
+    Key_ClearStates ();
     
 }
 
