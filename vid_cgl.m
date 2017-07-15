@@ -215,50 +215,50 @@ inline void GL_EndRendering (void)
 
 //====================================
 
-NSOpenGLPixelFormat *OpenGLPixelFormat (int bpp, qboolean fullscreen)
-{
-    NSOpenGLPixelFormat *format = nil;
-    NSOpenGLPixelFormatAttribute attributes[32];
-    int i = 0;
-    
-    if (bpp < 16)
-        bpp = 16;
-    else if (bpp > 16)
-        bpp = 32;
-    
-    attributes[i++] = NSOpenGLPFANoRecovery;
-    attributes[i++] = NSOpenGLPFAMinimumPolicy;
-    attributes[i++] = NSOpenGLPFAAccelerated;
-    attributes[i++] = NSOpenGLPFADoubleBuffer;
-    
-    attributes[i++] = NSOpenGLPFADepthSize;
-    attributes[i++] = 1;
-    
-    attributes[i++] = NSOpenGLPFAAlphaSize;
-    attributes[i++] = 0;
-    
-    attributes[i++] = NSOpenGLPFAStencilSize;
-    attributes[i++] = 0;
-    
-    attributes[i++] = NSOpenGLPFAAccumSize;
-    attributes[i++] = 0;
-    
-    attributes[i++] = NSOpenGLPFAColorSize;
-    attributes[i++] = bpp;
-    
-    if (fullscreen) {
-        attributes[i++] = NSOpenGLPFAFullScreen;
-        attributes[i++] = NSOpenGLPFAScreenMask;
-        attributes[i++] = CGDisplayIDToOpenGLDisplayMask(display);
-    } else
-        attributes[i++] = NSOpenGLPFAWindow;
-    
-    attributes[i++] = 0;
-    
-    format = [[NSOpenGLPixelFormat alloc] initWithAttributes:attributes];
-    
-    return format;
-}
+//NSOpenGLPixelFormat *OpenGLPixelFormat (int bpp, qboolean fullscreen)
+//{
+//    NSOpenGLPixelFormat *format = nil;
+//    NSOpenGLPixelFormatAttribute attributes[32];
+//    int i = 0;
+//    
+//    if (bpp < 16)
+//        bpp = 16;
+//    else if (bpp > 16)
+//        bpp = 32;
+//    
+//    attributes[i++] = NSOpenGLPFANoRecovery;
+//    attributes[i++] = NSOpenGLPFAMinimumPolicy;
+//    attributes[i++] = NSOpenGLPFAAccelerated;
+//    attributes[i++] = NSOpenGLPFADoubleBuffer;
+//    
+//    attributes[i++] = NSOpenGLPFADepthSize;
+//    attributes[i++] = 1;
+//    
+//    attributes[i++] = NSOpenGLPFAAlphaSize;
+//    attributes[i++] = 0;
+//    
+//    attributes[i++] = NSOpenGLPFAStencilSize;
+//    attributes[i++] = 0;
+//    
+//    attributes[i++] = NSOpenGLPFAAccumSize;
+//    attributes[i++] = 0;
+//    
+//    attributes[i++] = NSOpenGLPFAColorSize;
+//    attributes[i++] = bpp;
+//    
+//    if (fullscreen) {
+//        attributes[i++] = NSOpenGLPFAFullScreen;
+//        attributes[i++] = NSOpenGLPFAScreenMask;
+//        attributes[i++] = CGDisplayIDToOpenGLDisplayMask(display);
+//    } else
+//        attributes[i++] = NSOpenGLPFAWindow;
+//    
+//    attributes[i++] = 0;
+//    
+//    format = [[NSOpenGLPixelFormat alloc] initWithAttributes:attributes];
+//    
+//    return format;
+//}
 
 void CGL_SwapInterval (qboolean enable)
 {
