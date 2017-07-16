@@ -26,6 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 CGDirectDisplayID   display;
 NSOpenGLContext     *context = nil;
 NSWindow            *window = nil;
+NSScreen            *screen = nil;
 CGDisplayModeRef    desktopMode;
 CGDisplayModeRef    gameMode;
 
@@ -317,6 +318,17 @@ void VID_Init (void)
     // By default, we use the main screen
     display = displays[displayIndex];
     
+    NSArray *screens = [NSScreen screens];
+    if ([screens count] != displayCount) {
+        Sys_Error("Wrong screen counts");
+    }
+    
+    // get current screen from display
+    screen = [screens objectAtIndex:displayIndex];
+    if ([[[screen deviceDescription] objectForKey:@"NSScreenNumber"] unsignedIntValue] != display) {
+        Sys_Error("Wrong screen ID");
+    }
+    
     // get current mode
     desktopMode = CGDisplayCopyDisplayMode(display);
     if (!desktopMode) {
@@ -494,20 +506,43 @@ void VID_Init (void)
         NSRect windowRect;
         
         // Create a window of the desired size
-        windowRect.origin.x = ((int)CGDisplayModeGetWidth(desktopMode) - vid.width) / 2;
-        windowRect.origin.y = ((int)CGDisplayModeGetHeight(desktopMode) - vid.height) / 2;
+        windowRect.origin.x = ([screen frame].size.width - vid.width) / 2;
+        windowRect.origin.y = ([screen frame].size.height - vid.height) / 2;
+//        windowRect.origin.x = ((int)CGDisplayModeGetWidth(desktopMode) - vid.width) / 2;
+//        windowRect.origin.y = ((int)CGDisplayModeGetHeight(desktopMode) - vid.height) / 2;
         windowRect.size.width = vid.width;
         windowRect.size.height = vid.height;
         
         window = [[NSWindow alloc] initWithContentRect:windowRect 
                                              styleMask:NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask
                                                backing:NSBackingStoreBuffered 
-                                                 defer:NO];
+                                                 defer:NO 
+                                                screen:screen];
         [window setTitle:@"fxQuake"];
-        [window center];
+//        [window center];
+
+        
+        NSLog(@"%@", NSStringFromRect(windowRect));
+
+        
+        NSRect bounds = [window frame];
+        NSLog(@"%@", NSStringFromRect(bounds));
+
+        NSRect bounds2 = [screen frame];
+        NSLog(@"%@", NSStringFromRect(bounds2));
+
+        
+        NSRect bounds3 = [ [ window contentView ] frame ];
+        NSLog(@"%@", NSStringFromRect(bounds3));
+        
+//        window - (NSRect)frameRectForContentRect:(NSRect)contentRect;
+        NSRect bounds4 = [window frameRectForContentRect:bounds3];
+        NSLog(@"%@", NSStringFromRect(bounds4));
+        
         
 //        [window orderFront:nil];
         [window makeKeyAndOrderFront: nil];
+//        [window makeMainWindow];
         
         // Always get mouse moved events (if mouse support is turned off (rare) the event system will filter them out.
         [window setAcceptsMouseMovedEvents:YES];

@@ -24,9 +24,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "macquake.h"
 
 qboolean mouse_available;		// Mouse available for use
-qboolean keyboard_available;	// Keyboard available for use
 
-qboolean mouse_grab_active, keyboard_grab_active;
+qboolean mouse_active;
 
 float mouse_x=0, mouse_y=0;
 static float old_mouse_x, old_mouse_y;
@@ -63,64 +62,162 @@ static const byte scantokey[128] =
 
 /*
  ===========
- IN_GrabMouse
+ IN_ActivateMouse
  ===========
  */
-void IN_GrabMouse (void)
+void IN_ActivateMouse (void)
 {
-	if (mouse_available && !mouse_grab_active)
+	if (mouse_available && !mouse_active)
 	{
-        [NSApp activateIgnoringOtherApps:YES];
-        // hide cursor
+        
+        CGDisplayHideCursor (kCGNullDirectDisplay);
+        CGAssociateMouseAndMouseCursorPosition (false);
+//        CGDisplayMoveCursorToPoint (display, CGPointZero);
+        
+        
+                    CGPoint center;
+                    
+                    if (vidmode_fullscreen) {
+                        // just center at the middle of the screen
+                        
+                        CGRect bounds = CGDisplayBounds(display);
+                        
+                        center.x = bounds.origin.x + bounds.size.width / 2;
+                        center.y = bounds.origin.y + bounds.size.height / 2;
+
+                        
+//                        center = CGPointMake(vid.width / 2, vid.height / 2);
+                    } else {
+                        
+                        
+//                        windowRect.origin.x = ([screen frame].size.width - vid.width) / 2;
+//                        windowRect.origin.y = ([screen frame].size.height - vid.height) / 2;
+//                        //        windowRect.origin.x = ((int)CGDisplayModeGetWidth(desktopMode) - vid.width) / 2;
+//                        //        windowRect.origin.y = ((int)CGDisplayModeGetHeight(desktopMode) - vid.height) / 2;
+//                        windowRect.size.width = vid.width;
+//                        windowRect.size.height = vid.height;
+                        
+                        
+                        NSRect screenFrame = [screen frame];
+                        NSRect windowFrame = [window frame];
+                        NSRect contentFrame = [[window contentView] frame];
+                        
+                        // calculate the window center
+//                        center.x = windowFrame.origin.x + contentFrame.size.width / 2;
+//                        center.y = windowFrame.origin.y + contentFrame.size.height / 2;
+//                        
+//                        
+//                        center.x = windowFrame.origin.x - screenFrame.origin.x;
+//                        center.y = windowFrame.origin.y - screenFrame.origin.y;
+
+                        center.x = windowFrame.origin.x + contentFrame.size.width / 2;
+//                        center.x = windowFrame.origin.x;
+//                        center.x = windowFrame.origin.x - screenFrame.origin.x;
+                        center.y = -windowFrame.origin.y + screenFrame.size.height - contentFrame.size.height / 2 + screenFrame.origin.y;
+
+//                        CGFloat heightOffset = windowFrame.origin.y - screenFrame.origin.y;
+//                        NSLog(@"*-- %f", center.y);
+//                        NSLog(@"%f", heightOffset);
+//                        center.y = windowFrame.origin.y + contentFrame.size.height / 2;
+//                        center.y -= heightOffset;
+//                        NSLog(@"*-- %f", center.y);
+                        
+                        NSLog(@"%@", NSStringFromRect(screenFrame));
+                        NSLog(@"%@", NSStringFromRect(windowFrame));
+                        NSLog(@"%@", NSStringFromRect(contentFrame));
+                    }
+
+        
+        
+        NSLog(@"%@", NSStringFromPoint( *(NSPoint *)&center ));
+                    
+                    // move the mouse to the window center again                  
+                    CGWarpMouseCursorPosition(center);
+        
+        
+        
+        
+        
+/*        
+        Con_Printf("*** Activate Mouse ***\n");
+        
+        CGError err;
+//        CGRect bounds;
+//        CGPoint center;
+        
+//        [NSApp activateIgnoringOtherApps:YES];
+        
+        if (window) {
+            [window setAcceptsMouseMovedEvents:YES];
+        }
+        
         if (display) {
+//            bounds = CGDisplayBounds(display);
+//            
+//            center.x = bounds.origin.x + bounds.size.width / 2;
+//            center.y = bounds.origin.y + bounds.size.height / 2;
+            
+            // hide cursor
             CGDisplayHideCursor(display);
         }
-        // grab pointer
-        CGAssociateMouseAndMouseCursorPosition(NO);
         
-		mouse_grab_active = true;
+        // grab pointer
+        err = CGAssociateMouseAndMouseCursorPosition(false);
+        if (err != kCGErrorSuccess) {
+            Con_Printf("Could not disable mouse movement\n");
+        }
+        
+//        // Put the mouse in the position we want to leave it at
+//        err = CGWarpMouseCursorPosition(center);
+//        if (err != kCGErrorSuccess) {
+//            Con_Printf("Could not warp mouse position\n");
+//        }
+*/        
+		mouse_active = true;
 	}
 }
 
 /*
  ===========
- IN_UngrabMouse
+ IN_DeactivateMouse
  ===========
  */
-void IN_UngrabMouse (void)
+void IN_DeactivateMouse (void)
 {
-    if (mouse_available && mouse_grab_active)
+
+    if (mouse_available && mouse_active)
 	{
+        
+        CGAssociateMouseAndMouseCursorPosition (true);
+        CGDisplayShowCursor (kCGNullDirectDisplay);
+        
+/*        
+        Con_Printf("*** Deactivate Mouse ***\n");
+        
+        CGError err;
+        
+//        [NSApp activateIgnoringOtherApps:NO];
+        
+        if (window) {
+            [window setAcceptsMouseMovedEvents:NO];
+        }
+        
         // ungrab pointer
-        CGAssociateMouseAndMouseCursorPosition(YES);
+        err = CGAssociateMouseAndMouseCursorPosition(true);
+        if (err != kCGErrorSuccess) {
+            Con_Printf("Could not reenable mouse movement\n");
+        }
+        
         // show cursor
         if (display) {
             CGDisplayShowCursor(display);
         }
+*/        
         
-		mouse_grab_active = false;
+		mouse_active = false;
 	}
 }
 
-/*
- ===========
- IN_GrabKeyboard
- ===========
- */
-//void IN_GrabKeyboard (void)
-//{
-//    
-//}
-
-/*
- ===========
- IN_UngrabKeyboard
- ===========
- */
-//void IN_UngrabKeyboard (void)
-//{
-//    
-//}
 
 /*
 ===========
@@ -148,17 +245,9 @@ void IN_Init (void)
 	else
 		mouse_available = true;
     
-	mouse_grab_active = false;
+	mouse_active = false;
     
-/*  if (COM_CheckParm ("-nokeyb"))
-        keyboard_available = false;
-    else
-*/      keyboard_available = true;
-    
-	keyboard_grab_active = false;
-    
-	IN_GrabMouse(); // grab mouse first!
-//	IN_GrabKeyboard();
+	IN_ActivateMouse(); // grab mouse first!
 }
 
 /*
@@ -168,8 +257,7 @@ IN_Shutdown
 */
 void IN_Shutdown (void)
 {
-	IN_UngrabMouse();
-//	IN_UngrabKeyboard();
+	IN_DeactivateMouse();
 }
 
 /*
@@ -201,7 +289,7 @@ void IN_MouseMove (usercmd_t *cmd)
 {
 	float	mx, my;
     
-	if (!mouse_grab_active)
+	if (!mouse_active)
 		return;
     
 	// apply m_filter if it is on
@@ -271,15 +359,15 @@ void IN_ProcessEvents (void)
 	// handle the mouse state when windowed if that's changed
 	if (!vidmode_fullscreen)
 	{
-		if ( key_dest == key_game && !mouse_grab_active && vid_activewindow )
-//		if ( key_dest != key_console && !mouse_grab_active && vid_activewindow )
+		if ( key_dest == key_game && !mouse_active && vid_activewindow )
+//		if ( key_dest != key_console && !mouse_active && vid_activewindow )
 		{
-			IN_GrabMouse ();
+			IN_ActivateMouse ();
 		}
-		else if ( key_dest != key_game && mouse_grab_active ) 
-//		else if ( key_dest == key_console && mouse_grab_active ) 
+		else if ( key_dest != key_game && mouse_active ) 
+//		else if ( key_dest == key_console && mouse_active ) 
 		{
-			IN_UngrabMouse ();
+			IN_DeactivateMouse ();
 		}
 	}
     
@@ -303,12 +391,16 @@ void IN_ProcessEvents (void)
     
     
     
-	NSEvent *event;
-    while ((event = [NSApp nextEventMatchingMask:NSAnyEventMask 
-                                       untilDate:[NSDate distantPast] 
-                                          inMode:NSDefaultRunLoopMode 
-                                         dequeue:YES])) 
-    {
+	NSEvent *event = [NSApp nextEventMatchingMask:NSAnyEventMask 
+                                        untilDate:[NSDate distantPast] 
+                                           inMode:NSDefaultRunLoopMode 
+                                          dequeue:YES];
+    
+//    while ((event = [NSApp nextEventMatchingMask:NSAnyEventMask 
+//                                       untilDate:[NSDate distantPast] 
+//                                          inMode:NSDefaultRunLoopMode 
+//                                         dequeue:YES])) 
+//    {
         NSEventType eventType = [event type];
         switch (eventType) 
         {
@@ -331,7 +423,7 @@ void IN_ProcessEvents (void)
         case NSLeftMouseDragged:
         case NSRightMouseDragged:
         case NSOtherMouseDragged:   // other mouse dragged
-            if (mouse_grab_active) 
+            if (mouse_active) 
             {
                 static int32_t	dx, dy;
                 
@@ -345,26 +437,22 @@ void IN_ProcessEvents (void)
 //                    CGPoint center;
 //                    
 //                    if (vidmode_fullscreen) {
-//                        // just center at the middle of the screen:
-//                        center = CGPointMake((float) (vid.width >> 1), (float) (vid.height >> 1));
-//                        
+//                        // just center at the middle of the screen
+//                        center = CGPointMake(vid.width / 2, vid.height / 2);
 //                    } else {
-//                        float		centerX = mouse_x, centerY = -mouse_y;
+//                        NSRect bounds = [window frame];
+//                        // calculate the window center
+//                        center.x = bounds.origin.x + bounds.size.width / 2;
+//                        center.y = bounds.origin.y + bounds.size.height / 2;
 //                        
-//                        // calculate the window center:
-//                        centerX += (float) (vid.width >> 1);
-//                        centerY += (float) CGDisplayPixelsHigh (display) - (float) (vid.height >> 1);
-//                        
-//                        center = CGPointMake (centerX, centerY);
-//                        
+//                        NSLog(@"%@", NSStringFromRect(bounds));
 //                    }
 //                    
-//                    // move the mouse to the window center again
-//                    CGDisplayMoveCursorToPoint(display, center);
+//                    // move the mouse to the window center again                  
+//                    CGWarpMouseCursorPosition(center);
 //                }
-                
             }
-            return;
+            break; //return;
             
         case NSKeyDown: // key pressed
         case NSKeyUp: // key released
@@ -374,7 +462,7 @@ void IN_ProcessEvents (void)
                 
                 Key_Event(key, eventType == NSKeyDown);
             }   
-            return;
+            break; //return;
             
         case NSFlagsChanged: // special keys
             {
@@ -402,10 +490,10 @@ void IN_ProcessEvents (void)
                 if (filteredFlags & NSNumericPadKeyMask)
                     Key_Event (K_NUMLOCK, (flags & NSNumericPadKeyMask) ? true : false);
             }
-            return;
+            break; //return;
             
         case NSSystemDefined:
-            if (mouse_grab_active)
+            if (mouse_active)
             {
                 static NSInteger oldButtons = 0;
                 NSInteger buttonsDelta;
@@ -445,10 +533,11 @@ void IN_ProcessEvents (void)
                     oldButtons = buttons;
                 }
             }
-            return;
+            break; //return;
+
             
         case NSScrollWheel: // scroll wheel
-//            if (mouse_grab_active) 
+//            if (mouse_active) 
             {
                 if ([event deltaY] < 0.0)
                 {
@@ -461,19 +550,20 @@ void IN_ProcessEvents (void)
                     Key_Event (K_MWHEELUP, false);
                 }
             }
-            return;
+            break; //return;
             
         case NSMouseEntered:
         case NSMouseExited:
             notifywindow = (eventType == NSMouseEntered);
-            return;
+            break; //return;
             
         default:
+            [NSApp sendEvent:event];
             break;
         }
         
-        [NSApp sendEvent:event];
-    }
+//        [NSApp sendEvent:event];
+//    }
     
 	
 }

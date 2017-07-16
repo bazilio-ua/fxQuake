@@ -28,6 +28,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #import "qinterfaces.h"
 
 extern CGDirectDisplayID display;
+extern NSWindow *window;
+extern NSScreen *screen;
 
 extern qboolean vidmode_fullscreen; // was vidmode_active
 

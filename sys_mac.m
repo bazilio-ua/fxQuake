@@ -476,15 +476,27 @@ int main (int argc, char *argv[])
     Sys_Quit(0);
 }
 
+//- (void)windowDidBecomeMain:(NSNotification *)notification {
+//    Con_Printf("*** windowDidBecomeMain ***\n");
+//}
+//
+//- (void)windowDidResignMain:(NSNotification *)notification {
+//    Con_Printf("*** windowDidResignMain ***\n");
+//}
+
 - (void)windowDidBecomeKey:(NSNotification *)notification {
     vid_activewindow = true;
     
+    Con_Printf("*** windowDidBecomeKey ***\n");
+
 //    [self checkWindowActive];
 }
 
 - (void)windowDidResignKey:(NSNotification *)notification {
     vid_activewindow = false;
     
+    Con_Printf("*** windowDidResignKey ***\n");
+
 //    [self checkWindowActive];
 }
 
