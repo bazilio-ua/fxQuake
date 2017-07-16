@@ -69,110 +69,34 @@ void IN_ActivateMouse (void)
 {
 	if (mouse_available && !mouse_active)
 	{
-        
-        CGDisplayHideCursor (kCGNullDirectDisplay);
-        CGAssociateMouseAndMouseCursorPosition (false);
-//        CGDisplayMoveCursorToPoint (display, CGPointZero);
-        
-        
-                    CGPoint center;
-                    
-                    if (vidmode_fullscreen) {
-                        // just center at the middle of the screen
-                        
-                        CGRect bounds = CGDisplayBounds(display);
-                        
-                        center.x = bounds.origin.x + bounds.size.width / 2;
-                        center.y = bounds.origin.y + bounds.size.height / 2;
-
-                        
-//                        center = CGPointMake(vid.width / 2, vid.height / 2);
-                    } else {
-                        
-                        
-//                        windowRect.origin.x = ([screen frame].size.width - vid.width) / 2;
-//                        windowRect.origin.y = ([screen frame].size.height - vid.height) / 2;
-//                        //        windowRect.origin.x = ((int)CGDisplayModeGetWidth(desktopMode) - vid.width) / 2;
-//                        //        windowRect.origin.y = ((int)CGDisplayModeGetHeight(desktopMode) - vid.height) / 2;
-//                        windowRect.size.width = vid.width;
-//                        windowRect.size.height = vid.height;
-                        
-                        
-                        NSRect screenFrame = [screen frame];
-                        NSRect windowFrame = [window frame];
-                        NSRect contentFrame = [[window contentView] frame];
-                        
-                        // calculate the window center
-//                        center.x = windowFrame.origin.x + contentFrame.size.width / 2;
-//                        center.y = windowFrame.origin.y + contentFrame.size.height / 2;
-//                        
-//                        
-//                        center.x = windowFrame.origin.x - screenFrame.origin.x;
-//                        center.y = windowFrame.origin.y - screenFrame.origin.y;
-
-                        center.x = windowFrame.origin.x + contentFrame.size.width / 2;
-//                        center.x = windowFrame.origin.x;
-//                        center.x = windowFrame.origin.x - screenFrame.origin.x;
-                        center.y = -windowFrame.origin.y + screenFrame.size.height - contentFrame.size.height / 2 + screenFrame.origin.y;
-
-//                        CGFloat heightOffset = windowFrame.origin.y - screenFrame.origin.y;
-//                        NSLog(@"*-- %f", center.y);
-//                        NSLog(@"%f", heightOffset);
-//                        center.y = windowFrame.origin.y + contentFrame.size.height / 2;
-//                        center.y -= heightOffset;
-//                        NSLog(@"*-- %f", center.y);
-                        
-                        NSLog(@"%@", NSStringFromRect(screenFrame));
-                        NSLog(@"%@", NSStringFromRect(windowFrame));
-                        NSLog(@"%@", NSStringFromRect(contentFrame));
-                    }
-
-        
-        
-        NSLog(@"%@", NSStringFromPoint( *(NSPoint *)&center ));
-                    
-                    // move the mouse to the window center again                  
-                    CGWarpMouseCursorPosition(center);
-        
-        
-        
-        
-        
-/*        
-        Con_Printf("*** Activate Mouse ***\n");
-        
-        CGError err;
-//        CGRect bounds;
-//        CGPoint center;
-        
-//        [NSApp activateIgnoringOtherApps:YES];
-        
-        if (window) {
-            [window setAcceptsMouseMovedEvents:YES];
-        }
-        
-        if (display) {
-//            bounds = CGDisplayBounds(display);
-//            
-//            center.x = bounds.origin.x + bounds.size.width / 2;
-//            center.y = bounds.origin.y + bounds.size.height / 2;
-            
-            // hide cursor
-            CGDisplayHideCursor(display);
-        }
-        
-        // grab pointer
-        err = CGAssociateMouseAndMouseCursorPosition(false);
-        if (err != kCGErrorSuccess) {
-            Con_Printf("Could not disable mouse movement\n");
-        }
-        
-//        // Put the mouse in the position we want to leave it at
-//        err = CGWarpMouseCursorPosition(center);
-//        if (err != kCGErrorSuccess) {
-//            Con_Printf("Could not warp mouse position\n");
+//        if (window) {
+//            [window setAcceptsMouseMovedEvents:YES];
 //        }
-*/        
+        
+        // hide cursor
+        CGDisplayHideCursor(kCGNullDirectDisplay);
+        // grab pointer
+        CGAssociateMouseAndMouseCursorPosition(false);
+        
+        CGPoint center;
+        if (vidmode_fullscreen) {
+            CGRect bounds = CGDisplayBounds(display);
+            
+            // just center at the middle of the screen
+            center.x = bounds.origin.x + bounds.size.width / 2;
+            center.y = bounds.origin.y + bounds.size.height / 2;
+        } else {
+            NSRect screenFrame = [screen frame];
+            NSRect windowFrame = [window frame];
+            NSRect contentFrame = [[window contentView] frame];
+            
+            // calculate the window center
+            center.x = windowFrame.origin.x + contentFrame.size.width / 2;
+            center.y = -windowFrame.origin.y + screenFrame.size.height - contentFrame.size.height / 2 + screenFrame.origin.y;
+        }
+        // move the mouse to the window center again                  
+        CGWarpMouseCursorPosition(center);
+        
 		mouse_active = true;
 	}
 }
@@ -184,35 +108,16 @@ void IN_ActivateMouse (void)
  */
 void IN_DeactivateMouse (void)
 {
-
     if (mouse_available && mouse_active)
 	{
-        
-        CGAssociateMouseAndMouseCursorPosition (true);
-        CGDisplayShowCursor (kCGNullDirectDisplay);
-        
-/*        
-        Con_Printf("*** Deactivate Mouse ***\n");
-        
-        CGError err;
-        
-//        [NSApp activateIgnoringOtherApps:NO];
-        
-        if (window) {
-            [window setAcceptsMouseMovedEvents:NO];
-        }
+//        if (window) {
+//            [window setAcceptsMouseMovedEvents:NO];
+//        }
         
         // ungrab pointer
-        err = CGAssociateMouseAndMouseCursorPosition(true);
-        if (err != kCGErrorSuccess) {
-            Con_Printf("Could not reenable mouse movement\n");
-        }
-        
+        CGAssociateMouseAndMouseCursorPosition(true);
         // show cursor
-        if (display) {
-            CGDisplayShowCursor(display);
-        }
-*/        
+        CGDisplayShowCursor(kCGNullDirectDisplay);
         
 		mouse_active = false;
 	}
@@ -431,26 +336,6 @@ void IN_ProcessEvents (void)
                 
                 mouse_x = (float)dx;
                 mouse_y = (float)dy;
-                
-//                if (mouse_x || mouse_y) // do warp
-//                {
-//                    CGPoint center;
-//                    
-//                    if (vidmode_fullscreen) {
-//                        // just center at the middle of the screen
-//                        center = CGPointMake(vid.width / 2, vid.height / 2);
-//                    } else {
-//                        NSRect bounds = [window frame];
-//                        // calculate the window center
-//                        center.x = bounds.origin.x + bounds.size.width / 2;
-//                        center.y = bounds.origin.y + bounds.size.height / 2;
-//                        
-//                        NSLog(@"%@", NSStringFromRect(bounds));
-//                    }
-//                    
-//                    // move the mouse to the window center again                  
-//                    CGWarpMouseCursorPosition(center);
-//                }
             }
             break; //return;
             

@@ -508,41 +508,16 @@ void VID_Init (void)
         // Create a window of the desired size
         windowRect.origin.x = ([screen frame].size.width - vid.width) / 2;
         windowRect.origin.y = ([screen frame].size.height - vid.height) / 2;
-//        windowRect.origin.x = ((int)CGDisplayModeGetWidth(desktopMode) - vid.width) / 2;
-//        windowRect.origin.y = ((int)CGDisplayModeGetHeight(desktopMode) - vid.height) / 2;
         windowRect.size.width = vid.width;
         windowRect.size.height = vid.height;
         
         window = [[NSWindow alloc] initWithContentRect:windowRect 
-                                             styleMask:NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask
+                                             styleMask:NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask 
                                                backing:NSBackingStoreBuffered 
                                                  defer:NO 
                                                 screen:screen];
         [window setTitle:@"fxQuake"];
-//        [window center];
-
-        
-        NSLog(@"%@", NSStringFromRect(windowRect));
-
-        
-        NSRect bounds = [window frame];
-        NSLog(@"%@", NSStringFromRect(bounds));
-
-        NSRect bounds2 = [screen frame];
-        NSLog(@"%@", NSStringFromRect(bounds2));
-
-        
-        NSRect bounds3 = [ [ window contentView ] frame ];
-        NSLog(@"%@", NSStringFromRect(bounds3));
-        
-//        window - (NSRect)frameRectForContentRect:(NSRect)contentRect;
-        NSRect bounds4 = [window frameRectForContentRect:bounds3];
-        NSLog(@"%@", NSStringFromRect(bounds4));
-        
-        
-//        [window orderFront:nil];
         [window makeKeyAndOrderFront: nil];
-//        [window makeMainWindow];
         
         // Always get mouse moved events (if mouse support is turned off (rare) the event system will filter them out.
         [window setAcceptsMouseMovedEvents:YES];
@@ -595,6 +570,9 @@ called at shutdown
 void VID_Shutdown (void)
 {
     if (display) {
+        
+        VID_Gamma_Shutdown ();
+        
         if (context) {
             [NSOpenGLContext clearCurrentContext];
             CGLClearDrawable([context CGLContextObj]);
@@ -603,12 +581,14 @@ void VID_Shutdown (void)
             context = nil;
         }
         
-        VID_Gamma_Shutdown ();
-        
         if (window) {
-//            [window close];
             [window release];
             window = nil;
+        }
+        
+        if (screen) {
+            [screen release];
+            screen = nil;
         }
         
         // Switch back to the original screen resolution

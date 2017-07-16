@@ -196,6 +196,8 @@ void Sys_Quit (int code)
     
 	Sys_Shutdown ();
     
+//    [NSApp terminate:nil];
+
 	exit (code);
 }
 
@@ -338,6 +340,10 @@ int main (int argc, char *argv[])
 //- (void)applicationDidUnhide:(NSNotification *)notification {
 //    
 //}
+
+- (void)applicationWillTerminate:(NSNotification *)notification {
+    
+}
 
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender {
     return NSTerminateNow;
@@ -487,7 +493,7 @@ int main (int argc, char *argv[])
 - (void)windowDidBecomeKey:(NSNotification *)notification {
     vid_activewindow = true;
     
-    Con_Printf("*** windowDidBecomeKey ***\n");
+//    Con_Printf("*** windowDidBecomeKey ***\n");
 
 //    [self checkWindowActive];
 }
@@ -495,7 +501,7 @@ int main (int argc, char *argv[])
 - (void)windowDidResignKey:(NSNotification *)notification {
     vid_activewindow = false;
     
-    Con_Printf("*** windowDidResignKey ***\n");
+//    Con_Printf("*** windowDidResignKey ***\n");
 
 //    [self checkWindowActive];
 }
