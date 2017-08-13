@@ -25,6 +25,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 static qboolean nostdout = false;
 
+static qboolean app_active = true;
+
 // =======================================================================
 // General routines
 // =======================================================================
@@ -312,6 +314,7 @@ int main (int argc, char *argv[])
 
 - (void)quakeMain;
 - (void)checkWindowActive;
+- (void)updateApplicationActivity;
 
 @end
 
@@ -326,20 +329,68 @@ int main (int argc, char *argv[])
 }
 
 //- (void)applicationWillHide:(NSNotification *)notification {
+//    NSLog(@"%@", NSStringFromSelector(_cmd));
 //    
 //}
-//
-//- (void)applicationDidHide:(NSNotification *)notification {
-//    
-//}
-//
+
+- (void)applicationDidHide:(NSNotification *)notification {
+    NSLog(@"%@", NSStringFromSelector(_cmd));
+
+    vid_hiddenwindow = true;
+    vid_activewindow = false;
+    
+    //    [self checkWindowActive];
+    [self updateApplicationActivity];
+
+//    if (!vidmode_fullscreen)
+//    {
+//        if (![window isMiniaturized]) {
+//            [window miniaturize:nil];
+//        }  
+//    }
+}
+
 //- (void)applicationWillUnhide:(NSNotification *)notification {
+//    NSLog(@"%@", NSStringFromSelector(_cmd));
 //    
 //}
-//
-//- (void)applicationDidUnhide:(NSNotification *)notification {
-//    
-//}
+
+- (void)applicationDidUnhide:(NSNotification *)notification {
+    NSLog(@"%@", NSStringFromSelector(_cmd));
+    
+    vid_hiddenwindow = false;
+    vid_activewindow = true;
+
+    //    [self checkWindowActive];
+    [self updateApplicationActivity];
+
+//    if (!vidmode_fullscreen)
+//    {
+//        if ([window isMiniaturized]) {
+//            [window deminiaturize:nil];
+//        }  
+//    }
+}
+
+- (void)applicationDidResignActive:(NSNotification *)notification {
+    NSLog(@"%@", NSStringFromSelector(_cmd));
+    
+    app_active = false;
+    
+    //    [self checkWindowActive];
+    [self updateApplicationActivity];
+
+}
+
+- (void)applicationDidBecomeActive:(NSNotification *)notification {
+    NSLog(@"%@", NSStringFromSelector(_cmd));
+    
+    app_active = true;
+    
+    //    [self checkWindowActive];
+    [self updateApplicationActivity];
+
+}
 
 - (void)applicationWillTerminate:(NSNotification *)notification {
     
@@ -494,32 +545,47 @@ int main (int argc, char *argv[])
     vid_activewindow = true;
     
 //    Con_Printf("*** windowDidBecomeKey ***\n");
+    NSLog(@"%@", NSStringFromSelector(_cmd));
 
 //    [self checkWindowActive];
+    [self updateApplicationActivity];
 }
 
 - (void)windowDidResignKey:(NSNotification *)notification {
     vid_activewindow = false;
     
 //    Con_Printf("*** windowDidResignKey ***\n");
+    NSLog(@"%@", NSStringFromSelector(_cmd));
 
 //    [self checkWindowActive];
+    [self updateApplicationActivity];
 }
 
 - (void)windowDidMiniaturize:(NSNotification *)notification {
     vid_hiddenwindow = true;
     
+//    NSLog(@"%@", NSStringFromSelector(_cmd));
+    NSLog(@"%@", NSStringFromSelector(_cmd));
+
 //    [self checkWindowActive];
+    [self updateApplicationActivity];
 }
 
 - (void)windowDidDeminiaturize:(NSNotification *)notification {
     vid_hiddenwindow = false;
     
+//    NSLog(@"%@", NSStringFromSelector(_cmd));
+    NSLog(@"%@", NSStringFromSelector(_cmd));
+
 //    [self checkWindowActive];
+    [self updateApplicationActivity];
 }
 
-- (void)checkWindowActive {
-    static qboolean active = true;
+
+- (void)updateApplicationActivity {
+    
+//- (void)checkWindowActive {
+//    static qboolean active = true;
     
     if (vidmode_fullscreen)
     {
@@ -541,21 +607,23 @@ int main (int argc, char *argv[])
     {
         // enable/disable sound, set/restore gamma and grab/ungrab keyb
         // on focus gain/loss
-        if (vid_activewindow && !vid_hiddenwindow && !active)
+//        if (vid_activewindow && !vid_hiddenwindow && !active)
+        if (vid_activewindow && !vid_hiddenwindow && app_active)
         {
             S_UnblockSound ();
             S_ClearBuffer ();
             VID_Gamma_Set ();
 //            IN_GrabKeyboard();
-            active = true;
+//            active = true;
         }
-        else if (active)
+//        else if (active)
+        else if (!app_active)
         {
             S_BlockSound ();
             S_ClearBuffer ();
             VID_Gamma_Restore ();
 //            IN_UngrabKeyboard();
-            active = false;
+//            active = false;
         }
     }
     
