@@ -531,6 +531,8 @@ void VID_Init (void)
         if (glerr) {
             Sys_Error("Cannot set fullscreen");
         }
+        
+        [NSThread sleepForTimeInterval:2.0]; // hack to wait for fade transition can reset gamma
     }
     
     [context makeCurrentContext];
