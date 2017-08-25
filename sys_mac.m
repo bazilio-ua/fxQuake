@@ -503,18 +503,18 @@ int main (int argc, char *argv[])
 				Sys_Sleep (); // Prevent CPU hogging
 		}
         
-//		if (time > sys_ticrate.value * 2)
-//			oldtime = newtime;
-//		else
-//			oldtime += time;
+		if (time > sys_ticrate.value * 2)
+			oldtime = newtime;
+		else
+			oldtime += time;
         
 		Host_Frame (time);
         
-        if (time < 0.02) {
-            [NSThread sleepForTimeInterval:0.001];
-        }
-        
-        oldtime = newtime;
+//        if (time < 0.02) {
+//            [NSThread sleepForTimeInterval:0.001];
+//        }
+//        
+//        oldtime = newtime;
 	}
     
 //    [pool release];
