@@ -33,7 +33,7 @@ CGDisplayModeRef    gameMode;
 viddef_t vid; // global video state
 
 cvar_t		vid_gamma = {"gamma", "1", true};
-
+cvar_t		vid_contrast = {"contrast", "1", true}; // QuakeSpasm, MarkV
 
 //==========================================================================
 //
@@ -108,16 +108,18 @@ void VID_Gamma (void)
 {
     int i;
 	static float oldgamma;
+	static float oldcontrast;
     
-	if (vid_gamma.value == oldgamma)
+	if (vid_gamma.value == oldgamma && vid_contrast.value == oldcontrast)
 		return;
     
 	oldgamma = vid_gamma.value;
+    oldcontrast = vid_contrast.value;
     
 	// Refresh gamma
     for (i=0; i<256; i++)
         vid_gammaramp[0][i] = vid_gammaramp[1][i] = vid_gammaramp[2][i] =
-            CLAMP(0, (int)(255 * pow ((i+0.5)/255.5, vid_gamma.value) + 0.5), 255) / 255.0;
+            CLAMP(0, (int)((255 * pow ((i+0.5)/255.5, vid_gamma.value) + 0.5) * vid_contrast.value), 255) / 255.0;
     
 	VID_Gamma_Set ();
 }
@@ -147,6 +149,7 @@ void VID_Gamma_Init (void)
     }
     
 	Cvar_RegisterVariable (&vid_gamma, VID_Gamma);
+	Cvar_RegisterVariable (&vid_contrast, VID_Gamma);
 }
 
 //====================================
