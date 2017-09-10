@@ -290,8 +290,6 @@ void GL_CheckExtensions (void)
 	//
 #ifdef _WIN32
 	SWAPcontrol = strstr (gl_extensions, SWAPCONTROLSTRING) != NULL;
-//#elif defined __APPLE__ && defined __MACH__
-//	SWAPcontrol = false;
 #elif defined GLX_GLXEXT_PROTOTYPES
 	SWAPcontrol = strstr (glx_extensions, SWAPCONTROLSTRING) != NULL;
 #endif

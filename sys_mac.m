@@ -25,6 +25,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 static qboolean nostdout = false;
 
+qboolean has_smp = false;
+
 // =======================================================================
 // General routines
 // =======================================================================
@@ -120,7 +122,8 @@ void Sys_Init (void)
     if (numcpus != -1)
         numcpus = (numcpus < 1) ? 1 : numcpus;
     
-    Sys_Printf("Detected %d CPUs.\n", numcpus);
+    has_smp = (numcpus > 1) ? true : false;
+    Sys_Printf("Detected %d CPU%s.\n", numcpus, has_smp ? "s" : "");
 }
 
 void Sys_Printf (char *fmt, ...)
@@ -304,7 +307,6 @@ int main (int argc, char *argv[])
     return NSApplicationMain(argc, (const char **)argv);
 }
 
-
 //
 // Quake Controller
 //
@@ -322,6 +324,10 @@ int main (int argc, char *argv[])
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notification {
+    
+    [NSApp setServicesProvider:self];
+    [NSApp activateIgnoringOtherApps:YES];
+    
     [self quakeMain];
 }
 
@@ -335,14 +341,6 @@ int main (int argc, char *argv[])
         [self checkActive];
     }
 }
-
-//- (void)applicationDidHide:(NSNotification *)notification {
-//    NSLog(@"%@", NSStringFromSelector(_cmd));
-//}
-
-//- (void)applicationWillUnhide:(NSNotification *)notification {
-//    NSLog(@"%@", NSStringFromSelector(_cmd));
-//}
 
 - (void)applicationDidUnhide:(NSNotification *)notification {
     NSLog(@"%@", NSStringFromSelector(_cmd));
@@ -365,14 +363,6 @@ int main (int argc, char *argv[])
     }
 }
 
-//- (void)applicationDidResignActive:(NSNotification *)notification {
-//    NSLog(@"%@", NSStringFromSelector(_cmd));
-//}
-
-//- (void)applicationWillBecomeActive:(NSNotification *)notification {
-//    NSLog(@"%@", NSStringFromSelector(_cmd));
-//}
-
 - (void)applicationDidBecomeActive:(NSNotification *)notification {
     NSLog(@"%@", NSStringFromSelector(_cmd));
     
@@ -382,10 +372,6 @@ int main (int argc, char *argv[])
         [self checkActive];
     }
 }
-
-//- (void)applicationDidUpdate:(NSNotification *)notification {
-//    NSLog(@"%@", NSStringFromSelector(_cmd));
-//}
 
 - (void)applicationWillTerminate:(NSNotification *)notification {
     
@@ -403,10 +389,7 @@ int main (int argc, char *argv[])
 	quakeparms_t parms;
 	int t;
     
-//    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-//    [NSApplication sharedApplication];
-    
-    [NSApp setServicesProvider:self];
+//    [NSApp setServicesProvider:self];
     
     NSProcessInfo *processInfo = [NSProcessInfo processInfo];
     NSArray *arguments = [processInfo arguments];
@@ -477,7 +460,7 @@ int main (int argc, char *argv[])
 		printf ("fxQuake %4.2f\n", (float)VERSION);
 	}
     
-    [NSApp activateIgnoringOtherApps:YES];
+//    [NSApp activateIgnoringOtherApps:YES];
     
 	oldtime = Sys_DoubleTime () - 0.1;
 	// main message loop
@@ -509,15 +492,7 @@ int main (int argc, char *argv[])
 			oldtime += time;
         
 		Host_Frame (time);
-        
-//        if (time < 0.02) {
-//            [NSThread sleepForTimeInterval:0.001];
-//        }
-//        
-//        oldtime = newtime;
 	}
-    
-//    [pool release];
 }
 
 - (BOOL)windowShouldClose:(id)sender {
@@ -527,14 +502,6 @@ int main (int argc, char *argv[])
 - (void)windowWillClose:(NSNotification *)notification {
     Sys_Quit(0);
 }
-
-//- (void)windowDidBecomeMain:(NSNotification *)notification {
-//    NSLog(@"%@", NSStringFromSelector(_cmd));
-//}
-//
-//- (void)windowDidResignMain:(NSNotification *)notification {
-//    NSLog(@"%@", NSStringFromSelector(_cmd));
-//}
 
 - (void)windowDidBecomeKey:(NSNotification *)notification {
     NSLog(@"%@", NSStringFromSelector(_cmd));
@@ -565,10 +532,6 @@ int main (int argc, char *argv[])
         [self checkActive];
     }
 }
-
-//- (void)windowDidMiniaturize:(NSNotification *)notification {
-//    NSLog(@"%@", NSStringFromSelector(_cmd));
-//}
 
 - (void)windowDidDeminiaturize:(NSNotification *)notification {
     NSLog(@"%@", NSStringFromSelector(_cmd));

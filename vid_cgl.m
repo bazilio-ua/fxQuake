@@ -114,40 +114,10 @@ void VID_Gamma (void)
     
 	oldgamma = vid_gamma.value;
     
-    
-    
-    
-//    vid_gamma.value = 0.7; // DEBUG
-    
-    
-    
-    // Refresh gamma (X11)
-//	for (i=0; i<256; i++)
-//		vid_gammaramp[0][i] = vid_gammaramp[1][i] = vid_gammaramp[2][i] =
-//            CLAMP(0, (int) (255 * pow ((i+0.5)/255.5, vid_gamma.value) + 0.5), 255) << 8;
-    
-    
-//    for (i=0; i<256; i++)
-//        vid_gammaramp[0][i] = vid_gammaramp[1][i] = vid_gammaramp[2][i] =
-//            CLAMP(0, (int)(65535 * pow ((i+0.5)/255.5, vid_gamma.value) + 0.5), 65535) / 65535.0;
-
-//!    work!
+	// Refresh gamma
     for (i=0; i<256; i++)
         vid_gammaramp[0][i] = vid_gammaramp[1][i] = vid_gammaramp[2][i] =
             CLAMP(0, (int)(255 * pow ((i+0.5)/255.5, vid_gamma.value) + 0.5), 255) / 255.0;
-    
-    
-    
-//    float value = vid_gamma.value;
-//    value = CLAMP(0.5, value, 1.0);
-//    value = ((1.4f - value) * 2.5f);
-//    
-//    for (i=0; i<256; i++)
-//    {
-//        vid_gammaramp[0][i] = value * vid_systemgammaramp[0][i];
-//        vid_gammaramp[1][i] = value * vid_systemgammaramp[1][i];
-//        vid_gammaramp[2][i] = value * vid_systemgammaramp[2][i];
-//    }
     
 	VID_Gamma_Set ();
 }
@@ -206,60 +176,11 @@ inline void GL_EndRendering (void)
 //    [context flushBuffer];
 	CGLFlushDrawable([context CGLContextObj]);
     
-//    glClear(GL_DEPTH_BUFFER_BIT);
-//    glClear (GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-
-    
 	if (fullsbardraw)
 		Sbar_Changed();
 }
 
 //====================================
-
-//NSOpenGLPixelFormat *OpenGLPixelFormat (int bpp, qboolean fullscreen)
-//{
-//    NSOpenGLPixelFormat *format = nil;
-//    NSOpenGLPixelFormatAttribute attributes[32];
-//    int i = 0;
-//    
-//    if (bpp < 16)
-//        bpp = 16;
-//    else if (bpp > 16)
-//        bpp = 32;
-//    
-//    attributes[i++] = NSOpenGLPFANoRecovery;
-//    attributes[i++] = NSOpenGLPFAMinimumPolicy;
-//    attributes[i++] = NSOpenGLPFAAccelerated;
-//    attributes[i++] = NSOpenGLPFADoubleBuffer;
-//    
-//    attributes[i++] = NSOpenGLPFADepthSize;
-//    attributes[i++] = 1;
-//    
-//    attributes[i++] = NSOpenGLPFAAlphaSize;
-//    attributes[i++] = 0;
-//    
-//    attributes[i++] = NSOpenGLPFAStencilSize;
-//    attributes[i++] = 0;
-//    
-//    attributes[i++] = NSOpenGLPFAAccumSize;
-//    attributes[i++] = 0;
-//    
-//    attributes[i++] = NSOpenGLPFAColorSize;
-//    attributes[i++] = bpp;
-//    
-//    if (fullscreen) {
-//        attributes[i++] = NSOpenGLPFAFullScreen;
-//        attributes[i++] = NSOpenGLPFAScreenMask;
-//        attributes[i++] = CGDisplayIDToOpenGLDisplayMask(display);
-//    } else
-//        attributes[i++] = NSOpenGLPFAWindow;
-//    
-//    attributes[i++] = 0;
-//    
-//    format = [[NSOpenGLPixelFormat alloc] initWithAttributes:attributes];
-//    
-//    return format;
-//}
 
 void CGL_SwapInterval (qboolean enable)
 {
@@ -491,7 +412,6 @@ void VID_Init (void)
     }
     
     NSOpenGLPixelFormat *pixelFormat = [[NSOpenGLPixelFormat alloc] initWithAttributes:pixelAttributes];
-//    pixelFormat = OpenGLPixelFormat(colorDepth, fullscreen);
     if (!pixelFormat) {
         Sys_Error("No pixel format found");
     }
@@ -532,7 +452,9 @@ void VID_Init (void)
             Sys_Error("Cannot set fullscreen");
         }
         
-        [NSThread sleepForTimeInterval:2.0]; // hack to wait for fade transition can reset gamma
+        do {
+            [NSThread sleepForTimeInterval:2.0]; // wait for fade transition can reset gamma
+        } while (CGDisplayFadeOperationInProgress());
     }
     
     [context makeCurrentContext];
@@ -545,12 +467,12 @@ void VID_Init (void)
     
     GL_Init();
     
-    CGLError glerr = CGLEnable([context CGLContextObj], kCGLCEMPEngine);
-    if (glerr == kCGLNoError) {
-        Con_Printf("Enable multi-threaded OpenGL\n");
+    if (has_smp) {
+        CGLError glerr = CGLEnable([context CGLContextObj], kCGLCEMPEngine);
+        if (glerr == kCGLNoError) {
+            Con_Printf("Enable multi-threaded OpenGL\n");
+        }
     }
-
-//    CGL_SwapInterval(true); // DEBUG
     
 	VID_Gamma_Init ();
     
