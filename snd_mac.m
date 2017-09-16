@@ -237,8 +237,9 @@ qboolean SNDDMA_Init(void)
     shm->samplebits = 16;
 //    shm->samplebits = outputStreamBasicDescription.mBytesPerFrame;
 //    shm->speed = 96000;
+    shm->speed = 88200;
 //    shm->speed = 48000;
-    shm->speed = 44100;
+//    shm->speed = 44100;
 //    shm->speed = 22050;
 //    shm->speed = 11025;
 //    shm->speed = outputStreamBasicDescription.mSampleRate;
