@@ -102,6 +102,7 @@ qboolean SNDDMA_Init(void)
     AudioObjectPropertyAddress propertyAddress;
     AudioValueRange bufferSizeRange;
     UInt32 bufferSize;
+    int i;
     
     snd_inited = false;
 	shm = &sn;
@@ -190,7 +191,15 @@ qboolean SNDDMA_Init(void)
     
     // Tell the main app what we expect from it
     shm->samplebits = 16;
-    shm->speed = 44100;
+//    shm->speed = 44100;
+    
+	// sound speed
+	if ((i = COM_CheckParm("-sndspeed")) != 0 && i < com_argc - 1)
+		shm->speed = atoi(com_argv[i + 1]);
+	else
+		shm->speed = 44100;
+    
+    shm->width = outputStreamBasicDescription.mBytesPerFrame / 8;
     shm->channels = 2;
     shm->samples = sizeof(buffer) / (shm->samplebits >> 3);
     shm->samplepos = 0;

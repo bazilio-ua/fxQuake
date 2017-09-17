@@ -198,6 +198,7 @@ sndinitstat SNDDMA_InitDirect (void)
 	shm->channels = 2;
 	shm->samplebits = 16;
 //	shm->speed = 11025;
+    shm->width = 1;
 
 	// sound speed
 	if ((i = COM_CheckParm("-sndspeed")) != 0 && i < com_argc - 1)
@@ -406,6 +407,7 @@ qboolean SNDDMA_InitWav (void)
 	shm->channels = 2;
 	shm->samplebits = 16;
 //	shm->speed = 11025;
+    shm->width = 1;
 
 	// sound speed
 	if ((i = COM_CheckParm("-sndspeed")) != 0 && i < com_argc - 1)
