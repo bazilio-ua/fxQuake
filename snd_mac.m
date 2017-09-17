@@ -29,18 +29,19 @@ static AudioDeviceID outputDeviceID = kAudioDeviceUnknown;
 static AudioStreamBasicDescription outputStreamBasicDescription;
 static AudioDeviceIOProcID ioprocid = NULL;
 
-static AudioValueRange bufferFrameRange;
+static AudioValueRange bufferSizeRange;
 static UInt32 bufferByteCount;
 static UInt32 bufferPosition;
 
 static byte buffer[64*1024];
 //static unsigned char 			gSoundBuffer[64*1024];
 
-#define OUTPUT_BUFFER_SIZE	(4 * 1024)
+//#define OUTPUT_BUFFER_SIZE	(4 * 1024)
+#define OUTPUT_BUFFER_SIZE	(2 * 1024)
 
 
-int chunkSize = 2048; // 2 * 1024
-int bufferSize = 65536; // 64 * 1024
+//int chunkSize = 2048; // 2 * 1024
+//int bufferSize = 65536; // 64 * 1024
 //int bufferSize = 16384; // 64 * 1024
 
 
@@ -60,26 +61,24 @@ OSStatus audioDeviceIOProc(AudioDeviceID inDevice,
                            const AudioTimeStamp *inOutputTime,
                            void *inClientData)
 {
+    UInt32 sampleIndex;
+    short *samples = (short *)buffer + bufferPosition / (shm->samplebits >> 3);
+    float *outBuffer = (float *)outOutputData->mBuffers[0].mData;
+    float scale = 1.0f / 32768.0f;
     
-    UInt16	i;
-    short	*myDMA = ((short *) buffer) + bufferPosition / (shm->samplebits >> 3);
-    float	*myOutBuffer = (float *) outOutputData->mBuffers[0].mData;
-    
-    // convert the buffer to float, required by CoreAudio:
-    for (i = 0; i < OUTPUT_BUFFER_SIZE; i++)
+    // Convert the buffer to float, required by CoreAudio
+    for (sampleIndex = 0; sampleIndex < OUTPUT_BUFFER_SIZE; sampleIndex++)
     {
-        *myOutBuffer++ = (*myDMA++) * (1.0f / 32768.0f);
+        // Convert the samples from shorts to floats.  Scale the floats to be [-1..1].
+        outBuffer[sampleIndex] = samples[sampleIndex] * scale;
     }
     
-    // increase the bufferposition:
+    // Increase the buffer position. This is the next buffer we will submit
     bufferPosition += OUTPUT_BUFFER_SIZE * (shm->samplebits >> 3);
     if (bufferPosition >= sizeof (buffer))
-    {
         bufferPosition = 0;
-    }
     
-    // return 0 = no error:
-    return (0);
+	return kAudioHardwareNoError;
     
     
 //    UInt32 sampleIndex;
@@ -158,13 +157,16 @@ qboolean SNDDMA_Init(void)
     }
     
     // Get the buffer range on output device
-//    propertySize = sizeof(bufferFrameRange);
+    propertySize = sizeof(bufferSizeRange);
 //    propertyAddress.mSelector = kAudioDevicePropertyBufferFrameSizeRange;
+    propertyAddress.mSelector = kAudioDevicePropertyBufferSizeRange;
+    
 //    status = AudioObjectGetPropertyData(outputDeviceID, &propertyAddress, 0, NULL, &propertySize, &bufferFrameRange);
-//    if (status) {
-//        Con_Printf("AudioDeviceGetProperty: returned %d when getting kAudioDevicePropertyBufferSizeRange\n", status);
-//        return false;
-//    }
+    status = AudioDeviceGetProperty(outputDeviceID, 0, NO, kAudioDevicePropertyBufferSizeRange, &propertySize, &bufferSizeRange);
+    if (status) {
+        Con_Printf("AudioDeviceGetProperty: returned %d when getting kAudioDevicePropertyBufferSizeRange\n", status);
+        return false;
+    }
 
     
     // Configure the output device	
@@ -173,7 +175,7 @@ qboolean SNDDMA_Init(void)
     propertyAddress.mSelector = kAudioDevicePropertyBufferSize;
     
 //    bufferByteCount = chunkSize * sizeof(float);
-    bufferByteCount = OUTPUT_BUFFER_SIZE * sizeof (float);
+    bufferByteCount = OUTPUT_BUFFER_SIZE * sizeof(float);
     
 //    status = AudioObjectSetPropertyData(outputDeviceID, &propertyAddress, 0, NULL, propertySize, &bufferByteCount);
     status = AudioDeviceSetProperty(outputDeviceID, NULL, 0, NO, kAudioDevicePropertyBufferSize, propertySize, &bufferByteCount);
@@ -182,12 +184,12 @@ qboolean SNDDMA_Init(void)
         return false;
     }
     
-////    status = AudioObjectGetPropertyData(outputDeviceID, &propertyAddress, 0, NULL, &propertySize, &bufferByteCount);
-//    status = AudioDeviceGetProperty(outputDeviceID, 0, NO, kAudioDevicePropertyBufferSize, &propertySize, &bufferByteCount);
-//    if (status) {
-//        Con_Printf("AudioDeviceGetProperty: returned %d when getting kAudioDevicePropertyBufferSize\n", status);
-//        return false;
-//    }
+//    status = AudioObjectGetPropertyData(outputDeviceID, &propertyAddress, 0, NULL, &propertySize, &bufferByteCount);
+    status = AudioDeviceGetProperty(outputDeviceID, 0, NO, kAudioDevicePropertyBufferSize, &propertySize, &bufferByteCount);
+    if (status) {
+        Con_Printf("AudioDeviceGetProperty: returned %d when getting kAudioDevicePropertyBufferSize\n", status);
+        return false;
+    }
     
     // Print out the device status
     propertySize = sizeof(outputStreamBasicDescription);
@@ -234,12 +236,13 @@ qboolean SNDDMA_Init(void)
     
     
     // Tell the main app what we expect from it
+//    shm->samplebits = 8;
     shm->samplebits = 16;
 //    shm->samplebits = outputStreamBasicDescription.mBytesPerFrame;
 //    shm->speed = 96000;
-    shm->speed = 88200;
+//    shm->speed = 88200;
 //    shm->speed = 48000;
-//    shm->speed = 44100;
+    shm->speed = 44100;
 //    shm->speed = 22050;
 //    shm->speed = 11025;
 //    shm->speed = outputStreamBasicDescription.mSampleRate;
@@ -248,6 +251,7 @@ qboolean SNDDMA_Init(void)
 //    shm->samples = bufferSize; // crash
 //    shm->samples = 16384;
     shm->samples = sizeof(buffer) / (shm->samplebits >> 3);
+//    shm->samples = sizeof(buffer) / 4;
     shm->samplepos = 0;
 //    shm->submission_chunk = bufferByteCount;
     shm->submission_chunk = OUTPUT_BUFFER_SIZE;
