@@ -107,14 +107,13 @@ qboolean SNDDMA_Init(void)
     snd_inited = false;
 	shm = &sn;
     
-    propertyAddress.mScope = kAudioObjectPropertyScopeGlobal;
-    propertyAddress.mElement = kAudioObjectPropertyElementMaster;    
-    
     // Get the output device
     propertySize = sizeof(outputDeviceID);
+    propertyAddress.mElement = kAudioObjectPropertyElementMaster;    
+    propertyAddress.mScope = kAudioObjectPropertyScopeGlobal;
     propertyAddress.mSelector = kAudioHardwarePropertyDefaultOutputDevice;
-//    status = AudioObjectGetPropertyData(kAudioObjectSystemObject, &propertyAddress, 0, NULL, &propertySize, &outputDeviceID);
-    status = AudioHardwareGetProperty(kAudioHardwarePropertyDefaultOutputDevice, &propertySize, &outputDeviceID);
+    status = AudioObjectGetPropertyData(kAudioObjectSystemObject, &propertyAddress, 0, NULL, &propertySize, &outputDeviceID);
+//    status = AudioHardwareGetProperty(kAudioHardwarePropertyDefaultOutputDevice, &propertySize, &outputDeviceID);
     if (status) {
         Con_Printf("AudioHardwareGetProperty returned %d\n", status);
         return false;
@@ -127,31 +126,31 @@ qboolean SNDDMA_Init(void)
     
     // Get the buffer range on output device
     propertySize = sizeof(bufferSizeRange);
+    propertyAddress.mScope = kAudioDevicePropertyScopeOutput;
     propertyAddress.mSelector = kAudioDevicePropertyBufferSizeRange;
-    
-//    status = AudioObjectGetPropertyData(outputDeviceID, &propertyAddress, 0, NULL, &propertySize, &bufferFrameRange);
-    status = AudioDeviceGetProperty(outputDeviceID, 0, NO, kAudioDevicePropertyBufferSizeRange, &propertySize, &bufferSizeRange);
+    status = AudioObjectGetPropertyData(outputDeviceID, &propertyAddress, 0, NULL, &propertySize, &bufferSizeRange);
+//    status = AudioDeviceGetProperty(outputDeviceID, 0, NO, kAudioDevicePropertyBufferSizeRange, &propertySize, &bufferSizeRange);
     if (status) {
         Con_Printf("AudioDeviceGetProperty: returned %d when getting kAudioDevicePropertyBufferSizeRange\n", status);
         return false;
     }
-
     
     // Configure the output device	
     propertySize = sizeof(bufferSize);
+//    propertyAddress.mScope = kAudioDevicePropertyScopeOutput;
     propertyAddress.mSelector = kAudioDevicePropertyBufferSize;
     
     bufferSize = OUTPUT_BUFFER_SIZE * sizeof(float);
     
-//    status = AudioObjectSetPropertyData(outputDeviceID, &propertyAddress, 0, NULL, propertySize, &bufferByteCount);
-    status = AudioDeviceSetProperty(outputDeviceID, NULL, 0, NO, kAudioDevicePropertyBufferSize, propertySize, &bufferSize);
+    status = AudioObjectSetPropertyData(outputDeviceID, &propertyAddress, 0, NULL, propertySize, &bufferSize);
+//    status = AudioDeviceSetProperty(outputDeviceID, NULL, 0, NO, kAudioDevicePropertyBufferSize, propertySize, &bufferSize);
     if (status) {
         Con_Printf("AudioDeviceSetProperty: returned %d when setting kAudioDevicePropertyBufferSize to %d\n", status, bufferSize);
         return false;
     }
     
-//    status = AudioObjectGetPropertyData(outputDeviceID, &propertyAddress, 0, NULL, &propertySize, &bufferByteCount);
-    status = AudioDeviceGetProperty(outputDeviceID, 0, NO, kAudioDevicePropertyBufferSize, &propertySize, &bufferSize);
+    status = AudioObjectGetPropertyData(outputDeviceID, &propertyAddress, 0, NULL, &propertySize, &bufferSize);
+//    status = AudioDeviceGetProperty(outputDeviceID, 0, NO, kAudioDevicePropertyBufferSize, &propertySize, &bufferSize);
     if (status) {
         Con_Printf("AudioDeviceGetProperty: returned %d when getting kAudioDevicePropertyBufferSize\n", status);
         return false;
@@ -159,11 +158,11 @@ qboolean SNDDMA_Init(void)
     
     // Print out the device status
     propertySize = sizeof(outputStreamBasicDescription);
+//    propertyAddress.mScope = kAudioDevicePropertyScopeOutput;
     propertyAddress.mSelector = kAudioDevicePropertyStreamFormat;
-    propertyAddress.mScope = kAudioDevicePropertyScopeOutput;
     
-//    status = AudioObjectGetPropertyData(outputDeviceID, &propertyAddress, 0, NULL, &propertySize, &outputStreamBasicDescription);
-    status = AudioDeviceGetProperty(outputDeviceID, 0, NO, kAudioDevicePropertyStreamFormat, &propertySize, &outputStreamBasicDescription);
+    status = AudioObjectGetPropertyData(outputDeviceID, &propertyAddress, 0, NULL, &propertySize, &outputStreamBasicDescription);
+//    status = AudioDeviceGetProperty(outputDeviceID, 0, NO, kAudioDevicePropertyStreamFormat, &propertySize, &outputStreamBasicDescription);
     if (status) {
         Con_Printf("AudioDeviceGetProperty: returned %d when getting kAudioDevicePropertyStreamFormat\n", status);
         return false;
@@ -188,18 +187,17 @@ qboolean SNDDMA_Init(void)
     }
     
     // Add the sound to IOProc
-    status = AudioDeviceAddIOProc(outputDeviceID, audioDeviceIOProc, NULL);
-//    status = AudioDeviceCreateIOProcID(outputDeviceID, audioDeviceIOProc, NULL, &ioprocid);
+//    status = AudioDeviceAddIOProc(outputDeviceID, audioDeviceIOProc, NULL);
+    status = AudioDeviceCreateIOProcID(outputDeviceID, audioDeviceIOProc, NULL, &ioprocid);
     if (status) {
         Con_Printf("AudioDeviceAddIOProc: returned %d\n", status);
         return false;
     }
 
-//    if (ioprocid == NULL) {
-//        Con_Printf("Cannot create IOProcID\n");
-//        return false;
-//    }
-    
+    if (ioprocid == NULL) {
+        Con_Printf("Cannot create IOProcID\n");
+        return false;
+    }
     
     // Tell the main app what we expect from it
     shm->samplebits = 16;
@@ -214,8 +212,8 @@ qboolean SNDDMA_Init(void)
     bufferPosition = 0;
     
     // Start sound running
-    status = AudioDeviceStart(outputDeviceID, audioDeviceIOProc);
-//    status = AudioDeviceStart(outputDeviceID, ioprocid);
+//    status = AudioDeviceStart(outputDeviceID, audioDeviceIOProc);
+    status = AudioDeviceStart(outputDeviceID, ioprocid);
     if (status) {
         Con_Printf("AudioDeviceStart: returned %d\n", status);
         return false;
@@ -272,14 +270,13 @@ void SNDDMA_Shutdown(void)
 	{
         // do shutdown
         
-//        AudioDeviceStop(outputDeviceID, audioDeviceIOProc);
-//        
-////        AudioDeviceRemoveIOProc(outputDeviceID, audioDeviceIOProc);
-//        AudioDeviceDestroyIOProcID(outputDeviceID, ioprocid);
+        AudioDeviceStop(outputDeviceID, audioDeviceIOProc);
         
+//        AudioDeviceRemoveIOProc(outputDeviceID, audioDeviceIOProc);
+        AudioDeviceDestroyIOProcID(outputDeviceID, ioprocid);
         
-        AudioDeviceStop (outputDeviceID, audioDeviceIOProc);
-        AudioDeviceRemoveIOProc (outputDeviceID, audioDeviceIOProc);
+//        AudioDeviceStop (outputDeviceID, audioDeviceIOProc);
+//        AudioDeviceRemoveIOProc (outputDeviceID, audioDeviceIOProc);
         
         
         snd_inited = false;
