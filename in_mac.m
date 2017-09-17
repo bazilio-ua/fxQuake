@@ -69,10 +69,6 @@ void IN_ActivateMouse (void)
 {
 	if (mouse_available && !mouse_active)
 	{
-//        if (window) {
-//            [window setAcceptsMouseMovedEvents:YES];
-//        }
-        
         // hide cursor
         CGDisplayHideCursor(kCGNullDirectDisplay);
         // grab pointer
@@ -110,10 +106,6 @@ void IN_DeactivateMouse (void)
 {
     if (mouse_available && mouse_active)
 	{
-//        if (window) {
-//            [window setAcceptsMouseMovedEvents:NO];
-//        }
-        
         // ungrab pointer
         CGAssociateMouseAndMouseCursorPosition(true);
         // show cursor
@@ -276,180 +268,151 @@ void IN_ProcessEvents (void)
 		}
 	}
     
-    
-    
-//    NSEvent *event = [NSApp nextEventMatchingMask:NSAnyEventMask 
-//                                        untilDate:[NSDate distantPast]
-//                                           inMode:NSDefaultRunLoopMode 
-//                                          dequeue:YES];
-//    
-//    NSEventType eventType = [event type];
-//    
-//    switch (eventType) {
-//            
-//        default:
-//            break;
-//    }
-//    
-//    [NSApp sendEvent:event];
-
-    
-    
-    
 	NSEvent *event = [NSApp nextEventMatchingMask:NSAnyEventMask 
                                         untilDate:[NSDate distantPast] 
                                            inMode:NSDefaultRunLoopMode 
                                           dequeue:YES];
     
-//    while ((event = [NSApp nextEventMatchingMask:NSAnyEventMask 
-//                                       untilDate:[NSDate distantPast] 
-//                                          inMode:NSDefaultRunLoopMode 
-//                                         dequeue:YES])) 
-//    {
-        NSEventType eventType = [event type];
-        switch (eventType) 
+    NSEventType eventType = [event type];
+    switch (eventType) 
+    {
+    // These six event types are ignored since we do all of our mouse down/up process via the uber-mouse system defined event. 
+    // We have to accept these events however since they get enqueued and the queue will fill up if we don't. 
+/*
+    case NSLeftMouseDown:
+        break;
+    case NSLeftMouseUp:
+        break;
+    case NSRightMouseDown:
+        break;
+    case NSRightMouseUp:
+        break;
+    case NSOtherMouseDown:  // other mouse down
+        break;
+    case NSOtherMouseUp:    // other mouse up
+        break;
+*/
+    case NSMouseMoved: // mouse moved
+    case NSLeftMouseDragged:
+    case NSRightMouseDragged:
+    case NSOtherMouseDragged: // other mouse dragged
+        if (mouse_active) 
         {
-//    These six event types are ignored since we do all of our mouse down/up process via the uber-mouse system defined event. 
-//    We have to accept these events however since they get enqueued and the queue will fill up if we don't. 
-//        case NSLeftMouseDown:
-//            return;
-//        case NSLeftMouseUp:
-//            return;
-//        case NSRightMouseDown:
-//            return;
-//        case NSRightMouseUp:
-//            return;
-//        case NSOtherMouseDown:  // other mouse down
-//            return;
-//        case NSOtherMouseUp:    // other mouse up
-//            return;
-
-        case NSMouseMoved: // mouse moved
-        case NSLeftMouseDragged:
-        case NSRightMouseDragged:
-        case NSOtherMouseDragged:   // other mouse dragged
-            if (mouse_active) 
-            {
-                static int32_t	dx, dy;
-                
-                CGGetLastMouseDelta (&dx, &dy);
-                
-                mouse_x = (float)dx;
-                mouse_y = (float)dy;
-            }
-            break; //return;
+            static int32_t	dx, dy;
             
-        case NSKeyDown: // key pressed
-        case NSKeyUp: // key released
-            {
-                unsigned short vkey = [event keyCode];
-                int key = (byte)scantokey[vkey];
-                
-                Key_Event(key, eventType == NSKeyDown);
-            }   
-            break; //return;
+            CGGetLastMouseDelta (&dx, &dy);
             
-        case NSFlagsChanged: // special keys
-            {
-                static NSUInteger lastFlags = 0;
-                const NSUInteger flags = [event modifierFlags];
-                const NSUInteger filteredFlags = flags ^ lastFlags;
-                
-                lastFlags = flags;
-                
-                if (filteredFlags & NSAlphaShiftKeyMask)
-                    Key_Event (K_CAPSLOCK, (flags & NSAlphaShiftKeyMask) ? true : false);
-                
-                if (filteredFlags & NSShiftKeyMask)
-                    Key_Event (K_SHIFT, (flags & NSShiftKeyMask) ? true : false);
-                
-                if (filteredFlags & NSControlKeyMask)
-                    Key_Event (K_CTRL, (flags & NSControlKeyMask) ? true : false);
-                
-                if (filteredFlags & NSAlternateKeyMask)
-                    Key_Event (K_ALT, (flags & NSAlternateKeyMask) ? true : false);
-                
-                if (filteredFlags & NSCommandKeyMask)
-                    Key_Event (K_COMMAND, (flags & NSCommandKeyMask) ? true : false);
-                
-                if (filteredFlags & NSNumericPadKeyMask)
-                    Key_Event (K_NUMLOCK, (flags & NSNumericPadKeyMask) ? true : false);
-            }
-            break; //return;
-            
-        case NSSystemDefined:
-            if (mouse_active)
-            {
-                static NSInteger oldButtons = 0;
-                NSInteger buttonsDelta;
-                NSInteger buttons;
-                qboolean isDown;
-                
-                if ([event subtype] == 7) 
-                {
-                    buttons = [event data2];
-                    buttonsDelta = oldButtons ^ buttons;
-                    
-                    if (buttonsDelta & 1) {
-                        isDown = buttons & 1;
-                        Key_Event (K_MOUSE1, isDown);
-                    }
-                    
-                    if (buttonsDelta & 2) {
-                        isDown = buttons & 2;
-                        Key_Event (K_MOUSE2, isDown);
-                    }
-                    
-                    if (buttonsDelta & 4) {
-                        isDown = buttons & 4;
-                        Key_Event (K_MOUSE3, isDown);
-                    }
-                    
-                    if (buttonsDelta & 8) {
-                        isDown = buttons & 8;
-                        Key_Event (K_MOUSE4, isDown);
-                    }
-                    
-                    if (buttonsDelta & 16) {
-                        isDown = buttons & 16;
-                        Key_Event (K_MOUSE5, isDown);
-                    }
-                    
-                    oldButtons = buttons;
-                }
-            }
-            break; //return;
-
-            
-        case NSScrollWheel: // scroll wheel
-//            if (mouse_active) 
-            {
-                if ([event deltaY] < 0.0)
-                {
-                    Key_Event (K_MWHEELDOWN, true);
-                    Key_Event (K_MWHEELDOWN, false);
-                }
-                else
-                {
-                    Key_Event (K_MWHEELUP, true);
-                    Key_Event (K_MWHEELUP, false);
-                }
-            }
-            break; //return;
-            
-        case NSMouseEntered:
-        case NSMouseExited:
-            notifywindow = (eventType == NSMouseEntered);
-            break; //return;
-            
-        default:
-            [NSApp sendEvent:event];
-            break;
+            mouse_x = (float)dx;
+            mouse_y = (float)dy;
         }
+        break;
         
-//        [NSApp sendEvent:event];
-//    }
+    case NSKeyDown: // key pressed
+    case NSKeyUp: // key released
+        {
+            unsigned short vkey = [event keyCode];
+            int key = (byte)scantokey[vkey];
+            
+            Key_Event(key, eventType == NSKeyDown);
+        }   
+        break;
+        
+    case NSFlagsChanged: // special keys
+        {
+            static NSUInteger lastFlags = 0;
+            const NSUInteger flags = [event modifierFlags];
+            const NSUInteger filteredFlags = flags ^ lastFlags;
+            
+            lastFlags = flags;
+            
+            if (filteredFlags & NSAlphaShiftKeyMask)
+                Key_Event (K_CAPSLOCK, (flags & NSAlphaShiftKeyMask) ? true : false);
+            
+            if (filteredFlags & NSShiftKeyMask)
+                Key_Event (K_SHIFT, (flags & NSShiftKeyMask) ? true : false);
+            
+            if (filteredFlags & NSControlKeyMask)
+                Key_Event (K_CTRL, (flags & NSControlKeyMask) ? true : false);
+            
+            if (filteredFlags & NSAlternateKeyMask)
+                Key_Event (K_ALT, (flags & NSAlternateKeyMask) ? true : false);
+            
+            if (filteredFlags & NSCommandKeyMask)
+                Key_Event (K_COMMAND, (flags & NSCommandKeyMask) ? true : false);
+            
+            if (filteredFlags & NSNumericPadKeyMask)
+                Key_Event (K_NUMLOCK, (flags & NSNumericPadKeyMask) ? true : false);
+        }
+        break;
+        
+    case NSSystemDefined:
+        if (mouse_active)
+        {
+            static NSInteger oldButtons = 0;
+            NSInteger buttonsDelta;
+            NSInteger buttons;
+            qboolean isDown;
+            
+            if ([event subtype] == 7) 
+            {
+                buttons = [event data2];
+                buttonsDelta = oldButtons ^ buttons;
+                
+                if (buttonsDelta & 1) {
+                    isDown = buttons & 1;
+                    Key_Event (K_MOUSE1, isDown);
+                }
+                
+                if (buttonsDelta & 2) {
+                    isDown = buttons & 2;
+                    Key_Event (K_MOUSE2, isDown);
+                }
+                
+                if (buttonsDelta & 4) {
+                    isDown = buttons & 4;
+                    Key_Event (K_MOUSE3, isDown);
+                }
+                
+                if (buttonsDelta & 8) {
+                    isDown = buttons & 8;
+                    Key_Event (K_MOUSE4, isDown);
+                }
+                
+                if (buttonsDelta & 16) {
+                    isDown = buttons & 16;
+                    Key_Event (K_MOUSE5, isDown);
+                }
+                
+                oldButtons = buttons;
+            }
+        }
+        break;
+        
+    case NSScrollWheel: // scroll wheel
+        //if (mouse_active) 
+        {
+            if ([event deltaY] < 0.0)
+            {
+                Key_Event (K_MWHEELDOWN, true);
+                Key_Event (K_MWHEELDOWN, false);
+            }
+            else
+            {
+                Key_Event (K_MWHEELUP, true);
+                Key_Event (K_MWHEELUP, false);
+            }
+        }
+        break;
+        
+    case NSMouseEntered:
+    case NSMouseExited:
+        notifywindow = (eventType == NSMouseEntered);
+        break;
+        
+    default:
+        [NSApp sendEvent:event];
+        break;
+    }
     
-	
 }
 

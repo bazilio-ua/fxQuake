@@ -442,7 +442,7 @@ void VID_Init (void)
         [window setTitle:@"fxQuake"];
         [window makeKeyAndOrderFront: nil];
         
-        // Always get mouse moved events (if mouse support is turned off (rare) the event system will filter them out.
+        // Always get mouse moved events. If mouse support is turned off (rare) the event system will filter them out.
         [window setAcceptsMouseMovedEvents:YES];
         [window setDelegate:(id<NSWindowDelegate>)[[NSApplication sharedApplication] delegate]];
         
