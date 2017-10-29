@@ -23,11 +23,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "unixquake.h"
 #include "macquake.h"
 
-static qboolean isPaused = false;
+static qboolean cdValid = false;
+static qboolean	playing = false;
+static qboolean	wasPlaying = false;
 static qboolean	initialized = false;
-static qboolean	enabled = true;
+static qboolean	enabled = false;
 static qboolean playLooping = false;
-//static byte 	remap[100];
+static byte 	remap[100];
 static byte		playTrack;
 static byte		maxTrack;
 
@@ -53,6 +55,7 @@ typedef struct _AIFFInfo {
 
 AIFFInfo *AIFFOpen(NSString *path);
 void AIFFClose(AIFFInfo *aiff);
+
 unsigned int AIFFRead(AIFFInfo *aiff, short *samples, unsigned int sampleCount);
 
 /* ------------------------------------------------------------------------------------ */
@@ -61,24 +64,12 @@ NSMutableArray *cdTracks;
 
 static float	old_cdvolume;
 
-//#define SAMPLES_PER_BUFFER (8*1024)
 #define SAMPLES_PER_BUFFER (2*1024)
 
 static AIFFInfo         *aiffInfo;
 static short            *samples;
 
-//static AudioDeviceID outputDeviceID;
-//static AudioStreamBasicDescription outputStreamBasicDescription;
 static AudioDeviceIOProcID ioprocid = NULL;
-
-static OSStatus audioDeviceIOProc(AudioDeviceID inDevice,
-                                  const AudioTimeStamp *inNow,
-                                  const AudioBufferList *inInputData,
-                                  const AudioTimeStamp *inInputTime,
-                                  AudioBufferList *outOutputData,
-                                  const AudioTimeStamp *inOutputTime,
-                                  void *inClientData);
-
 
 /*
 ====================
@@ -154,11 +145,11 @@ AIFFInfo *AIFFOpen(NSString *path)
 
 void AIFFClose(AIFFInfo *aiff)
 {
-//    if (aiff) {
-//        fclose(aiff->file);
-//        free(aiff);
-//        aiff = NULL;
-//    }
+    if (aiff) {
+        fclose(aiff->file);
+        free(aiff);
+        aiff = NULL;
+    }
 }
 
 unsigned int AIFFRead(AIFFInfo *aiff, short *samples, unsigned int sampleCount)
@@ -173,7 +164,7 @@ unsigned int AIFFRead(AIFFInfo *aiff, short *samples, unsigned int sampleCount)
         sample = samples[index];
         
         // CD data is stored in little-endian order, but we want big endian, being on PPC.
-//        sample = ((sample & 0xff00) >> 8) | ((sample & 0x00ff) << 8);
+        //sample = ((sample & 0xff00) >> 8) | ((sample & 0x00ff) << 8);
         
         samples[index] = sample;
     }
@@ -182,6 +173,14 @@ unsigned int AIFFRead(AIFFInfo *aiff, short *samples, unsigned int sampleCount)
 }
 
 /* ------------------------------------------------------------------------------------ */
+
+static OSStatus audioDeviceIOProc(AudioDeviceID inDevice,
+                                  const AudioTimeStamp *inNow,
+                                  const AudioBufferList *inInputData,
+                                  const AudioTimeStamp *inInputTime,
+                                  AudioBufferList *outOutputData,
+                                  const AudioTimeStamp *inOutputTime,
+                                  void *inClientData);
 
 /*
 ====================
@@ -217,23 +216,22 @@ OSStatus audioDeviceIOProc(AudioDeviceID inDevice,
     for (; sampleIndex < SAMPLES_PER_BUFFER; sampleIndex++)
         outBuffer[sampleIndex] = 0.0;
     
-    return 0;
+    return kAudioHardwareNoError;
 }
 
+static void CDAudio_Eject(void)
+{
+	
+}
 
-//static void CDAudio_Eject(void)
-//{
-//	
-//}
-//
-//static void CDAudio_CloseDoor(void)
-//{
-//	
-//}
+static void CDAudio_CloseDoor(void)
+{
+	
+}
 
 /* ------------------------------------------------------------------------------------ */
 
-qboolean CDAudio_GetAudioDiskInfo(void)
+static int CDAudio_GetAudioDiskInfo(void)
 {
     NSDirectoryEnumerator *dirEnum;
     NSFileManager *fileManager;
@@ -246,37 +244,32 @@ qboolean CDAudio_GetAudioDiskInfo(void)
     [cdTracks release];
     cdTracks = [[NSMutableArray alloc] init];
     
+    cdValid = false;
+    
     // Get the list of file system mount points
     mountCount = getmntinfo(&mounts, MNT_NOWAIT);
     if (mountCount <= 0) {
         Con_DWarning("GetAudioDiskInfo: getmntinfo failed");
-        return false;
+        return -1;
     }
     
     fileManager = [NSFileManager defaultManager];
     while (mountCount--) {
-        const char *lastComponent;
-        
-        if ((mounts[mountCount].f_flags & MNT_RDONLY) != MNT_RDONLY) {
-            // CDs are read-only.
+        // CDs are read-only.
+        if ((mounts[mountCount].f_flags & MNT_RDONLY) != MNT_RDONLY)
             continue;
-        }
         
-        if ((mounts[mountCount].f_flags & MNT_LOCAL) != MNT_LOCAL) {
-            // CDs are not network filesystems
+        // CDs are not network filesystems
+        if ((mounts[mountCount].f_flags & MNT_LOCAL) != MNT_LOCAL)
             continue;
-        }
         
-        if (strcmp(mounts[mountCount].f_fstypename, "cddafs")) {
-            // Check the file system type just to be extra sure
+        // Check the file system type just to be extra sure
+        if (strcmp(mounts[mountCount].f_fstypename, "cddafs"))
             continue;
-        }
         
-        lastComponent = strrchr(mounts[mountCount].f_mntonname, '/');
-        if (!lastComponent) {
-            // No slash in the mount point!  How is that possible?
+        // No slash in the mount point!  How is that possible?
+        if (!strrchr(mounts[mountCount].f_mntonname, '/'))
             continue;
-        }
         
         // This looks good
         Con_DPrintf("FOUND CD:\n");
@@ -289,7 +282,8 @@ qboolean CDAudio_GetAudioDiskInfo(void)
         mountPath = [NSString stringWithCString: mounts[mountCount].f_mntonname encoding:NSUTF8StringEncoding];
         dirEnum = [fileManager enumeratorAtPath: mountPath];
         while ((filePath = [dirEnum nextObject])) {
-            if ([[filePath pathExtension] isEqualToString: @"aiff"])
+            if ([[filePath pathExtension] isEqualToString: @"aiff"] || 
+                [[filePath pathExtension] isEqualToString: @"cdda"])
                 [cdTracks addObject: [mountPath stringByAppendingPathComponent: filePath]];
         }
     }
@@ -298,41 +292,53 @@ qboolean CDAudio_GetAudioDiskInfo(void)
         [cdTracks release];
         cdTracks = NULL;
         Con_DPrintf("CDAudio: no music tracks\n");
-        return false;
+        return -1;
     }
     
+	cdValid = true;
     maxTrack = [cdTracks count];
     
-	return true;
+	return 0;
 }
 
 void CDAudio_Play(byte track, qboolean looping)
 {
-    OSStatus status;
-    
 	if (!enabled)
 		return;
     
-    if (track < 1 || track > maxTrack)
-    {
+	if (!cdValid) {
+		CDAudio_GetAudioDiskInfo();
+		if (!cdValid)
+			return;
+	}
+    
+	track = remap[track];
+    
+    if (track < 1 || track > maxTrack) {
         Con_DPrintf("CDAudio: Bad track number %u.\n", track);
         return;
     }
 	
-    playTrack = track;
+    if (playing) {
+		if (playTrack == track)
+			return;
+		CDAudio_Stop();
+	}
+    
     aiffInfo = AIFFOpen([cdTracks objectAtIndex:track - 1]);
     
-    // Start playing audio
-    status = AudioDeviceStart(outputDeviceID, ioprocid);
+    OSStatus status = AudioDeviceStart(outputDeviceID, ioprocid);
     if (status) {
-        Con_Printf("AudioDeviceStart: returned %d\n", status);
-    } else {
-        if (!old_cdvolume)
-            CDAudio_Pause();
-        
-        isPaused = false;
-        playLooping = looping;
-    }
+        Con_DPrintf("CDAudio_Play: failed (%d)\n", status);
+        return;
+    } 
+    
+    playLooping = looping;    
+    playTrack = track;
+    playing = true;
+    
+    if (bgmvolume.value == 0.0)
+		CDAudio_Pause ();
 }
 
 void CDAudio_Stop(void)
@@ -340,8 +346,16 @@ void CDAudio_Stop(void)
 	if (!enabled)
 		return;
     
-    // Stop playing audio
-    AudioDeviceStop(outputDeviceID, ioprocid);
+    if (!playing)
+		return;
+
+    OSStatus status = AudioDeviceStop(outputDeviceID, ioprocid);
+    if (status) {
+        Con_DPrintf("CDAudio_Stop: failed (%d)\n", status);
+    }
+    
+	wasPlaying = false;
+	playing = false;
     
     AIFFClose(aiffInfo);
 }
@@ -351,8 +365,16 @@ void CDAudio_Pause(void)
 	if (!enabled)
 		return;
     
-    AudioDeviceStop(outputDeviceID, ioprocid);
-    isPaused = true;
+    if (!playing)
+		return;
+    
+    OSStatus status = AudioDeviceStop(outputDeviceID, ioprocid);
+    if (status) {
+        Con_DPrintf("CDAudio_Pause: failed (%d)\n", status);
+    }
+    
+    wasPlaying = playing;
+	playing = false;
 }
 
 void CDAudio_Resume(void)
@@ -360,40 +382,178 @@ void CDAudio_Resume(void)
 	if (!enabled)
 		return;
     
-    if (!isPaused)
-        return;
+	if (!cdValid)
+		return;
     
-    AudioDeviceStart (outputDeviceID, ioprocid);
-    isPaused = false;
+    if (!wasPlaying)
+		return;
+    
+    OSStatus status = AudioDeviceStart (outputDeviceID, ioprocid);
+    if (status) {
+        Con_DPrintf("CDAudio_Resume: failed (%d)\n", status);
+    }
+    
+	playing = true;
 }
 
 static void CD_f (void)
 {
-	
+	char	*command;
+	int		ret;
+	int		n;
+    
+	if (Cmd_Argc() < 2)
+	{
+		Con_Printf("commands: ");
+		Con_Printf("on, off, reset, remap, \n");
+		Con_Printf("play, stop, loop, pause, resume\n");
+		Con_Printf("eject, close, info\n");
+		return;
+	}
+    
+	command = Cmd_Argv (1);
+    
+	if (strcasecmp(command, "on") == 0)
+	{
+		enabled = true;
+		return;
+	}
+    
+	if (strcasecmp(command, "off") == 0)
+	{
+		if (playing)
+			CDAudio_Stop();
+        
+		enabled = false;
+		return;
+	}
+    
+	if (strcasecmp(command, "reset") == 0)
+	{
+		enabled = true;
+        
+		if (playing)
+			CDAudio_Stop();
+        
+		for (n = 0; n < 100; n++)
+			remap[n] = n;
+        
+		CDAudio_GetAudioDiskInfo();
+		return;
+	}
+    
+	if (strcasecmp(command, "remap") == 0)
+	{
+		ret = Cmd_Argc() - 2;
+		if (ret <= 0)
+		{
+			for (n = 1; n < 100; n++)
+				if (remap[n] != n)
+					Con_Printf("  %u -> %u\n", n, remap[n]);
+			return;
+		}
+		for (n = 1; n <= ret; n++)
+			remap[n] = atoi(Cmd_Argv (n+1));
+		return;
+	}
+    
+	if (strcasecmp(command, "close") == 0)
+	{
+		CDAudio_CloseDoor();
+		return;
+	}
+    
+	if (!cdValid)
+	{
+		CDAudio_GetAudioDiskInfo();
+		if (!cdValid)
+		{
+			Con_Printf("No CD in drive\n");
+			return;
+		}
+	}
+    
+	if (strcasecmp(command, "play") == 0)
+	{
+		CDAudio_Play((byte)atoi(Cmd_Argv (2)), false);
+		return;
+	}
+    
+	if (strcasecmp(command, "loop") == 0)
+	{
+		CDAudio_Play((byte)atoi(Cmd_Argv (2)), true);
+		return;
+	}
+    
+	if (strcasecmp(command, "stop") == 0)
+	{
+		CDAudio_Stop();
+		return;
+	}
+    
+	if (strcasecmp(command, "pause") == 0)
+	{
+		CDAudio_Pause();
+		return;
+	}
+    
+	if (strcasecmp(command, "resume") == 0)
+	{
+		CDAudio_Resume();
+		return;
+	}
+    
+	if (strcasecmp(command, "eject") == 0)
+	{
+		if (playing)
+			CDAudio_Stop();
+        
+		CDAudio_Eject();
+        
+		cdValid = false;
+		return;
+	}
+    
+	if (strcasecmp(command, "info") == 0)
+	{
+		Con_Printf("%u tracks\n", maxTrack);
+        
+		if (playing)
+			Con_Printf("Currently %s track %u\n", playLooping ? "looping" : "playing", playTrack);
+		else if (wasPlaying)
+			Con_Printf("Paused %s track %u\n", playLooping ? "looping" : "playing", playTrack);
+        
+		Con_Printf("Volume is %f\n", bgmvolume.value);
+		return;
+	}
 }
 
+static void CDAudio_SetVolume (cvar_t *var)
+{
+	if (var->value < 0.0)
+		Cvar_SetValue (var->name, 0.0);
+	else if (var->value > 1.0)
+		Cvar_SetValue (var->name, 1.0);
+	old_cdvolume = var->value;
+    
+	if (old_cdvolume == 0.0)
+		CDAudio_Pause ();
+	else
+		CDAudio_Resume();
+}
 
 void CDAudio_Update(void)
 {
 	if (!enabled)
 		return;
     
-    if (old_cdvolume != bgmvolume.value) {
-        if (old_cdvolume) {
-            old_cdvolume = bgmvolume.value;
-            if (!old_cdvolume)
-                CDAudio_Pause();
-        } else {
-            old_cdvolume = bgmvolume.value;
-            if (!old_cdvolume)
-                CDAudio_Resume();
-        }
-    }
+	if (old_cdvolume != bgmvolume.value)
+		CDAudio_SetVolume (&bgmvolume);
 }
 
 int CDAudio_Init(void)
 {
-    OSStatus status;
+	int i;
     
 	if (cls.state == ca_dedicated)
 		return -1;
@@ -403,13 +563,10 @@ int CDAudio_Init(void)
     
     Cmd_AddCommand ("cd", CD_f);
     
-	old_cdvolume = bgmvolume.value;
-    
-//    aiffInfo = aiff;
     samples = (short *)malloc(SAMPLES_PER_BUFFER * sizeof(*samples));
     
     // Add the sound to IOProc
-    status = AudioDeviceCreateIOProcID(outputDeviceID, audioDeviceIOProc, NULL, &ioprocid);
+    OSStatus status = AudioDeviceCreateIOProcID(outputDeviceID, audioDeviceIOProc, NULL, &ioprocid);
     if (status) {
         Con_Printf("AudioDeviceAddIOProc: returned %d\n", status);
         return -1;
@@ -420,17 +577,19 @@ int CDAudio_Init(void)
         return -1;
     }
     
+	for (i = 0; i < 100; i++)
+		remap[i] = i;
+    
     initialized = true;
+    enabled = true;
+	old_cdvolume = bgmvolume.value;
     
     Con_Printf("CD Audio initialized (using CoreAudio)\n");
     
     if (CDAudio_GetAudioDiskInfo()) {
-        isPaused = false;
-    } else {
-        return -1;
+        Con_Printf("No CD in drive\n");
+		cdValid = false;
     }
-    
-    enabled = true;
     
 	return 0;
 }
@@ -443,7 +602,10 @@ void CDAudio_Shutdown(void)
     CDAudio_Stop();
     
     // Remove sound IOProcID
-    AudioDeviceDestroyIOProcID(outputDeviceID, ioprocid);
+    OSStatus status = AudioDeviceDestroyIOProcID(outputDeviceID, ioprocid);
+    if (status) {
+        Con_Printf("AudioDeviceRemoveIOProc: returned %d\n", status);
+    }
     
     if (cdTracks) {
         [cdTracks release];
