@@ -30,6 +30,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #undef	USE_AUX_API
 //#define	USE_AUX_API
 
+cvar_t bgmvolume = {"bgmvolume", "1", true};
+cvar_t bgmtype = {"bgmtype", "cd", true};   // cd or none
+cvar_t bgmbuffer = {"bgmbuffer", "4096"};
+
 static qboolean cdValid = false;
 static qboolean	playing = false;
 static qboolean	wasPlaying = false;
@@ -485,6 +489,12 @@ int CDAudio_Init(void)
 	if (COM_CheckParm("-nocdaudio"))
 		return -1;
 
+    Cmd_AddCommand ("cd", CD_f);
+
+    Cvar_RegisterVariable(&bgmvolume, NULL);
+	Cvar_RegisterVariable(&bgmtype, NULL);
+	Cvar_RegisterVariable(&bgmbuffer, NULL);
+
 	mciOpenParms.lpstrDeviceType = "cdaudio";
 	dwReturn = mciSendCommand(0, MCI_OPEN, MCI_OPEN_TYPE | MCI_OPEN_SHAREABLE, (DWORD_PTR) (LPVOID) &mciOpenParms);
 	if (dwReturn)
@@ -506,6 +516,7 @@ int CDAudio_Init(void)
 
 	for (n = 0; n < 100; n++)
 		remap[n] = n;
+    
 	initialized = true;
 	enabled = true;
 	old_cdvolume = bgmvolume.value;
@@ -515,8 +526,6 @@ int CDAudio_Init(void)
 		Con_Printf("No CD in drive\n");
 		cdValid = false;
 	}
-
-	Cmd_AddCommand ("cd", CD_f);
 
 #ifdef USE_AUX_API
 	CD_FindCDAux();

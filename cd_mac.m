@@ -23,6 +23,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "unixquake.h"
 #include "macquake.h"
 
+cvar_t bgmvolume = {"bgmvolume", "1", true};
+cvar_t bgmtype = {"bgmtype", "cd", true};   // cd or none
+cvar_t bgmbuffer = {"bgmbuffer", "4096"};
+
 static qboolean cdValid = false;
 static qboolean	playing = false;
 static qboolean	wasPlaying = false;
@@ -32,6 +36,8 @@ static qboolean playLooping = false;
 static byte 	remap[100];
 static byte		playTrack;
 static byte		maxTrack;
+
+/* ------------------------------------------------------------------------------------ */
 
 typedef struct _AIFFChunkHeader {
     unsigned int chunkID;
@@ -78,9 +84,7 @@ static OSStatus audioDeviceIOProc(AudioDeviceID inDevice,
 
 /*
 ====================
-
 AIFF-C read routines
-
 ====================
 */
 
@@ -546,6 +550,10 @@ int CDAudio_Init(void)
 		return -1;
     
     Cmd_AddCommand ("cd", CD_f);
+    
+    Cvar_RegisterVariable(&bgmvolume, NULL);
+	Cvar_RegisterVariable(&bgmtype, NULL);
+	Cvar_RegisterVariable(&bgmbuffer, NULL);
     
     samples = (short *)malloc(SAMPLES_PER_BUFFER * sizeof(*samples));
     
