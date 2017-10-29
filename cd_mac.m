@@ -206,6 +206,14 @@ OSStatus audioDeviceIOProc(AudioDeviceID inDevice,
     // Read some samples from the file.
     sampleCount = AIFFRead(aiffInfo, samples, SAMPLES_PER_BUFFER);
     
+    if (sampleCount < SAMPLES_PER_BUFFER) {
+        if (feof(aiffInfo->file)) {
+            if (playLooping) {
+                fseek(aiffInfo->file, 0L, SEEK_SET);
+            }
+        }
+    }
+    
     // Convert whatever samples we got into floats. Scale the floats to be [-1..1].
     for (sampleIndex = 0; sampleIndex < sampleCount; sampleIndex++) {
         // Convert the samples from shorts to floats.  Scale the floats to be [-1..1].
