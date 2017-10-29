@@ -311,7 +311,7 @@ void CDAudio_Play(byte track, qboolean looping)
     
     aiffInfo = AIFFOpen([cdTracks objectAtIndex:track - 1]);
     
-    OSStatus status = AudioDeviceStart(outputDeviceID, ioprocid);
+    OSStatus status = AudioDeviceStart(audioDevice, ioprocid);
     if (status) {
         Con_DPrintf("CDAudio_Play: failed (%d)\n", status);
         return;
@@ -333,7 +333,7 @@ void CDAudio_Stop(void)
     if (!playing)
 		return;
 
-    OSStatus status = AudioDeviceStop(outputDeviceID, ioprocid);
+    OSStatus status = AudioDeviceStop(audioDevice, ioprocid);
     if (status) {
         Con_DPrintf("CDAudio_Stop: failed (%d)\n", status);
     }
@@ -352,7 +352,7 @@ void CDAudio_Pause(void)
     if (!playing)
 		return;
     
-    OSStatus status = AudioDeviceStop(outputDeviceID, ioprocid);
+    OSStatus status = AudioDeviceStop(audioDevice, ioprocid);
     if (status) {
         Con_DPrintf("CDAudio_Pause: failed (%d)\n", status);
     }
@@ -372,7 +372,7 @@ void CDAudio_Resume(void)
     if (!wasPlaying)
 		return;
     
-    OSStatus status = AudioDeviceStart (outputDeviceID, ioprocid);
+    OSStatus status = AudioDeviceStart (audioDevice, ioprocid);
     if (status) {
         Con_DPrintf("CDAudio_Resume: failed (%d)\n", status);
     }
@@ -549,15 +549,14 @@ int CDAudio_Init(void)
     
     samples = (short *)malloc(SAMPLES_PER_BUFFER * sizeof(*samples));
     
-    // Add the sound to IOProc
-    OSStatus status = AudioDeviceCreateIOProcID(outputDeviceID, audioDeviceIOProc, NULL, &ioprocid);
+    // Add cd IOProcID
+    OSStatus status = AudioDeviceCreateIOProcID(audioDevice, audioDeviceIOProc, NULL, &ioprocid);
     if (status) {
-        Con_Printf("AudioDeviceAddIOProc: returned %d\n", status);
+        Con_DPrintf("AudioDeviceAddIOProc: returned %d\n", status);
         return -1;
     }
-    
     if (ioprocid == NULL) {
-        Con_Printf("Cannot create IOProcID\n");
+        Con_DPrintf("Cannot create IOProcID\n");
         return -1;
     }
     
@@ -585,10 +584,10 @@ void CDAudio_Shutdown(void)
     
     CDAudio_Stop();
     
-    // Remove sound IOProcID
-    OSStatus status = AudioDeviceDestroyIOProcID(outputDeviceID, ioprocid);
+    // Remove cd IOProcID
+    OSStatus status = AudioDeviceDestroyIOProcID(audioDevice, ioprocid);
     if (status) {
-        Con_Printf("AudioDeviceRemoveIOProc: returned %d\n", status);
+        Con_DPrintf("AudioDeviceRemoveIOProc: returned %d\n", status);
     }
     
     if (cdTracks) {

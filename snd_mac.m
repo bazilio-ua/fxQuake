@@ -23,8 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "unixquake.h"
 #include "macquake.h"
 
-AudioDeviceID outputDeviceID = kAudioDeviceUnknown;
-//static AudioDeviceID outputDeviceID = kAudioDeviceUnknown;
+AudioDeviceID audioDevice = kAudioDeviceUnknown;
 static AudioStreamBasicDescription outputStreamBasicDescription;
 static AudioDeviceIOProcID ioprocid = NULL;
 
@@ -109,18 +108,18 @@ qboolean SNDDMA_Init(void)
 	shm = &sn;
     
     // Get the output device
-    propertySize = sizeof(outputDeviceID);
+    propertySize = sizeof(audioDevice);
     propertyAddress.mElement = kAudioObjectPropertyElementMaster;    
     propertyAddress.mScope = kAudioObjectPropertyScopeGlobal;
     propertyAddress.mSelector = kAudioHardwarePropertyDefaultOutputDevice;
-    status = AudioObjectGetPropertyData(kAudioObjectSystemObject, &propertyAddress, 0, NULL, &propertySize, &outputDeviceID);
+    status = AudioObjectGetPropertyData(kAudioObjectSystemObject, &propertyAddress, 0, NULL, &propertySize, &audioDevice);
     if (status) {
-        Con_Printf("AudioHardwareGetProperty returned %d\n", status);
+        Con_DPrintf("AudioHardwareGetProperty returned %d\n", status);
         return false;
     }
     
-    if (outputDeviceID == kAudioDeviceUnknown) {
-        Con_Printf("AudioHardwareGetProperty: outputDeviceID is kAudioDeviceUnknown\n");
+    if (audioDevice == kAudioDeviceUnknown) {
+        Con_DPrintf("AudioHardwareGetProperty: audioDevice is kAudioDeviceUnknown\n");
         return false;
     }
     
@@ -128,9 +127,9 @@ qboolean SNDDMA_Init(void)
     propertySize = sizeof(bufferSizeRange);
     propertyAddress.mScope = kAudioDevicePropertyScopeOutput;
     propertyAddress.mSelector = kAudioDevicePropertyBufferSizeRange;
-    status = AudioObjectGetPropertyData(outputDeviceID, &propertyAddress, 0, NULL, &propertySize, &bufferSizeRange);
+    status = AudioObjectGetPropertyData(audioDevice, &propertyAddress, 0, NULL, &propertySize, &bufferSizeRange);
     if (status) {
-        Con_Printf("AudioDeviceGetProperty: returned %d when getting kAudioDevicePropertyBufferSizeRange\n", status);
+        Con_DPrintf("AudioDeviceGetProperty: returned %d when getting kAudioDevicePropertyBufferSizeRange\n", status);
         return false;
     }
     
@@ -140,53 +139,52 @@ qboolean SNDDMA_Init(void)
     
     bufferSize = OUTPUT_BUFFER_SIZE * sizeof(float);
     
-    status = AudioObjectSetPropertyData(outputDeviceID, &propertyAddress, 0, NULL, propertySize, &bufferSize);
+    status = AudioObjectSetPropertyData(audioDevice, &propertyAddress, 0, NULL, propertySize, &bufferSize);
     if (status) {
-        Con_Printf("AudioDeviceSetProperty: returned %d when setting kAudioDevicePropertyBufferSize to %d\n", status, bufferSize);
+        Con_DPrintf("AudioDeviceSetProperty: returned %d when setting kAudioDevicePropertyBufferSize to %d\n", status, bufferSize);
         return false;
     }
-    status = AudioObjectGetPropertyData(outputDeviceID, &propertyAddress, 0, NULL, &propertySize, &bufferSize);
+    status = AudioObjectGetPropertyData(audioDevice, &propertyAddress, 0, NULL, &propertySize, &bufferSize);
     if (status) {
-        Con_Printf("AudioDeviceGetProperty: returned %d when getting kAudioDevicePropertyBufferSize\n", status);
+        Con_DPrintf("AudioDeviceGetProperty: returned %d when getting kAudioDevicePropertyBufferSize\n", status);
         return false;
     }
     
     // Print out the device status
     propertySize = sizeof(outputStreamBasicDescription);
     propertyAddress.mSelector = kAudioDevicePropertyStreamFormat;
-    status = AudioObjectGetPropertyData(outputDeviceID, &propertyAddress, 0, NULL, &propertySize, &outputStreamBasicDescription);
+    status = AudioObjectGetPropertyData(audioDevice, &propertyAddress, 0, NULL, &propertySize, &outputStreamBasicDescription);
     if (status) {
-        Con_Printf("AudioDeviceGetProperty: returned %d when getting kAudioDevicePropertyStreamFormat\n", status);
+        Con_DPrintf("AudioDeviceGetProperty: returned %d when getting kAudioDevicePropertyStreamFormat\n", status);
         return false;
     }
     
-    Con_Printf("Hardware format:\n");
-    Con_Printf("  %f mSampleRate\n", outputStreamBasicDescription.mSampleRate);
-    Con_Printf("  %c%c%c%c mFormatID\n",
-               (outputStreamBasicDescription.mFormatID & 0xff000000) >> 24,
-               (outputStreamBasicDescription.mFormatID & 0x00ff0000) >> 16,
-               (outputStreamBasicDescription.mFormatID & 0x0000ff00) >>  8,
-               (outputStreamBasicDescription.mFormatID & 0x000000ff) >>  0);
-    Con_Printf("  %5d mBytesPerPacket\n", outputStreamBasicDescription.mBytesPerPacket);
-    Con_Printf("  %5d mFramesPerPacket\n", outputStreamBasicDescription.mFramesPerPacket);
-    Con_Printf("  %5d mBytesPerFrame\n", outputStreamBasicDescription.mBytesPerFrame);
-    Con_Printf("  %5d mChannelsPerFrame\n", outputStreamBasicDescription.mChannelsPerFrame);
-    Con_Printf("  %5d mBitsPerChannel\n", outputStreamBasicDescription.mBitsPerChannel);
+    Con_DPrintf("Hardware format:\n");
+    Con_DPrintf("  %f mSampleRate\n", outputStreamBasicDescription.mSampleRate);
+    Con_DPrintf("  %c%c%c%c mFormatID\n",
+                (outputStreamBasicDescription.mFormatID & 0xff000000) >> 24,
+                (outputStreamBasicDescription.mFormatID & 0x00ff0000) >> 16,
+                (outputStreamBasicDescription.mFormatID & 0x0000ff00) >>  8,
+                (outputStreamBasicDescription.mFormatID & 0x000000ff) >>  0);
+    Con_DPrintf("  %5d mBytesPerPacket\n", outputStreamBasicDescription.mBytesPerPacket);
+    Con_DPrintf("  %5d mFramesPerPacket\n", outputStreamBasicDescription.mFramesPerPacket);
+    Con_DPrintf("  %5d mBytesPerFrame\n", outputStreamBasicDescription.mBytesPerFrame);
+    Con_DPrintf("  %5d mChannelsPerFrame\n", outputStreamBasicDescription.mChannelsPerFrame);
+    Con_DPrintf("  %5d mBitsPerChannel\n", outputStreamBasicDescription.mBitsPerChannel);
     
     if (outputStreamBasicDescription.mFormatID != kAudioFormatLinearPCM) {
-        Con_Printf("Default Audio Device doesn't support Linear PCM!\n");
+        Con_DPrintf("Default Audio Device doesn't support Linear PCM!\n");
         return false;
     }
     
-    // Add the sound to IOProc
-    status = AudioDeviceCreateIOProcID(outputDeviceID, audioDeviceIOProc, NULL, &ioprocid);
+    // Add sound IOProcID
+    status = AudioDeviceCreateIOProcID(audioDevice, audioDeviceIOProc, NULL, &ioprocid);
     if (status) {
-        Con_Printf("AudioDeviceAddIOProc: returned %d\n", status);
+        Con_DPrintf("AudioDeviceAddIOProc: returned %d\n", status);
         return false;
     }
-
     if (ioprocid == NULL) {
-        Con_Printf("Cannot create IOProcID\n");
+        Con_DPrintf("Cannot create IOProcID\n");
         return false;
     }
     
@@ -210,10 +208,9 @@ qboolean SNDDMA_Init(void)
     // We haven't enqueued anything yet
     bufferPosition = 0;
     
-    // Start sound running
-    status = AudioDeviceStart(outputDeviceID, ioprocid);
+    status = AudioDeviceStart(audioDevice, ioprocid);
     if (status) {
-        Con_Printf("AudioDeviceStart: returned %d\n", status);
+        Con_DPrintf("AudioDeviceStart: returned %d\n", status);
         return false;
     }
     
@@ -264,12 +261,20 @@ SNDDMA_Shutdown
 */
 void SNDDMA_Shutdown(void)
 {
+    OSStatus status;
+    
     if (snd_inited)
 	{
-        // do shutdown
-        AudioDeviceStop(outputDeviceID, ioprocid);
+        status = AudioDeviceStop(audioDevice, ioprocid);
+        if (status) {
+            Con_DPrintf("AudioDeviceStop: returned %d\n", status);
+        }
         
-        AudioDeviceDestroyIOProcID(outputDeviceID, ioprocid);
+        // Remove sound IOProcID
+        status = AudioDeviceDestroyIOProcID(audioDevice, ioprocid);
+        if (status) {
+            Con_DPrintf("AudioDeviceRemoveIOProc: returned %d\n", status);
+        }
         
         snd_inited = false;
     }

@@ -30,8 +30,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #import "qinterfaces.h"
 
-extern AudioDeviceID outputDeviceID;
-
+extern AudioDeviceID audioDevice;
 extern CGDirectDisplayID display;
 extern NSWindow *window;
 extern NSScreen *screen;
