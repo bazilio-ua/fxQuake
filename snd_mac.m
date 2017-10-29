@@ -23,7 +23,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "unixquake.h"
 #include "macquake.h"
 
-static AudioDeviceID outputDeviceID = kAudioDeviceUnknown;
+AudioDeviceID outputDeviceID = kAudioDeviceUnknown;
+//static AudioDeviceID outputDeviceID = kAudioDeviceUnknown;
 static AudioStreamBasicDescription outputStreamBasicDescription;
 static AudioDeviceIOProcID ioprocid = NULL;
 
@@ -173,7 +174,7 @@ qboolean SNDDMA_Init(void)
     Con_Printf("  %5d mBitsPerChannel\n", outputStreamBasicDescription.mBitsPerChannel);
     
     if (outputStreamBasicDescription.mFormatID != kAudioFormatLinearPCM) {
-        Con_Printf("Default Audio Device doesn't support Linear PCM!");
+        Con_Printf("Default Audio Device doesn't support Linear PCM!\n");
         return false;
     }
     

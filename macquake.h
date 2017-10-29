@@ -25,8 +25,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #import <CoreAudio/CoreAudio.h>
 
 #import <dlfcn.h> 
+#import <sys/types.h>
+#import <sys/mount.h>
 
 #import "qinterfaces.h"
+
+extern AudioDeviceID outputDeviceID;
 
 extern CGDirectDisplayID display;
 extern NSWindow *window;
