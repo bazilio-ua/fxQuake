@@ -56,8 +56,6 @@ typedef struct _AIFFInfo {
 AIFFInfo *AIFFOpen(NSString *path);
 void AIFFClose(AIFFInfo *aiff);
 
-unsigned int AIFFRead(AIFFInfo *aiff, short *samples, unsigned int sampleCount);
-
 /* ------------------------------------------------------------------------------------ */
 
 NSMutableArray *cdTracks;
@@ -70,6 +68,13 @@ static AIFFInfo         *aiffInfo;
 static short            *samples;
 
 static AudioDeviceIOProcID ioprocid = NULL;
+static OSStatus audioDeviceIOProc(AudioDeviceID inDevice,
+                                  const AudioTimeStamp *inNow,
+                                  const AudioBufferList *inInputData,
+                                  const AudioTimeStamp *inInputTime,
+                                  AudioBufferList *outOutputData,
+                                  const AudioTimeStamp *inOutputTime,
+                                  void *inClientData);
 
 /*
 ====================
@@ -152,35 +157,7 @@ void AIFFClose(AIFFInfo *aiff)
     }
 }
 
-unsigned int AIFFRead(AIFFInfo *aiff, short *samples, unsigned int sampleCount)
-{
-    unsigned int index;
-    
-    sampleCount = fread(samples, sizeof(*samples), sampleCount, aiff->file);
-    
-    for (index = 0; index < sampleCount; index++) {
-        short sample;
-        
-        sample = samples[index];
-        
-        // CD data is stored in little-endian order, but we want big endian, being on PPC.
-        //sample = ((sample & 0xff00) >> 8) | ((sample & 0x00ff) << 8);
-        
-        samples[index] = sample;
-    }
-    
-    return sampleCount;
-}
-
 /* ------------------------------------------------------------------------------------ */
-
-static OSStatus audioDeviceIOProc(AudioDeviceID inDevice,
-                                  const AudioTimeStamp *inNow,
-                                  const AudioBufferList *inInputData,
-                                  const AudioTimeStamp *inInputTime,
-                                  AudioBufferList *outOutputData,
-                                  const AudioTimeStamp *inOutputTime,
-                                  void *inClientData);
 
 /*
 ====================
@@ -204,8 +181,7 @@ OSStatus audioDeviceIOProc(AudioDeviceID inDevice,
     outBuffer = (float *)outOutputData->mBuffers[0].mData;
     
     // Read some samples from the file.
-    sampleCount = AIFFRead(aiffInfo, samples, SAMPLES_PER_BUFFER);
-    
+    sampleCount = fread(samples, sizeof(*samples), SAMPLES_PER_BUFFER, aiffInfo->file);
     if (sampleCount < SAMPLES_PER_BUFFER) {
         if (feof(aiffInfo->file)) {
             if (playLooping) {
