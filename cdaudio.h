@@ -21,7 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 extern	cvar_t bgmvolume;
 extern	cvar_t bgmtype;
-//extern	cvar_t bgmbuffer;
 
 int CDAudio_Init(void);
 void CDAudio_Play(byte track, qboolean looping);

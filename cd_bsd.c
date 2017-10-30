@@ -24,7 +24,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 cvar_t bgmvolume = {"bgmvolume", "1", true};
 cvar_t bgmtype = {"bgmtype", "cd", true};   // cd or none
-//cvar_t bgmbuffer = {"bgmbuffer", "4096"};
 
 static qboolean cdValid = false;
 static qboolean	playing = false;
@@ -458,7 +457,6 @@ int CDAudio_Init(void)
 
     Cvar_RegisterVariable(&bgmvolume, NULL);
 	Cvar_RegisterVariable(&bgmtype, NULL);
-//	Cvar_RegisterVariable(&bgmbuffer, NULL);
 
 	if ((i = COM_CheckParm("-cddev")) != 0 && i < com_argc - 1) 
 		cd_dev = com_argv[i + 1];
