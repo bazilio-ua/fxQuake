@@ -37,17 +37,12 @@ AudioDeviceID audioDevice = kAudioDeviceUnknown;
 static AudioStreamBasicDescription outputStreamBasicDescription;
 static AudioDeviceIOProcID ioprocid = NULL;
 
-//typedef struct {
-//    AudioStreamBasicDescription asbd;
-//    AudioUnitSampleType *data;
-//	UInt32 numFrames;
-//	UInt32 sampleNum;
-//} SoundBuffer, *SoundBufferPtr;
-
 // 64K is > 1 second at 16-bit, 22050 Hz
 #define	WAV_BUFFERS				64
 #define	WAV_BUFFER_SIZE			1024 // chunk size
-#define OUTPUT_BUFFER_SIZE	(2 * WAV_BUFFER_SIZE)
+//#define OUTPUT_BUFFER_SIZE	(2 * WAV_BUFFER_SIZE)
+#define OUTPUT_BUFFER_SIZE	(4 * WAV_BUFFER_SIZE)
+//#define OUTPUT_BUFFER_SIZE	(1 * WAV_BUFFER_SIZE)
 
 static byte buffer[WAV_BUFFERS * WAV_BUFFER_SIZE];
 static UInt32 bufferPosition;
@@ -73,90 +68,15 @@ OSStatus renderCallback(void *inRefCon,
                         UInt32 inNumberFrames,
                         AudioBufferList *ioData)
 {
-//    AudioBuffer *audioBuffer = &ioData->mBuffers[0];
-//    NSUInteger audioDataByteSize = audioBuffer->mDataByteSize;
-    
-    
-    UInt32 sampleIndex;
-    byte *samples = buffer + bufferPosition / (shm->samplebits >> 3);
     byte *outBuffer = (byte *)ioData->mBuffers[0].mData;
+    UInt32 outBufferByteSize = ioData->mBuffers[0].mDataByteSize;
     
-    for (sampleIndex = 0; sampleIndex < OUTPUT_BUFFER_SIZE; sampleIndex++)
-    {
-        outBuffer[sampleIndex] = samples[sampleIndex];
-    }
+    memcpy((void *)outBuffer, &(buffer[bufferPosition]), outBufferByteSize);
     
     // Increase the buffer position. This is the next buffer we will submit
-    bufferPosition += OUTPUT_BUFFER_SIZE * (shm->samplebits >> 3);
+    bufferPosition += outBufferByteSize;
     if (bufferPosition >= sizeof (buffer))
         bufferPosition = 0;
-
-    
-    
-//    _FDAudioBuffer* pSound          = (_FDAudioBuffer*) pContext;
-//    AudioBuffer*    pAudioBuffer    = &pIoData->mBuffers[0];
-//    NSUInteger      bytesToWrite    = pAudioBuffer->mDataByteSize;
-//    
-//    if (pSound)
-//    {
-//        bytesToWrite = [pSound fillBuffer: pAudioBuffer];
-//        - (NSUInteger) fillBuffer: (AudioBuffer*) pIoData
-//        {
-//            NSUInteger bytesToWrite = 0;
-//            
-//            if (mpCallback != nil)
-//            {
-//                bytesToWrite = (*mpCallback) (pIoData->mData, pIoData->mDataByteSize, mpContext);
-//                NSUInteger SNDDMA_Callback (void* pDst, NSUInteger numBytes, void* pContext)
-//                {
-//                    while (numBytes)
-//                    {
-//                        if (sSndBufferPosition >= FD_SIZE_OF_ARRAY (sSndBuffer))
-//                        {
-//                            sSndBufferPosition = 0;
-//                        }
-//                        
-//                        NSUInteger toCopy = FD_SIZE_OF_ARRAY (sSndBuffer) - sSndBufferPosition;
-//                        
-//                        if (toCopy > numBytes)
-//                        {
-//                            toCopy = numBytes;
-//                        }
-//                        
-//                        FD_MEMCPY (pDst, &(sSndBuffer[sSndBufferPosition]), toCopy);
-//                        
-//                        pDst                += toCopy;
-//                        numBytes            -= toCopy;
-//                        sSndBufferPosition  += toCopy;
-//                    }
-//                    
-//                    return 0;
-//                }
-//                
-//            }
-//            
-//            return bytesToWrite;
-//        }
-//        
-//    }
-//    
-//    if (bytesToWrite != 0)
-//    {
-//        UInt8* pData = (UInt8*) pAudioBuffer->mData;
-//        
-//        FD_MEMSET (pData + pAudioBuffer->mDataByteSize - bytesToWrite, 0, bytesToWrite);
-//    }
-//    
-//    return noErr;
-
-	
-    
-    
-
-    
-//    audioDataByteSize = 
-
-    
     
     return kAudioHardwareNoError;
 }
