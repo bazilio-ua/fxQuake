@@ -23,9 +23,26 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "unixquake.h"
 #include "macquake.h"
 
+Boolean audioGraphIsRunning = false;
+AudioUnitElement unitElement = 0;
+
+AUGraph audioGraph;
+AUNode outputNode;
+AUNode mixerNode;
+AUNode converterNode;
+AudioUnit mixerUnit;
+AudioUnit converterUnit;
+
 AudioDeviceID audioDevice = kAudioDeviceUnknown;
 static AudioStreamBasicDescription outputStreamBasicDescription;
 static AudioDeviceIOProcID ioprocid = NULL;
+
+//typedef struct {
+//    AudioStreamBasicDescription asbd;
+//    AudioUnitSampleType *data;
+//	UInt32 numFrames;
+//	UInt32 sampleNum;
+//} SoundBuffer, *SoundBufferPtr;
 
 // 64K is > 1 second at 16-bit, 22050 Hz
 #define	WAV_BUFFERS				64
@@ -36,6 +53,114 @@ static byte buffer[WAV_BUFFERS * WAV_BUFFER_SIZE];
 static UInt32 bufferPosition;
 
 static qboolean snd_inited;
+
+OSStatus renderCallback(void *inRefCon,
+                        AudioUnitRenderActionFlags *ioActionFlags,
+                        const AudioTimeStamp *inTimeStamp,
+                        UInt32 inBusNumber,
+                        UInt32 inNumberFrames,
+                        AudioBufferList *ioData);
+
+/*
+ ===============
+ renderCallback
+ ===============
+ */
+OSStatus renderCallback(void *inRefCon,
+                        AudioUnitRenderActionFlags *ioActionFlags,
+                        const AudioTimeStamp *inTimeStamp,
+                        UInt32 inBusNumber,
+                        UInt32 inNumberFrames,
+                        AudioBufferList *ioData)
+{
+//    AudioBuffer *audioBuffer = &ioData->mBuffers[0];
+//    NSUInteger audioDataByteSize = audioBuffer->mDataByteSize;
+    
+    
+    UInt32 sampleIndex;
+    byte *samples = buffer + bufferPosition / (shm->samplebits >> 3);
+    byte *outBuffer = (byte *)ioData->mBuffers[0].mData;
+    
+    for (sampleIndex = 0; sampleIndex < OUTPUT_BUFFER_SIZE; sampleIndex++)
+    {
+        outBuffer[sampleIndex] = samples[sampleIndex];
+    }
+    
+    // Increase the buffer position. This is the next buffer we will submit
+    bufferPosition += OUTPUT_BUFFER_SIZE * (shm->samplebits >> 3);
+    if (bufferPosition >= sizeof (buffer))
+        bufferPosition = 0;
+
+    
+    
+//    _FDAudioBuffer* pSound          = (_FDAudioBuffer*) pContext;
+//    AudioBuffer*    pAudioBuffer    = &pIoData->mBuffers[0];
+//    NSUInteger      bytesToWrite    = pAudioBuffer->mDataByteSize;
+//    
+//    if (pSound)
+//    {
+//        bytesToWrite = [pSound fillBuffer: pAudioBuffer];
+//        - (NSUInteger) fillBuffer: (AudioBuffer*) pIoData
+//        {
+//            NSUInteger bytesToWrite = 0;
+//            
+//            if (mpCallback != nil)
+//            {
+//                bytesToWrite = (*mpCallback) (pIoData->mData, pIoData->mDataByteSize, mpContext);
+//                NSUInteger SNDDMA_Callback (void* pDst, NSUInteger numBytes, void* pContext)
+//                {
+//                    while (numBytes)
+//                    {
+//                        if (sSndBufferPosition >= FD_SIZE_OF_ARRAY (sSndBuffer))
+//                        {
+//                            sSndBufferPosition = 0;
+//                        }
+//                        
+//                        NSUInteger toCopy = FD_SIZE_OF_ARRAY (sSndBuffer) - sSndBufferPosition;
+//                        
+//                        if (toCopy > numBytes)
+//                        {
+//                            toCopy = numBytes;
+//                        }
+//                        
+//                        FD_MEMCPY (pDst, &(sSndBuffer[sSndBufferPosition]), toCopy);
+//                        
+//                        pDst                += toCopy;
+//                        numBytes            -= toCopy;
+//                        sSndBufferPosition  += toCopy;
+//                    }
+//                    
+//                    return 0;
+//                }
+//                
+//            }
+//            
+//            return bytesToWrite;
+//        }
+//        
+//    }
+//    
+//    if (bytesToWrite != 0)
+//    {
+//        UInt8* pData = (UInt8*) pAudioBuffer->mData;
+//        
+//        FD_MEMSET (pData + pAudioBuffer->mDataByteSize - bytesToWrite, 0, bytesToWrite);
+//    }
+//    
+//    return noErr;
+
+	
+    
+    
+
+    
+//    audioDataByteSize = 
+
+    
+    
+    return kAudioHardwareNoError;
+}
+
 
 /*
 ===============
@@ -98,15 +223,73 @@ SNDDMA_Init
 qboolean SNDDMA_Init(void)
 {
     OSStatus status;
-    UInt32 propertySize;
-    AudioObjectPropertyAddress propertyAddress;
-    AudioValueRange bufferSizeRange;
-    UInt32 bufferSize;
+//    UInt32 propertySize;
+//    AudioObjectPropertyAddress propertyAddress;
+//    AudioValueRange bufferSizeRange;
+//    UInt32 bufferSize;
     int i;
     
     snd_inited = false;
 	shm = &sn;
     
+    
+    status = NewAUGraph(&audioGraph);
+    if (status) {
+        Con_DPrintf("NewAUGraph returned %d\n", status);
+        return false;
+    }
+    
+    AudioComponentDescription outputDescription;
+    outputDescription.componentType = kAudioUnitType_Output;
+    outputDescription.componentSubType = kAudioUnitSubType_DefaultOutput;
+    outputDescription.componentManufacturer = kAudioUnitManufacturer_Apple;
+    outputDescription.componentFlags = 0;
+    outputDescription.componentFlagsMask = 0;
+    
+    status = AUGraphAddNode(audioGraph, &outputDescription, &outputNode);
+    if (status) {
+        Con_DPrintf("AUGraphAddNode returned %d\n", status);
+        return false;
+    }
+
+    AudioComponentDescription mixerDescription;
+    mixerDescription.componentType = kAudioUnitType_Mixer;
+    mixerDescription.componentSubType = kAudioUnitSubType_StereoMixer;
+    mixerDescription.componentManufacturer = kAudioUnitManufacturer_Apple;
+    mixerDescription.componentFlags = 0;
+    mixerDescription.componentFlagsMask = 0;
+    
+    status = AUGraphAddNode(audioGraph, &mixerDescription, &mixerNode);
+    if (status) {
+        Con_DPrintf("AUGraphAddNode returned %d\n", status);
+        return false;
+    }
+    
+    status = AUGraphConnectNodeInput(audioGraph, mixerNode, 0, outputNode, 0);
+    if (status) {
+        Con_DPrintf("AUGraphConnectNodeInput returned %d\n", status);
+        return false;
+    }
+    
+    status = AUGraphOpen(audioGraph);
+    if (status) {
+        Con_DPrintf("AUGraphOpen returned %d\n", status);
+        return false;
+    }
+    
+    status = AUGraphInitialize(audioGraph);
+    if (status) {
+        Con_DPrintf("AUGraphInitialize returned %d\n", status);
+        return false;
+    }
+    
+    status = AUGraphNodeInfo(audioGraph, mixerNode, 0, &mixerUnit);
+    if (status) {
+        Con_DPrintf("AUGraphNodeInfo returned %d\n", status);
+        return false;
+    }
+        
+/*    
     // Get the output device
     propertySize = sizeof(audioDevice);
     propertyAddress.mElement = kAudioObjectPropertyElementMaster;    
@@ -187,6 +370,93 @@ qboolean SNDDMA_Init(void)
         Con_DPrintf("Cannot create IOProcID\n");
         return false;
     }
+*/    
+    
+    status = AUGraphIsRunning(audioGraph, &audioGraphIsRunning);
+    if (status) {
+        Con_DPrintf("AUGraphIsRunning returned %d\n", status);
+        return false;
+    }
+    
+//    if (audioGraphIsRunning) {
+//        status = AUGraphStop(audioGraph);
+//        if (status) {
+//            Con_DPrintf("AUGraphStop returned %d\n", status);
+//            return false;
+//        }
+//    }
+    
+    AudioComponentDescription converterDescription;
+    converterDescription.componentType = kAudioUnitType_FormatConverter;
+    converterDescription.componentSubType = kAudioUnitSubType_AUConverter;
+    converterDescription.componentManufacturer = kAudioUnitManufacturer_Apple;
+    converterDescription.componentFlags = 0;
+    converterDescription.componentFlagsMask = 0;
+
+    status = AUGraphAddNode(audioGraph, &converterDescription, &converterNode);
+    if (status) {
+        Con_DPrintf("AUGraphAddNode returned %d\n", status);
+        return false;
+    }
+    
+    status = AUGraphNodeInfo(audioGraph, converterNode, 0, &converterUnit);
+    if (status) {
+        Con_DPrintf("AUGraphNodeInfo returned %d\n", status);
+        return false;
+    }
+    
+    
+    AURenderCallbackStruct callbackStruct;
+    callbackStruct.inputProc = &renderCallback;
+    callbackStruct.inputProcRefCon = NULL;
+    
+    status = AudioUnitSetProperty(converterUnit, 
+                                  kAudioUnitProperty_SetRenderCallback, 
+                                  kAudioUnitScope_Input, 
+                                  0, 
+                                  &callbackStruct, 
+                                  sizeof(callbackStruct));
+    if (status) {
+        Con_DPrintf("AudioUnitSetProperty returned %d\n", status);
+        return false;
+    }
+    
+    
+    UInt32 sampleRate = 44100;
+    UInt32 bitsPerChannel = 16;
+    UInt32 channelsPerFrame = 2;
+    UInt32 bytesPerFrame = channelsPerFrame * (bitsPerChannel >> 3);
+    UInt32 framesPerPacket = 1;
+    UInt32 bytesPerPacket = bytesPerFrame * framesPerPacket;
+    
+    AudioStreamBasicDescription streamBasicDescription;
+    streamBasicDescription.mSampleRate = sampleRate;
+    streamBasicDescription.mFormatID = kAudioFormatLinearPCM;
+    streamBasicDescription.mFormatFlags = kLinearPCMFormatFlagIsPacked;
+    streamBasicDescription.mBytesPerPacket = bytesPerPacket;
+    streamBasicDescription.mFramesPerPacket = framesPerPacket;
+    streamBasicDescription.mChannelsPerFrame = channelsPerFrame;
+    streamBasicDescription.mBitsPerChannel = bitsPerChannel;
+    if (bitsPerChannel > 8) {
+        streamBasicDescription.mFormatFlags |= kLinearPCMFormatFlagIsSignedInteger;
+    }
+    
+    status = AudioUnitSetProperty(converterUnit, 
+                                  kAudioUnitProperty_StreamFormat, 
+                                  kAudioUnitScope_Input, 
+                                  0, 
+                                  &streamBasicDescription, 
+                                  sizeof(streamBasicDescription));
+    if (status) {
+        Con_DPrintf("AudioUnitSetProperty returned %d\n", status);
+        return false;
+    }
+    
+    status = AUGraphConnectNodeInput(audioGraph, converterNode, 0, mixerNode, unitElement);
+    if (status) {
+        Con_DPrintf("AUGraphConnectNodeInput returned %d\n", status);
+        return false;
+    }
     
     // Tell the main app what we expect from it
     shm->samplebits = 16;
@@ -198,7 +468,8 @@ qboolean SNDDMA_Init(void)
 	else
 		shm->speed = 44100;
     
-    shm->width = outputStreamBasicDescription.mBytesPerFrame / 8;
+//    shm->width = outputStreamBasicDescription.mBytesPerFrame / 8;
+    shm->width = 1;//outputStreamBasicDescription.mBytesPerFrame / 8;
     shm->channels = 2;
     shm->samples = sizeof(buffer) / (shm->samplebits >> 3);
     shm->samplepos = 0;
@@ -207,12 +478,20 @@ qboolean SNDDMA_Init(void)
     
     // We haven't enqueued anything yet
     bufferPosition = 0;
-    
+/*    
     status = AudioDeviceStart(audioDevice, ioprocid);
     if (status) {
         Con_DPrintf("AudioDeviceStart: returned %d\n", status);
         return false;
     }
+*/    
+//    if (audioGraphIsRunning) {
+        status = AUGraphStart(audioGraph);
+        if (status) {
+            Con_DPrintf("AUGraphStart returned %d\n", status);
+            return false;
+        }
+//    }
     
     snd_inited = true;
     
@@ -265,6 +544,34 @@ void SNDDMA_Shutdown(void)
     
     if (snd_inited)
 	{
+        status = AUGraphIsRunning(audioGraph, &audioGraphIsRunning);
+        if (status) {
+            Con_DPrintf("AUGraphIsRunning returned %d\n", status);
+        }
+        
+//        if (audioGraphIsRunning) {
+            status = AUGraphStop(audioGraph);
+            if (status) {
+                Con_DPrintf("AUGraphStop returned %d\n", status);
+            }
+//        }
+        
+        status = AUGraphDisconnectNodeInput(audioGraph, mixerNode, unitElement);
+        if (status) {
+            Con_DPrintf("AUGraphDisconnectNodeInput returned %d\n", status);
+        }
+        
+        status = AUGraphRemoveNode(audioGraph, converterNode);
+        if (status) {
+            Con_DPrintf("AUGraphRemoveNode returned %d\n", status);
+        }
+        
+        status = DisposeAUGraph(audioGraph);
+        if (status) {
+            Con_DPrintf("DisposeAUGraph returned %d\n", status);
+        }
+        
+/*        
         status = AudioDeviceStop(audioDevice, ioprocid);
         if (status) {
             Con_DPrintf("AudioDeviceStop: returned %d\n", status);
@@ -275,7 +582,7 @@ void SNDDMA_Shutdown(void)
         if (status) {
             Con_DPrintf("AudioDeviceRemoveIOProc: returned %d\n", status);
         }
-        
+*/        
         snd_inited = false;
     }
 }
