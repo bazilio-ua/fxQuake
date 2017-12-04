@@ -71,7 +71,11 @@ OSStatus renderCallback(void *inRefCon,
     byte *outBuffer = (byte *)ioData->mBuffers[0].mData;
     UInt32 outBufferByteSize = ioData->mBuffers[0].mDataByteSize;
     
-    memcpy((void *)outBuffer, &(buffer[bufferPosition]), outBufferByteSize);
+    for (UInt32 index = 0; index < outBufferByteSize; index++) {
+        outBuffer[index] = buffer[bufferPosition + index];
+    }
+    
+//    memcpy((void *)outBuffer, &(buffer[bufferPosition]), outBufferByteSize);
     
     // Increase the buffer position. This is the next buffer we will submit
     bufferPosition += outBufferByteSize;
