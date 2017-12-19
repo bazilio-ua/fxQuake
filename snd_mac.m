@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "macquake.h"
 
 Boolean audioGraphIsRunning = false;
-AudioUnitElement unitElement = 0;
+AudioUnitElement unitElement0 = 0;
 
 AUGraph audioGraph;
 AUNode outputNode;
@@ -376,7 +376,7 @@ qboolean SNDDMA_Init(void)
         return false;
     }
     
-    status = AUGraphConnectNodeInput(audioGraph, converterNode, 0, mixerNode, unitElement);
+    status = AUGraphConnectNodeInput(audioGraph, converterNode, 0, mixerNode, unitElement0);
     if (status) {
         Con_DPrintf("AUGraphConnectNodeInput returned %d\n", status);
         return false;
@@ -410,11 +410,11 @@ qboolean SNDDMA_Init(void)
     }
 */    
 //    if (audioGraphIsRunning) {
-        status = AUGraphStart(audioGraph);
-        if (status) {
-            Con_DPrintf("AUGraphStart returned %d\n", status);
-            return false;
-        }
+//        status = AUGraphStart(audioGraph);
+//        if (status) {
+//            Con_DPrintf("AUGraphStart returned %d\n", status);
+//            return false;
+//        }
 //    }
     
     snd_inited = true;
@@ -480,7 +480,7 @@ void SNDDMA_Shutdown(void)
             }
 //        }
         
-        status = AUGraphDisconnectNodeInput(audioGraph, mixerNode, unitElement);
+        status = AUGraphDisconnectNodeInput(audioGraph, mixerNode, unitElement0);
         if (status) {
             Con_DPrintf("AUGraphDisconnectNodeInput returned %d\n", status);
         }

@@ -23,6 +23,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "unixquake.h"
 #include "macquake.h"
 
+AudioUnitElement unitElement1 = 1;
+
+AUNode audioNode;
+AudioUnit audioUnit;
+AudioFileID audioFileId;
+
 cvar_t bgmvolume = {"bgmvolume", "1", true};
 cvar_t bgmtype = {"bgmtype", "cd", true};   // cd or none
 
@@ -64,6 +70,7 @@ void AIFFClose(AIFFInfo *aiff);
 /* ------------------------------------------------------------------------------------ */
 
 NSMutableArray *cdTracks;
+NSMutableString *cdMountPath;
 
 static float	old_cdvolume;
 
@@ -80,6 +87,11 @@ static OSStatus audioDeviceIOProc(AudioDeviceID inDevice,
                                   AudioBufferList *outOutputData,
                                   const AudioTimeStamp *inOutputTime,
                                   void *inClientData);
+
+
+void completionProc(void *userData,
+                    ScheduledAudioFileRegion *fileRegion,
+                    OSStatus result);
 
 /*
 ====================
@@ -162,11 +174,115 @@ void AIFFClose(AIFFInfo *aiff)
 
 /* ------------------------------------------------------------------------------------ */
 
+void playFile(SInt64 startFrame, qboolean loop)
+{
+    OSStatus status;
+    UInt32 propertySize;
+    
+    UInt64 packetCount = 0;
+    propertySize = sizeof(packetCount);
+    status = AudioFileGetProperty(audioFileId, kAudioFilePropertyAudioDataPacketCount, &propertySize, &packetCount);
+    if (status) {
+        Con_DPrintf("AudioFileGetProperty: returned %d\n", status);
+        return;
+    } 
+    
+    AudioStreamBasicDescription fileDescription = { 0 };
+    propertySize = sizeof(fileDescription);
+    status = AudioFileGetProperty(audioFileId, kAudioFilePropertyDataFormat, &propertySize, &fileDescription);
+    if (status) {
+        Con_DPrintf("AudioFileGetProperty: returned %d\n", status);
+        return;
+    }
+    
+    ScheduledAudioFileRegion fileRegion = { 0 };
+    fileRegion.mTimeStamp.mFlags = kAudioTimeStampSampleTimeValid;
+    fileRegion.mTimeStamp.mSampleTime = 0;
+//    fileRegion.mCompletionProc = &completionProc;
+    fileRegion.mCompletionProc = nil;
+    fileRegion.mCompletionProcUserData = nil;
+    fileRegion.mAudioFile = audioFileId;
+//    fileRegion.mLoopCount = (loop == YES) ? -1 : 0;
+    fileRegion.mLoopCount = INT_MAX;
+    fileRegion.mStartFrame = startFrame;
+    fileRegion.mFramesToPlay = (UInt32)(packetCount * fileDescription.mFramesPerPacket);
+   
+    Boolean audioGraphIsRunning;
+    status = AUGraphIsRunning(audioGraph, &audioGraphIsRunning);
+    if (status) {
+        Con_DPrintf("AUGraphIsRunning returned %d\n", status);
+    }
+    
+    
+    status = AudioUnitSetProperty(audioUnit, kAudioUnitProperty_ScheduledFileRegion, kAudioUnitScope_Global, 0, &fileRegion, sizeof(fileRegion));
+    if (status) {
+        Con_DPrintf("AudioUnitSetProperty: returned %d\n", status);
+        return;
+    }
+    
+    UInt32 filePrime;
+    status = AudioUnitSetProperty(audioUnit, kAudioUnitProperty_ScheduledFilePrime, kAudioUnitScope_Global, 0, &filePrime, sizeof(filePrime));
+    if (status) {
+        Con_DPrintf("AudioUnitSetProperty: returned %d\n", status);
+        return;
+    }
+    
+    AudioTimeStamp timeStamp = { 0 };
+    timeStamp.mFlags = kAudioTimeStampSampleTimeValid;
+    timeStamp.mSampleTime = -1;
+    status = AudioUnitSetProperty(audioUnit, kAudioUnitProperty_ScheduleStartTimeStamp, kAudioUnitScope_Global, 0, &timeStamp, sizeof(timeStamp));
+    if (status) {
+        Con_DPrintf("AudioUnitSetProperty: returned %d\n", status);
+        return;
+    }
+    
+    // temp start point
+    status = AUGraphStart(audioGraph);
+    if (status) {
+        Con_DPrintf("AUGraphStart returned %d\n", status);
+    }
+    
+}
+
+void openTrack(NSURL *url, qboolean loop)
+{
+    OSStatus status;
+    const char *path = [[url path] fileSystemRepresentation];
+    CFIndex pathLen = strlen(path);
+    CFURLRef urlPath = CFURLCreateFromFileSystemRepresentation(kCFAllocatorDefault, (const UInt8 *)path, pathLen, false);
+    status = AudioFileOpenURL(urlPath, kAudioFileReadPermission, 0, &audioFileId);
+    CFRelease(urlPath);
+    if (status) {
+        Con_DPrintf("AudioFileOpenURL: returned %d\n", status);
+        return;
+    } 
+    
+    status = AudioUnitSetProperty(audioUnit, kAudioUnitProperty_ScheduledFileIDs, kAudioUnitScope_Global, 0, &audioFileId, sizeof(audioFileId));
+    if (status) {
+        Con_DPrintf("AudioUnitSetProperty: returned %d\n", status);
+        return;
+    }
+    
+    playFile(0, loop); // play at start
+}
+
+void closeTrack(void)
+{
+    
+}
+
 /*
 ====================
 CoreAudio IO Proc
 ====================
 */
+
+void completionProc(void *userData,
+                    ScheduledAudioFileRegion *fileRegion,
+                    OSStatus result)
+{
+    
+}
 
 OSStatus audioDeviceIOProc(AudioDeviceID inDevice,
                            const AudioTimeStamp *inNow,
@@ -271,7 +387,7 @@ static int CDAudio_GetAudioDiskInfo(void)
         while ((filePath = [dirEnum nextObject])) {
             if ([[filePath pathExtension] isEqualToString: @"aiff"] || 
                 [[filePath pathExtension] isEqualToString: @"cdda"])
-                [cdTracks addObject: [mountPath stringByAppendingPathComponent: filePath]];
+                [cdTracks addObject: [NSURL fileURLWithPath: [mountPath stringByAppendingPathComponent: filePath]]];
         }
     }
     
@@ -311,14 +427,18 @@ void CDAudio_Play(byte track, qboolean looping)
 			return;
 		CDAudio_Stop();
 	}
+  
     
-    aiffInfo = AIFFOpen([cdTracks objectAtIndex:track - 1]);
+    openTrack([cdTracks objectAtIndex:track - 1], looping);
     
-    OSStatus status = AudioDeviceStart(audioDevice, ioprocid);
-    if (status) {
-        Con_DPrintf("CDAudio_Play: failed (%d)\n", status);
-        return;
-    } 
+    
+//    aiffInfo = AIFFOpen([cdTracks objectAtIndex:track - 1]);
+
+//    OSStatus status = AudioDeviceStart(audioDevice, ioprocid);
+//    if (status) {
+//        Con_DPrintf("CDAudio_Play: failed (%d)\n", status);
+//        return;
+//    } 
     
     playLooping = looping;    
     playTrack = track;
@@ -336,15 +456,15 @@ void CDAudio_Stop(void)
     if (!playing)
 		return;
 
-    OSStatus status = AudioDeviceStop(audioDevice, ioprocid);
-    if (status) {
-        Con_DPrintf("CDAudio_Stop: failed (%d)\n", status);
-    }
+//    OSStatus status = AudioDeviceStop(audioDevice, ioprocid);
+//    if (status) {
+//        Con_DPrintf("CDAudio_Stop: failed (%d)\n", status);
+//    }
     
 	wasPlaying = false;
 	playing = false;
     
-    AIFFClose(aiffInfo);
+//    AIFFClose(aiffInfo);
 }
 
 void CDAudio_Pause(void)
@@ -355,10 +475,10 @@ void CDAudio_Pause(void)
     if (!playing)
 		return;
     
-    OSStatus status = AudioDeviceStop(audioDevice, ioprocid);
-    if (status) {
-        Con_DPrintf("CDAudio_Pause: failed (%d)\n", status);
-    }
+//    OSStatus status = AudioDeviceStop(audioDevice, ioprocid);
+//    if (status) {
+//        Con_DPrintf("CDAudio_Pause: failed (%d)\n", status);
+//    }
     
     wasPlaying = playing;
 	playing = false;
@@ -375,10 +495,10 @@ void CDAudio_Resume(void)
     if (!wasPlaying)
 		return;
     
-    OSStatus status = AudioDeviceStart (audioDevice, ioprocid);
-    if (status) {
-        Con_DPrintf("CDAudio_Resume: failed (%d)\n", status);
-    }
+//    OSStatus status = AudioDeviceStart (audioDevice, ioprocid);
+//    if (status) {
+//        Con_DPrintf("CDAudio_Resume: failed (%d)\n", status);
+//    }
     
 	playing = true;
 }
@@ -540,6 +660,7 @@ void CDAudio_Update(void)
 
 int CDAudio_Init(void)
 {
+    OSStatus status;
 	int i;
     
 	if (cls.state == ca_dedicated)
@@ -553,18 +674,47 @@ int CDAudio_Init(void)
     Cvar_RegisterVariable(&bgmvolume, NULL);
 	Cvar_RegisterVariable(&bgmtype, NULL);
     
-    samples = (short *)malloc(SAMPLES_PER_BUFFER * sizeof(*samples));
     
-    // Add cd IOProcID
-    OSStatus status = AudioDeviceCreateIOProcID(audioDevice, audioDeviceIOProc, NULL, &ioprocid);
+    
+    AudioComponentDescription audioDescription;
+    audioDescription.componentType = kAudioUnitType_Generator;
+    audioDescription.componentSubType = kAudioUnitSubType_AudioFilePlayer;
+    audioDescription.componentManufacturer = kAudioUnitManufacturer_Apple;
+    audioDescription.componentFlags = 0;
+    audioDescription.componentFlagsMask = 0;
+    
+    status = AUGraphAddNode(audioGraph, &audioDescription, &audioNode);
     if (status) {
-        Con_DPrintf("AudioDeviceAddIOProc: returned %d\n", status);
+        Con_DPrintf("AUGraphAddNode returned %d\n", status);
         return -1;
     }
-    if (ioprocid == NULL) {
-        Con_DPrintf("Cannot create IOProcID\n");
+    
+    status = AUGraphNodeInfo(audioGraph, audioNode, 0, &audioUnit);
+    if (status) {
+        Con_DPrintf("AUGraphNodeInfo returned %d\n", status);
         return -1;
     }
+    
+    status = AUGraphConnectNodeInput(audioGraph, audioNode, 0, mixerNode, unitElement1);
+    if (status) {
+        Con_DPrintf("AUGraphConnectNodeInput returned %d\n", status);
+        return -1;
+    }
+    
+    
+    
+//    samples = (short *)malloc(SAMPLES_PER_BUFFER * sizeof(*samples));
+//    
+//    // Add cd IOProcID
+//    OSStatus status = AudioDeviceCreateIOProcID(audioDevice, audioDeviceIOProc, NULL, &ioprocid);
+//    if (status) {
+//        Con_DPrintf("AudioDeviceAddIOProc: returned %d\n", status);
+//        return -1;
+//    }
+//    if (ioprocid == NULL) {
+//        Con_DPrintf("Cannot create IOProcID\n");
+//        return -1;
+//    }
     
 	for (i = 0; i < 100; i++)
 		remap[i] = i;
@@ -585,16 +735,28 @@ int CDAudio_Init(void)
 
 void CDAudio_Shutdown(void)
 {
+    OSStatus status;
+    
     if (!initialized)
 		return;
     
     CDAudio_Stop();
-    
-    // Remove cd IOProcID
-    OSStatus status = AudioDeviceDestroyIOProcID(audioDevice, ioprocid);
+
+    status = AUGraphDisconnectNodeInput(audioGraph, mixerNode, unitElement1);
     if (status) {
-        Con_DPrintf("AudioDeviceRemoveIOProc: returned %d\n", status);
+        Con_DPrintf("AUGraphDisconnectNodeInput: returned %d\n", status);
     }
+    
+    status = AUGraphRemoveNode(audioGraph, audioNode);
+    if (status) {
+        Con_DPrintf("AUGraphRemoveNode: returned %d\n", status);
+    }
+    
+//    // Remove cd IOProcID
+//    OSStatus status = AudioDeviceDestroyIOProcID(audioDevice, ioprocid);
+//    if (status) {
+//        Con_DPrintf("AudioDeviceRemoveIOProc: returned %d\n", status);
+//    }
     
     if (cdTracks) {
         [cdTracks release];
