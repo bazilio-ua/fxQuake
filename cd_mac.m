@@ -28,6 +28,7 @@ AudioUnitElement unitElement1 = 1;
 AUNode audioNode;
 AudioUnit audioUnit;
 AudioFileID audioFileId;
+SInt64 filePosition;
 
 cvar_t bgmvolume = {"bgmvolume", "1", true};
 cvar_t bgmtype = {"bgmtype", "cd", true};   // cd or none
@@ -174,102 +175,116 @@ void AIFFClose(AIFFInfo *aiff)
 
 /* ------------------------------------------------------------------------------------ */
 
-void playFile(SInt64 startFrame, qboolean loop)
-{
-    OSStatus status;
-    UInt32 propertySize;
-    
-    UInt64 packetCount = 0;
-    propertySize = sizeof(packetCount);
-    status = AudioFileGetProperty(audioFileId, kAudioFilePropertyAudioDataPacketCount, &propertySize, &packetCount);
-    if (status) {
-        Con_DPrintf("AudioFileGetProperty: returned %d\n", status);
-        return;
-    } 
-    
-    AudioStreamBasicDescription fileDescription = { 0 };
-    propertySize = sizeof(fileDescription);
-    status = AudioFileGetProperty(audioFileId, kAudioFilePropertyDataFormat, &propertySize, &fileDescription);
-    if (status) {
-        Con_DPrintf("AudioFileGetProperty: returned %d\n", status);
-        return;
-    }
-    
-    ScheduledAudioFileRegion fileRegion = { 0 };
-    fileRegion.mTimeStamp.mFlags = kAudioTimeStampSampleTimeValid;
-    fileRegion.mTimeStamp.mSampleTime = 0;
-//    fileRegion.mCompletionProc = &completionProc;
-    fileRegion.mCompletionProc = nil;
-    fileRegion.mCompletionProcUserData = nil;
-    fileRegion.mAudioFile = audioFileId;
-//    fileRegion.mLoopCount = (loop == YES) ? -1 : 0;
-    fileRegion.mLoopCount = INT_MAX;
-    fileRegion.mStartFrame = startFrame;
-    fileRegion.mFramesToPlay = (UInt32)(packetCount * fileDescription.mFramesPerPacket);
-   
-    Boolean audioGraphIsRunning;
-    status = AUGraphIsRunning(audioGraph, &audioGraphIsRunning);
-    if (status) {
-        Con_DPrintf("AUGraphIsRunning returned %d\n", status);
-    }
-    
-    
-    status = AudioUnitSetProperty(audioUnit, kAudioUnitProperty_ScheduledFileRegion, kAudioUnitScope_Global, 0, &fileRegion, sizeof(fileRegion));
-    if (status) {
-        Con_DPrintf("AudioUnitSetProperty: returned %d\n", status);
-        return;
-    }
-    
-    UInt32 filePrime;
-    status = AudioUnitSetProperty(audioUnit, kAudioUnitProperty_ScheduledFilePrime, kAudioUnitScope_Global, 0, &filePrime, sizeof(filePrime));
-    if (status) {
-        Con_DPrintf("AudioUnitSetProperty: returned %d\n", status);
-        return;
-    }
-    
-    AudioTimeStamp timeStamp = { 0 };
-    timeStamp.mFlags = kAudioTimeStampSampleTimeValid;
-    timeStamp.mSampleTime = -1;
-    status = AudioUnitSetProperty(audioUnit, kAudioUnitProperty_ScheduleStartTimeStamp, kAudioUnitScope_Global, 0, &timeStamp, sizeof(timeStamp));
-    if (status) {
-        Con_DPrintf("AudioUnitSetProperty: returned %d\n", status);
-        return;
-    }
-    
-    // temp start point
-    status = AUGraphStart(audioGraph);
-    if (status) {
-        Con_DPrintf("AUGraphStart returned %d\n", status);
-    }
-    
-}
+//void playFile(SInt64 startFrame, qboolean loop)
+//{
+//    OSStatus status;
+//    UInt32 propertySize;
+//    
+//    UInt64 packetCount = 0;
+//    propertySize = sizeof(packetCount);
+//    status = AudioFileGetProperty(audioFileId, kAudioFilePropertyAudioDataPacketCount, &propertySize, &packetCount);
+//    if (status) {
+//        Con_DPrintf("AudioFileGetProperty: returned %d\n", status);
+//        return;
+//    } 
+//    
+//    AudioStreamBasicDescription fileDescription = { 0 };
+//    propertySize = sizeof(fileDescription);
+//    status = AudioFileGetProperty(audioFileId, kAudioFilePropertyDataFormat, &propertySize, &fileDescription);
+//    if (status) {
+//        Con_DPrintf("AudioFileGetProperty: returned %d\n", status);
+//        return;
+//    }
+//    
+//    ScheduledAudioFileRegion fileRegion = { 0 };
+//    fileRegion.mTimeStamp.mFlags = kAudioTimeStampSampleTimeValid;
+//    fileRegion.mTimeStamp.mSampleTime = 0;
+////    fileRegion.mCompletionProc = &completionProc;
+//    fileRegion.mCompletionProc = nil;
+//    fileRegion.mCompletionProcUserData = nil;
+//    fileRegion.mAudioFile = audioFileId;
+////    fileRegion.mLoopCount = (loop == YES) ? -1 : 0;
+//    fileRegion.mLoopCount = INT_MAX;
+//    fileRegion.mStartFrame = startFrame;
+//    fileRegion.mFramesToPlay = (UInt32)(packetCount * fileDescription.mFramesPerPacket);
+//   
+//    Boolean audioGraphIsRunning;
+//    status = AUGraphIsRunning(audioGraph, &audioGraphIsRunning);
+//    if (status) {
+//        Con_DPrintf("AUGraphIsRunning returned %d\n", status);
+//    }
+//    
+//    
+//    status = AudioUnitSetProperty(audioUnit, kAudioUnitProperty_ScheduledFileRegion, kAudioUnitScope_Global, 0, &fileRegion, sizeof(fileRegion));
+//    if (status) {
+//        Con_DPrintf("AudioUnitSetProperty: returned %d\n", status);
+//        return;
+//    }
+//    
+//    UInt32 filePrime;
+//    status = AudioUnitSetProperty(audioUnit, kAudioUnitProperty_ScheduledFilePrime, kAudioUnitScope_Global, 0, &filePrime, sizeof(filePrime));
+//    if (status) {
+//        Con_DPrintf("AudioUnitSetProperty: returned %d\n", status);
+//        return;
+//    }
+//    
+//    AudioTimeStamp timeStamp = { 0 };
+//    timeStamp.mFlags = kAudioTimeStampSampleTimeValid;
+//    timeStamp.mSampleTime = -1;
+//    status = AudioUnitSetProperty(audioUnit, kAudioUnitProperty_ScheduleStartTimeStamp, kAudioUnitScope_Global, 0, &timeStamp, sizeof(timeStamp));
+//    if (status) {
+//        Con_DPrintf("AudioUnitSetProperty: returned %d\n", status);
+//        return;
+//    }
+//    
+//    // temp start point
+//    status = AUGraphStart(audioGraph);
+//    if (status) {
+//        Con_DPrintf("AUGraphStart returned %d\n", status);
+//    }
+//    
+//}
 
-void openTrack(NSURL *url, qboolean loop)
-{
-    OSStatus status;
-    const char *path = [[url path] fileSystemRepresentation];
-    CFIndex pathLen = strlen(path);
-    CFURLRef urlPath = CFURLCreateFromFileSystemRepresentation(kCFAllocatorDefault, (const UInt8 *)path, pathLen, false);
-    status = AudioFileOpenURL(urlPath, kAudioFileReadPermission, 0, &audioFileId);
-    CFRelease(urlPath);
-    if (status) {
-        Con_DPrintf("AudioFileOpenURL: returned %d\n", status);
-        return;
-    } 
-    
-    status = AudioUnitSetProperty(audioUnit, kAudioUnitProperty_ScheduledFileIDs, kAudioUnitScope_Global, 0, &audioFileId, sizeof(audioFileId));
-    if (status) {
-        Con_DPrintf("AudioUnitSetProperty: returned %d\n", status);
-        return;
-    }
-    
-    playFile(0, loop); // play at start
-}
+//void openTrack(NSURL *url, qboolean loop)
+//{
+//    OSStatus status;
+//    const char *path = [[url path] fileSystemRepresentation];
+//    CFIndex pathLen = strlen(path);
+//    CFURLRef urlPath = CFURLCreateFromFileSystemRepresentation(kCFAllocatorDefault, (const UInt8 *)path, pathLen, false);
+//    status = AudioFileOpenURL(urlPath, kAudioFileReadPermission, 0, &audioFileId);
+//    CFRelease(urlPath);
+//    if (status) {
+//        Con_DPrintf("AudioFileOpenURL: returned %d\n", status);
+//        return;
+//    } 
+//    
+//    status = AudioUnitSetProperty(audioUnit, kAudioUnitProperty_ScheduledFileIDs, kAudioUnitScope_Global, 0, &audioFileId, sizeof(audioFileId));
+//    if (status) {
+//        Con_DPrintf("AudioUnitSetProperty: returned %d\n", status);
+//        return;
+//    }
+//    
+//    playFile(0, loop); // play at start
+//}
 
-void closeTrack(void)
-{
-    
-}
+//void closeTrack(void)
+//{
+//    OSStatus status;
+//
+//    status = AudioUnitReset(audioUnit, kAudioUnitScope_Global, 0);
+//    if (status) {
+//        Con_DPrintf("AudioUnitReset: returned %d\n", status);
+//    }
+//    
+//    if (audioFileId) {
+//        status = AudioFileClose(audioFileId);
+//        if (status) {
+//            Con_DPrintf("AudioFileClose: returned %d\n", status);
+//        }
+//        
+//        audioFileId = NULL;
+//    }
+//}
 
 /*
 ====================
@@ -427,9 +442,86 @@ void CDAudio_Play(byte track, qboolean looping)
 			return;
 		CDAudio_Stop();
 	}
-  
     
-    openTrack([cdTracks objectAtIndex:track - 1], looping);
+    
+    OSStatus status;
+    
+    NSURL *url = [cdTracks objectAtIndex:track - 1];
+    const char *path = [[url path] fileSystemRepresentation];
+    CFIndex pathLen = strlen(path);
+    CFURLRef urlPath = CFURLCreateFromFileSystemRepresentation(kCFAllocatorDefault, (const UInt8 *)path, pathLen, false);
+    status = AudioFileOpenURL(urlPath, kAudioFileReadPermission, 0, &audioFileId);
+    CFRelease(urlPath);
+    if (status) {
+        Con_DPrintf("AudioFileOpenURL: returned %d\n", status);
+        return;
+    } 
+    
+    status = AudioUnitSetProperty(audioUnit, kAudioUnitProperty_ScheduledFileIDs, kAudioUnitScope_Global, 0, &audioFileId, sizeof(audioFileId));
+    if (status) {
+        Con_DPrintf("AudioUnitSetProperty: returned %d\n", status);
+        return;
+    }
+    
+    UInt32 propertySize;
+    
+    UInt64 packetCount = 0;
+    propertySize = sizeof(packetCount);
+    status = AudioFileGetProperty(audioFileId, kAudioFilePropertyAudioDataPacketCount, &propertySize, &packetCount);
+    if (status) {
+        Con_DPrintf("AudioFileGetProperty: returned %d\n", status);
+        return;
+    } 
+    
+    AudioStreamBasicDescription fileDescription = { 0 };
+    propertySize = sizeof(fileDescription);
+    status = AudioFileGetProperty(audioFileId, kAudioFilePropertyDataFormat, &propertySize, &fileDescription);
+    if (status) {
+        Con_DPrintf("AudioFileGetProperty: returned %d\n", status);
+        return;
+    }
+    
+    ScheduledAudioFileRegion fileRegion = { 0 };
+    fileRegion.mTimeStamp.mFlags = kAudioTimeStampSampleTimeValid;
+    fileRegion.mTimeStamp.mSampleTime = 0;
+    fileRegion.mCompletionProc = nil;
+    fileRegion.mCompletionProcUserData = nil;
+    fileRegion.mAudioFile = audioFileId;
+    fileRegion.mLoopCount = looping ? -1 : 0;
+    fileRegion.mStartFrame = 0;
+    fileRegion.mFramesToPlay = (UInt32)(packetCount * fileDescription.mFramesPerPacket);
+    status = AudioUnitSetProperty(audioUnit, kAudioUnitProperty_ScheduledFileRegion, kAudioUnitScope_Global, 0, &fileRegion, sizeof(fileRegion));
+    if (status) {
+        Con_DPrintf("AudioUnitSetProperty: returned %d\n", status);
+        return;
+    }
+    
+    UInt32 filePrime;
+    status = AudioUnitSetProperty(audioUnit, kAudioUnitProperty_ScheduledFilePrime, kAudioUnitScope_Global, 0, &filePrime, sizeof(filePrime));
+    if (status) {
+        Con_DPrintf("AudioUnitSetProperty: returned %d\n", status);
+        return;
+    }
+    
+    AudioTimeStamp startTimeStamp = { 0 };
+    startTimeStamp.mFlags = kAudioTimeStampSampleTimeValid;
+    startTimeStamp.mSampleTime = -1;
+    status = AudioUnitSetProperty(audioUnit, kAudioUnitProperty_ScheduleStartTimeStamp, kAudioUnitScope_Global, 0, &startTimeStamp, sizeof(startTimeStamp));
+    if (status) {
+        Con_DPrintf("AudioUnitSetProperty: returned %d\n", status);
+        return;
+    }
+    
+    
+    
+    
+    // temp start point
+    status = AUGraphStart(audioGraph);
+    if (status) {
+        Con_DPrintf("AUGraphStart returned %d\n", status);
+    }
+    
+    
     
     
 //    aiffInfo = AIFFOpen([cdTracks objectAtIndex:track - 1]);
@@ -455,7 +547,26 @@ void CDAudio_Stop(void)
     
     if (!playing)
 		return;
-
+    
+    
+    OSStatus status;
+    
+    status = AudioUnitReset(audioUnit, kAudioUnitScope_Global, 0);
+    if (status) {
+        Con_DPrintf("AudioUnitReset: returned %d\n", status);
+    }
+    
+    if (audioFileId) {
+        status = AudioFileClose(audioFileId);
+        if (status) {
+            Con_DPrintf("AudioFileClose: returned %d\n", status);
+        }
+        
+        audioFileId = NULL;
+    }
+    
+    
+    
 //    OSStatus status = AudioDeviceStop(audioDevice, ioprocid);
 //    if (status) {
 //        Con_DPrintf("CDAudio_Stop: failed (%d)\n", status);
@@ -474,6 +585,26 @@ void CDAudio_Pause(void)
     
     if (!playing)
 		return;
+    
+    
+    OSStatus status;
+    
+    AudioTimeStamp currentPlayTime = { 0 };
+    UInt32 propertySize;
+    propertySize = sizeof(currentPlayTime);
+
+    status = AudioUnitGetProperty(audioUnit, kAudioUnitProperty_CurrentPlayTime, kAudioUnitScope_Global, 0, &currentPlayTime, &propertySize);
+    if (status) {
+        Con_DPrintf("AudioUnitGetProperty: returned %d\n", status);
+    }
+    
+    filePosition = currentPlayTime.mSampleTime;
+    
+    status = AudioUnitReset(audioUnit, kAudioUnitScope_Global, 0);
+    if (status) {
+        Con_DPrintf("AudioUnitReset: returned %d\n", status);
+    }
+    
     
 //    OSStatus status = AudioDeviceStop(audioDevice, ioprocid);
 //    if (status) {
@@ -494,12 +625,67 @@ void CDAudio_Resume(void)
     
     if (!wasPlaying)
 		return;
+
+    
+    OSStatus status;
+    
+    UInt32 propertySize;
+    
+    UInt64 packetCount = 0;
+    propertySize = sizeof(packetCount);
+    status = AudioFileGetProperty(audioFileId, kAudioFilePropertyAudioDataPacketCount, &propertySize, &packetCount);
+    if (status) {
+        Con_DPrintf("AudioFileGetProperty: returned %d\n", status);
+        return;
+    }
+    
+    AudioStreamBasicDescription fileDescription = { 0 };
+    propertySize = sizeof(fileDescription);
+    status = AudioFileGetProperty(audioFileId, kAudioFilePropertyDataFormat, &propertySize, &fileDescription);
+    if (status) {
+        Con_DPrintf("AudioFileGetProperty: returned %d\n", status);
+        return;
+    }
+    
+    ScheduledAudioFileRegion fileRegion = { 0 };
+    fileRegion.mTimeStamp.mFlags = kAudioTimeStampSampleTimeValid;
+    fileRegion.mTimeStamp.mSampleTime = 0;
+    fileRegion.mCompletionProc = nil;
+    fileRegion.mCompletionProcUserData = nil;
+    fileRegion.mAudioFile = audioFileId;
+    fileRegion.mLoopCount = playLooping ? -1 : 0;
+    fileRegion.mStartFrame = filePosition;
+    fileRegion.mFramesToPlay = (UInt32)(packetCount * fileDescription.mFramesPerPacket);
+    status = AudioUnitSetProperty(audioUnit, kAudioUnitProperty_ScheduledFileRegion, kAudioUnitScope_Global, 0, &fileRegion, sizeof(fileRegion));
+    if (status) {
+        Con_DPrintf("AudioUnitSetProperty: returned %d\n", status);
+        return;
+    }
+    
+    UInt32 filePrime;
+    status = AudioUnitSetProperty(audioUnit, kAudioUnitProperty_ScheduledFilePrime, kAudioUnitScope_Global, 0, &filePrime, sizeof(filePrime));
+    if (status) {
+        Con_DPrintf("AudioUnitSetProperty: returned %d\n", status);
+        return;
+    }
+    
+    AudioTimeStamp startTimeStamp = { 0 };
+    startTimeStamp.mFlags = kAudioTimeStampSampleTimeValid;
+    startTimeStamp.mSampleTime = -1;
+    status = AudioUnitSetProperty(audioUnit, kAudioUnitProperty_ScheduleStartTimeStamp, kAudioUnitScope_Global, 0, &startTimeStamp, sizeof(startTimeStamp));
+    if (status) {
+        Con_DPrintf("AudioUnitSetProperty: returned %d\n", status);
+        return;
+    }
+    
+    
     
 //    OSStatus status = AudioDeviceStart (audioDevice, ioprocid);
 //    if (status) {
 //        Con_DPrintf("CDAudio_Resume: failed (%d)\n", status);
 //    }
     
+	wasPlaying = false;
 	playing = true;
 }
 
