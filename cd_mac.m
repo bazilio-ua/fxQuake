@@ -28,7 +28,7 @@ AudioUnitElement unitElement1 = 1;
 AUNode audioNode;
 AudioUnit audioUnit;
 AudioFileID audioFileId;
-SInt64 filePosition;
+SInt64 filePosition = 0;
 
 cvar_t bgmvolume = {"bgmvolume", "1", true};
 cvar_t bgmtype = {"bgmtype", "cd", true};   // cd or none
@@ -488,7 +488,7 @@ void CDAudio_Play(byte track, qboolean looping)
     fileRegion.mCompletionProcUserData = nil;
     fileRegion.mAudioFile = audioFileId;
     fileRegion.mLoopCount = looping ? -1 : 0;
-    fileRegion.mStartFrame = 0;
+    fileRegion.mStartFrame = 0; // filePosition
     fileRegion.mFramesToPlay = (UInt32)(packetCount * fileDescription.mFramesPerPacket);
     status = AudioUnitSetProperty(audioUnit, kAudioUnitProperty_ScheduledFileRegion, kAudioUnitScope_Global, 0, &fileRegion, sizeof(fileRegion));
     if (status) {
@@ -513,6 +513,7 @@ void CDAudio_Play(byte track, qboolean looping)
     }
     
     
+    filePosition = 0;
     
     
     // temp start point
@@ -565,7 +566,7 @@ void CDAudio_Stop(void)
         audioFileId = NULL;
     }
     
-    
+    filePosition = 0;
     
 //    OSStatus status = AudioDeviceStop(audioDevice, ioprocid);
 //    if (status) {
@@ -598,7 +599,7 @@ void CDAudio_Pause(void)
         Con_DPrintf("AudioUnitGetProperty: returned %d\n", status);
     }
     
-    filePosition = currentPlayTime.mSampleTime;
+    filePosition += currentPlayTime.mSampleTime;
     
     status = AudioUnitReset(audioUnit, kAudioUnitScope_Global, 0);
     if (status) {
@@ -656,6 +657,7 @@ void CDAudio_Resume(void)
     fileRegion.mLoopCount = playLooping ? -1 : 0;
     fileRegion.mStartFrame = filePosition;
     fileRegion.mFramesToPlay = (UInt32)(packetCount * fileDescription.mFramesPerPacket);
+//    fileRegion.mFramesToPlay = (UInt32)((packetCount * fileDescription.mFramesPerPacket) - filePosition);
     status = AudioUnitSetProperty(audioUnit, kAudioUnitProperty_ScheduledFileRegion, kAudioUnitScope_Global, 0, &fileRegion, sizeof(fileRegion));
     if (status) {
         Con_DPrintf("AudioUnitSetProperty: returned %d\n", status);
