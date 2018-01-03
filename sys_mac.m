@@ -378,7 +378,29 @@ int main (int argc, char *argv[])
 }
 
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender {
-    return NSTerminateNow;
+    NSApplicationTerminateReply terminateReply = NSTerminateNow;
+    
+    if (host_initialized) {
+        if ([NSApp isHidden] || ![NSApp isActive]) {
+            [NSApp activateIgnoringOtherApps:YES];
+        }
+        
+        if (!vidmode_fullscreen && window) {
+            if ([window isMiniaturized]) {
+                [window deminiaturize:nil];
+            }
+            [window orderFront:nil];
+        }
+        
+        if (cls.state == ca_dedicated) {
+            Sys_Quit(0);
+        } else {
+            M_Menu_Quit_f();
+            terminateReply = NSTerminateCancel;
+        }
+    }
+    
+    return terminateReply;
 }
 
 - (void)quakeMain {
@@ -496,11 +518,16 @@ int main (int argc, char *argv[])
 }
 
 - (BOOL)windowShouldClose:(id)sender {
-    return YES;
+    const BOOL shouldClose = vidmode_fullscreen;
+    if (!shouldClose) {
+        [NSApp terminate:nil];
+    }
+    
+    return shouldClose;
 }
 
 - (void)windowWillClose:(NSNotification *)notification {
-    Sys_Quit(0);
+//    Sys_Quit(0);
 }
 
 - (void)windowDidBecomeKey:(NSNotification *)notification {
