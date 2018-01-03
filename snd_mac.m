@@ -34,8 +34,8 @@ AudioUnit mixerUnit;
 AudioUnit converterUnit;
 
 AudioDeviceID audioDevice = kAudioDeviceUnknown;
-static AudioStreamBasicDescription outputStreamBasicDescription;
-static AudioDeviceIOProcID ioprocid = NULL;
+//static AudioStreamBasicDescription outputStreamBasicDescription;
+//static AudioDeviceIOProcID ioprocid = NULL;
 
 // 64K is > 1 second at 16-bit, 22050 Hz
 #define	WAV_BUFFERS				64
@@ -91,33 +91,33 @@ OSStatus renderCallback(void *inRefCon,
 audioDeviceIOProc
 ===============
 */
-OSStatus audioDeviceIOProc(AudioDeviceID inDevice,
-                           const AudioTimeStamp *inNow,
-                           const AudioBufferList *inInputData,
-                           const AudioTimeStamp *inInputTime,
-                           AudioBufferList *outOutputData,
-                           const AudioTimeStamp *inOutputTime,
-                           void *inClientData)
-{
-    UInt32 sampleIndex;
-    short *samples = (short *)buffer + bufferPosition / (shm->samplebits >> 3);
-    float *outBuffer = (float *)outOutputData->mBuffers[0].mData;
-    float scale = 1.0f / 32768.0f;
-    
-    // Convert the buffer to float, required by CoreAudio
-    for (sampleIndex = 0; sampleIndex < OUTPUT_BUFFER_SIZE; sampleIndex++)
-    {
-        // Convert the samples from shorts to floats.  Scale the floats to be [-1..1].
-        outBuffer[sampleIndex] = samples[sampleIndex] * scale;
-    }
-    
-    // Increase the buffer position. This is the next buffer we will submit
-    bufferPosition += OUTPUT_BUFFER_SIZE * (shm->samplebits >> 3);
-    if (bufferPosition >= sizeof (buffer))
-        bufferPosition = 0;
-    
-	return kAudioHardwareNoError;
-}
+//OSStatus audioDeviceIOProc(AudioDeviceID inDevice,
+//                           const AudioTimeStamp *inNow,
+//                           const AudioBufferList *inInputData,
+//                           const AudioTimeStamp *inInputTime,
+//                           AudioBufferList *outOutputData,
+//                           const AudioTimeStamp *inOutputTime,
+//                           void *inClientData)
+//{
+//    UInt32 sampleIndex;
+//    short *samples = (short *)buffer + bufferPosition / (shm->samplebits >> 3);
+//    float *outBuffer = (float *)outOutputData->mBuffers[0].mData;
+//    float scale = 1.0f / 32768.0f;
+//    
+//    // Convert the buffer to float, required by CoreAudio
+//    for (sampleIndex = 0; sampleIndex < OUTPUT_BUFFER_SIZE; sampleIndex++)
+//    {
+//        // Convert the samples from shorts to floats.  Scale the floats to be [-1..1].
+//        outBuffer[sampleIndex] = samples[sampleIndex] * scale;
+//    }
+//    
+//    // Increase the buffer position. This is the next buffer we will submit
+//    bufferPosition += OUTPUT_BUFFER_SIZE * (shm->samplebits >> 3);
+//    if (bufferPosition >= sizeof (buffer))
+//        bufferPosition = 0;
+//    
+//	return kAudioHardwareNoError;
+//}
 
 /*
 ==================

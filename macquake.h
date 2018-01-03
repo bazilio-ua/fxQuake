@@ -33,7 +33,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 extern AUGraph audioGraph;
 extern AUNode mixerNode;
-extern AudioDeviceID audioDevice;
+extern AudioUnit mixerUnit;
+//extern AudioDeviceID audioDevice;
 extern CGDirectDisplayID display;
 extern NSWindow *window;
 extern NSScreen *screen;

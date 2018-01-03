@@ -45,28 +45,28 @@ static byte		maxTrack;
 
 /* ------------------------------------------------------------------------------------ */
 
-typedef struct _AIFFChunkHeader {
-    unsigned int chunkID;
-    unsigned int chunkSize;
-    unsigned int fileType;
-} AIFFChunkHeader;
-
-typedef struct _AIFFGenericChunk {
-    unsigned int chunkID;
-    unsigned int chunkSize;
-} AIFFGenericChunk;
-
-typedef struct _AIFFSSNDData {
-    unsigned int offset;
-    unsigned int blockSize;
-} AIFFSSNDData;
-
-typedef struct _AIFFInfo {
-    FILE *file;
-} AIFFInfo; 
-
-AIFFInfo *AIFFOpen(NSString *path);
-void AIFFClose(AIFFInfo *aiff);
+//typedef struct _AIFFChunkHeader {
+//    unsigned int chunkID;
+//    unsigned int chunkSize;
+//    unsigned int fileType;
+//} AIFFChunkHeader;
+//
+//typedef struct _AIFFGenericChunk {
+//    unsigned int chunkID;
+//    unsigned int chunkSize;
+//} AIFFGenericChunk;
+//
+//typedef struct _AIFFSSNDData {
+//    unsigned int offset;
+//    unsigned int blockSize;
+//} AIFFSSNDData;
+//
+//typedef struct _AIFFInfo {
+//    FILE *file;
+//} AIFFInfo; 
+//
+//AIFFInfo *AIFFOpen(NSString *path);
+//void AIFFClose(AIFFInfo *aiff);
 
 /* ------------------------------------------------------------------------------------ */
 
@@ -75,19 +75,19 @@ NSMutableString *cdMountPath;
 
 static float	old_cdvolume;
 
-#define SAMPLES_PER_BUFFER (2*1024)
-
-static AIFFInfo         *aiffInfo;
-static short            *samples;
-
-static AudioDeviceIOProcID ioprocid = NULL;
-static OSStatus audioDeviceIOProc(AudioDeviceID inDevice,
-                                  const AudioTimeStamp *inNow,
-                                  const AudioBufferList *inInputData,
-                                  const AudioTimeStamp *inInputTime,
-                                  AudioBufferList *outOutputData,
-                                  const AudioTimeStamp *inOutputTime,
-                                  void *inClientData);
+//#define SAMPLES_PER_BUFFER (2*1024)
+//
+//static AIFFInfo         *aiffInfo;
+//static short            *samples;
+//
+//static AudioDeviceIOProcID ioprocid = NULL;
+//static OSStatus audioDeviceIOProc(AudioDeviceID inDevice,
+//                                  const AudioTimeStamp *inNow,
+//                                  const AudioBufferList *inInputData,
+//                                  const AudioTimeStamp *inInputTime,
+//                                  AudioBufferList *outOutputData,
+//                                  const AudioTimeStamp *inOutputTime,
+//                                  void *inClientData);
 
 
 void completionProc(void *userData,
@@ -100,78 +100,78 @@ AIFF-C read routines
 ====================
 */
 
-AIFFInfo *AIFFOpen(NSString *path)
-{
-    const char *pathStr;
-    AIFFInfo *aiff;
-    FILE *file;
-    AIFFChunkHeader chunkHeader;
-    AIFFGenericChunk chunk;
-    AIFFSSNDData ssndData;
-    
-    pathStr = [path fileSystemRepresentation];
-    file = fopen(pathStr, "r");
-    if (!file) {
-        perror(pathStr);
-        return NULL;
-    }
-    
-    aiff = malloc(sizeof(*aiff));
-    aiff->file = file;
-    
-    fread(&chunkHeader, 1, sizeof(chunkHeader), aiff->file);
-    chunkHeader.chunkID = BigLong(chunkHeader.chunkID);
-    if (chunkHeader.chunkID != 'FORM') {
-        Con_DWarning("AIFFOpen: chunkID is not 'FORM'\n");
-        AIFFClose(aiff);
-        return NULL;
-    }
-    chunkHeader.fileType = BigLong(chunkHeader.fileType);
-    if (chunkHeader.fileType != 'AIFC') {
-        Con_DWarning("AIFFOpen: file format is not 'AIFC'\n");
-        AIFFClose(aiff);
-        return NULL;
-    }
-    
-    // Skip up to the 'SSND' chunk, ignoring all the type, compression, format, chunks.
-    while (1) {
-        fread(&chunk, 1, sizeof(chunk), aiff->file);
-        chunk.chunkID = BigLong(chunk.chunkID);
-        chunk.chunkSize = BigLong(chunk.chunkSize);
-        
-        if (chunk.chunkID == 'SSND')
-            break;
-        
-        Con_DPrintf("AIFFOpen: skipping chunk %c%c%c%c\n", 
-                    (chunk.chunkID >> 24) & 0xff, 
-                    (chunk.chunkID >> 16) & 0xff, 
-                    (chunk.chunkID >> 8) & 0xff, 
-                    (chunk.chunkID >> 0) & 0xff);
-        
-        // Skip the chunk data
-        fseek(aiff->file, chunk.chunkSize, SEEK_CUR);
-    }
-    
-    Con_DPrintf("AIFFOpen: Found SSND, size = %d\n", chunk.chunkSize);
-    
-    fread(&ssndData, 1, sizeof(ssndData), aiff->file);
-    ssndData.offset =  BigLong(ssndData.offset);
-    ssndData.blockSize = BigLong(ssndData.blockSize);
-    
-    Con_DPrintf("AIFFOpen: offset = %d\n", ssndData.offset);
-    Con_DPrintf("AIFFOpen: blockSize = %d\n", ssndData.blockSize);
-    
-    return aiff;
-}
-
-void AIFFClose(AIFFInfo *aiff)
-{
-    if (aiff) {
-        fclose(aiff->file);
-        free(aiff);
-        aiff = NULL;
-    }
-}
+//AIFFInfo *AIFFOpen(NSString *path)
+//{
+//    const char *pathStr;
+//    AIFFInfo *aiff;
+//    FILE *file;
+//    AIFFChunkHeader chunkHeader;
+//    AIFFGenericChunk chunk;
+//    AIFFSSNDData ssndData;
+//    
+//    pathStr = [path fileSystemRepresentation];
+//    file = fopen(pathStr, "r");
+//    if (!file) {
+//        perror(pathStr);
+//        return NULL;
+//    }
+//    
+//    aiff = malloc(sizeof(*aiff));
+//    aiff->file = file;
+//    
+//    fread(&chunkHeader, 1, sizeof(chunkHeader), aiff->file);
+//    chunkHeader.chunkID = BigLong(chunkHeader.chunkID);
+//    if (chunkHeader.chunkID != 'FORM') {
+//        Con_DWarning("AIFFOpen: chunkID is not 'FORM'\n");
+//        AIFFClose(aiff);
+//        return NULL;
+//    }
+//    chunkHeader.fileType = BigLong(chunkHeader.fileType);
+//    if (chunkHeader.fileType != 'AIFC') {
+//        Con_DWarning("AIFFOpen: file format is not 'AIFC'\n");
+//        AIFFClose(aiff);
+//        return NULL;
+//    }
+//    
+//    // Skip up to the 'SSND' chunk, ignoring all the type, compression, format, chunks.
+//    while (1) {
+//        fread(&chunk, 1, sizeof(chunk), aiff->file);
+//        chunk.chunkID = BigLong(chunk.chunkID);
+//        chunk.chunkSize = BigLong(chunk.chunkSize);
+//        
+//        if (chunk.chunkID == 'SSND')
+//            break;
+//        
+//        Con_DPrintf("AIFFOpen: skipping chunk %c%c%c%c\n", 
+//                    (chunk.chunkID >> 24) & 0xff, 
+//                    (chunk.chunkID >> 16) & 0xff, 
+//                    (chunk.chunkID >> 8) & 0xff, 
+//                    (chunk.chunkID >> 0) & 0xff);
+//        
+//        // Skip the chunk data
+//        fseek(aiff->file, chunk.chunkSize, SEEK_CUR);
+//    }
+//    
+//    Con_DPrintf("AIFFOpen: Found SSND, size = %d\n", chunk.chunkSize);
+//    
+//    fread(&ssndData, 1, sizeof(ssndData), aiff->file);
+//    ssndData.offset =  BigLong(ssndData.offset);
+//    ssndData.blockSize = BigLong(ssndData.blockSize);
+//    
+//    Con_DPrintf("AIFFOpen: offset = %d\n", ssndData.offset);
+//    Con_DPrintf("AIFFOpen: blockSize = %d\n", ssndData.blockSize);
+//    
+//    return aiff;
+//}
+//
+//void AIFFClose(AIFFInfo *aiff)
+//{
+//    if (aiff) {
+//        fclose(aiff->file);
+//        free(aiff);
+//        aiff = NULL;
+//    }
+//}
 
 /* ------------------------------------------------------------------------------------ */
 
@@ -299,43 +299,43 @@ void completionProc(void *userData,
     
 }
 
-OSStatus audioDeviceIOProc(AudioDeviceID inDevice,
-                           const AudioTimeStamp *inNow,
-                           const AudioBufferList *inInputData,
-                           const AudioTimeStamp *inInputTime,
-                           AudioBufferList *outOutputData,
-                           const AudioTimeStamp *inOutputTime,
-                           void *inClientData)
-{
-    unsigned int sampleIndex, sampleCount;
-    float *outBuffer;
-    float scale = (old_cdvolume / 32768.0f);
-    
-    // The buffer that we need to fill
-    outBuffer = (float *)outOutputData->mBuffers[0].mData;
-    
-    // Read some samples from the file.
-    sampleCount = fread(samples, sizeof(*samples), SAMPLES_PER_BUFFER, aiffInfo->file);
-    if (sampleCount < SAMPLES_PER_BUFFER) {
-        if (feof(aiffInfo->file)) {
-            if (playLooping) {
-                fseek(aiffInfo->file, 0L, SEEK_SET);
-            }
-        }
-    }
-    
-    // Convert whatever samples we got into floats. Scale the floats to be [-1..1].
-    for (sampleIndex = 0; sampleIndex < sampleCount; sampleIndex++) {
-        // Convert the samples from shorts to floats.  Scale the floats to be [-1..1].
-        outBuffer[sampleIndex] = samples[sampleIndex] * scale;
-    }
-    
-    // Fill in zeros in the rest of the buffer
-    for (; sampleIndex < SAMPLES_PER_BUFFER; sampleIndex++)
-        outBuffer[sampleIndex] = 0.0;
-    
-    return kAudioHardwareNoError;
-}
+//OSStatus audioDeviceIOProc(AudioDeviceID inDevice,
+//                           const AudioTimeStamp *inNow,
+//                           const AudioBufferList *inInputData,
+//                           const AudioTimeStamp *inInputTime,
+//                           AudioBufferList *outOutputData,
+//                           const AudioTimeStamp *inOutputTime,
+//                           void *inClientData)
+//{
+//    unsigned int sampleIndex, sampleCount;
+//    float *outBuffer;
+//    float scale = (old_cdvolume / 32768.0f);
+//    
+//    // The buffer that we need to fill
+//    outBuffer = (float *)outOutputData->mBuffers[0].mData;
+//    
+//    // Read some samples from the file.
+//    sampleCount = fread(samples, sizeof(*samples), SAMPLES_PER_BUFFER, aiffInfo->file);
+//    if (sampleCount < SAMPLES_PER_BUFFER) {
+//        if (feof(aiffInfo->file)) {
+//            if (playLooping) {
+//                fseek(aiffInfo->file, 0L, SEEK_SET);
+//            }
+//        }
+//    }
+//    
+//    // Convert whatever samples we got into floats. Scale the floats to be [-1..1].
+//    for (sampleIndex = 0; sampleIndex < sampleCount; sampleIndex++) {
+//        // Convert the samples from shorts to floats.  Scale the floats to be [-1..1].
+//        outBuffer[sampleIndex] = samples[sampleIndex] * scale;
+//    }
+//    
+//    // Fill in zeros in the rest of the buffer
+//    for (; sampleIndex < SAMPLES_PER_BUFFER; sampleIndex++)
+//        outBuffer[sampleIndex] = 0.0;
+//    
+//    return kAudioHardwareNoError;
+//}
 
 static void CDAudio_Eject(void)
 {
@@ -830,6 +830,13 @@ static void CDAudio_SetVolume (cvar_t *var)
 	else if (var->value > 1.0)
 		Cvar_SetValue (var->name, 1.0);
 	old_cdvolume = var->value;
+    
+    OSStatus status;
+
+    status = AudioUnitSetParameter(mixerUnit, kStereoMixerParam_Volume, kAudioUnitScope_Input, unitElement1, old_cdvolume, 0);
+    if (status) {
+        Con_DPrintf("AudioUnitSetParameter returned %d\n", status);
+    }
     
 	if (old_cdvolume == 0.0)
 		CDAudio_Pause ();
