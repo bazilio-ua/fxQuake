@@ -332,7 +332,7 @@ int main (int argc, char *argv[])
 }
 
 - (void)applicationWillHide:(NSNotification *)notification {
-    NSLog(@"%@", NSStringFromSelector(_cmd));
+//    NSLog(@"%@", NSStringFromSelector(_cmd));
     
     if (!vid_hiddenwindow && vid_activewindow) {
         vid_hiddenwindow = true;
@@ -343,7 +343,7 @@ int main (int argc, char *argv[])
 }
 
 - (void)applicationDidUnhide:(NSNotification *)notification {
-    NSLog(@"%@", NSStringFromSelector(_cmd));
+//    NSLog(@"%@", NSStringFromSelector(_cmd));
     
     if (vid_hiddenwindow && !vid_activewindow) {
         vid_hiddenwindow = false;
@@ -354,7 +354,7 @@ int main (int argc, char *argv[])
 }
 
 - (void)applicationWillResignActive:(NSNotification *)notification {
-    NSLog(@"%@", NSStringFromSelector(_cmd));
+//    NSLog(@"%@", NSStringFromSelector(_cmd));
     
     if (vid_activewindow) {
         vid_activewindow = false;
@@ -364,7 +364,7 @@ int main (int argc, char *argv[])
 }
 
 - (void)applicationDidBecomeActive:(NSNotification *)notification {
-    NSLog(@"%@", NSStringFromSelector(_cmd));
+//    NSLog(@"%@", NSStringFromSelector(_cmd));
     
     if (!vid_activewindow) {
         vid_activewindow = true;
@@ -504,7 +504,7 @@ int main (int argc, char *argv[])
 }
 
 - (void)windowDidBecomeKey:(NSNotification *)notification {
-    NSLog(@"%@", NSStringFromSelector(_cmd));
+//    NSLog(@"%@", NSStringFromSelector(_cmd));
     
     if (!vid_activewindow) {
         vid_activewindow = true;
@@ -514,7 +514,7 @@ int main (int argc, char *argv[])
 }
 
 - (void)windowDidResignKey:(NSNotification *)notification {
-    NSLog(@"%@", NSStringFromSelector(_cmd));
+//    NSLog(@"%@", NSStringFromSelector(_cmd));
     
     if (vid_activewindow) {
         vid_activewindow = false;
@@ -524,7 +524,7 @@ int main (int argc, char *argv[])
 }
 
 - (void)windowWillMiniaturize:(NSNotification *)notification {
-    NSLog(@"%@", NSStringFromSelector(_cmd));
+//    NSLog(@"%@", NSStringFromSelector(_cmd));
     
     if (!vid_hiddenwindow) {
         vid_hiddenwindow = true;
@@ -534,7 +534,7 @@ int main (int argc, char *argv[])
 }
 
 - (void)windowDidDeminiaturize:(NSNotification *)notification {
-    NSLog(@"%@", NSStringFromSelector(_cmd));
+//    NSLog(@"%@", NSStringFromSelector(_cmd));
     
     if (vid_hiddenwindow) {
         vid_hiddenwindow = false;
@@ -568,21 +568,23 @@ int main (int argc, char *argv[])
         // on focus gain/loss
         if (vid_activewindow && !vid_hiddenwindow && !active)
         {
+            CDAudio_Resume ();
             S_UnblockSound ();
             S_ClearBuffer ();
             VID_Gamma_Set ();
             active = true;
             
-            Con_Printf("*** Active ***\n");
+//            Con_Printf("*** Active ***\n");
         }
         else if (active)
         {
+            CDAudio_Pause ();
             S_BlockSound ();
             S_ClearBuffer ();
             VID_Gamma_Restore ();
             active = false;
             
-            Con_Printf("*** Inactive ***\n");
+//            Con_Printf("*** Inactive ***\n");
         }
     }
     
