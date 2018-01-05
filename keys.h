@@ -75,7 +75,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define K_KP_PLUS		174
 #define	K_KP_STAR		175
 
-// EER1 (apple)
+// EER1 (macOS)
 #define	K_COMMAND		180
 #define	K_CAPSLOCK		181
 #define	K_NUMLOCK   	182

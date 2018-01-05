@@ -110,9 +110,11 @@ keyname_t keynames[] =
 	{"PGUP", K_PGUP},
 	{"HOME", K_HOME},
 	{"END", K_END},
-
+    
+#if defined __APPLE__ && defined __MACH__
 	{"COMMAND", K_COMMAND},
-
+#endif
+    
 	{"MOUSE1", K_MOUSE1},
 	{"MOUSE2", K_MOUSE2},
 	{"MOUSE3", K_MOUSE3},
@@ -857,7 +859,9 @@ void Key_Init (void)
 	consolekeys[K_KP_INS] = true;
 	consolekeys[K_KP_DEL] = true;
     
-//	consolekeys[K_COMMAND] = true; // macos
+#if defined __APPLE__ && defined __MACH__
+	consolekeys[K_COMMAND] = true; // macOS
+#endif
     
 	consolekeys[K_MWHEELUP] = true;
 	consolekeys[K_MWHEELDOWN] = true;

@@ -385,7 +385,7 @@ int main (int argc, char *argv[])
             [NSApp activateIgnoringOtherApps:YES];
         }
         
-        if (!vidmode_fullscreen && window) {
+        if (/*!vidmode_fullscreen && */ window) {
             if ([window isMiniaturized]) {
                 [window deminiaturize:nil];
             }
@@ -518,12 +518,14 @@ int main (int argc, char *argv[])
 }
 
 - (BOOL)windowShouldClose:(id)sender {
-    const BOOL shouldClose = vidmode_fullscreen;
-    if (!shouldClose) {
+//    const BOOL shouldClose = vidmode_fullscreen;
+//    if (!shouldClose) {
         [NSApp terminate:nil];
-    }
+//    }
     
-    return shouldClose;
+//    return shouldClose;
+    return NO;
+
 }
 
 - (void)windowWillClose:(NSNotification *)notification {

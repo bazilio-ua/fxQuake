@@ -444,7 +444,8 @@ void VID_Init (void)
         
         // Always get mouse moved events. If mouse support is turned off (rare) the event system will filter them out.
         [window setAcceptsMouseMovedEvents:YES];
-        [window setDelegate:(id<NSWindowDelegate>)[[NSApplication sharedApplication] delegate]];
+//        [window setDelegate:(id<NSWindowDelegate>)[[NSApplication sharedApplication] delegate]];
+        [window setDelegate:(id<NSWindowDelegate>)[NSApp delegate]];
         
         // Direct the context to draw in this window
         [context setView:[window contentView]];
