@@ -104,7 +104,6 @@ void S_SoundInfo_f(void)
 	Con_Printf("%5d samplebits\n", shm->samplebits);
 	Con_Printf("%5d submission_chunk\n", shm->submission_chunk);
 	Con_Printf("%5d speed\n", shm->speed);
-	Con_Printf("%5d width\n", shm->width);
 	Con_Printf("0x%x dma buffer\n", shm->buffer);
 	Con_Printf("%5d total_channels\n", total_channels);
 }
@@ -189,7 +188,6 @@ void S_Init (void)
 		shm = (void *) Hunk_AllocName(sizeof(*shm), "shm");
 		shm->samplebits = 16;
 		shm->speed = 22050;
-        shm->width = 1;
 		shm->channels = 2;
 		shm->samples = 32768;
 		shm->samplepos = 0;

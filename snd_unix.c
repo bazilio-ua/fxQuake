@@ -209,8 +209,6 @@ qboolean SNDDMA_Init(void)
 		}
 	}
 
-    shm->width = 1;
-
 // check how much space we have for non-blocking output
 	if (ioctl(audio_fd, SNDCTL_DSP_GETOSPACE, &info) == -1)
 	{

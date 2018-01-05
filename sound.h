@@ -52,7 +52,6 @@ typedef struct
 	int				samplepos;				// in mono samples
 	int				samplebits;
 	int				speed;
-	int				width;
 	byte	*buffer;
 } dma_t;
 

@@ -393,7 +393,7 @@ qboolean SNDDMA_Init(void)
 		shm->speed = 44100;
     
 //    shm->width = outputStreamBasicDescription.mBytesPerFrame / 8;
-    shm->width = 1;//outputStreamBasicDescription.mBytesPerFrame / 8;
+//    shm->width = 1;//outputStreamBasicDescription.mBytesPerFrame / 8;
     shm->channels = 2;
     shm->samples = sizeof(buffer) / (shm->samplebits >> 3);
     shm->samplepos = 0;
