@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "unixquake.h"
 #include "macquake.h"
 
-AudioUnitElement unitElement1 = 1;
+AudioUnitElement unitElementCD = 1;
 
 AUNode audioNode;
 AudioUnit audioUnit;
@@ -517,10 +517,10 @@ void CDAudio_Play(byte track, qboolean looping)
     
     
     // temp start point
-    status = AUGraphStart(audioGraph);
-    if (status) {
-        Con_DPrintf("AUGraphStart returned %d\n", status);
-    }
+//    status = AUGraphStart(audioGraph);
+//    if (status) {
+//        Con_DPrintf("AUGraphStart returned %d\n", status);
+//    }
     
     
     
@@ -833,7 +833,7 @@ static void CDAudio_SetVolume (cvar_t *var)
     
     OSStatus status;
 
-    status = AudioUnitSetParameter(mixerUnit, kStereoMixerParam_Volume, kAudioUnitScope_Input, unitElement1, old_cdvolume, 0);
+    status = AudioUnitSetParameter(mixerUnit, kStereoMixerParam_Volume, kAudioUnitScope_Input, unitElementCD, old_cdvolume, 0);
     if (status) {
         Con_DPrintf("AudioUnitSetParameter returned %d\n", status);
     }
@@ -864,12 +864,38 @@ int CDAudio_Init(void)
 	if (COM_CheckParm("-nocdaudio"))
 		return -1;
     
+    if (!audioGraph)
+        return -1;
+    
+    Boolean audioGraphIsInitialized = NO;
+    status = AUGraphIsInitialized(audioGraph, &audioGraphIsInitialized);
+    if (status) {
+        Con_DPrintf("AUGraphIsInitialized returned %d\n", status);
+        return -1;
+    }
+    
+    if (!audioGraphIsInitialized)
+        return -1;
+    
     Cmd_AddCommand ("cd", CD_f);
     
     Cvar_RegisterVariable(&bgmvolume, NULL);
 	Cvar_RegisterVariable(&bgmtype, NULL);
     
+    Boolean audioGraphIsRunning = NO;
+    status = AUGraphIsRunning(audioGraph, &audioGraphIsRunning);
+    if (status) {
+        Con_DPrintf("AUGraphIsRunning returned %d\n", status);
+        return -1;
+    }
     
+    if (audioGraphIsRunning) {
+        status = AUGraphStop(audioGraph);
+        if (status) {
+            Con_DPrintf("AUGraphStop returned %d\n", status);
+            return -1;
+        }
+    }
     
     AudioComponentDescription audioDescription;
     audioDescription.componentType = kAudioUnitType_Generator;
@@ -890,10 +916,18 @@ int CDAudio_Init(void)
         return -1;
     }
     
-    status = AUGraphConnectNodeInput(audioGraph, audioNode, 0, mixerNode, unitElement1);
+    status = AUGraphConnectNodeInput(audioGraph, audioNode, 0, mixerNode, unitElementCD);
     if (status) {
         Con_DPrintf("AUGraphConnectNodeInput returned %d\n", status);
         return -1;
+    }
+    
+    if (audioGraphIsRunning) {
+        status = AUGraphStart(audioGraph);
+        if (status) {
+            Con_DPrintf("AUGraphStart returned %d\n", status);
+            return -1;
+        }
     }
     
     
@@ -937,7 +971,7 @@ void CDAudio_Shutdown(void)
     
     CDAudio_Stop();
 
-    status = AUGraphDisconnectNodeInput(audioGraph, mixerNode, unitElement1);
+    status = AUGraphDisconnectNodeInput(audioGraph, mixerNode, unitElementCD);
     if (status) {
         Con_DPrintf("AUGraphDisconnectNodeInput: returned %d\n", status);
     }
