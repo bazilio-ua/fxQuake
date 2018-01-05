@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "unixquake.h"
 #include "macquake.h"
 
-Boolean audioGraphIsRunning = false;
+//Boolean audioGraphIsRunning = false;
 AudioUnitElement unitElement0 = 0;
 
 AUGraph audioGraph;
@@ -296,11 +296,11 @@ qboolean SNDDMA_Init(void)
     }
 */    
     
-    status = AUGraphIsRunning(audioGraph, &audioGraphIsRunning);
-    if (status) {
-        Con_DPrintf("AUGraphIsRunning returned %d\n", status);
-        return false;
-    }
+//    status = AUGraphIsRunning(audioGraph, &audioGraphIsRunning);
+//    if (status) {
+//        Con_DPrintf("AUGraphIsRunning returned %d\n", status);
+//        return false;
+//    }
     
 //    if (audioGraphIsRunning) {
 //        status = AUGraphStop(audioGraph);
@@ -468,10 +468,10 @@ void SNDDMA_Shutdown(void)
     
     if (snd_inited)
 	{
-        status = AUGraphIsRunning(audioGraph, &audioGraphIsRunning);
-        if (status) {
-            Con_DPrintf("AUGraphIsRunning returned %d\n", status);
-        }
+//        status = AUGraphIsRunning(audioGraph, &audioGraphIsRunning);
+//        if (status) {
+//            Con_DPrintf("AUGraphIsRunning returned %d\n", status);
+//        }
         
 //        if (audioGraphIsRunning) {
             status = AUGraphStop(audioGraph);
