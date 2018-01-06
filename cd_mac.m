@@ -195,6 +195,8 @@ void CDAudio_Play(byte track, qboolean looping)
         return;
     }
     
+    filePosition = 0;
+    
     ScheduledAudioFileRegion fileRegion = { 0 };
     fileRegion.mTimeStamp.mFlags = kAudioTimeStampSampleTimeValid;
     fileRegion.mTimeStamp.mSampleTime = 0;
@@ -202,7 +204,7 @@ void CDAudio_Play(byte track, qboolean looping)
     fileRegion.mCompletionProcUserData = nil;
     fileRegion.mAudioFile = audioFileId;
     fileRegion.mLoopCount = looping ? -1 : 0;
-    fileRegion.mStartFrame = 0; // filePosition
+    fileRegion.mStartFrame = filePosition;
     fileRegion.mFramesToPlay = (UInt32)(packetCount * fileDescription.mFramesPerPacket);
     status = AudioUnitSetProperty(audioUnit, kAudioUnitProperty_ScheduledFileRegion, kAudioUnitScope_Global, 0, &fileRegion, sizeof(fileRegion));
     if (status) {
@@ -225,8 +227,6 @@ void CDAudio_Play(byte track, qboolean looping)
         Con_DPrintf("AudioUnitSetProperty: returned %d\n", status);
         return;
     }
-    
-    filePosition = 0;
     
     playLooping = looping;    
     playTrack = track;
