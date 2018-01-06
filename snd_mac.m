@@ -235,15 +235,12 @@ qboolean SNDDMA_Init(void)
     AudioStreamBasicDescription streamBasicDescription;
     streamBasicDescription.mSampleRate = sampleRate;
     streamBasicDescription.mFormatID = kAudioFormatLinearPCM;
-    streamBasicDescription.mFormatFlags = kLinearPCMFormatFlagIsPacked;
+    streamBasicDescription.mFormatFlags = kLinearPCMFormatFlagIsSignedInteger | kLinearPCMFormatFlagIsPacked;
     streamBasicDescription.mBytesPerPacket = bytesPerPacket;
     streamBasicDescription.mFramesPerPacket = framesPerPacket;
     streamBasicDescription.mBytesPerFrame = bytesPerFrame;    
     streamBasicDescription.mChannelsPerFrame = channelsPerFrame;
     streamBasicDescription.mBitsPerChannel = bitsPerChannel;
-    if (bitsPerChannel > 8) {
-        streamBasicDescription.mFormatFlags |= kLinearPCMFormatFlagIsSignedInteger;
-    }
     
     status = AudioUnitSetProperty(converterUnit, 
                                   kAudioUnitProperty_StreamFormat, 
