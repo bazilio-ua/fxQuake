@@ -35,9 +35,9 @@ AudioUnit converterUnit;
 // 64K is > 1 second at 16-bit, 22050 Hz
 #define	WAV_BUFFERS				64
 #define	WAV_BUFFER_SIZE			1024 // chunk size
-#define OUTPUT_BUFFER_SIZE	(4 * WAV_BUFFER_SIZE)
 
-static byte buffer[WAV_BUFFERS * WAV_BUFFER_SIZE];
+#define	BUFFER_SIZE				(WAV_BUFFERS * WAV_BUFFER_SIZE)
+static byte buffer[BUFFER_SIZE];
 static UInt32 bufferPosition;
 
 static qboolean snd_inited;
@@ -223,6 +223,7 @@ qboolean SNDDMA_Init(void)
     streamBasicDescription.mFormatFlags = kLinearPCMFormatFlagIsPacked;
     streamBasicDescription.mBytesPerPacket = bytesPerPacket;
     streamBasicDescription.mFramesPerPacket = framesPerPacket;
+    streamBasicDescription.mBytesPerFrame = bytesPerFrame;    
     streamBasicDescription.mChannelsPerFrame = channelsPerFrame;
     streamBasicDescription.mBitsPerChannel = bitsPerChannel;
     if (bitsPerChannel > 8) {
@@ -260,7 +261,7 @@ qboolean SNDDMA_Init(void)
     
     shm->samples = sizeof(buffer) / (shm->samplebits >> 3);
     shm->samplepos = 0;
-    shm->submission_chunk = OUTPUT_BUFFER_SIZE;
+    shm->submission_chunk = 1;
     shm->buffer = buffer;
     
     // We haven't enqueued anything yet
