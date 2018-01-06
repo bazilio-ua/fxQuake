@@ -64,15 +64,30 @@ OSStatus renderCallback(void *inRefCon,
     byte *outBuffer = (byte *)ioData->mBuffers[0].mData;
     UInt32 outBufferByteSize = ioData->mBuffers[0].mDataByteSize;
     
-//    memcpy((void *)outBuffer, &(buffer[bufferPosition]), outBufferByteSize);
+    UInt32 availableBufferBytes = sizeof(buffer) - bufferPosition;
+    UInt32 overflowedBufferBytes = 0;
+    if (availableBufferBytes < outBufferByteSize) {
+        overflowedBufferBytes = outBufferByteSize - availableBufferBytes;
+        outBufferByteSize = availableBufferBytes;
+    }
+    
     for (UInt32 index = 0; index < outBufferByteSize; index++) {
         outBuffer[index] = buffer[bufferPosition + index];
     }
     
     // Increase the buffer position. This is the next buffer we will submit
     bufferPosition += outBufferByteSize;
-    if (bufferPosition >= sizeof (buffer))
+    if (bufferPosition >= sizeof(buffer))
         bufferPosition = 0;
+    
+    if (overflowedBufferBytes) {
+        for (UInt32 index = 0; index < overflowedBufferBytes; index++) {
+            outBuffer[outBufferByteSize + index] = buffer[bufferPosition + index];
+        }
+        
+        // Increase the buffer position. There is no need to check position out of buffer bounds
+        bufferPosition += overflowedBufferBytes;
+    }
     
     return kAudioHardwareNoError;
 }
