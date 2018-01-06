@@ -131,6 +131,18 @@ qboolean SNDDMA_Init(void)
         return false;
     }
     
+    status = AUGraphOpen(audioGraph);
+    if (status) {
+        Con_DPrintf("AUGraphOpen returned %d\n", status);
+        return false;
+    }
+    
+    status = AUGraphInitialize(audioGraph);
+    if (status) {
+        Con_DPrintf("AUGraphInitialize returned %d\n", status);
+        return false;
+    }
+    
     AudioComponentDescription outputDescription;
     outputDescription.componentType = kAudioUnitType_Output;
     outputDescription.componentSubType = kAudioUnitSubType_DefaultOutput;
@@ -160,18 +172,6 @@ qboolean SNDDMA_Init(void)
     status = AUGraphConnectNodeInput(audioGraph, mixerNode, 0, outputNode, 0);
     if (status) {
         Con_DPrintf("AUGraphConnectNodeInput returned %d\n", status);
-        return false;
-    }
-    
-    status = AUGraphOpen(audioGraph);
-    if (status) {
-        Con_DPrintf("AUGraphOpen returned %d\n", status);
-        return false;
-    }
-    
-    status = AUGraphInitialize(audioGraph);
-    if (status) {
-        Con_DPrintf("AUGraphInitialize returned %d\n", status);
         return false;
     }
     
