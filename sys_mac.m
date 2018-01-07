@@ -471,6 +471,16 @@ int main (int argc, char *argv[])
 /* <NSWindowDelegate> */
 
 - (NSSize)windowWillResize:(NSWindow *)sender toSize:(NSSize)frameSize {
+    NSRect windowFrame = [sender frame];
+    NSRect contentFrame = [[sender contentView] frame];
+    NSSize titleSize;
+    
+    titleSize.width = windowFrame.size.width - contentFrame.size.width;
+    titleSize.height = windowFrame.size.height - contentFrame.size.height;
+    
+    frameSize.width -= titleSize.width;
+    frameSize.height -= titleSize.height;
+    
     CGFloat window_width = frameSize.width;
     CGFloat window_height = frameSize.height;
     
@@ -491,6 +501,9 @@ int main (int argc, char *argv[])
     frameSize.width = window_width;
     frameSize.height = window_height;
     
+    frameSize.width += titleSize.width;
+    frameSize.height += titleSize.height;
+
     return frameSize;
 }
 
