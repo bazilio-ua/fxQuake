@@ -59,7 +59,6 @@ static const byte scantokey[128] =
 /* 0x78 */  K_F2,           K_PGDN,         K_F1,           K_LEFTARROW,    K_RIGHTARROW,   K_DOWNARROW,    K_UPARROW,      0
 };
 
-
 /*
  ===========
  IN_ActivateMouse
@@ -413,6 +412,5 @@ void IN_ProcessEvents (void)
         [NSApp sendEvent:event];
         break;
     }
-    
 }
 
