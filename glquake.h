@@ -176,10 +176,12 @@ extern float gl_texture_anisotropy;
 #define TEXPREF_FULLBRIGHT		0x0100	// use fullbright mask palette
 #define TEXPREF_NOBRIGHT		0x0200	// use nobright mask palette
 #define TEXPREF_CONCHARS		0x0400	// use conchars palette
-#define TEXPREF_WARPIMAGE		0x0800	// resize this texture when gl_warpimage_size changes (UNUSED)
-#define TEXPREF_BLOOM			0x1000	// bloom texture (UNUSED)
-#define TEXPREF_TRANSPARENT		0x2000	// color 0 is transparent, odd - translucent, even - full value
-#define TEXPREF_HOLEY			0x4000	// color 0 is transparent
+#define TEXPREF_WARP			0x0800	// warp texture
+#define TEXPREF_WARPIMAGE		0x1000	// resize this texture when gl_warpimage_size changes
+#define TEXPREF_SKY				0x2000	// sky texture
+#define TEXPREF_TRANSPARENT		0x4000	// color 0 is transparent, odd - translucent, even - full value
+#define TEXPREF_HOLEY			0x8000	// color 0 is transparent
+#define TEXPREF_BLOOM			0x10000	// bloom texture (UNUSED)
 
 enum srcformat {SRC_INDEXED, SRC_LIGHTMAP, SRC_RGBA, SRC_BLOOM};
 

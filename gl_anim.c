@@ -818,7 +818,7 @@ void R_LoadSkyBox (char *skybox)
 		data = GL_LoadImage (name, &width, &height);
 		if (data)
 		{
-			skyboxtextures[i] = GL_LoadTexture (cl.worldmodel, name, width, height, SRC_RGBA, data, name, 0, TEXPREF_NONE);
+			skyboxtextures[i] = GL_LoadTexture (cl.worldmodel, name, width, height, SRC_RGBA, data, name, 0, TEXPREF_SKY);
 			nonefound = false;
 		}
 		else
@@ -1632,7 +1632,7 @@ void R_InitSky (texture_t *mt)
 	}
 
 	sprintf (texturename, "%s:%s_back", loadmodel->name, mt->name);
-	solidskytexture = GL_LoadTexture (loadmodel, texturename, 128, 128, SRC_INDEXED, back_data, "", (unsigned)back_data, TEXPREF_NONE);
+	solidskytexture = GL_LoadTexture (loadmodel, texturename, 128, 128, SRC_INDEXED, back_data, "", (unsigned)back_data, TEXPREF_SKY);
 
 // extract front layer and upload
 	for (i=0 ; i<128 ; i++)
@@ -1646,7 +1646,7 @@ void R_InitSky (texture_t *mt)
 	}
 
 	sprintf (texturename, "%s:%s_front", loadmodel->name, mt->name);
-	alphaskytexture = GL_LoadTexture (loadmodel, texturename, 128, 128, SRC_INDEXED, front_data, "", (unsigned)front_data, TEXPREF_ALPHA);
+	alphaskytexture = GL_LoadTexture (loadmodel, texturename, 128, 128, SRC_INDEXED, front_data, "", (unsigned)front_data, TEXPREF_SKY | TEXPREF_ALPHA);
 
 // calculate r_fastsky color based on average of all opaque foreground colors
 	r = g = b = count = 0;

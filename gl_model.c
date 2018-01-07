@@ -461,7 +461,7 @@ void Mod_LoadTextures (lump_t *l)
 
 				sprintf (texturename, "%s:%s", loadmodel->name, tx->name);
 				offset = (unsigned)(mt+1) - (unsigned)mod_base;
-				tx->gltexture = GL_LoadTexture (loadmodel, texturename, tx->width, tx->height, SRC_INDEXED, (byte *)(tx+1), loadmodel->name, offset, TEXPREF_NONE);
+				tx->gltexture = GL_LoadTexture (loadmodel, texturename, tx->width, tx->height, SRC_INDEXED, (byte *)(tx+1), loadmodel->name, offset, TEXPREF_WARP);
 
 				//now create the warpimage, using dummy data from the hunk to create the initial image
 				Hunk_Alloc (gl_warpimage_size*gl_warpimage_size*4); //make sure hunk is big enough so we don't reach an illegal address
