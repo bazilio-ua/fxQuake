@@ -46,7 +46,7 @@ static byte		maxTrack;
 /* ------------------------------------------------------------------------------------ */
 
 NSMutableArray *cdTracks;
-//NSMutableString *cdMountPath;
+NSMutableArray *cdMountPaths;
 
 static float	old_cdvolume;
 
@@ -54,7 +54,16 @@ static float	old_cdvolume;
 
 static void CDAudio_Eject(void)
 {
-	
+    if (!cdValid)
+        return;
+    
+    if ([cdMountPaths count]) {
+        for (NSString *path in cdMountPaths) {
+            if (![[NSWorkspace sharedWorkspace] unmountAndEjectDeviceAtPath:path]) {
+                Con_Warning("CDAudio: Failed to eject Audio CD\n");
+            }
+        }
+    }
 }
 
 static void CDAudio_CloseDoor(void)
@@ -76,6 +85,9 @@ static int CDAudio_GetAudioDiskInfo(void)
     // Get rid of old info
     [cdTracks release];
     cdTracks = [[NSMutableArray alloc] init];
+    
+    [cdMountPaths release];
+    cdMountPaths = [[NSMutableArray alloc] init];
     
     cdValid = false;
     
@@ -119,11 +131,16 @@ static int CDAudio_GetAudioDiskInfo(void)
                 [[filePath pathExtension] isEqualToString: @"cdda"])
                 [cdTracks addObject: [NSURL fileURLWithPath: [mountPath stringByAppendingPathComponent: filePath]]];
         }
+        
+        [cdMountPaths addObject:mountPath]; // can be multiple mount paths
     }
     
     if (![cdTracks count]) {
         [cdTracks release];
-        cdTracks = NULL;
+        cdTracks = nil;
+        
+        [cdMountPaths release];
+        cdMountPaths = nil;
         Con_DPrintf("CDAudio: no music tracks\n");
         return -1;
     }
@@ -639,7 +656,12 @@ void CDAudio_Shutdown(void)
     
     if (cdTracks) {
         [cdTracks release];
-        cdTracks = NULL;
+        cdTracks = nil;
+    }
+    
+    if (cdMountPaths) {
+        [cdMountPaths release];
+        cdMountPaths = nil;
     }
     
     initialized = false;
