@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "macquake.h"
 
 CGDirectDisplayID   display;
-NSOpenGLContext     *context = nil;
+NSOpenGLContext     *glcontext = nil;
 NSWindow            *window = nil;
 NSScreen            *screen = nil;
 CGDisplayModeRef    desktopMode;
@@ -176,8 +176,7 @@ GL_EndRendering
 */
 inline void GL_EndRendering (void)
 {
-//    [context flushBuffer];
-	CGLFlushDrawable([context CGLContextObj]);
+	CGLFlushDrawable([glcontext CGLContextObj]);
     
 	if (fullsbardraw)
 		Sbar_Changed();
@@ -189,9 +188,9 @@ void CGL_SwapInterval (qboolean enable)
 {
     const GLint state = (enable) ? 1 : 0;
     
-    [context makeCurrentContext];
+    [glcontext makeCurrentContext];
     
-    CGLError glerr = CGLSetParameter([context CGLContextObj], kCGLCPSwapInterval, &state);
+    CGLError glerr = CGLSetParameter([glcontext CGLContextObj], kCGLCPSwapInterval, &state);
     if (glerr == kCGLNoError) {
         Con_Printf ("%s CGL swap interval\n", (state == 1) ? "Enable" : "Disable");
     } else {
@@ -420,8 +419,8 @@ void VID_Init (void)
     }
     
     // Create a context with the desired pixel attributes
-    context = [[NSOpenGLContext alloc] initWithFormat:pixelFormat shareContext:nil];
-    if (!context) {
+    glcontext = [[NSOpenGLContext alloc] initWithFormat:pixelFormat shareContext:nil];
+    if (!glcontext) {
         Sys_Error("Cannot create OpenGL context");
     }
     
@@ -444,14 +443,13 @@ void VID_Init (void)
         
         // Always get mouse moved events. If mouse support is turned off (rare) the event system will filter them out.
         [window setAcceptsMouseMovedEvents:YES];
-//        [window setDelegate:(id<NSWindowDelegate>)[[NSApplication sharedApplication] delegate]];
         [window setDelegate:(id<NSWindowDelegate>)[NSApp delegate]];
         
         // Direct the context to draw in this window
-        [context setView:[window contentView]];
+        [glcontext setView:[window contentView]];
     } else {
         // Set the context to full screen
-        CGLError glerr = CGLSetFullScreenOnDisplay([context CGLContextObj], CGDisplayIDToOpenGLDisplayMask(display));
+        CGLError glerr = CGLSetFullScreenOnDisplay([glcontext CGLContextObj], CGDisplayIDToOpenGLDisplayMask(display));
         if (glerr) {
             Sys_Error("Cannot set fullscreen");
         }
@@ -461,7 +459,7 @@ void VID_Init (void)
         } while (CGDisplayFadeOperationInProgress());
     }
     
-    [context makeCurrentContext];
+    [glcontext makeCurrentContext];
     
     vid_activewindow = true;
 	vid_hiddenwindow = false;
@@ -472,7 +470,7 @@ void VID_Init (void)
     GL_Init();
     
     if (has_smp) {
-        CGLError glerr = CGLEnable([context CGLContextObj], kCGLCEMPEngine);
+        CGLError glerr = CGLEnable([glcontext CGLContextObj], kCGLCEMPEngine);
         if (glerr == kCGLNoError) {
             Con_Printf("Enable multi-threaded OpenGL\n");
         }
@@ -501,12 +499,15 @@ void VID_Shutdown (void)
         
         VID_Gamma_Shutdown ();
         
-        if (context) {
+        if (glcontext) {
             [NSOpenGLContext clearCurrentContext];
-            CGLClearDrawable([context CGLContextObj]);
-            [context clearDrawable];
-            [context release];
-            context = nil;
+            
+            // Have to call both to actually deallocate kernel resources and free the NSSurface
+            CGLClearDrawable([glcontext CGLContextObj]);
+            [glcontext clearDrawable];
+            
+            [glcontext release];
+            glcontext = nil;
         }
         
         if (window) {
