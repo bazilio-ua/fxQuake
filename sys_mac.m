@@ -174,14 +174,13 @@ void Sys_Error (char *error, ...)
     
 	fprintf (stderr, "Quake Error: %s\n", string);
     
+    NSString *message = [NSString stringWithCString:string encoding:NSASCIIStringEncoding];
+    NSLog(@"Quake Error: %@", message);
+    NSRunCriticalAlertPanel(@"Quake Error", message, @"OK", nil, nil);
+    
 	Host_Shutdown ();
     
 	Sys_Shutdown ();
-    
-//    [NSApplication sharedApplication];
-    NSString *message = [NSString stringWithCString:string encoding:NSASCIIStringEncoding];
-//    NSRunCriticalAlertPanel(@"Quake Error", message, @"OK", nil, nil);
-    NSLog(@"Quake Error: %@", message);
     
 	exit (1);
 } 
@@ -199,8 +198,6 @@ void Sys_Quit (int code)
     
 	Sys_Shutdown ();
     
-//    [NSApp terminate:nil];
-
 	exit (code);
 }
 
@@ -289,10 +286,8 @@ char *Sys_GetClipboardData (void)
 
 void Sys_Sleep (void)
 {
-//	usleep (1);
     [NSThread sleepForTimeInterval:0.001];
 }
-
 
 /*
 ================
@@ -323,86 +318,6 @@ int main (int argc, char *argv[])
     [super dealloc];
 }
 
-- (void)applicationDidFinishLaunching:(NSNotification *)notification {
-    
-    [NSApp setServicesProvider:self];
-    [NSApp activateIgnoringOtherApps:YES];
-    
-    [self quakeMain];
-}
-
-- (void)applicationWillHide:(NSNotification *)notification {
-//    NSLog(@"%@", NSStringFromSelector(_cmd));
-    
-    if (!vid_hiddenwindow && vid_activewindow) {
-        vid_hiddenwindow = true;
-        vid_activewindow = false;
-        
-        [self checkActive];
-    }
-}
-
-- (void)applicationDidUnhide:(NSNotification *)notification {
-//    NSLog(@"%@", NSStringFromSelector(_cmd));
-    
-    if (vid_hiddenwindow && !vid_activewindow) {
-        vid_hiddenwindow = false;
-        vid_activewindow = true;
-        
-        [self checkActive];
-    }
-}
-
-- (void)applicationWillResignActive:(NSNotification *)notification {
-//    NSLog(@"%@", NSStringFromSelector(_cmd));
-    
-    if (vid_activewindow) {
-        vid_activewindow = false;
-        
-        [self checkActive];
-    }
-}
-
-- (void)applicationDidBecomeActive:(NSNotification *)notification {
-//    NSLog(@"%@", NSStringFromSelector(_cmd));
-    
-    if (!vid_activewindow) {
-        vid_activewindow = true;
-        
-        [self checkActive];
-    }
-}
-
-- (void)applicationWillTerminate:(NSNotification *)notification {
-    
-}
-
-- (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender {
-    NSApplicationTerminateReply terminateReply = NSTerminateNow;
-    
-    if (host_initialized) {
-        if ([NSApp isHidden] || ![NSApp isActive]) {
-            [NSApp activateIgnoringOtherApps:YES];
-        }
-        
-        if (/*!vidmode_fullscreen && */ window) {
-            if ([window isMiniaturized]) {
-                [window deminiaturize:nil];
-            }
-            [window orderFront:nil];
-        }
-        
-        if (cls.state == ca_dedicated) {
-            Sys_Quit(0);
-        } else {
-            M_Menu_Quit_f();
-            terminateReply = NSTerminateCancel;
-        }
-    }
-    
-    return terminateReply;
-}
-
 - (void)quakeMain {
     int argc = 0;
     char *argv[MAX_NUM_ARGVS];
@@ -410,8 +325,6 @@ int main (int argc, char *argv[])
 	double time, oldtime, newtime;
 	quakeparms_t parms;
 	int t;
-    
-//    [NSApp setServicesProvider:self];
     
     NSProcessInfo *processInfo = [NSProcessInfo processInfo];
     NSArray *arguments = [processInfo arguments];
@@ -426,10 +339,8 @@ int main (int argc, char *argv[])
     }
     
     NSString *basepath = [[[NSBundle mainBundle] bundlePath] stringByDeletingLastPathComponent];
-//    NSLog(@"basepath %@", basepath);
     NSFileManager *fileManager = [NSFileManager defaultManager];
     [fileManager changeCurrentDirectoryPath:basepath];
-    
     
 	signal(SIGFPE, SIG_IGN);
     
@@ -482,8 +393,6 @@ int main (int argc, char *argv[])
 		printf ("fxQuake %4.2f\n", (float)VERSION);
 	}
     
-//    [NSApp activateIgnoringOtherApps:YES];
-    
 	oldtime = Sys_DoubleTime () - 0.1;
 	// main message loop
 	while (1)
@@ -517,61 +426,6 @@ int main (int argc, char *argv[])
 	}
 }
 
-- (BOOL)windowShouldClose:(id)sender {
-//    const BOOL shouldClose = vidmode_fullscreen;
-//    if (!shouldClose) {
-        [NSApp terminate:nil];
-//    }
-    
-//    return shouldClose;
-    return NO;
-
-}
-
-- (void)windowWillClose:(NSNotification *)notification {
-//    Sys_Quit(0);
-}
-
-- (void)windowDidBecomeKey:(NSNotification *)notification {
-//    NSLog(@"%@", NSStringFromSelector(_cmd));
-    
-    if (!vid_activewindow) {
-        vid_activewindow = true;
-        
-        [self checkActive];
-    }
-}
-
-- (void)windowDidResignKey:(NSNotification *)notification {
-//    NSLog(@"%@", NSStringFromSelector(_cmd));
-    
-    if (vid_activewindow) {
-        vid_activewindow = false;
-        
-        [self checkActive];
-    }
-}
-
-- (void)windowWillMiniaturize:(NSNotification *)notification {
-//    NSLog(@"%@", NSStringFromSelector(_cmd));
-    
-    if (!vid_hiddenwindow) {
-        vid_hiddenwindow = true;
-        
-        [self checkActive];
-    }
-}
-
-- (void)windowDidDeminiaturize:(NSNotification *)notification {
-//    NSLog(@"%@", NSStringFromSelector(_cmd));
-    
-    if (vid_hiddenwindow) {
-        vid_hiddenwindow = false;
-        
-        [self checkActive];
-    }
-}
-
 - (void)checkActive {
     static qboolean active = true;
     
@@ -579,16 +433,13 @@ int main (int argc, char *argv[])
     {
         if (!vid_hiddenwindow)
         {
-//            // set our video mode
-//            XF86VidModeSwitchToMode(x_disp, scrnum, &game_vidmode);
-//            
-//            // move the viewport to top left
-//            XF86VidModeSetViewPort(x_disp, scrnum, 0, 0);
+            // set our video mode
+            
+            // move the viewport to top left
         }
         else if (vid_hiddenwindow)
         {
-//            // set our video mode
-//            XF86VidModeSwitchToMode(x_disp, scrnum, &init_vidmode);
+            // set our video mode
         }
     }
     else //if (!vidmode_fullscreen)
@@ -602,8 +453,6 @@ int main (int argc, char *argv[])
             S_ClearBuffer ();
             VID_Gamma_Set ();
             active = true;
-            
-//            Con_Printf("*** Active ***\n");
         }
         else if (active)
         {
@@ -612,13 +461,128 @@ int main (int argc, char *argv[])
             S_ClearBuffer ();
             VID_Gamma_Restore ();
             active = false;
-            
-//            Con_Printf("*** Inactive ***\n");
         }
     }
     
     // fix the leftover Alt from any Alt-Tab or the like that switched us away
     Key_ClearStates ();
+}
+
+/* <NSWindowDelegate> */
+
+- (BOOL)windowShouldClose:(id)sender {
+    [NSApp terminate:nil];
+    
+    return NO;
+}
+
+- (void)windowWillClose:(NSNotification *)notification {
+    
+}
+
+- (void)windowDidBecomeKey:(NSNotification *)notification {
+    if (!vid_activewindow) {
+        vid_activewindow = true;
+        
+        [self checkActive];
+    }
+}
+
+- (void)windowDidResignKey:(NSNotification *)notification {
+    if (vid_activewindow) {
+        vid_activewindow = false;
+        
+        [self checkActive];
+    }
+}
+
+- (void)windowWillMiniaturize:(NSNotification *)notification {
+    if (!vid_hiddenwindow) {
+        vid_hiddenwindow = true;
+        
+        [self checkActive];
+    }
+}
+
+- (void)windowDidDeminiaturize:(NSNotification *)notification {
+    if (vid_hiddenwindow) {
+        vid_hiddenwindow = false;
+        
+        [self checkActive];
+    }
+}
+
+/* <NSApplicationDelegate> */
+
+- (void)applicationDidFinishLaunching:(NSNotification *)notification {
+    [NSApp setServicesProvider:self];
+    [NSApp activateIgnoringOtherApps:YES];
+    
+    [self quakeMain];
+}
+
+- (void)applicationWillHide:(NSNotification *)notification {
+    if (!vid_hiddenwindow && vid_activewindow) {
+        vid_hiddenwindow = true;
+        vid_activewindow = false;
+        
+        [self checkActive];
+    }
+}
+
+- (void)applicationDidUnhide:(NSNotification *)notification {
+    if (vid_hiddenwindow && !vid_activewindow) {
+        vid_hiddenwindow = false;
+        vid_activewindow = true;
+        
+        [self checkActive];
+    }
+}
+
+- (void)applicationWillResignActive:(NSNotification *)notification {
+    if (vid_activewindow) {
+        vid_activewindow = false;
+        
+        [self checkActive];
+    }
+}
+
+- (void)applicationDidBecomeActive:(NSNotification *)notification {
+    if (!vid_activewindow) {
+        vid_activewindow = true;
+        
+        [self checkActive];
+    }
+}
+
+- (void)applicationWillTerminate:(NSNotification *)notification {
+    
+}
+
+- (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender {
+    NSApplicationTerminateReply terminateReply = NSTerminateNow;
+    
+    if (host_initialized) {
+        if ([NSApp isHidden] || ![NSApp isActive]) {
+            [NSApp activateIgnoringOtherApps:YES];
+        }
+        
+        if (window) {
+            if ([window isMiniaturized]) {
+                [window deminiaturize:nil];
+            }
+            [window orderFront:nil];
+        }
+        
+        if (cls.state == ca_dedicated) {
+            Sys_Quit(0);
+        } else {
+            M_Menu_Quit_f();
+            terminateReply = NSTerminateCancel;
+        }
+    }
+    
+    return terminateReply;
 }
 
 @end

@@ -933,5 +933,7 @@ void Host_Shutdown(void)
 	}
 
 	LOG_Close ();
+    
+    host_initialized = false;
 }
 
