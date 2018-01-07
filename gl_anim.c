@@ -449,7 +449,8 @@ void R_UpdateWarpTextures (void)
 			continue;
 
 		// render warp
-		glViewport (glx, gly + glheight - gl_warpimage_size, gl_warpimage_size, gl_warpimage_size);
+//		glViewport (glx, gly + glheight - gl_warpimage_size, gl_warpimage_size, gl_warpimage_size);
+		glViewport (glx, gly, gl_warpimage_size, gl_warpimage_size);
 
 		glMatrixMode (GL_PROJECTION);
 		glLoadIdentity ();
@@ -480,14 +481,15 @@ void R_UpdateWarpTextures (void)
 
 		// copy to texture
 		GL_Bind (tx->warpimage);
-		glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, glx, gly + glheight - gl_warpimage_size, gl_warpimage_size, gl_warpimage_size);
+//		glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, glx, gly + glheight - gl_warpimage_size, gl_warpimage_size, gl_warpimage_size);
+		glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, glx, gly, gl_warpimage_size, gl_warpimage_size);
 
 		tx->update_warp = false;
 	}
 
 	// if warp render went down into sbar territory, we need to be sure to refresh it next frame
-	if (gl_warpimage_size + sb_lines > vid.height)
-		Sbar_Changed ();
+//	if (gl_warpimage_size + sb_lines > vid.height)
+//		Sbar_Changed ();
 }
 
 

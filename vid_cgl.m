@@ -434,7 +434,7 @@ void VID_Init (void)
         windowRect.size.height = vid.height;
         
         window = [[NSWindow alloc] initWithContentRect:windowRect 
-                                             styleMask:NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask 
+                                             styleMask:NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask | NSResizableWindowMask 
                                                backing:NSBackingStoreBuffered 
                                                  defer:NO 
                                                 screen:screen];

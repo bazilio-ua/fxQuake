@@ -173,6 +173,9 @@ void GL_UploadWarpImage (void)
 			GL_Bind (glt);
 			glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, gl_warpimage_size, gl_warpimage_size, 0, GL_RGBA, GL_UNSIGNED_BYTE, dummy);
 			glt->width = glt->height = gl_warpimage_size;
+            
+            // set filter modes
+            GL_SetFilterModes (glt);
 		}
 	}
 
@@ -800,7 +803,7 @@ GL_SetFilterModes
 */
 void GL_SetFilterModes (gltexture_t *glt)
 {
-	GL_Bind (glt);
+//	GL_Bind (glt);
 
 	if (glt->flags & TEXPREF_NEAREST)
 	{
@@ -868,8 +871,11 @@ void GL_TextureMode_f (void)
 	gl_filter_mag = modes[gl_texturemode].magfilter;
 
 	// change all the existing texture objects
-	for (glt=active_gltextures; glt; glt=glt->next)
+	for (glt=active_gltextures; glt; glt=glt->next) 
+    {
+        GL_Bind (glt);
 		GL_SetFilterModes (glt);
+    }
 
 	Sbar_Changed (); // sbar graphics need to be redrawn with new filter mode
 }
@@ -891,8 +897,11 @@ void GL_Texture_Anisotropy_f (void)
 
 	gl_texture_anisotropy = CLAMP(1.0f, atof (Cmd_Argv(1)), gl_hardware_max_anisotropy);
 
-	for (glt=active_gltextures; glt; glt=glt->next)
+	for (glt=active_gltextures; glt; glt=glt->next) 
+    {
+        GL_Bind (glt);
 		GL_SetFilterModes (glt);
+    }
 }
 
 
@@ -2107,11 +2116,36 @@ reloads all texture images.
 void GL_ReloadTextures_f (void)
 {
 	gltexture_t *glt;
-
+    
+	int mark;
+	byte *dummy;
+    
 	for (glt=active_gltextures; glt; glt=glt->next)
 	{
-		glGenTextures(1, &glt->texnum);
-		GL_ReloadTexture (glt);
+        if (!(glt->flags & TEXPREF_WARPIMAGE)) 
+        {
+            glGenTextures(1, &glt->texnum);
+            GL_ReloadTexture (glt);
+        }
 	}
+    
+	mark = Hunk_LowMark ();
+	
+	dummy = Hunk_Alloc (gl_warpimage_size*gl_warpimage_size*4);
+    
+	for (glt=active_gltextures; glt; glt=glt->next)
+	{
+		if (glt->flags & TEXPREF_WARPIMAGE)
+		{
+			GL_Bind (glt);
+			glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, gl_warpimage_size, gl_warpimage_size, 0, GL_RGBA, GL_UNSIGNED_BYTE, dummy);
+			glt->width = glt->height = gl_warpimage_size;
+            
+            // set filter modes
+            GL_SetFilterModes (glt);
+		}
+	}
+    
+	Hunk_FreeToLowMark (mark);
 }
 

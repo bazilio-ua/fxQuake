@@ -470,6 +470,41 @@ int main (int argc, char *argv[])
 
 /* <NSWindowDelegate> */
 
+- (NSSize)windowWillResize:(NSWindow *)sender toSize:(NSSize)frameSize {
+    CGFloat window_width = frameSize.width;
+    CGFloat window_height = frameSize.height;
+    
+    // check for resize
+    if (window_width < 320)
+        window_width = 320;
+    if (window_height < 200)
+        window_height = 200;
+    
+    vid.width = window_width;
+    vid.height = window_height;
+    
+    vid.conwidth = vid.width;
+    vid.conheight = vid.height;
+    
+    vid.recalc_refdef = true; // force a surface cache flush
+    
+    frameSize.width = window_width;
+    frameSize.height = window_height;
+    
+    return frameSize;
+}
+
+- (void)windowDidResize:(NSNotification *)notification {
+    [glcontext update];
+    
+    Host_Frame(0.02);
+}
+
+- (void)windowDidChangeScreen:(NSNotification *)notification {
+    NSLog(@"%@", NSStringFromSelector(_cmd));
+    
+}
+
 - (BOOL)windowShouldClose:(id)sender {
     [NSApp terminate:nil];
     

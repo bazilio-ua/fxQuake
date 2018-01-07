@@ -35,6 +35,7 @@ extern AUGraph audioGraph;
 extern AUNode mixerNode;
 extern AudioUnit mixerUnit;
 extern CGDirectDisplayID display;
+extern NSOpenGLContext *glcontext;
 extern NSWindow *window;
 extern NSScreen *screen;
 

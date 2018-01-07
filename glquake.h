@@ -251,6 +251,7 @@ void GL_ReloadTexture (gltexture_t *glt);
 void GL_ReloadTextures_f (void);
 gltexture_t *GL_LoadTexture (model_t *owner, char *name, int width, int height, enum srcformat format, byte *data, char *source_file, unsigned source_offset, unsigned flags);
 gltexture_t *GL_FindTexture (model_t *owner, char *name);
+void GL_SetFilterModes (gltexture_t *glt);
 extern inline void GL_Set2D (void);
 extern inline void GL_SelectTexture (GLenum target);
 extern inline void GL_Bind (gltexture_t *texture);
