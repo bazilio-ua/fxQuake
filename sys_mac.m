@@ -514,8 +514,15 @@ int main (int argc, char *argv[])
 }
 
 - (void)windowDidChangeScreen:(NSNotification *)notification {
-    NSLog(@"%@", NSStringFromSelector(_cmd));
+    VID_Gamma_Shutdown();
     
+    NSScreen *currentScreen = [[notification object] screen];
+    CGDirectDisplayID currentDisplay = [[[currentScreen deviceDescription] objectForKey:@"NSScreenNumber"] unsignedIntValue];
+    
+    display = currentDisplay;
+    
+    VID_Gamma_Init();
+    VID_Gamma_Set();
 }
 
 - (BOOL)windowShouldClose:(id)sender {

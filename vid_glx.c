@@ -146,8 +146,6 @@ void VID_Gamma_Init (void)
 
 	if (!vid_gammaworks)
 		Con_Printf ("Hardware gamma unavailable\n");
-
-	Cvar_RegisterVariable (&vid_gamma, VID_Gamma);
 }
 
 //====================================
@@ -463,6 +461,8 @@ void VID_Init (void)
 	GL_Init();
 
 	VID_Gamma_Init ();
+    
+	Cvar_RegisterVariable (&vid_gamma, VID_Gamma);
 
 	vid.recalc_refdef = true; // force a surface cache flush
 
