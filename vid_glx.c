@@ -27,6 +27,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 int scrnum;
 static GLXContext ctx = NULL;
+static Colormap cmap;
 
 Atom wm_delete_window_atom;
 
@@ -343,7 +344,7 @@ void VID_Init (void)
 // window attributes
 	mask = CWBackPixel | CWColormap | CWEventMask;
 	attr.background_pixel = 0;
-	attr.colormap = XCreateColormap(x_disp, root, visinfo->visual, AllocNone);
+	attr.colormap = cmap = XCreateColormap(x_disp, root, visinfo->visual, AllocNone);
 	attr.event_mask = X_MASK;
 
 // setup attributes for main window
@@ -483,18 +484,23 @@ void VID_Shutdown (void)
 {
 	if (x_disp) 
 	{
-		if (ctx)
+		if (ctx) {
+            glXMakeCurrent(x_disp, None, NULL);
 			glXDestroyContext(x_disp, ctx);
+        }
 
 		VID_Gamma_Shutdown ();
 
-		if (x_win)
+		if (x_win) {
+            XClearWindow(x_disp, x_win);
 			XDestroyWindow(x_disp, x_win);
+        }
 
 		if (vidmode_fullscreen)
 			XF86VidModeSwitchToMode(x_disp, scrnum, &init_vidmode);
 
-		XCloseDisplay (x_disp);
+        XFreeColormap(x_disp, cmap);
+		XCloseDisplay(x_disp);
 	}
 
 	vidmode_fullscreen = false;
