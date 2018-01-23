@@ -38,7 +38,7 @@ qboolean vidmode_fullscreen = false; // was vidmode_active
 // let go of the mouse, turn off sound, and restore system gamma ramps...
 qboolean vid_activewindow; 
 // if window is hidden, don't update screen
-qboolean vid_hidden;
+qboolean vid_hiddenwindow;
 // if mouse entered/leaved window
 qboolean vid_notifywindow;
 
