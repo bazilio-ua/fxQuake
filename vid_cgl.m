@@ -460,6 +460,7 @@ void VID_Init (void)
     
     vid_activewindow = true;
 	vid_hiddenwindow = false;
+	vid_notifywindow = true;
     
     vid.conwidth = vid.width;
 	vid.conheight = vid.height;

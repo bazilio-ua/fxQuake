@@ -43,6 +43,7 @@ extern void (*vid_menucmdfn)(void); //johnfitz
 
 extern qboolean vid_hiddenwindow;
 extern qboolean vid_activewindow;
+extern qboolean vid_notifywindow;
 
 // gamma stuff
 extern	cvar_t		vid_gamma;

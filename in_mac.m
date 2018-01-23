@@ -34,10 +34,13 @@ cvar_t m_filter = {"m_filter", "0", true};
 
 qboolean vidmode_fullscreen = false; // was vidmode_active
 
-qboolean	vid_activewindow;
-qboolean	vid_hiddenwindow;
+// if window is not the active window, don't hog as much CPU time,
+// let go of the mouse, turn off sound, and restore system gamma ramps...
+qboolean vid_activewindow; 
+// if window is hidden, don't update screen
+qboolean vid_hidden;
 // if mouse entered/leaved window
-qboolean    notifywindow = false;
+qboolean vid_notifywindow;
 
 static const byte scantokey[128] = 
 {
@@ -405,7 +408,7 @@ void IN_ProcessEvents (void)
         
     case NSMouseEntered:
     case NSMouseExited:
-        notifywindow = (eventType == NSMouseEntered);
+        vid_notifywindow = (eventType == NSMouseEntered);
         break;
         
     default:

@@ -46,7 +46,7 @@ qboolean vid_activewindow;
 // if window is hidden, don't update screen
 qboolean vid_hiddenwindow;
 // if mouse entered/leaved window
-qboolean notifywindow = false;
+qboolean vid_notifywindow;
 
 static const byte scantokey[128] = 
 {
@@ -711,184 +711,184 @@ void IN_ProcessEvents (void)
 		while (XPending(x_disp)) 
 		{
 			XNextEvent(x_disp, &x_event);
-		}
 	
-        switch (x_event.type) 
-        {
-        case KeyPress: // key pressed
-        case KeyRelease: // key released
-            Key_Event(XLateKey(&x_event.xkey), x_event.type == KeyPress);
-            break;
+			switch (x_event.type) 
+			{
+			case KeyPress: // key pressed
+			case KeyRelease: // key released
+				Key_Event(XLateKey(&x_event.xkey), x_event.type == KeyPress);
+				break;
 
-        case MotionNotify: // mouse moved
-            if (mouse_grab_active)
-            {
-                if (dga_mouse_active)
-                {
-                    mouse_x += (float)x_event.xmotion.x_root;
-                    mouse_y += (float)x_event.xmotion.y_root;
-                }
-                else
-                {
-                    mouse_x = (float)x_event.xmotion.x - (float)(vid.width / 2);
-                    mouse_y = (float)x_event.xmotion.y - (float)(vid.height / 2);
+			case MotionNotify: // mouse moved
+				if (mouse_grab_active)
+				{
+					if (dga_mouse_active)
+					{
+						mouse_x += (float)x_event.xmotion.x_root;
+						mouse_y += (float)x_event.xmotion.y_root;
+					}
+					else
+					{
+						mouse_x = (float)x_event.xmotion.x - (float)(vid.width / 2);
+						mouse_y = (float)x_event.xmotion.y - (float)(vid.height / 2);
 
-                    if (mouse_x || mouse_y) // do warp
-                    {
-                        // move the mouse to the window center again
-                        XWarpPointer(x_disp, None, x_win, 0, 0, 0, 0, vid.width / 2, vid.height / 2);
-                    }
-                }
-            }
-            break;
+						if (mouse_x || mouse_y) // do warp
+						{
+							// move the mouse to the window center again
+							XWarpPointer(x_disp, None, x_win, 0, 0, 0, 0, vid.width / 2, vid.height / 2);
+						}
+					}
+				}
+				break;
 
-        case ButtonPress: // mouse button pressed
-        case ButtonRelease: // mouse button released
-            switch (x_event.xbutton.button)
-            {
-            case 1:
-                Key_Event (K_MOUSE1, x_event.type == ButtonPress);
-                break;
+			case ButtonPress: // mouse button pressed
+			case ButtonRelease: // mouse button released
+				switch (x_event.xbutton.button)
+				{
+				case 1:
+					Key_Event (K_MOUSE1, x_event.type == ButtonPress);
+					break;
 
-            case 2:
-                Key_Event (K_MOUSE3, x_event.type == ButtonPress);
-                break;
+				case 2:
+					Key_Event (K_MOUSE3, x_event.type == ButtonPress);
+					break;
 
-            case 3:
-                Key_Event (K_MOUSE2, x_event.type == ButtonPress);
-                break;
+				case 3:
+					Key_Event (K_MOUSE2, x_event.type == ButtonPress);
+					break;
 
-            case 4:
-                Key_Event (K_MWHEELUP, x_event.type == ButtonPress);
-                break;
+				case 4:
+					Key_Event (K_MWHEELUP, x_event.type == ButtonPress);
+					break;
 
-            case 5:
-                Key_Event (K_MWHEELDOWN, x_event.type == ButtonPress);
-                break;
+				case 5:
+					Key_Event (K_MWHEELDOWN, x_event.type == ButtonPress);
+					break;
 
-            case 6:
-                Key_Event (K_MOUSE4, x_event.type == ButtonPress);
-                break;
+				case 6:
+					Key_Event (K_MOUSE4, x_event.type == ButtonPress);
+					break;
 
-            case 7:
-                Key_Event (K_MOUSE5, x_event.type == ButtonPress);
-                break;
+				case 7:
+					Key_Event (K_MOUSE5, x_event.type == ButtonPress);
+					break;
 
-            case 8:
-                Key_Event (K_MOUSE6, x_event.type == ButtonPress);
-                break;
+				case 8:
+					Key_Event (K_MOUSE6, x_event.type == ButtonPress);
+					break;
 
-            case 9:
-                Key_Event (K_MOUSE7, x_event.type == ButtonPress);
-                break;
+				case 9:
+					Key_Event (K_MOUSE7, x_event.type == ButtonPress);
+					break;
 
-            case 10:
-                Key_Event (K_MOUSE8, x_event.type == ButtonPress);
-                break;
-            }
-            break;
+				case 10:
+					Key_Event (K_MOUSE8, x_event.type == ButtonPress);
+					break;
+				}
+				break;
 
-        case CreateNotify: // window created
-            window_x = x_event.xcreatewindow.x;
-            window_y = x_event.xcreatewindow.y;
-            window_width = x_event.xcreatewindow.width;
-            window_height = x_event.xcreatewindow.height;
-            break;
+			case CreateNotify: // window created
+				window_x = x_event.xcreatewindow.x;
+				window_y = x_event.xcreatewindow.y;
+				window_width = x_event.xcreatewindow.width;
+				window_height = x_event.xcreatewindow.height;
+				break;
 
-        case ConfigureNotify: // window changed size/location
-            window_x = x_event.xconfigure.x;
-            window_y = x_event.xconfigure.y;
-            window_width = x_event.xconfigure.width;
-            window_height = x_event.xconfigure.height;
+			case ConfigureNotify: // window changed size/location
+				window_x = x_event.xconfigure.x;
+				window_y = x_event.xconfigure.y;
+				window_width = x_event.xconfigure.width;
+				window_height = x_event.xconfigure.height;
 
-            // check for resize
-            if (!vidmode_fullscreen)
-            {
-                if (window_width < 320)
-                    window_width = 320;
-                if (window_height < 200)
-                    window_height = 200;
+				// check for resize
+				if (!vidmode_fullscreen)
+				{
+					if (window_width < 320)
+						window_width = 320;
+					if (window_height < 200)
+						window_height = 200;
 
-                vid.width = window_width;
-                vid.height = window_height;
+					vid.width = window_width;
+					vid.height = window_height;
 
-                vid.conwidth = vid.width;
-                vid.conheight = vid.height;
+					vid.conwidth = vid.width;
+					vid.conheight = vid.height;
 
-                vid.recalc_refdef = true; // force a surface cache flush
-            }
-            break;
+					vid.recalc_refdef = true; // force a surface cache flush
+				}
+				break;
 
-        case DestroyNotify: // window has been destroyed
-            Sys_Quit (0);
-            break; 
+			case DestroyNotify: // window has been destroyed
+				Sys_Quit (0);
+				break; 
 
-        case ClientMessage: // window manager messages
-            if ((x_event.xclient.format == 32) && ((unsigned int)x_event.xclient.data.l[0] == wm_delete_window_atom))
-                Sys_Quit (0);
-            break; 
+			case ClientMessage: // window manager messages
+				if ((x_event.xclient.format == 32) && ((unsigned int)x_event.xclient.data.l[0] == wm_delete_window_atom))
+					Sys_Quit (0);
+				break; 
 
-        case MapNotify: // window restored
-        case UnmapNotify: // window iconified/rolledup/whatever
-            vid_hiddenwindow = (x_event.type == UnmapNotify);
-        case FocusIn: // window is now the input focus
-        case FocusOut: // window is no longer the input focus
-            switch (x_event.xfocus.mode)
-            {
-            case NotifyNormal:
-            case NotifyGrab:
-            case NotifyUngrab:
-                vid_activewindow = (x_event.type == FocusIn);
-                break;
-            }
+			case MapNotify: // window restored
+			case UnmapNotify: // window iconified/rolledup/whatever
+				vid_hiddenwindow = (x_event.type == UnmapNotify);
+			case FocusIn: // window is now the input focus
+			case FocusOut: // window is no longer the input focus
+				switch (x_event.xfocus.mode)
+				{
+				case NotifyNormal:
+				case NotifyGrab:
+				case NotifyUngrab:
+					vid_activewindow = (x_event.type == FocusIn);
+					break;
+				}
 
-            if(vidmode_fullscreen)
-            {
-                if(x_event.type == MapNotify)
-                {
-                    // set our video mode
-                    XF86VidModeSwitchToMode(x_disp, scrnum, &game_vidmode);
+				if(vidmode_fullscreen)
+				{
+					if(x_event.type == MapNotify)
+					{
+						// set our video mode
+						XF86VidModeSwitchToMode(x_disp, scrnum, &game_vidmode);
+	
+						// move the viewport to top left
+						XF86VidModeSetViewPort(x_disp, scrnum, 0, 0);
+					}
+					else if(x_event.type == UnmapNotify)
+					{
+						// set our video mode
+						XF86VidModeSwitchToMode(x_disp, scrnum, &init_vidmode);
+					}
+				}
+				else //if (!vidmode_fullscreen)
+				{
+					// enable/disable sound, set/restore gamma and grab/ungrab keyb
+					// on focus gain/loss
+					if (vid_activewindow && !vid_hiddenwindow && !active)
+					{
+						S_UnblockSound ();
+						S_ClearBuffer ();
+						VID_Gamma_Set ();
+						IN_GrabKeyboard();
+						active = true;
+					}
+					else if (active)
+					{
+						S_BlockSound ();
+						S_ClearBuffer ();
+						VID_Gamma_Restore ();
+						IN_UngrabKeyboard();
+						active = false;
+					}
+				}
 
-                    // move the viewport to top left
-                    XF86VidModeSetViewPort(x_disp, scrnum, 0, 0);
-                }
-                else if(x_event.type == UnmapNotify)
-                {
-                    // set our video mode
-                    XF86VidModeSwitchToMode(x_disp, scrnum, &init_vidmode);
-                }
-            }
-            else //if (!vidmode_fullscreen)
-            {
-                // enable/disable sound, set/restore gamma and grab/ungrab keyb
-                // on focus gain/loss
-                if (vid_activewindow && !vid_hiddenwindow && !active)
-                {
-                    S_UnblockSound ();
-                    S_ClearBuffer ();
-                    VID_Gamma_Set ();
-                    IN_GrabKeyboard();
-                    active = true;
-                }
-                else if (active)
-                {
-                    S_BlockSound ();
-                    S_ClearBuffer ();
-                    VID_Gamma_Restore ();
-                    IN_UngrabKeyboard();
-                    active = false;
-                }
-            }
+				// fix the leftover Alt from any Alt-Tab or the like that switched us away
+				Key_ClearStates ();
+				break;
 
-            // fix the leftover Alt from any Alt-Tab or the like that switched us away
-            Key_ClearStates ();
-            break;
-
-        case EnterNotify: // mouse entered window
-        case LeaveNotify: // mouse left window
-            notifywindow = (x_event.type == EnterNotify);
-            break;
-        }
+			case EnterNotify: // mouse entered window
+			case LeaveNotify: // mouse left window
+				vid_notifywindow = (x_event.type == EnterNotify);
+				break;
+			}
+		}
 	}
 }
 
