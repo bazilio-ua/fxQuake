@@ -970,6 +970,9 @@ void IN_ProcessEvents (void)
 				vid_notifywindow = (x_event.type == EnterNotify);
 				break;
 			}
+            
+            default:
+                break;
 		}
 	}
     

@@ -446,26 +446,33 @@ int main (int argc, char *argv[])
     {
         // enable/disable sound, set/restore gamma and grab/ungrab keyb
         // on focus gain/loss
-        if (vid_activewindow && !vid_hiddenwindow && !active)
+        if (vid_activewindow && !vid_hiddenwindow)// && !active)
         {
+            if (!active) {
             CDAudio_Resume ();
             S_UnblockSound ();
             S_ClearBuffer ();
             VID_Gamma_Set ();
+            NSLog(@"*** Active ***");
             active = true;
+            }
         }
-        else if (active)
+        else //if (active)
         {
+            if (active) {
             CDAudio_Pause ();
             S_BlockSound ();
             S_ClearBuffer ();
             VID_Gamma_Restore ();
+            Key_ClearStates ();
+            NSLog(@"*** Inactive ***");
             active = false;
+            }
         }
     }
     
     // fix the leftover Alt from any Alt-Tab or the like that switched us away
-    Key_ClearStates ();
+//    Key_ClearStates ();
 }
 
 /* <NSWindowDelegate> */

@@ -255,20 +255,6 @@ IN_ProcessEvents
 */
 void IN_ProcessEvents (void)
 {
-	// handle the mouse state when windowed if that's changed
-	if (!vidmode_fullscreen)
-	{
-		if ( key_dest == key_game && !mouse_active && vid_activewindow )
-//		if ( key_dest != key_console && !mouse_active && vid_activewindow )
-		{
-			IN_ActivateMouse ();
-		}
-		else if ( key_dest != key_game && mouse_active ) 
-//		else if ( key_dest == key_console && mouse_active ) 
-		{
-			IN_DeactivateMouse ();
-		}
-	}
     
 	NSEvent *event = [NSApp nextEventMatchingMask:NSAnyEventMask 
                                         untilDate:[NSDate distantPast] 
@@ -415,5 +401,21 @@ void IN_ProcessEvents (void)
         [NSApp sendEvent:event];
         break;
     }
+    
+    // handle the mouse state when windowed if that's changed
+	if (!vidmode_fullscreen)
+	{
+		if ( key_dest == key_game && !mouse_active && vid_activewindow )
+//		if ( key_dest != key_console && !mouse_active && vid_activewindow )
+		{
+			IN_ActivateMouse ();
+		}
+		else if ( key_dest != key_game && mouse_active ) 
+//		else if ( key_dest == key_console && mouse_active ) 
+		{
+			IN_DeactivateMouse ();
+		}
+	}
+    
 }
 
