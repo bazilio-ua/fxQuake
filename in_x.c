@@ -536,10 +536,10 @@ void IN_Init (void)
 	dga_mouse_available = false;
 	dga_mouse_active = false;
 
-/*	if (COM_CheckParm ("-nokeyb"))
+	if (COM_CheckParm ("-nokeyb"))
 		keyboard_available = false;
 	else
-*/		keyboard_available = true;
+		keyboard_available = true;
 
 	keyboard_grab_active = false;
 	dga_keyboard_available = false;
@@ -729,7 +729,7 @@ void IN_CheckActive (void)
                 S_UnblockSound ();
                 S_ClearBuffer ();
                 VID_Gamma_Set ();
-//                IN_GrabKeyboard();
+                IN_GrabKeyboard();
                 active = true;
                 printf("*** Active ***\n");
             }
@@ -742,7 +742,7 @@ void IN_CheckActive (void)
                 S_BlockSound ();
                 S_ClearBuffer ();
                 VID_Gamma_Restore ();
-//                IN_UngrabKeyboard();
+                IN_UngrabKeyboard();
                 Key_ClearStates ();
                 active = false;
                 printf("*** Inactive ***\n");
@@ -984,14 +984,12 @@ void IN_ProcessEvents (void)
 		if ( key_dest == key_game && !mouse_grab_active && vid_activewindow )
 //		if ( key_dest != key_console && !mouse_grab_active && vid_activewindow )
 		{
-			IN_GrabMouse();
-            IN_GrabKeyboard();
+			IN_GrabMouse ();
 		}
 		else if ( key_dest != key_game && mouse_grab_active ) 
 //		else if ( key_dest == key_console && mouse_grab_active ) 
 		{
-			IN_UngrabMouse();
-            IN_UngrabKeyboard();
+			IN_UngrabMouse ();
 		}
 	}
 
