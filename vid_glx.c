@@ -387,7 +387,7 @@ void VID_Init (void)
 	);
 
 	wmhints = XAllocWMHints();
-	if(XpmCreatePixmapFromData(x_disp, x_win, quake_xpm, &wmhints->icon_pixmap, &wmhints->icon_mask, NULL) == XpmSuccess)
+	if (XpmCreatePixmapFromData(x_disp, x_win, quake_xpm, &wmhints->icon_pixmap, &wmhints->icon_mask, NULL) == XpmSuccess)
 		wmhints->flags |= IconPixmapHint | IconMaskHint;
 
 	clshints = XAllocClassHint();
@@ -395,15 +395,19 @@ void VID_Init (void)
 	clshints->res_class = strdup("fxQuake");
 
 	szhints = XAllocSizeHints();
-//	if(vidmode_fullscreen)
-	{
-		szhints->min_width = 320;
-			szhints->max_width = vid.width;
-		szhints->min_height = 200;
-			szhints->max_height = vid.height;
+	if (vidmode_fullscreen) 
+    {
+		szhints->min_width = szhints->max_width = vid.width;
+		szhints->min_height = szhints->max_height = vid.height;
 		szhints->flags |= PMinSize | PMaxSize;
-	}
-
+	} 
+    else 
+    {
+		szhints->min_width = 320;
+		szhints->min_height = 200;
+		szhints->flags |= PMinSize;
+    }
+    
 	XmbSetWMProperties(x_disp, x_win, "fxQuake", "fxQuake", (char **) com_argv, com_argc, szhints, wmhints, clshints);
 	// strdup() allocates using malloc(), should be freed with free()
 	free(clshints->res_name);

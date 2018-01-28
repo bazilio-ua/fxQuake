@@ -676,6 +676,83 @@ void IN_Move (usercmd_t *cmd)
 }
 
 
+void IN_CheckResize (void)
+{
+    // check for resize
+    if (!vidmode_fullscreen)
+    {
+        if (window_width < 320)
+            window_width = 320;
+        if (window_height < 200)
+            window_height = 200;
+        
+        vid.width = window_width;
+        vid.height = window_height;
+        
+        vid.conwidth = vid.width;
+        vid.conheight = vid.height;
+        
+        vid.recalc_refdef = true; // force a surface cache flush
+    }
+    
+}
+
+void IN_CheckActive (void)
+{
+    static qboolean active = true;
+    
+    if(vidmode_fullscreen)
+    {
+        if(x_event.type == MapNotify)
+        {
+            // set our video mode
+            XF86VidModeSwitchToMode(x_disp, scrnum, &game_vidmode);
+            
+            // move the viewport to top left
+            XF86VidModeSetViewPort(x_disp, scrnum, 0, 0);
+        }
+        else if(x_event.type == UnmapNotify)
+        {
+            // set our video mode
+            XF86VidModeSwitchToMode(x_disp, scrnum, &init_vidmode);
+        }
+    }
+    else //if (!vidmode_fullscreen)
+    {
+        // enable/disable sound, set/restore gamma and grab/ungrab keyb
+        // on focus gain/loss
+        if (vid_activewindow && !vid_hiddenwindow)// && !active)
+        {
+            if (!active) 
+            {
+                S_UnblockSound ();
+                S_ClearBuffer ();
+                VID_Gamma_Set ();
+                IN_GrabKeyboard();
+                active = true;
+                printf("*** Active ***\n");
+            }
+        }
+        else //if (active)
+        {
+            if (active) 
+            {
+                S_BlockSound ();
+                S_ClearBuffer ();
+                VID_Gamma_Restore ();
+                IN_UngrabKeyboard();
+                Key_ClearStates ();
+                active = false;
+                printf("*** Inactive ***\n");
+            }
+        }
+    }
+    
+    // fix the leftover Alt from any Alt-Tab or the like that switched us away
+//    Key_ClearStates ();
+
+}
+
 /*
 ===========
 IN_ProcessEvents
@@ -683,27 +760,12 @@ IN_ProcessEvents
 */
 void IN_ProcessEvents (void)
 {
-
-	// handle the mouse state when windowed if that's changed
-	if (!vidmode_fullscreen)
-	{
-		if ( key_dest == key_game && !mouse_grab_active && vid_activewindow )
-//		if ( key_dest != key_console && !mouse_grab_active && vid_activewindow )
-		{
-			IN_GrabMouse ();
-		}
-		else if ( key_dest != key_game && mouse_grab_active ) 
-//		else if ( key_dest == key_console && mouse_grab_active ) 
-		{
-			IN_UngrabMouse ();
-		}
-	}
-
+    
 	// getting and handle events
 	{
 		XEvent x_event;
 	
-		static qboolean active = true;
+//		static qboolean active = true;
 	
 		if (!x_disp)
 			return;
@@ -800,25 +862,26 @@ void IN_ProcessEvents (void)
 				window_width = x_event.xconfigure.width;
 				window_height = x_event.xconfigure.height;
 
-				// check for resize
-				if (!vidmode_fullscreen)
-				{
-					if (window_width < 320)
-						window_width = 320;
-					if (window_height < 200)
-						window_height = 200;
-
-//					x_event.xconfigure.width = window_width;
-//					x_event.xconfigure.height = window_height;
-
-					vid.width = window_width;
-					vid.height = window_height;
-
-					vid.conwidth = vid.width;
-					vid.conheight = vid.height;
-
-					vid.recalc_refdef = true; // force a surface cache flush
-				}
+                IN_CheckResize();
+//				// check for resize
+//				if (!vidmode_fullscreen)
+//				{
+//					if (window_width < 320)
+//						window_width = 320;
+//					if (window_height < 200)
+//						window_height = 200;
+//
+////					x_event.xconfigure.width = window_width;
+////					x_event.xconfigure.height = window_height;
+//
+//					vid.width = window_width;
+//					vid.height = window_height;
+//
+//					vid.conwidth = vid.width;
+//					vid.conheight = vid.height;
+//
+//					vid.recalc_refdef = true; // force a surface cache flush
+//				}
 				break;
 
 			case DestroyNotify: // window has been destroyed
@@ -833,17 +896,17 @@ void IN_ProcessEvents (void)
 			case MapNotify: // window restored
 			case UnmapNotify: // window iconified/rolledup/whatever
 				vid_hiddenwindow = (x_event.type == UnmapNotify);
+                IN_CheckActive();
+                break;
+                    
 			case FocusIn: // window is now the input focus
 			case FocusOut: // window is no longer the input focus
+                if (x_event.xfocus.mode == NotifyGrab || x_event.xfocus.mode == NotifyUngrab)
+                    continue; // Someone is handling a global hotkey, ignore it
 
-				if (x_event.type == FocusIn || x_event.type == FocusOut)
-				{
-					if (x_event.xfocus.mode == NotifyGrab || x_event.xfocus.mode == NotifyUngrab)
-						continue;
-
-					vid_activewindow = (x_event.type == FocusIn);
-
-				}
+                vid_activewindow = (x_event.type == FocusIn);
+                IN_CheckActive();
+                break;
 
 //				switch (x_event.xfocus.mode)
 //				{
@@ -854,53 +917,53 @@ void IN_ProcessEvents (void)
 //					break;
 //				}
 
-				if(vidmode_fullscreen)
-				{
-					if(x_event.type == MapNotify)
-					{
-						// set our video mode
-						XF86VidModeSwitchToMode(x_disp, scrnum, &game_vidmode);
-	
-						// move the viewport to top left
-						XF86VidModeSetViewPort(x_disp, scrnum, 0, 0);
-					}
-					else if(x_event.type == UnmapNotify)
-					{
-						// set our video mode
-						XF86VidModeSwitchToMode(x_disp, scrnum, &init_vidmode);
-					}
-				}
-				else //if (!vidmode_fullscreen)
-				{
-					// enable/disable sound, set/restore gamma and grab/ungrab keyb
-					// on focus gain/loss
-					if (vid_activewindow && !vid_hiddenwindow)// && !active)
-					{
-						if (!active) {
-						S_UnblockSound ();
-						S_ClearBuffer ();
-						VID_Gamma_Set ();
-						IN_GrabKeyboard();
-						active = true;
-						printf("*** Active ***\n");
-						}
-					}
-					else //if (active)
-					{
-						if (active) {
-						S_BlockSound ();
-						S_ClearBuffer ();
-						VID_Gamma_Restore ();
-						IN_UngrabKeyboard();
-						active = false;
-						printf("*** Inactive ***\n");
-						}
-					}
-				}
-
-				// fix the leftover Alt from any Alt-Tab or the like that switched us away
-				Key_ClearStates ();
-				break;
+//				if(vidmode_fullscreen)
+//				{
+//					if(x_event.type == MapNotify)
+//					{
+//						// set our video mode
+//						XF86VidModeSwitchToMode(x_disp, scrnum, &game_vidmode);
+//	
+//						// move the viewport to top left
+//						XF86VidModeSetViewPort(x_disp, scrnum, 0, 0);
+//					}
+//					else if(x_event.type == UnmapNotify)
+//					{
+//						// set our video mode
+//						XF86VidModeSwitchToMode(x_disp, scrnum, &init_vidmode);
+//					}
+//				}
+//				else //if (!vidmode_fullscreen)
+//				{
+//					// enable/disable sound, set/restore gamma and grab/ungrab keyb
+//					// on focus gain/loss
+//					if (vid_activewindow && !vid_hiddenwindow)// && !active)
+//					{
+//						if (!active) {
+//						S_UnblockSound ();
+//						S_ClearBuffer ();
+//						VID_Gamma_Set ();
+//						IN_GrabKeyboard();
+//						active = true;
+//						printf("*** Active ***\n");
+//						}
+//					}
+//					else //if (active)
+//					{
+//						if (active) {
+//						S_BlockSound ();
+//						S_ClearBuffer ();
+//						VID_Gamma_Restore ();
+//						IN_UngrabKeyboard();
+//						active = false;
+//						printf("*** Inactive ***\n");
+//						}
+//					}
+//				}
+//
+//				// fix the leftover Alt from any Alt-Tab or the like that switched us away
+//				Key_ClearStates ();
+//				break;
 
 			case EnterNotify: // mouse entered window
 			case LeaveNotify: // mouse left window
@@ -909,5 +972,21 @@ void IN_ProcessEvents (void)
 			}
 		}
 	}
+    
+    // handle the mouse state when windowed if that's changed
+	if (!vidmode_fullscreen)
+	{
+		if ( key_dest == key_game && !mouse_grab_active && vid_activewindow )
+//		if ( key_dest != key_console && !mouse_grab_active && vid_activewindow )
+		{
+			IN_GrabMouse ();
+		}
+		else if ( key_dest != key_game && mouse_grab_active ) 
+//		else if ( key_dest == key_console && mouse_grab_active ) 
+		{
+			IN_UngrabMouse ();
+		}
+	}
+
 }
 
