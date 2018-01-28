@@ -395,10 +395,12 @@ void VID_Init (void)
 	clshints->res_class = strdup("fxQuake");
 
 	szhints = XAllocSizeHints();
-	if(vidmode_fullscreen)
+//	if(vidmode_fullscreen)
 	{
-		szhints->min_width = szhints->max_width = vid.width;
-		szhints->min_height = szhints->max_height = vid.height;
+		szhints->min_width = 320;
+			szhints->max_width = vid.width;
+		szhints->min_height = 200;
+			szhints->max_height = vid.height;
 		szhints->flags |= PMinSize | PMaxSize;
 	}
 

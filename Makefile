@@ -25,7 +25,7 @@ UNIX=linux
 endif
 endif
 
-CC=gcc
+CC=gcc49
 STRIP=strip
 
 CPUFLAGS=-m32

@@ -808,6 +808,9 @@ void IN_ProcessEvents (void)
 					if (window_height < 200)
 						window_height = 200;
 
+//					x_event.xconfigure.width = window_width;
+//					x_event.xconfigure.height = window_height;
+
 					vid.width = window_width;
 					vid.height = window_height;
 
@@ -832,14 +835,24 @@ void IN_ProcessEvents (void)
 				vid_hiddenwindow = (x_event.type == UnmapNotify);
 			case FocusIn: // window is now the input focus
 			case FocusOut: // window is no longer the input focus
-				switch (x_event.xfocus.mode)
+
+				if (x_event.type == FocusIn || x_event.type == FocusOut)
 				{
-				case NotifyNormal:
-				case NotifyGrab:
-				case NotifyUngrab:
+					if (x_event.xfocus.mode == NotifyGrab || x_event.xfocus.mode == NotifyUngrab)
+						continue;
+
 					vid_activewindow = (x_event.type == FocusIn);
-					break;
+
 				}
+
+//				switch (x_event.xfocus.mode)
+//				{
+//				case NotifyNormal:
+//				case NotifyGrab:
+//				case NotifyUngrab:
+//					vid_activewindow = (x_event.type == FocusIn);
+//					break;
+//				}
 
 				if(vidmode_fullscreen)
 				{
@@ -861,21 +874,27 @@ void IN_ProcessEvents (void)
 				{
 					// enable/disable sound, set/restore gamma and grab/ungrab keyb
 					// on focus gain/loss
-					if (vid_activewindow && !vid_hiddenwindow && !active)
+					if (vid_activewindow && !vid_hiddenwindow)// && !active)
 					{
+						if (!active) {
 						S_UnblockSound ();
 						S_ClearBuffer ();
 						VID_Gamma_Set ();
 						IN_GrabKeyboard();
 						active = true;
+						printf("*** Active ***\n");
+						}
 					}
-					else if (active)
+					else //if (active)
 					{
+						if (active) {
 						S_BlockSound ();
 						S_ClearBuffer ();
 						VID_Gamma_Restore ();
 						IN_UngrabKeyboard();
 						active = false;
+						printf("*** Inactive ***\n");
+						}
 					}
 				}
 
