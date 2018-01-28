@@ -361,12 +361,12 @@ void IN_GrabMouse (void)
 {
 	if (mouse_available && !mouse_grab_active && x_win)
 	{
-		XWindowAttributes attribs_1;
-		XSetWindowAttributes attribs_2;
-
-		XGetWindowAttributes(x_disp, x_win, &attribs_1);
-		attribs_2.event_mask = attribs_1.your_event_mask | KEY_MASK | MOUSE_MASK;
-		XChangeWindowAttributes(x_disp, x_win, CWEventMask, &attribs_2);
+//		XWindowAttributes attribs_1;
+//		XSetWindowAttributes attribs_2;
+//
+//		XGetWindowAttributes(x_disp, x_win, &attribs_1);
+//		attribs_2.event_mask = attribs_1.your_event_mask | KEY_MASK | MOUSE_MASK;
+//		XChangeWindowAttributes(x_disp, x_win, CWEventMask, &attribs_2);
 
 		// hide cursor
 		XDefineCursor(x_disp, x_win, CreateNullCursor());
@@ -729,7 +729,7 @@ void IN_CheckActive (void)
                 S_UnblockSound ();
                 S_ClearBuffer ();
                 VID_Gamma_Set ();
-                IN_GrabKeyboard();
+//                IN_GrabKeyboard();
                 active = true;
                 printf("*** Active ***\n");
             }
@@ -742,7 +742,7 @@ void IN_CheckActive (void)
                 S_BlockSound ();
                 S_ClearBuffer ();
                 VID_Gamma_Restore ();
-                IN_UngrabKeyboard();
+//                IN_UngrabKeyboard();
                 Key_ClearStates ();
                 active = false;
                 printf("*** Inactive ***\n");
@@ -984,12 +984,14 @@ void IN_ProcessEvents (void)
 		if ( key_dest == key_game && !mouse_grab_active && vid_activewindow )
 //		if ( key_dest != key_console && !mouse_grab_active && vid_activewindow )
 		{
-			IN_GrabMouse ();
+			IN_GrabMouse();
+            IN_GrabKeyboard();
 		}
 		else if ( key_dest != key_game && mouse_grab_active ) 
 //		else if ( key_dest == key_console && mouse_grab_active ) 
 		{
-			IN_UngrabMouse ();
+			IN_UngrabMouse();
+            IN_UngrabKeyboard();
 		}
 	}
 
