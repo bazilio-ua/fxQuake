@@ -703,7 +703,7 @@ void IN_CheckActive (void)
     
     if(vidmode_fullscreen)
     {
-        if(x_event.type == MapNotify)
+        if (!vid_hiddenwindow)
         {
             // set our video mode
             XF86VidModeSwitchToMode(x_disp, scrnum, &game_vidmode);
@@ -711,7 +711,7 @@ void IN_CheckActive (void)
             // move the viewport to top left
             XF86VidModeSetViewPort(x_disp, scrnum, 0, 0);
         }
-        else if(x_event.type == UnmapNotify)
+        else if (vid_hiddenwindow)
         {
             // set our video mode
             XF86VidModeSwitchToMode(x_disp, scrnum, &init_vidmode);
