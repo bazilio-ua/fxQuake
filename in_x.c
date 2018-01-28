@@ -971,10 +971,10 @@ void IN_ProcessEvents (void)
 			case LeaveNotify: // mouse left window
 				vid_notifywindow = (x_event.type == EnterNotify);
 				break;
-			}
             
             default:
                 break;
+			}
 		}
 	}
     
