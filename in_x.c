@@ -725,6 +725,7 @@ void IN_CheckActive (void)
         {
             if (!active) 
             {
+                CDAudio_Resume ();
                 S_UnblockSound ();
                 S_ClearBuffer ();
                 VID_Gamma_Set ();
@@ -737,6 +738,7 @@ void IN_CheckActive (void)
         {
             if (active) 
             {
+                CDAudio_Pause ();
                 S_BlockSound ();
                 S_ClearBuffer ();
                 VID_Gamma_Restore ();
