@@ -375,8 +375,12 @@ void IN_GrabMouse (void)
 
 		if (dga_mouse_available)
 		{
-			if (!vidmode_fullscreen && (vid.width < 640 || vid.height < 480))
-				Con_Warning ("Running low-res windowed mode, XFree86 DGA Mouse disabled\n");
+			if (!vidmode_fullscreen /* && (vid.width < 640 || vid.height < 480) */ )
+            {
+//				Con_Warning ("Running low-res windowed mode, XFree86 DGA Mouse disabled\n");
+				Con_Warning ("Running windowed mode, XFree86 DGA Mouse disabled\n");
+                dga_mouse_available = false;
+            }
 			else
 				IN_ActivateDGAMouse();
 
@@ -471,8 +475,12 @@ void IN_GrabKeyboard (void)
 
 		if (dga_keyboard_available)
 		{
-			if (!vidmode_fullscreen && (vid.width < 640 || vid.height < 480))
-				Con_Warning ("Running low-res windowed mode, XFree86 DGA Keyboard disabled\n");
+			if (!vidmode_fullscreen /* && (vid.width < 640 || vid.height < 480) */ ) 
+            {
+//				Con_Warning ("Running low-res windowed mode, XFree86 DGA Keyboard disabled\n");
+                Con_Warning ("Running windowed mode, XFree86 DGA Keyboard disabled\n");
+                dga_keyboard_available = false;
+            }
 			else
 				IN_ActivateDGAKeyboard();
 		}
@@ -729,7 +737,7 @@ void IN_CheckActive (void)
                 S_UnblockSound ();
                 S_ClearBuffer ();
                 VID_Gamma_Set ();
-                IN_GrabKeyboard();
+//                IN_GrabKeyboard();
                 active = true;
                 printf("*** Active ***\n");
             }
@@ -742,7 +750,7 @@ void IN_CheckActive (void)
                 S_BlockSound ();
                 S_ClearBuffer ();
                 VID_Gamma_Restore ();
-                IN_UngrabKeyboard();
+//                IN_UngrabKeyboard();
                 Key_ClearStates ();
                 active = false;
                 printf("*** Inactive ***\n");
@@ -984,12 +992,14 @@ void IN_ProcessEvents (void)
 		if ( key_dest == key_game && !mouse_grab_active && vid_activewindow )
 //		if ( key_dest != key_console && !mouse_grab_active && vid_activewindow )
 		{
-			IN_GrabMouse ();
+			IN_GrabMouse();
+			IN_GrabKeyboard();
 		}
 		else if ( key_dest != key_game && mouse_grab_active ) 
 //		else if ( key_dest == key_console && mouse_grab_active ) 
 		{
-			IN_UngrabMouse ();
+			IN_UngrabMouse();
+			IN_UngrabKeyboard();
 		}
 	}
 
