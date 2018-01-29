@@ -544,7 +544,7 @@ void IN_Init (void)
 	dga_mouse_available = false;
 	dga_mouse_active = false;
 
-	if (COM_CheckParm ("-nokeyb"))
+	if (COM_CheckParm ("-nokbd"))
 		keyboard_available = false;
 	else
 		keyboard_available = true;
@@ -713,16 +713,16 @@ void IN_CheckActive (void)
     {
         if (!vid_hiddenwindow)
         {
-            // set our video mode
-            XF86VidModeSwitchToMode(x_disp, scrnum, &game_vidmode);
-            
-            // move the viewport to top left
-            XF86VidModeSetViewPort(x_disp, scrnum, 0, 0);
+//            // set our video mode
+//            XF86VidModeSwitchToMode(x_disp, scrnum, &game_vidmode);
+//            
+//            // move the viewport to top left
+//            XF86VidModeSetViewPort(x_disp, scrnum, 0, 0);
         }
         else if (vid_hiddenwindow)
         {
             // set our video mode
-            XF86VidModeSwitchToMode(x_disp, scrnum, &init_vidmode);
+//            XF86VidModeSwitchToMode(x_disp, scrnum, &init_vidmode);
         }
     }
     else //if (!vidmode_fullscreen)
