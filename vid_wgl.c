@@ -824,8 +824,9 @@ LONG WINAPI MainWndProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 		// enable/disable sound, set/restore gamma and activate/deactivate mouse
 		// on focus gain/loss
-		if (vid_activewindow && !vid_hiddenwindow && !active)
+		if (vid_activewindow && !vid_hiddenwindow)// && !active)
 		{
+            if (!active) {
 			if (modestate == MS_FULLSCREEN)
 			{
 				IN_ActivateMouse ();
@@ -844,13 +845,16 @@ LONG WINAPI MainWndProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				IN_ActivateMouse ();
 				IN_HideMouse ();
 			}
+            CDAudio_Resume ();
 			S_UnblockSound ();
 			S_ClearBuffer ();
 			VID_Gamma_Set ();
 			active = true;
+            }
 		}
-		else if (active) //if (!vid_activewindow)
+		else //if (active) //if (!vid_activewindow)
 		{
+            if (active) {
 			if (modestate == MS_FULLSCREEN)
 			{
 				IN_DeactivateMouse ();
@@ -867,10 +871,12 @@ LONG WINAPI MainWndProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				IN_DeactivateMouse ();
 				IN_ShowMouse ();
 			}
+            CDAudio_Pause ();
 			S_BlockSound ();
 			S_ClearBuffer ();
 			VID_Gamma_Restore ();
 			active = false;
+            }
 		}
 
 		// fix the leftover Alt from any Alt-Tab or the like that switched us away
