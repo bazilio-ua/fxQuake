@@ -25,6 +25,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 static qboolean nostdout = false;
 
+qboolean has_smp = false;
+
 // =======================================================================
 // General routines
 // =======================================================================
@@ -130,6 +132,14 @@ Sys_Init
 */
 void Sys_Init(void)
 {
+    int numcpus;
+    
+    numcpus = sysconf(_SC_NPROCESSORS_ONLN);
+    if (numcpus != -1)
+        numcpus = (numcpus < 1) ? 1 : numcpus;
+    
+    has_smp = (numcpus > 1) ? true : false;
+    Sys_Printf("Detected %d CPU%s.\n", numcpus, has_smp ? "s" : "");
 }
 
 void Sys_Printf (char *fmt, ...)
