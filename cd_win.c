@@ -251,6 +251,8 @@ void CDAudio_Resume(void)
 		Con_DPrintf("CDAudio_Resume: MCI_PLAY failed (%u)\n", (unsigned int)dwReturn);
 		return;
 	}
+    
+	wasPlaying = false;
 	playing = true;
 }
 
