@@ -139,17 +139,16 @@ void Sys_Init (void)
 		numcpus = info.dwNumberOfProcessors;
         numcpus = (numcpus < 1) ? 1 : numcpus;
 
-        has_smp = (numcpus > 1) ? true : false;
-
 		WinNT = true;
     }
 	else
     {
-        has_smp = false;
+        numcpus = 1;
 
 		WinNT = false;
     }
     
+    has_smp = (numcpus > 1) ? true : false;
     Sys_Printf("Detected %d CPU%s.\n", numcpus, has_smp ? "s" : "");
 }
 
