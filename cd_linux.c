@@ -204,6 +204,7 @@ void CDAudio_Resume(void)
 	if ( ioctl(cdfile, CDROMRESUME) == -1 ) 
 		IOCTL_FAILURE(CDROMRESUME);
 
+	wasPlaying = false;
 	playing = true;
 }
 

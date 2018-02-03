@@ -37,11 +37,11 @@ static byte		maxTrack;
 
 static int cdfile = -1;
 // default path to cdrom device. user can always do -cddev
-#ifndef __FreeBSD__
+//#ifndef __FreeBSD__
 static char	default_cd_dev[] = _PATH_DEV "cd0";
-#else
-static char	default_cd_dev[] = _PATH_DEV "acd0";
-#endif
+//#else
+//static char	default_cd_dev[] = _PATH_DEV "acd0";
+//#endif
 static char	*cd_dev = default_cd_dev;
 
 static float	old_cdvolume;
@@ -220,6 +220,7 @@ void CDAudio_Resume(void)
 	if ( ioctl(cdfile, CDIOCRESUME) == -1 )
 		IOCTL_FAILURE(CDIOCRESUME);
 
+	wasPlaying = false;
 	playing = true;
 }
 
