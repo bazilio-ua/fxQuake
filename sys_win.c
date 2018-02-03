@@ -31,6 +31,7 @@ int			starttime;
 qboolean	vid_activewindow;
 qboolean	vid_hiddenwindow;
 qboolean	WinNT;
+qboolean	has_smp = false;
 
 static double		pfreq;
 static qboolean		hwtimer = false;
@@ -115,6 +116,7 @@ Sys_Init
 void Sys_Init (void)
 {
 	OSVERSIONINFO	vinfo;
+    int numcpus;
 
 	Sys_InitDoubleTime ();
 
@@ -130,9 +132,25 @@ void Sys_Init (void)
 	}
 
 	if (vinfo.dwPlatformId == VER_PLATFORM_WIN32_NT)
+    {
+        SYSTEM_INFO info;
+
+        GetSystemInfo(&info);
+		numcpus = info.dwNumberOfProcessors;
+        numcpus = (numcpus < 1) ? 1 : numcpus;
+
+        has_smp = (numcpus > 1) ? true : false;
+
 		WinNT = true;
+    }
 	else
+    {
+        has_smp = false;
+
 		WinNT = false;
+    }
+    
+    Sys_Printf("Detected %d CPU%s.\n", numcpus, has_smp ? "s" : "");
 }
 
 void Sys_Printf (char *fmt, ...)
