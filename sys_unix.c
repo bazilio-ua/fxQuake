@@ -347,13 +347,29 @@ main
 */
 //char *qbasedir = ".";
 //char *qcachedir = "/tmp";
+static char qcwd[MAX_OSPATH];
 
 int main (int argc, char **argv)
 {
 	double time, oldtime, newtime;
 	quakeparms_t parms;
 	int t;
+    char *c;
+//    if (getcwd(qcwd, sizeof(cwd) - 1) == NULL)
+//        Sys_Error ("Couldn't determine current directory");
 
+    strncpy(qcwd, argv[0], sizeof(qcwd));
+    c = (char *)qcwd;
+    
+    while (*c != '\0')     /* go to end */
+        c++;
+    while (*c != '/')      /* back up to parent */
+        c--;
+    *c++ = '\0';             /* cut off last part (binary name) */
+
+    if (chdir(qcwd) == 0)
+        Sys_Printf("Current directory: %s\n", qcwd);
+    
 	signal(SIGFPE, SIG_IGN);
 
 	memset(&parms, 0, sizeof(parms));
