@@ -366,7 +366,7 @@ int main (int argc, char **argv)
     *c++ = '\0';        /* cut off last part (binary name) */
 
     if (chdir(basepath) == -1)
-        Sys_Error ("Couldn't change to current directory: %s\n", basepath);
+        Sys_Error ("Couldn't change to directory: %s\n", basepath);
     if (getcwd(qcwd, sizeof(qcwd)) == NULL)
         Sys_Error ("Couldn't determine current directory");
     else
