@@ -214,7 +214,7 @@ void CDAudio_Play(byte track, qboolean looping)
     
     filePosition = 0;
     
-    ScheduledAudioFileRegion fileRegion = { 0 };
+    ScheduledAudioFileRegion fileRegion = {{0}};
     fileRegion.mTimeStamp.mFlags = kAudioTimeStampSampleTimeValid;
     fileRegion.mTimeStamp.mSampleTime = 0;
     fileRegion.mCompletionProc = nil;
@@ -344,7 +344,7 @@ void CDAudio_Resume(void)
         return;
     }
     
-    ScheduledAudioFileRegion fileRegion = { 0 };
+    ScheduledAudioFileRegion fileRegion = {{0}};
     fileRegion.mTimeStamp.mFlags = kAudioTimeStampSampleTimeValid;
     fileRegion.mTimeStamp.mSampleTime = 0;
     fileRegion.mCompletionProc = nil;

@@ -21,12 +21,19 @@ ifneq (,$(findstring Darwin,$(shell uname -s)))
 UNIX=mac
 endif
 
-CC=gcc
+CC=clang
 STRIP=strip
 
 CPUFLAGS=-m32
-LDFLAGS=-L/usr/lib -F/System/Library/Frameworks -Wl,-framework,Cocoa -Wl,-framework,IOKit -Wl,-framework,OpenGL
-BASE_CFLAGS=-I/usr/include -DQBASEDIR="$(QBASE_DIR)" -Wall -Wno-trigraphs
+LDFLAGS=-L/usr/lib -F/System/Library/Frameworks \
+		-Wl,-framework,Cocoa \
+		-Wl,-framework,AppKit \
+		-Wl,-framework,IOKit \
+		-Wl,-framework,OpenGL \
+		-Wl,-framework,CoreAudio \
+		-Wl,-framework,AudioToolbox \
+		-Wl,-framework,AudioUnit
+BASE_CFLAGS=-I/usr/include -DQBASEDIR="$(QBASE_DIR)" -Wall -Wno-trigraphs #-std=c99
 
 ifeq ($(DEBUG),Y)
 CFLAGS=$(BASE_CFLAGS) -DDEBUG -g
