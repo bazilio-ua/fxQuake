@@ -279,7 +279,7 @@ static inline void VectorNormalizeFast(vec3_t v)
 
 struct mplane_s;
 
-extern inline int BoxOnPlaneSide (vec3_t emins, vec3_t emaxs, struct mplane_s *p);
+extern int BoxOnPlaneSide (vec3_t emins, vec3_t emaxs, struct mplane_s *p);
 
 #define BOX_ON_PLANE_SIDE(emins, emaxs, p)	\
 	(((p)->type < 3)?						\

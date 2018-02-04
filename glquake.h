@@ -233,12 +233,12 @@ typedef struct particle_s
 extern	model_t	*loadmodel;
 
 // vid_*gl*.c
-extern inline void GL_BeginRendering (int *x, int *y, int *width, int *height);
-extern inline void GL_EndRendering (void);
+extern void GL_BeginRendering (int *x, int *y, int *width, int *height);
+extern void GL_EndRendering (void);
 
 // gl_main.c
-extern inline qboolean R_CullBox (vec3_t mins, vec3_t maxs);
-extern inline qboolean R_CullModelForEntity (entity_t *e);
+extern qboolean R_CullBox (vec3_t mins, vec3_t maxs);
+extern qboolean R_CullModelForEntity (entity_t *e);
 void R_DrawAliasModel (entity_t *e);
 void R_DrawSpriteModel (entity_t *e);
 
@@ -254,11 +254,11 @@ void GL_ReloadTextures_f (void);
 gltexture_t *GL_LoadTexture (model_t *owner, char *name, int width, int height, enum srcformat format, byte *data, char *source_file, unsigned source_offset, unsigned flags);
 gltexture_t *GL_FindTexture (model_t *owner, char *name);
 void GL_SetFilterModes (gltexture_t *glt);
-extern inline void GL_Set2D (void);
-extern inline void GL_SelectTexture (GLenum target);
-extern inline void GL_Bind (gltexture_t *texture);
-extern inline void GL_DisableMultitexture (void);
-extern inline void GL_EnableMultitexture (void);
+extern void GL_Set2D (void);
+extern void GL_SelectTexture (GLenum target);
+extern void GL_Bind (gltexture_t *texture);
+extern void GL_DisableMultitexture (void);
+extern void GL_EnableMultitexture (void);
 void GL_Init (void);
 void GL_SetupState (void);
 void GL_SwapInterval (void);
@@ -292,8 +292,8 @@ void R_MarkLeaves (void);
 void R_DrawBrushModel (entity_t *e);
 void R_DrawWorld (void);
 void R_DrawOpaque (void);
-extern inline void R_DrawGLPoly34 (glpoly_t *p);
-extern inline void R_DrawGLPoly56 (glpoly_t *p);
+extern void R_DrawGLPoly34 (glpoly_t *p);
+extern void R_DrawGLPoly56 (glpoly_t *p);
 void R_DrawSequentialPoly (msurface_t *s, float alpha, int frame);
 void R_BuildLightmaps (void);
 void R_UploadLightmaps (void);
@@ -379,9 +379,9 @@ typedef struct gl_alphalist_s
 extern gl_alphalist_t	gl_alphalist[MAX_ALPHA_ITEMS];
 extern int				gl_alphalist_num;
 
-extern inline float R_GetTurbAlpha (msurface_t *s);
-extern inline vec_t R_GetAlphaDist (vec3_t origin);
-extern inline void R_AddToAlpha (int type, vec_t dist, void *data, entity_t *entity, float alpha);
+extern float R_GetTurbAlpha (msurface_t *s);
+extern vec_t R_GetAlphaDist (vec3_t origin);
+extern void R_AddToAlpha (int type, vec_t dist, void *data, entity_t *entity, float alpha);
 extern void R_DrawAlpha (void);
 
 //====================================================
