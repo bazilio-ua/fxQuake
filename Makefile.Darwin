@@ -33,13 +33,13 @@ LDFLAGS=-L/usr/lib -F/System/Library/Frameworks \
 		-Wl,-framework,CoreAudio \
 		-Wl,-framework,AudioToolbox \
 		-Wl,-framework,AudioUnit
-BASE_CFLAGS=-I/usr/include -DQBASEDIR="$(QBASE_DIR)" -Wall -Wno-trigraphs #-std=c99
+BASE_CFLAGS=-I/usr/include -DQBASEDIR="$(QBASE_DIR)" -Wall
 
 ifeq ($(DEBUG),Y)
 CFLAGS=$(BASE_CFLAGS) -DDEBUG -g
 do_strip=
 else
-CFLAGS=$(BASE_CFLAGS) -DNDEBUG -O2 -ffast-math -frename-registers -fweb
+CFLAGS=$(BASE_CFLAGS) -DNDEBUG -O2
 cmd_strip=$(STRIP) $(1)
 define do_strip
 	$(call cmd_strip,$(1))

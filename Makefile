@@ -25,18 +25,18 @@ UNIX=linux
 endif
 endif
 
-CC=gcc49
+CC=gcc
 STRIP=strip
 
 CPUFLAGS=-m32
 LDFLAGS=-L/usr/local/lib -lm -lX11 -lXpm -lXext -lXxf86dga -lXxf86vm -lGL
-BASE_CFLAGS=-I/usr/local/include -DQBASEDIR="$(QBASE_DIR)" -Wall -Wno-trigraphs
+BASE_CFLAGS=-I/usr/local/include -DQBASEDIR="$(QBASE_DIR)" -Wall
 
 ifeq ($(DEBUG),Y)
 CFLAGS=$(BASE_CFLAGS) -DDEBUG -g
 do_strip=
 else
-CFLAGS=$(BASE_CFLAGS) -DNDEBUG -O2 -ffast-math -frename-registers -fweb
+CFLAGS=$(BASE_CFLAGS) -DNDEBUG -O2
 cmd_strip=$(STRIP) $(1)
 define do_strip
 	$(call cmd_strip,$(1))

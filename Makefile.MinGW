@@ -28,13 +28,13 @@ endif
 
 CPUFLAGS=-m32
 LDFLAGS=-L/mingw/lib -L/mingw/lib/w32api -mwindows -ldxguid -ldinput -ldsound -lwinmm -lwsock32 -lopengl32
-BASE_CFLAGS=-I/mingw/include -I/mingw/include/w32api -Wall -Wno-trigraphs
+BASE_CFLAGS=-I/mingw/include -I/mingw/include/w32api -Wall
 
 ifeq ($(DEBUG),Y)
 CFLAGS=$(BASE_CFLAGS) -DDEBUG -g
 do_strip=
 else
-CFLAGS=$(BASE_CFLAGS) -DNDEBUG -O2 -ffast-math -frename-registers -fweb
+CFLAGS=$(BASE_CFLAGS) -DNDEBUG -O2
 cmd_strip=$(STRIP) $(1)
 define do_strip
 	$(call cmd_strip,$(1))
