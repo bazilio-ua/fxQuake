@@ -34,7 +34,7 @@ aliashdr_t	*paliashdr;
 
 #define MAX_CMDS 16384 // was 8192
 
-qboolean	used[MAX_CMDS];
+int		used[MAX_CMDS]; // qboolean
 
 // the command list holds counts and s/t values that are valid for
 // every frame
