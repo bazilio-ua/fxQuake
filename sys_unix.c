@@ -348,6 +348,7 @@ main
 //char *qbasedir = ".";
 //char *qcachedir = "/tmp";
 static char qcwd[MAX_OSPATH];
+static char basepath[MAX_OSPATH];
 
 int main (int argc, char **argv)
 {
@@ -355,21 +356,22 @@ int main (int argc, char **argv)
 	quakeparms_t parms;
 	int t;
     char *c;
-//    if (getcwd(qcwd, sizeof(cwd) - 1) == NULL)
-//        Sys_Error ("Couldn't determine current directory");
 
-    strncpy(qcwd, argv[0], sizeof(qcwd));
-    c = (char *)qcwd;
-    
-    while (*c != '\0')     /* go to end */
+    strncpy(basepath, argv[0], sizeof(basepath));
+    c = (char *)basepath;
+    while (*c != '\0')  /* go to end */
         c++;
-    while (*c != '/')      /* back up to parent */
+    while (*c != '/')   /* back up to parent */
         c--;
-    *c++ = '\0';             /* cut off last part (binary name) */
+    *c++ = '\0';        /* cut off last part (binary name) */
 
-    if (chdir(qcwd) == 0)
+    if (chdir(basepath) == -1)
+        Sys_Error ("Couldn't change to current directory: %s\n", basepath);
+    if (getcwd(qcwd, sizeof(qcwd)) == NULL)
+        Sys_Error ("Couldn't determine current directory");
+    else
         Sys_Printf("Current directory: %s\n", qcwd);
-    
+
 	signal(SIGFPE, SIG_IGN);
 
 	memset(&parms, 0, sizeof(parms));
