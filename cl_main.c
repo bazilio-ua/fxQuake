@@ -531,7 +531,7 @@ void CL_RelinkEntities (void)
 			dl->die = cl.time + 0.1;
 			
 			//johnfitz -- assume muzzle flash accompanied by muzzle flare, which looks bad when lerped
-			if (cl_lerpmuzzleflash.value == 0)
+			if (!cl_lerpmuzzleflash.value)
 			{
                 if (i == cl.viewentity)
                     cl.viewent.lerpflags |= LERP_RESETANIM|LERP_RESETANIM2; // no lerping for two frames
