@@ -30,6 +30,7 @@ cvar_t	cl_color = {"cl_color", "0", true};
 
 cvar_t	cl_shownet = {"cl_shownet","0"};	// can be 0, 1, or 2
 cvar_t	cl_nolerp = {"cl_nolerp","0"};
+cvar_t	cl_lerpmuzzleflash = {"cl_lerpmuzzleflash","0"};
 
 cvar_t	cl_coloredlight = {"cl_coloredlight","0", true};
 cvar_t	cl_extradlight = {"cl_extradlight","0", true};
@@ -495,7 +496,6 @@ void CL_RelinkEntities (void)
 			//johnfitz -- don't cl_lerp entities that will be r_lerped
 			if (ent->lerpflags & LERP_MOVESTEP)
 				f = 1;
-			//johnfitz
 
 		// interpolate the origin and angles
 			for (j=0 ; j<3 ; j++)
@@ -530,6 +530,13 @@ void CL_RelinkEntities (void)
 			dl->minlight = 32;
 			dl->die = cl.time + 0.1;
 			
+			//johnfitz -- assume muzzle flash accompanied by muzzle flare, which looks bad when lerped
+			if (cl_lerpmuzzleflash.value == 0)
+			{
+                if (i == cl.viewentity)
+                    cl.viewent.lerpflags |= LERP_RESETANIM|LERP_RESETANIM2; // no lerping for two frames
+			}
+            
 			if (i == cl.viewentity)
 			{
 				// switch the flash colour for the current weapon
@@ -899,6 +906,7 @@ void CL_Init (void)
 	Cvar_RegisterVariable (&cl_anglespeedkey, NULL);
 	Cvar_RegisterVariable (&cl_shownet, NULL);
 	Cvar_RegisterVariable (&cl_nolerp, NULL);
+	Cvar_RegisterVariable (&cl_lerpmuzzleflash, NULL);
 
 	Cvar_RegisterVariable (&cl_coloredlight, NULL);
 	Cvar_RegisterVariable (&cl_extradlight, NULL);

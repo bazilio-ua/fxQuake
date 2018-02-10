@@ -1245,9 +1245,19 @@ void R_SetupAliasFrame (entity_t *e, aliashdr_t *paliashdr, lerpdata_t *lerpdata
 	}
 	else if (e->currentpose != posenum)  // pose changed, start new lerp
 	{
-		e->lerpstart = cl.time;
-		e->previouspose = e->currentpose;
-		e->currentpose = posenum;
+		if (e->lerpflags & LERP_RESETANIM2) // defer lerping one more time
+		{
+			e->lerpstart = 0;
+			e->previouspose = posenum;
+			e->currentpose = posenum;
+			e->lerpflags -= LERP_RESETANIM2;
+		}
+		else
+        {
+            e->lerpstart = cl.time;
+            e->previouspose = e->currentpose;
+            e->currentpose = posenum;
+        }
 	}
 
 	// set up values
