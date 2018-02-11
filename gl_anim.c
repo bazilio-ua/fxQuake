@@ -881,9 +881,9 @@ void R_SkyEmitSkyBoxVertex (float s, float t, int axis)
 	int			j, k;
 	float		w, h;
 
-	b[0] = s * FARCLIP / sqrt(3.0);
-	b[1] = t * FARCLIP / sqrt(3.0);
-	b[2] = FARCLIP / sqrt(3.0);
+	b[0] = s * gl_farclip.value / sqrt(3.0);
+	b[1] = t * gl_farclip.value / sqrt(3.0);
+	b[2] = gl_farclip.value / sqrt(3.0);
 
 	for (j=0 ; j<3 ; j++)
 	{
@@ -996,9 +996,9 @@ void R_SkySetBoxVert (float s, float t, int axis, vec3_t v)
 	vec3_t		b;
 	int			j, k;
 
-	b[0] = s * FARCLIP / sqrt(3.0);
-	b[1] = t * FARCLIP / sqrt(3.0);
-	b[2] = FARCLIP / sqrt(3.0);
+	b[0] = s * gl_farclip.value / sqrt(3.0);
+	b[1] = t * gl_farclip.value / sqrt(3.0);
+	b[2] = gl_farclip.value / sqrt(3.0);
 
 	for (j=0 ; j<3 ; j++)
 	{

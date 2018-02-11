@@ -86,6 +86,7 @@ cvar_t	r_clearcolor = {"r_clearcolor", "2", true}; // Closest to the original
 cvar_t	gl_finish = {"gl_finish","0"};
 cvar_t	gl_clear = {"gl_clear","0"};
 cvar_t	gl_cull = {"gl_cull","1"};
+cvar_t	gl_farclip = {"gl_farclip","16384", true};
 cvar_t	gl_smoothmodels = {"gl_smoothmodels","1"};
 cvar_t	gl_affinemodels = {"gl_affinemodels","0"};
 cvar_t	gl_polyblend = {"gl_polyblend","1", true};
@@ -912,7 +913,7 @@ void GL_SetFrustum (float fovx, float fovy)
 	xmin = -xmax;
 	ymin = -ymax;
 
-	glFrustum (xmin, xmax, ymin, ymax, NEARCLIP, FARCLIP);
+	glFrustum (xmin, xmax, ymin, ymax, NEARCLIP, gl_farclip.value); // FARCLIP
 }
 
 /*

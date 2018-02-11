@@ -343,7 +343,7 @@ extern	int glx, gly, glwidth, glheight;
 #define BACKFACE_EPSILON	0.01
 #define COLINEAR_EPSILON	0.001
 
-#define FARCLIP		16384 // 4096
+#define FARCLIP		1048576 // enough? was 16384 // orig. 4096
 #define NEARCLIP		1 // 4
 
 void R_TimeRefresh_f (void);
@@ -471,7 +471,7 @@ extern	cvar_t	r_oldsky;
 extern	cvar_t	gl_finish;
 extern	cvar_t	gl_clear;
 extern	cvar_t	gl_cull;
-extern	cvar_t	gl_poly;
+extern	cvar_t	gl_farclip;
 extern	cvar_t	gl_smoothmodels;
 extern	cvar_t	gl_affinemodels;
 extern	cvar_t	gl_polyblend;
