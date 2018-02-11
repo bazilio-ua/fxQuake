@@ -398,6 +398,7 @@ void R_DrawAliasModel (entity_t *e)
 	static float	lastmsg = 0;
 	lerpdata_t	lerpdata;
 	float		scale;
+	qboolean	alphatest;
 
 	//
 	// locate the proper data
@@ -467,6 +468,8 @@ void R_DrawAliasModel (entity_t *e)
 	//
 	aliasalpha = ENTALPHA_DECODE(e->alpha);
 
+    alphatest = !!(e->model->flags & MF_HOLEY);
+
 	if (aliasalpha == 0)
 		goto cleanup;
 
@@ -474,7 +477,8 @@ void R_DrawAliasModel (entity_t *e)
 	{
 		glDepthMask (GL_FALSE);
 		glEnable (GL_BLEND);
-	}
+	} else if (alphatest)
+		glEnable (GL_ALPHA_TEST);
 
 	//
 	// set up lighting
@@ -647,6 +651,8 @@ cleanup:
 	glShadeModel (GL_FLAT); // gl_smoothmodels
 	glDepthMask (GL_TRUE);
 	glDisable (GL_BLEND);
+	if (alphatest)
+		glDisable (GL_ALPHA_TEST);
 	glColor3f (1, 1, 1);
 	glPopMatrix ();
 }

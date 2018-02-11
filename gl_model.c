@@ -2501,6 +2501,7 @@ void *Mod_LoadAllSkins (int numskins, daliasskintype_t *pskintype)
 	int		groupskins;
 	daliasskininterval_t	*pinskinintervals;
 	unsigned				offset; //johnfitz
+	unsigned int			texflags = TEXPREF_PAD;
 
 	skin = (byte *)(pskintype + 1);
 
@@ -2508,6 +2509,9 @@ void *Mod_LoadAllSkins (int numskins, daliasskintype_t *pskintype)
 		Host_Error ("Mod_LoadAllSkins: invalid # of skins (%d, max = %d) in %s", numskins, MAX_SKINS, loadmodel->name);
 
 	size = pheader->skinwidth * pheader->skinheight;
+
+    if (loadmodel->flags & MF_HOLEY)
+		texflags |= TEXPREF_ALPHA;
 
 	for (i=0 ; i<numskins ; i++)
 	{
@@ -2529,13 +2533,13 @@ void *Mod_LoadAllSkins (int numskins, daliasskintype_t *pskintype)
 				pheader->gltexture[i][0] =
 				pheader->gltexture[i][1] =
 				pheader->gltexture[i][2] =
-				pheader->gltexture[i][3] = GL_LoadTexture (loadmodel, skinname, pheader->skinwidth, pheader->skinheight, SRC_INDEXED, (byte *)(pskintype+1), loadmodel->name, offset, TEXPREF_PAD | TEXPREF_NOBRIGHT);
+				pheader->gltexture[i][3] = GL_LoadTexture (loadmodel, skinname, pheader->skinwidth, pheader->skinheight, SRC_INDEXED, (byte *)(pskintype+1), loadmodel->name, offset, texflags | TEXPREF_NOBRIGHT);
 
 				sprintf (skinname, "%s:frame%i_glow", loadmodel->name, i);
 				pheader->fullbright[i][0] =
 				pheader->fullbright[i][1] =
 				pheader->fullbright[i][2] =
-				pheader->fullbright[i][3] = GL_LoadTexture (loadmodel, skinname, pheader->skinwidth, pheader->skinheight, SRC_INDEXED, (byte *)(pskintype+1), loadmodel->name, offset, TEXPREF_PAD | TEXPREF_FULLBRIGHT);
+				pheader->fullbright[i][3] = GL_LoadTexture (loadmodel, skinname, pheader->skinwidth, pheader->skinheight, SRC_INDEXED, (byte *)(pskintype+1), loadmodel->name, offset, texflags | TEXPREF_FULLBRIGHT);
 			}
 			else
 			{
@@ -2543,7 +2547,7 @@ void *Mod_LoadAllSkins (int numskins, daliasskintype_t *pskintype)
 				pheader->gltexture[i][0] =
 				pheader->gltexture[i][1] =
 				pheader->gltexture[i][2] =
-				pheader->gltexture[i][3] = GL_LoadTexture (loadmodel, skinname, pheader->skinwidth, pheader->skinheight, SRC_INDEXED, (byte *)(pskintype+1), loadmodel->name, offset, TEXPREF_PAD);
+				pheader->gltexture[i][3] = GL_LoadTexture (loadmodel, skinname, pheader->skinwidth, pheader->skinheight, SRC_INDEXED, (byte *)(pskintype+1), loadmodel->name, offset, texflags);
 
 				pheader->fullbright[i][0] =
 				pheader->fullbright[i][1] =
@@ -2577,15 +2581,15 @@ void *Mod_LoadAllSkins (int numskins, daliasskintype_t *pskintype)
 				if (IsFullbright ((byte *)(pskintype), size))
 				{
 					sprintf (skinname, "%s:frame%i_%i", loadmodel->name, i,j);
-					pheader->gltexture[i][j&3] = GL_LoadTexture (loadmodel, skinname, pheader->skinwidth, pheader->skinheight, SRC_INDEXED, (byte *)(pskintype), loadmodel->name, offset, TEXPREF_PAD | TEXPREF_NOBRIGHT);
+					pheader->gltexture[i][j&3] = GL_LoadTexture (loadmodel, skinname, pheader->skinwidth, pheader->skinheight, SRC_INDEXED, (byte *)(pskintype), loadmodel->name, offset, texflags | TEXPREF_NOBRIGHT);
 
 					sprintf (skinname, "%s:frame%i_%i_glow", loadmodel->name, i,j);
-					pheader->fullbright[i][j&3] = GL_LoadTexture (loadmodel, skinname, pheader->skinwidth, pheader->skinheight, SRC_INDEXED, (byte *)(pskintype), loadmodel->name, offset, TEXPREF_PAD | TEXPREF_FULLBRIGHT);
+					pheader->fullbright[i][j&3] = GL_LoadTexture (loadmodel, skinname, pheader->skinwidth, pheader->skinheight, SRC_INDEXED, (byte *)(pskintype), loadmodel->name, offset, texflags | TEXPREF_FULLBRIGHT);
 				}
 				else
 				{
 					sprintf (skinname, "%s:frame%i_%i", loadmodel->name, i,j);
-					pheader->gltexture[i][j&3] = GL_LoadTexture (loadmodel, skinname, pheader->skinwidth, pheader->skinheight, SRC_INDEXED, (byte *)(pskintype), loadmodel->name, offset, TEXPREF_PAD);
+					pheader->gltexture[i][j&3] = GL_LoadTexture (loadmodel, skinname, pheader->skinwidth, pheader->skinheight, SRC_INDEXED, (byte *)(pskintype), loadmodel->name, offset, texflags);
 
 					pheader->fullbright[i][j&3] = NULL;
 				}
@@ -2813,6 +2817,9 @@ void Mod_LoadAliasModel (model_t *mod, void *buffer)
 
 	mod->type = mod_alias;
 	
+    // set up extra flags that aren't in the mdl
+    mod->flags &= (0xFF | MF_HOLEY); // only preserve first byte, plus MF_HOLEY
+
 	Mod_CalcAliasBounds (pheader); // calc correct bounds
 
 //
