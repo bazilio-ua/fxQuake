@@ -143,6 +143,7 @@ RECT		window_rect;
 //==========================================================================
 
 cvar_t		vid_gamma = {"gamma", "1", true}; // moved here from view.c
+cvar_t		vid_contrast = {"contrast", "1", true}; // QuakeSpasm, MarkV
 
 unsigned short vid_gammaramp[768];
 unsigned short vid_systemgammaramp[768]; // to restore gamma on exit
@@ -210,16 +211,18 @@ void VID_Gamma (void)
 {
 	int i;
 	static float oldgamma;
+	static float oldcontrast;
 
-	if (vid_gamma.value == oldgamma)
+	if (vid_gamma.value == oldgamma && vid_contrast.value == oldcontrast)
 		return;
 
 	oldgamma = vid_gamma.value;
+    oldcontrast = vid_contrast.value;
 
 	// Refresh gamma
 	for (i=0; i<256; i++)
 		vid_gammaramp[i] = vid_gammaramp[i+256] = vid_gammaramp[i+512] =
-			CLAMP(0, (int) (255 * pow ((i+0.5)/255.5, vid_gamma.value) + 0.5), 255) << 8;
+			CLAMP(0, (int)((255 * pow ((i+0.5)/255.5, vid_gamma.value) + 0.5) * vid_contrast.value), 255) << 8;
 
 	VID_Gamma_Set ();
 }
@@ -1468,6 +1471,7 @@ void VID_Init (void)
 	VID_Gamma_Init ();
 
 	Cvar_RegisterVariable (&vid_gamma, VID_Gamma);
+	Cvar_RegisterVariable (&vid_contrast, VID_Gamma);
 
 	vid_realmode = vid_modenum;
 

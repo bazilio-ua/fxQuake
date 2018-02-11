@@ -862,17 +862,18 @@ enum
 	OPT_DEFAULTS,	//2
 	OPT_SCRSIZE,	//3
 	OPT_GAMMA,		//4
-	OPT_MOUSESPEED,	//5
-	OPT_MUSICTYPE,	//6
-	OPT_MUSICVOL,	//7
-	OPT_SNDVOL,		//8
-	OPT_ALWAYRUN,	//9
-	OPT_INVMOUSE,	//10
-	OPT_LOOKSPRING,	//11
-	OPT_LOOKSTRAFE,	//12
-	OPT_CROSSHAIR,	//13
-	OPT_ALWAYSMLOOK,//14
-	OPT_VIDEO,		//15
+	OPT_CONTRAST,	//5
+	OPT_MOUSESPEED,	//6
+	OPT_MUSICTYPE,	//7
+	OPT_MUSICVOL,	//8
+	OPT_SNDVOL,		//9
+	OPT_ALWAYRUN,	//10
+	OPT_INVMOUSE,	//11
+	OPT_LOOKSPRING,	//12
+	OPT_LOOKSTRAFE,	//13
+	OPT_CROSSHAIR,	//14
+	OPT_ALWAYSMLOOK,//15
+	OPT_VIDEO,		//16
 	OPTIONS_ITEMS
 };
 
@@ -907,7 +908,15 @@ void M_AdjustSliders (int dir)
 			vid_gamma.value = 1;
 		Cvar_SetValue("gamma", vid_gamma.value);
 		break;
-	case OPT_MOUSESPEED: //case 5 // mouse speed
+    case OPT_CONTRAST: // case 5 // contrast
+        vid_contrast.value += dir * 0.1;
+        if (vid_contrast.value < 1)	
+            vid_contrast.value = 1;
+        else if (vid_contrast.value > 2) 
+            vid_contrast.value = 2;
+        Cvar_SetValue ("contrast", vid_contrast.value);
+        break;
+	case OPT_MOUSESPEED: //case 6 // mouse speed
 		sensitivity.value += dir * 0.5;
 		if (sensitivity.value < 1)
 			sensitivity.value = 1;
@@ -915,7 +924,7 @@ void M_AdjustSliders (int dir)
 			sensitivity.value = 11;
 		Cvar_SetValue("sensitivity", sensitivity.value);
 		break;
-	case OPT_MUSICTYPE: //case 6 // bgm type
+	case OPT_MUSICTYPE: //case 7 // bgm type
 		if (strcasecmp(bgmtype.string,"cd") == 0)
 		{
 			if (dir < 0)
@@ -931,7 +940,7 @@ void M_AdjustSliders (int dir)
 				Cvar_Set("bgmtype","cd");
 		}
 		break;
-	case OPT_MUSICVOL: //case 7 // music volume
+	case OPT_MUSICVOL: //case 8 // music volume
 		bgmvolume.value += dir * 0.1;
 
 		if (bgmvolume.value < 0)
@@ -940,7 +949,7 @@ void M_AdjustSliders (int dir)
 			bgmvolume.value = 1;
 		Cvar_SetValue("bgmvolume", bgmvolume.value);
 		break;
-	case OPT_SNDVOL: //case 8 // sfx volume
+	case OPT_SNDVOL: //case 9 // sfx volume
 		volume.value += dir * 0.1;
 		if (volume.value < 0)
 			volume.value = 0;
@@ -948,7 +957,7 @@ void M_AdjustSliders (int dir)
 			volume.value = 1;
 		Cvar_SetValue("volume", volume.value);
 		break;
-	case OPT_ALWAYRUN: //case 9 // always run
+	case OPT_ALWAYRUN: //case 10 // always run
 		if (cl_forwardspeed.value > 200)
 		{
 			Cvar_SetValue ("cl_forwardspeed", 200);
@@ -960,19 +969,19 @@ void M_AdjustSliders (int dir)
 			Cvar_SetValue ("cl_backspeed", 400);
 		}
 		break;
-	case OPT_INVMOUSE: //case 10 // invert mouse
+	case OPT_INVMOUSE: //case 11 // invert mouse
 		Cvar_SetValue ("m_pitch", -m_pitch.value);
 		break;
-	case OPT_LOOKSPRING: //case 11 // lookspring
+	case OPT_LOOKSPRING: //case 12 // lookspring
 		Cvar_SetValue ("lookspring", !lookspring.value);
 		break;
-	case OPT_LOOKSTRAFE: //case 12 // lookstrafe
+	case OPT_LOOKSTRAFE: //case 13 // lookstrafe
 		Cvar_SetValue ("lookstrafe", !lookstrafe.value);
 		break;
-	case OPT_CROSSHAIR: //case 13 // crosshair
+	case OPT_CROSSHAIR: //case 14 // crosshair
 		Cvar_SetValue ("crosshair", !crosshair.value);
 		break;
-	case OPT_ALWAYSMLOOK: //case 14 // +mlook
+	case OPT_ALWAYSMLOOK: //case 15 // +mlook
 		if (in_mlook.state & 1)
 			Cbuf_AddText("-mlook");
 		else
@@ -1028,6 +1037,10 @@ void M_Options_Draw (void)
 	M_Print (16, 32+(OPT_GAMMA*8), "            Brightness");
 	r = (1.0 - vid_gamma.value) / 0.5;
 	M_DrawSlider (220, 32+(OPT_GAMMA*8), r);
+
+	M_Print (16, 32+(OPT_CONTRAST*8), "              Contrast");
+	r = vid_contrast.value - 1.0;
+	M_DrawSlider (220, 32+(OPT_CONTRAST*8), r);
 
 	M_Print (16, 32+(OPT_MOUSESPEED*8), "           Mouse Speed");
 	r = (sensitivity.value - 1) / 10;
