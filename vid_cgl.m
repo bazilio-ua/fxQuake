@@ -303,7 +303,7 @@ void VID_Init (void)
     {
         isStretched = true;
     } else {
-        isStretched = (qboolean)(CGDisplayModeGetIOFlags(desktopMode) & kDisplayModeStretchedFlag) == kDisplayModeStretchedFlag;
+        isStretched = (CGDisplayModeGetIOFlags(desktopMode) & kDisplayModeStretchedFlag) == kDisplayModeStretchedFlag;
     }
     
     // check for command-line video parameters
@@ -313,7 +313,7 @@ void VID_Init (void)
 		vid.height = (int)CGDisplayModeGetHeight(desktopMode);
         colorDepth = (int)[[(NSDictionary *)*((long *)desktopMode + 2) objectForKey:(id)kCGDisplayBitsPerPixel] intValue];
         refreshRate = (int)CGDisplayModeGetRefreshRate(desktopMode);
-        isStretched = (qboolean)(CGDisplayModeGetIOFlags(desktopMode) & kDisplayModeStretchedFlag) == kDisplayModeStretchedFlag;
+        isStretched = (CGDisplayModeGetIOFlags(desktopMode) & kDisplayModeStretchedFlag) == kDisplayModeStretchedFlag;
 	}
 	else if (COM_CheckParm("-window"))
 	{
@@ -351,7 +351,7 @@ void VID_Init (void)
                 (int)CGDisplayModeGetHeight(mode) == vid.height && 
                 (int)[[(NSDictionary *)*((long *)mode + 2) objectForKey:(id)kCGDisplayBitsPerPixel] intValue] == colorDepth &&
                 (int)CGDisplayModeGetRefreshRate(mode) == refreshRate &&
-                (qboolean)((CGDisplayModeGetIOFlags(mode) & kDisplayModeStretchedFlag) == kDisplayModeStretchedFlag) == isStretched) {
+                ((CGDisplayModeGetIOFlags(mode) & kDisplayModeStretchedFlag) == kDisplayModeStretchedFlag) == isStretched) {
                 
                 break; // we got it
             }
