@@ -69,7 +69,7 @@ int				gl_alphalist_num = 0;
 R_GetTurbAlpha
 ===============
 */
-inline float R_GetTurbAlpha (msurface_t *s)
+float R_GetTurbAlpha (msurface_t *s)
 {
 	float alpha = 1.0f;
 	
@@ -99,7 +99,7 @@ inline float R_GetTurbAlpha (msurface_t *s)
 R_GetAlphaDist
 ===============
 */
-inline vec_t R_GetAlphaDist (vec3_t origin)
+vec_t R_GetAlphaDist (vec3_t origin)
 {
 	vec3_t	result;
 	
@@ -115,7 +115,7 @@ inline vec_t R_GetAlphaDist (vec3_t origin)
 R_AddToAlpha
 ===============
 */
-inline void R_AddToAlpha (int type, vec_t dist, void *data, entity_t *entity, float alpha)
+void R_AddToAlpha (int type, vec_t dist, void *data, entity_t *entity, float alpha)
 {
 	if (gl_alphalist_num == MAX_ALPHA_ITEMS)
 		return;
@@ -553,7 +553,7 @@ void R_UploadLightmaps (void)
 R_DrawGLPoly34
 ================
 */
-inline void R_DrawGLPoly34 (glpoly_t *p)
+void R_DrawGLPoly34 (glpoly_t *p)
 {
 	float	*v;
 	int		i;
@@ -573,7 +573,7 @@ inline void R_DrawGLPoly34 (glpoly_t *p)
 R_DrawGLPoly56
 ================
 */
-inline void R_DrawGLPoly56 (glpoly_t *p)
+void R_DrawGLPoly56 (glpoly_t *p)
 {
 	float	*v;
 	int		i;

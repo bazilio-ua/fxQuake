@@ -526,7 +526,7 @@ void GL_Init (void)
 GL_Bind
 ================
 */
-inline void GL_Bind (gltexture_t *texture)
+void GL_Bind (gltexture_t *texture)
 {
 	if (!texture)
 		texture = nulltexture;
@@ -543,7 +543,7 @@ inline void GL_Bind (gltexture_t *texture)
 GL_SelectTexture
 ================
 */
-inline void GL_SelectTexture (GLenum target)
+void GL_SelectTexture (GLenum target)
 {
 	static GLenum currenttarget;
 	static int ct0, ct1;
@@ -574,7 +574,7 @@ GL_DisableMultitexture
 selects texture unit 0
 ================
 */
-inline void GL_DisableMultitexture (void) 
+void GL_DisableMultitexture (void) 
 {
 	if (mtexenabled) 
 	{
@@ -591,7 +591,7 @@ GL_EnableMultitexture
 selects texture unit 1
 ================
 */
-inline void GL_EnableMultitexture (void) 
+void GL_EnableMultitexture (void) 
 {
 	if (gl_mtexable) 
 	{
@@ -1418,7 +1418,7 @@ GL_Set2D
 Setup as if the screen was 320*200
 ================
 */
-inline void GL_Set2D (void)
+void GL_Set2D (void)
 {
 	//
 	// set up viewpoint
