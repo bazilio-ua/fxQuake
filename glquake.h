@@ -181,7 +181,8 @@ extern float gl_texture_anisotropy;
 #define TEXPREF_SKY				0x2000	// sky texture
 #define TEXPREF_TRANSPARENT		0x4000	// color 0 is transparent, odd - translucent, even - full value
 #define TEXPREF_HOLEY			0x8000	// color 0 is transparent
-#define TEXPREF_BLOOM			0x10000	// bloom texture (UNUSED)
+#define TEXPREF_SPECIAL_TRANS	0x10000	// special (particle translucency table) H2
+#define TEXPREF_BLOOM			0x20000	// bloom texture (UNUSED)
 
 enum srcformat {SRC_INDEXED, SRC_LIGHTMAP, SRC_RGBA, SRC_BLOOM};
 
