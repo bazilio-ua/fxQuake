@@ -31,7 +31,7 @@ BoxOnPlaneSide
 Returns 1, 2, or 1 + 2
 ==================
 */
-inline int BoxOnPlaneSide (vec3_t emins, vec3_t emaxs, mplane_t *p)
+int BoxOnPlaneSide (vec3_t emins, vec3_t emaxs, mplane_t *p)
 {
 	float	dist1, dist2;
 	int		sides;

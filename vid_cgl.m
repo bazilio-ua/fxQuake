@@ -158,7 +158,7 @@ GL_BeginRendering
 sets values of glx, gly, glwidth, glheight
 =================
 */
-inline void GL_BeginRendering (int *x, int *y, int *width, int *height)
+void GL_BeginRendering (int *x, int *y, int *width, int *height)
 {
 	*x = *y = 0;
 
@@ -171,7 +171,7 @@ inline void GL_BeginRendering (int *x, int *y, int *width, int *height)
 GL_EndRendering
 =================
 */
-inline void GL_EndRendering (void)
+void GL_EndRendering (void)
 {
 	CGLFlushDrawable([glcontext CGLContextObj]);
     
