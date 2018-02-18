@@ -24,6 +24,17 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // PROTOCOL_FITZQUAKE
 #define PROTOCOL_FITZQUAKE		666		// johnfitz -- added new protocol for fitzquake 0.85
 #define PROTOCOL_FITZQUAKE_PLUS	668		// Baker: for smooth angles for rotating entities
+#define PROTOCOL_RMQ			999		// mh: RMQ
+
+// PROTOCOL_RMQ protocol flags
+#define PRFL_SHORTANGLE		(1 << 1)
+#define PRFL_FLOATANGLE		(1 << 2)
+#define PRFL_24BITCOORD		(1 << 3)
+#define PRFL_FLOATCOORD		(1 << 4)
+#define PRFL_EDICTSCALE		(1 << 5)
+#define PRFL_ALPHASANITY	(1 << 6)	// cleanup insanity with alpha
+#define PRFL_INT32COORD		(1 << 7)
+#define PRFL_MOREFLAGS		(1 << 31)	// not supported
 
 // these protocols are read-only on the client and exist for the sole purpose of playing demos
 #define	PROTOCOL_BJP	10000	// Extended protocol (models > 256 etc), hopefully no conflict (compat. with BJP)
@@ -54,13 +65,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define U_FRAME2		(1<<17) // 1 byte, this is .frame & 0xFF00 (second byte)
 #define U_MODEL2		(1<<18) // 1 byte, this is .modelindex & 0xFF00 (second byte)
 #define U_LERPFINISH	(1<<19) // 1 byte, 0.0-1.0 maps to 0-255, not sent if exactly 0.1, this is ent->v.nextthink - sv.time, used for lerping
-#define U_UNUSED20		(1<<20)
+#define U_SCALE			(1<<20) // 1 byte, for PROTOCOL_RMQ PRFL_EDICTSCALE, currently read but ignored
 #define U_UNUSED21		(1<<21)
 #define U_UNUSED22		(1<<22)
 #define U_EXTEND2		(1<<23) // another byte to follow, future expansion
 // johnfitz
 
-// Nehahra 
+// Nehahra -- PROTOCOL_NEHAHRA
 #define U_TRANS		(1<<15)		// transparency
 
 #define	SU_VIEWHEIGHT	(1<<0)

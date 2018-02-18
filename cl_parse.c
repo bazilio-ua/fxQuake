@@ -576,7 +576,7 @@ void CL_ParseUpdate (int bits)
 		else
 			ent->lerpflags &= ~LERP_FINISH;
 	}
-	else // PROTOCOL_NETQUAKE
+	else // PROTOCOL_NETQUAKE and PROTOCOL_NEHAHRA
 	{
 		// Nehahra
 		if (bits & U_TRANS) // if this bit is set, assume this is Nehahra protocol
