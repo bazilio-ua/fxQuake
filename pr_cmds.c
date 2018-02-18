@@ -534,7 +534,7 @@ void PF_ambientsound (void)
 	//johnfitz -- PROTOCOL_FITZQUAKE
 	if (soundnum > 255)
 	{
-		if (sv.protocol == PROTOCOL_FITZQUAKE || sv.protocol == PROTOCOL_FITZQUAKE_PLUS)
+		if (sv.protocol == PROTOCOL_FITZQUAKE || sv.protocol == PROTOCOL_FITZQUAKE_PLUS || sv.protocol == PROTOCOL_RMQ)
 			large = true;
 		else
 			return; // don't send any info protocol can't support
@@ -1610,7 +1610,7 @@ void PF_makestatic (void)
 	//johnfitz
 
 	//johnfitz -- PROTOCOL_FITZQUAKE
-	if (sv.protocol == PROTOCOL_FITZQUAKE || sv.protocol == PROTOCOL_FITZQUAKE_PLUS)
+	if (sv.protocol == PROTOCOL_FITZQUAKE || sv.protocol == PROTOCOL_FITZQUAKE_PLUS || sv.protocol == PROTOCOL_RMQ)
 	{
 		if (SV_ModelIndex(pr_strings + ent->v.model) & 0xFF00)
 			bits |= B_LARGEMODEL;

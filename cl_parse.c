@@ -146,7 +146,7 @@ void CL_ParseStartSoundPacket(void)
 		attenuation = DEFAULT_SOUND_PACKET_ATTENUATION;
 
 	//johnfitz -- PROTOCOL_FITZQUAKE
-	if (cl.protocol == PROTOCOL_FITZQUAKE || cl.protocol == PROTOCOL_FITZQUAKE_PLUS)
+	if (cl.protocol == PROTOCOL_FITZQUAKE || cl.protocol == PROTOCOL_FITZQUAKE_PLUS || cl.protocol == PROTOCOL_RMQ)
 	{
 		if (field_mask & SND_LARGEENTITY)
 		{
@@ -280,15 +280,30 @@ void CL_ParseServerInfo (void)
 	if (i == PROTOCOL_BJP || i == PROTOCOL_BJP2 || i == PROTOCOL_BJP3)
 		Con_SafePrintf ("\nusing BJP demo protocol %i\n", i);
 	//johnfitz -- support multiple protocols
-	else if (i != PROTOCOL_NETQUAKE && i != PROTOCOL_FITZQUAKE && i != PROTOCOL_FITZQUAKE_PLUS)
+	else if (i != PROTOCOL_NETQUAKE && i != PROTOCOL_FITZQUAKE && i != PROTOCOL_FITZQUAKE_PLUS && i != PROTOCOL_RMQ)
 	{
 		Con_SafePrintf ("\n"); // because there's no newline after serverinfo print
-		Host_Error ("CL_ParseServerInfo: Server returned unknown protocol version %i, not %i, %i or %i", i, 
-			PROTOCOL_NETQUAKE, PROTOCOL_FITZQUAKE, PROTOCOL_FITZQUAKE_PLUS);
+		Host_Error ("CL_ParseServerInfo: Server returned unknown protocol version %i, not %i, %i, %i or %i", i, 
+			PROTOCOL_NETQUAKE, PROTOCOL_FITZQUAKE, PROTOCOL_FITZQUAKE_PLUS, PROTOCOL_RMQ);
 	}
 
 	cl.protocol = i;
 	Con_DPrintf ("Server protocol is %i", i);
+
+    if (cl.protocol == PROTOCOL_RMQ)
+	{
+		const unsigned int supportedflags = (PRFL_SHORTANGLE | PRFL_FLOATANGLE | PRFL_24BITCOORD | PRFL_FLOATCOORD | PRFL_EDICTSCALE | PRFL_INT32COORD);
+		
+		// mh - read protocol flags from server so that we know what protocol features to expect
+		cl.protocolflags = (unsigned int) MSG_ReadLong (net_message);
+		
+		if (0 != (cl.protocolflags & (~supportedflags)))
+		{
+			Con_Warning("PROTOCOL_RMQ protocolflags %i contains unsupported flags\n", cl.protocolflags);
+		}
+	}
+	else 
+        cl.protocolflags = 0;
 
 // parse maxclients
 	cl.maxclients = MSG_ReadByte (net_message);
@@ -426,7 +441,7 @@ void CL_ParseUpdate (int bits)
 	}
 
 	//johnfitz -- PROTOCOL_FITZQUAKE
-	if (cl.protocol == PROTOCOL_FITZQUAKE || cl.protocol == PROTOCOL_FITZQUAKE_PLUS)
+	if (cl.protocol == PROTOCOL_FITZQUAKE || cl.protocol == PROTOCOL_FITZQUAKE_PLUS || cl.protocol == PROTOCOL_RMQ)
 	{
 		if (bits & U_EXTEND1)
 			bits |= MSG_ReadByte (net_message) << 16;
@@ -458,7 +473,7 @@ void CL_ParseUpdate (int bits)
 
 	if (bits & U_MODEL)
 	{
-		if (cl.protocol == PROTOCOL_FITZQUAKE || cl.protocol == PROTOCOL_FITZQUAKE_PLUS)
+		if (cl.protocol == PROTOCOL_FITZQUAKE || cl.protocol == PROTOCOL_FITZQUAKE_PLUS || cl.protocol == PROTOCOL_RMQ)
 			modnum = MSG_ReadByte (net_message);
 		else if (cl.protocol == PROTOCOL_NETQUAKE)
 			modnum = MSG_ReadByte (net_message);
@@ -558,12 +573,14 @@ void CL_ParseUpdate (int bits)
 	//johnfitz
 
 	//johnfitz -- PROTOCOL_FITZQUAKE
-	if (cl.protocol == PROTOCOL_FITZQUAKE || cl.protocol == PROTOCOL_FITZQUAKE_PLUS)
+	if (cl.protocol == PROTOCOL_FITZQUAKE || cl.protocol == PROTOCOL_FITZQUAKE_PLUS || cl.protocol == PROTOCOL_RMQ)
 	{
 		if (bits & U_ALPHA)
 			ent->alpha = MSG_ReadByte (net_message);
 		else
 			ent->alpha = ent->baseline.alpha;
+		if (bits & U_SCALE)
+			MSG_ReadByte (net_message); // PROTOCOL_RMQ: currently ignored
 		if (bits & U_FRAME2)
 			ent->frame = (ent->frame & 0x00FF) | (MSG_ReadByte (net_message) << 8);
 		if (bits & U_MODEL2)
@@ -654,7 +671,7 @@ void CL_ParseBaseline (entity_t *ent, int version) //johnfitz -- added argument
 	bits = (version == 2) ? MSG_ReadByte (net_message) : 0;
 
 	//johnfitz -- PROTOCOL_FITZQUAKE
-	if (cl.protocol == PROTOCOL_FITZQUAKE || cl.protocol == PROTOCOL_FITZQUAKE_PLUS)
+	if (cl.protocol == PROTOCOL_FITZQUAKE || cl.protocol == PROTOCOL_FITZQUAKE_PLUS || cl.protocol == PROTOCOL_RMQ)
 	{
 		ent->baseline.modelindex = (bits & B_LARGEMODEL) ? MSG_ReadShort (net_message) : MSG_ReadByte (net_message);
 		ent->baseline.frame = (bits & B_LARGEFRAME) ? MSG_ReadShort (net_message) : MSG_ReadByte (net_message);
@@ -681,7 +698,7 @@ void CL_ParseBaseline (entity_t *ent, int version) //johnfitz -- added argument
 	}
 
 	//johnfitz -- PROTOCOL_FITZQUAKE
-	if (cl.protocol == PROTOCOL_FITZQUAKE || cl.protocol == PROTOCOL_FITZQUAKE_PLUS)
+	if (cl.protocol == PROTOCOL_FITZQUAKE || cl.protocol == PROTOCOL_FITZQUAKE_PLUS || cl.protocol == PROTOCOL_RMQ)
 		ent->baseline.alpha = (bits & B_ALPHA) ? MSG_ReadByte (net_message) : ENTALPHA_DEFAULT;
 	else 
 		ent->baseline.alpha = ENTALPHA_DEFAULT;
@@ -703,7 +720,7 @@ void CL_ParseClientdata (void)
 	bits = (unsigned short)MSG_ReadShort (net_message); // read bits here isntead of in CL_ParseServerMessage()
 
 	//johnfitz -- PROTOCOL_FITZQUAKE
-	if (cl.protocol == PROTOCOL_FITZQUAKE || cl.protocol == PROTOCOL_FITZQUAKE_PLUS)
+	if (cl.protocol == PROTOCOL_FITZQUAKE || cl.protocol == PROTOCOL_FITZQUAKE_PLUS || cl.protocol == PROTOCOL_RMQ)
 	{
 		if (bits & SU_EXTEND1)
 			bits |= (MSG_ReadByte (net_message) << 16);
@@ -774,7 +791,7 @@ void CL_ParseClientdata (void)
 
 	if (bits & SU_WEAPON)
 	{
-		if (cl.protocol == PROTOCOL_FITZQUAKE || cl.protocol == PROTOCOL_FITZQUAKE_PLUS)
+		if (cl.protocol == PROTOCOL_FITZQUAKE || cl.protocol == PROTOCOL_FITZQUAKE_PLUS || cl.protocol == PROTOCOL_RMQ)
 			i = MSG_ReadByte (net_message);
 		else if (cl.protocol == PROTOCOL_NETQUAKE)
 			i = MSG_ReadByte (net_message);
@@ -838,7 +855,7 @@ void CL_ParseClientdata (void)
 	}
 
 	//johnfitz -- PROTOCOL_FITZQUAKE
-	if (cl.protocol == PROTOCOL_FITZQUAKE || cl.protocol == PROTOCOL_FITZQUAKE_PLUS)
+	if (cl.protocol == PROTOCOL_FITZQUAKE || cl.protocol == PROTOCOL_FITZQUAKE_PLUS || cl.protocol == PROTOCOL_RMQ)
 	{
 		if (bits & SU_WEAPON2)
 			cl.stats[STAT_WEAPON] |= (MSG_ReadByte(net_message) << 8);
@@ -923,7 +940,7 @@ void CL_ParseStaticSound (int version) //johnfitz -- added argument
 		org[i] = MSG_ReadCoord (net_message, cl.protocolflags);
 
 	//johnfitz -- PROTOCOL_FITZQUAKE
-	if (cl.protocol == PROTOCOL_FITZQUAKE || cl.protocol == PROTOCOL_FITZQUAKE_PLUS)
+	if (cl.protocol == PROTOCOL_FITZQUAKE || cl.protocol == PROTOCOL_FITZQUAKE_PLUS || cl.protocol == PROTOCOL_RMQ)
 	{
 		if (version == 2)
 			sound_num = MSG_ReadShort (net_message);
@@ -1052,9 +1069,9 @@ void CL_ParseServerMessage (void)
 			if (i == PROTOCOL_BJP || i == PROTOCOL_BJP2 || i == PROTOCOL_BJP3)
 				Con_SafePrintf ("using BJP demo protocol version %i\n", i);
 			//johnfitz -- support multiple protocols
-			else if (i != PROTOCOL_NETQUAKE && i != PROTOCOL_FITZQUAKE && i != PROTOCOL_FITZQUAKE_PLUS)
-				Host_Error ("CL_ParseServerMessage: Server protocol is %i instead of %i, %i or %i", i, 
-					PROTOCOL_NETQUAKE, PROTOCOL_FITZQUAKE, PROTOCOL_FITZQUAKE_PLUS);
+			else if (i != PROTOCOL_NETQUAKE && i != PROTOCOL_FITZQUAKE && i != PROTOCOL_FITZQUAKE_PLUS && i != PROTOCOL_RMQ)
+				Host_Error ("CL_ParseServerMessage: Server protocol is %i instead of %i, %i, %i or %i", i, 
+					PROTOCOL_NETQUAKE, PROTOCOL_FITZQUAKE, PROTOCOL_FITZQUAKE_PLUS, PROTOCOL_RMQ);
 			cl.protocol = i;
 			Con_DPrintf ("Using protocol version %i\n", cl.protocol);
 			//johnfitz
