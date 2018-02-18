@@ -389,12 +389,12 @@ void CL_SendMove (usercmd_t *cmd)
 	else if (cl.protocol == PROTOCOL_FITZQUAKE || cl.protocol == PROTOCOL_FITZQUAKE_PLUS) //johnfitz -- 16-bit angles for PROTOCOL_FITZQUAKE
 	{
 		for (i=0 ; i<3 ; i++)
-			MSG_WriteAngle16 (&buf, cl.viewangles[i]);
+			MSG_WriteAngle16 (&buf, cl.viewangles[i], cl.protocolflags);
 	}
 	else
 	{
 		for (i=0 ; i<3 ; i++)
-			MSG_WriteAngle (&buf, cl.viewangles[i]);
+			MSG_WriteAngle (&buf, cl.viewangles[i], cl.protocolflags);
 	}
 
 	MSG_WriteShort (&buf, cmd->forwardmove);

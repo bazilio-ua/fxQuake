@@ -456,12 +456,12 @@ void SV_ReadClientMove (usercmd_t *move)
 	else if (sv.protocol == PROTOCOL_FITZQUAKE || sv.protocol == PROTOCOL_FITZQUAKE_PLUS) //johnfitz -- 16-bit angles for PROTOCOL_FITZQUAKE
 	{
 		for (i=0 ; i<3 ; i++)
-			angle[i] = MSG_ReadAngle16 (net_message);
+			angle[i] = MSG_ReadAngle16 (net_message, sv.protocolflags);
 	}
 	else
 	{
 		for (i=0 ; i<3 ; i++)
-			angle[i] = MSG_ReadAngle (net_message);
+			angle[i] = MSG_ReadAngle (net_message, sv.protocolflags);
 	}
 
 	VectorCopy (angle, host_client->edict->v.v_angle);

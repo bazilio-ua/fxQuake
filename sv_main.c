@@ -134,9 +134,9 @@ void SV_StartParticle (vec3_t org, vec3_t dir, int color, int count)
 		return;
 
 	MSG_WriteByte (&sv.datagram, svc_particle);
-	MSG_WriteCoord (&sv.datagram, org[0]);
-	MSG_WriteCoord (&sv.datagram, org[1]);
-	MSG_WriteCoord (&sv.datagram, org[2]);
+	MSG_WriteCoord (&sv.datagram, org[0], sv.protocolflags);
+	MSG_WriteCoord (&sv.datagram, org[1], sv.protocolflags);
+	MSG_WriteCoord (&sv.datagram, org[2], sv.protocolflags);
 	for (i=0 ; i<3 ; i++)
 	{
 		v = dir[i]*16;
@@ -257,7 +257,7 @@ void SV_StartSound (edict_t *entity, int channel, char *sample, int volume, floa
 	//johnfitz
 
 	for (i=0 ; i<3 ; i++)
-		MSG_WriteCoord (&sv.datagram, entity->v.origin[i]+0.5*(entity->v.mins[i]+entity->v.maxs[i]));
+		MSG_WriteCoord (&sv.datagram, entity->v.origin[i]+0.5*(entity->v.mins[i]+entity->v.maxs[i]), sv.protocolflags);
 }           
 
 /*
@@ -809,31 +809,31 @@ void SV_WriteEntitiesToClient (edict_t	*clent, sizebuf_t *msg)
 		if (bits & U_EFFECTS)
 			MSG_WriteByte (msg, ent->v.effects);
 		if (bits & U_ORIGIN1)
-			MSG_WriteCoord (msg, ent->v.origin[0]);
+			MSG_WriteCoord (msg, ent->v.origin[0], sv.protocolflags);
 		if (bits & U_ANGLE1)
 		{
 			if (sv.protocol == PROTOCOL_FITZQUAKE_PLUS)
-				MSG_WriteAngle16(msg, ent->v.angles[0]); // Baker change
+				MSG_WriteAngle16(msg, ent->v.angles[0], sv.protocolflags); // Baker change
 			else
-				MSG_WriteAngle(msg, ent->v.angles[0]);
+				MSG_WriteAngle(msg, ent->v.angles[0], sv.protocolflags);
 		}
 		if (bits & U_ORIGIN2)
-			MSG_WriteCoord (msg, ent->v.origin[1]);
+			MSG_WriteCoord (msg, ent->v.origin[1], sv.protocolflags);
 		if (bits & U_ANGLE2)
 		{
 			if (sv.protocol == PROTOCOL_FITZQUAKE_PLUS)
-				MSG_WriteAngle16(msg, ent->v.angles[1]); // Baker change
+				MSG_WriteAngle16(msg, ent->v.angles[1], sv.protocolflags); // Baker change
 			else
-				MSG_WriteAngle(msg, ent->v.angles[1]);
+				MSG_WriteAngle(msg, ent->v.angles[1], sv.protocolflags);
 		}
 		if (bits & U_ORIGIN3)
-			MSG_WriteCoord (msg, ent->v.origin[2]);
+			MSG_WriteCoord (msg, ent->v.origin[2], sv.protocolflags);
 		if (bits & U_ANGLE3)
 		{
 			if (sv.protocol == PROTOCOL_FITZQUAKE_PLUS)
-				MSG_WriteAngle16(msg, ent->v.angles[2]); // Baker change
+				MSG_WriteAngle16(msg, ent->v.angles[2], sv.protocolflags); // Baker change
 			else
-				MSG_WriteAngle(msg, ent->v.angles[2]);
+				MSG_WriteAngle(msg, ent->v.angles[2], sv.protocolflags);
 		}
 
 		if (sv.protocol == PROTOCOL_FITZQUAKE || sv.protocol == PROTOCOL_FITZQUAKE_PLUS)
@@ -904,7 +904,7 @@ void SV_WriteClientdataToMessage (edict_t *ent, sizebuf_t *msg)
 		MSG_WriteByte (msg, ent->v.dmg_save);
 		MSG_WriteByte (msg, ent->v.dmg_take);
 		for (i=0 ; i<3 ; i++)
-			MSG_WriteCoord (msg, other->v.origin[i] + 0.5*(other->v.mins[i] + other->v.maxs[i]));
+			MSG_WriteCoord (msg, other->v.origin[i] + 0.5*(other->v.mins[i] + other->v.maxs[i]), sv.protocolflags);
 	
 		ent->v.dmg_take = 0;
 		ent->v.dmg_save = 0;
@@ -920,7 +920,7 @@ void SV_WriteClientdataToMessage (edict_t *ent, sizebuf_t *msg)
 	{
 		MSG_WriteByte (msg, svc_setangle);
 		for (i=0 ; i < 3 ; i++)
-			MSG_WriteAngle (msg, ent->v.angles[i] );
+			MSG_WriteAngle (msg, ent->v.angles[i], sv.protocolflags);
 		ent->v.fixangle = 0;
 	}
 
@@ -1405,8 +1405,8 @@ void SV_CreateBaseline (void)
 
 		for (i=0 ; i<3 ; i++)
 		{
-			MSG_WriteCoord(&sv.signon, svent->baseline.origin[i]);
-			MSG_WriteAngle(&sv.signon, svent->baseline.angles[i]);
+			MSG_WriteCoord(&sv.signon, svent->baseline.origin[i], sv.protocolflags);
+			MSG_WriteAngle(&sv.signon, svent->baseline.angles[i], sv.protocolflags);
 		}
 
 		//johnfitz -- PROTOCOL_FITZQUAKE

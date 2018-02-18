@@ -317,14 +317,30 @@ void MSG_WriteCoord32f (sizebuf_t *sb, float f)
 	MSG_WriteFloat (sb, f);
 }
 
-void MSG_WriteCoord (sizebuf_t *sb, float f)
+void MSG_WriteCoord (sizebuf_t *sb, float f, unsigned int flags)
 {
-	MSG_WriteShort (sb, (int)(f * 8.0));
+//	MSG_WriteShort (sb, (int)(f * 8.0));
+    
+	if (flags & PRFL_FLOATCOORD)
+		MSG_WriteFloat (sb, f);
+	else if (flags & PRFL_INT32COORD)
+		MSG_WriteLong (sb, Q_rint(f * 16.0));
+	else if (flags & PRFL_24BITCOORD)
+		MSG_WriteCoord24 (sb, f);
+	else 
+        MSG_WriteCoord16 (sb, f);
 }
 
-void MSG_WriteAngle (sizebuf_t *sb, float f)
+void MSG_WriteAngle (sizebuf_t *sb, float f, unsigned int flags)
 {
-	MSG_WriteByte (sb, (int)(f * 256.0 / 360.0) & 255);
+//	MSG_WriteByte (sb, (int)(f * 256.0 / 360.0) & 255);
+    
+	if (flags & PRFL_FLOATANGLE)
+		MSG_WriteFloat (sb, f);
+	else if (flags & PRFL_SHORTANGLE)
+		MSG_WriteShort (sb, Q_rint(f * 65536.0 / 360.0) & 65535); //johnfitz -- use Q_rint instead of (int)
+	else 
+        MSG_WriteByte (sb, Q_rint(f * 256.0 / 360.0) & 255); //johnfitz -- use Q_rint instead of (int)
 }
 
 // precise aim for ProQuake
@@ -334,9 +350,14 @@ void MSG_WritePreciseAngle (sizebuf_t *sb, float f)
 }
 
 //johnfitz -- for PROTOCOL_FITZQUAKE
-void MSG_WriteAngle16 (sizebuf_t *sb, float f)
+void MSG_WriteAngle16 (sizebuf_t *sb, float f, unsigned int flags)
 {
-	MSG_WriteShort (sb, Q_rint(f * 65536.0 / 360.0) & 65535); //johnfitz -- use Q_rint instead of (int)
+//	MSG_WriteShort (sb, Q_rint(f * 65536.0 / 360.0) & 65535); //johnfitz -- use Q_rint instead of (int)
+    
+	if (flags & PRFL_FLOATANGLE)
+		MSG_WriteFloat (sb, f);
+	else 
+        MSG_WriteShort (sb, Q_rint(f * 65536.0 / 360.0) & 65535); //johnfitz -- use Q_rint instead of (int)
 }
 //johnfitz
 
@@ -494,14 +515,30 @@ float MSG_ReadCoord32f (qmsg_t *msg)
 	return MSG_ReadFloat (msg);
 }
 
-float MSG_ReadCoord (qmsg_t *msg)
+float MSG_ReadCoord (qmsg_t *msg, unsigned int flags)
 {
-	return MSG_ReadShort (msg) * (1.0 / 8.0);
+//	return MSG_ReadShort (msg) * (1.0 / 8.0);
+    
+    if (flags & PRFL_FLOATCOORD)
+		return MSG_ReadFloat (msg);
+	else if (flags & PRFL_INT32COORD)
+		return MSG_ReadLong (msg) * (1.0 / 16.0);
+	else if (flags & PRFL_24BITCOORD)
+		return MSG_ReadCoord24 (msg);
+	else 
+        return MSG_ReadCoord16 (msg);
 }
 
-float MSG_ReadAngle (qmsg_t *msg)
+float MSG_ReadAngle (qmsg_t *msg, unsigned int flags)
 {
-	return MSG_ReadChar (msg) * (360.0 / 256.0);
+//	return MSG_ReadChar (msg) * (360.0 / 256.0);
+    
+	if (flags & PRFL_FLOATANGLE)
+		return MSG_ReadFloat (msg);
+	else if (flags & PRFL_SHORTANGLE)
+		return MSG_ReadShort (msg) * (360.0 / 65536.0);
+	else 
+        return MSG_ReadChar (msg) * (360.0 / 256.0);
 }
 
 // precise aim for ProQuake
@@ -511,9 +548,14 @@ float MSG_ReadPreciseAngle (qmsg_t *msg)
 }
 
 //johnfitz -- for PROTOCOL_FITZQUAKE
-float MSG_ReadAngle16 (qmsg_t *msg)
+float MSG_ReadAngle16 (qmsg_t *msg, unsigned int flags)
 {
-	return MSG_ReadShort (msg) * (360.0 / 65536.0);
+//	return MSG_ReadShort (msg) * (360.0 / 65536.0);
+    
+	if (flags & PRFL_FLOATANGLE)
+		return MSG_ReadFloat (msg);	// make sure
+	else 
+        return MSG_ReadShort (msg) * (360.0 / 65536.0);
 }
 //johnfitz
 

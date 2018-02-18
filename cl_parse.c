@@ -188,7 +188,7 @@ void CL_ParseStartSoundPacket(void)
 		Host_Error ("CL_ParseStartSoundPacket: invalid edict (%d, max = %d)", ent, MAX_EDICTS);
 	
 	for (i=0 ; i<3 ; i++)
-		pos[i] = MSG_ReadCoord (net_message);
+		pos[i] = MSG_ReadCoord (net_message, cl.protocolflags);
  
     S_StartSound (ent, channel, cl.sound_precache[sound_num], pos, volume/255.0, attenuation);
 }       
@@ -512,38 +512,38 @@ void CL_ParseUpdate (int bits)
 	VectorCopy (ent->msg_angles[0], ent->msg_angles[1]);
 
 	if (bits & U_ORIGIN1)
-		ent->msg_origins[0][0] = MSG_ReadCoord (net_message);
+		ent->msg_origins[0][0] = MSG_ReadCoord (net_message, cl.protocolflags);
 	else
 		ent->msg_origins[0][0] = ent->baseline.origin[0];
 	if (bits & U_ANGLE1)
 		if (cl.protocol == PROTOCOL_FITZQUAKE_PLUS)
-			ent->msg_angles[0][0] = MSG_ReadAngle16 (net_message); // Baker change
+			ent->msg_angles[0][0] = MSG_ReadAngle16 (net_message, cl.protocolflags); // Baker change
 		else
-			ent->msg_angles[0][0] = MSG_ReadAngle (net_message);
+			ent->msg_angles[0][0] = MSG_ReadAngle (net_message, cl.protocolflags);
 	else
 		ent->msg_angles[0][0] = ent->baseline.angles[0];
 
 	if (bits & U_ORIGIN2)
-		ent->msg_origins[0][1] = MSG_ReadCoord (net_message);
+		ent->msg_origins[0][1] = MSG_ReadCoord (net_message, cl.protocolflags);
 	else
 		ent->msg_origins[0][1] = ent->baseline.origin[1];
 	if (bits & U_ANGLE2)
 		if (cl.protocol == PROTOCOL_FITZQUAKE_PLUS)
-			ent->msg_angles[0][1] = MSG_ReadAngle16 (net_message); // Baker change
+			ent->msg_angles[0][1] = MSG_ReadAngle16 (net_message, cl.protocolflags); // Baker change
 		else
-			ent->msg_angles[0][1] = MSG_ReadAngle (net_message);
+			ent->msg_angles[0][1] = MSG_ReadAngle (net_message, cl.protocolflags);
 	else
 		ent->msg_angles[0][1] = ent->baseline.angles[1];
 
 	if (bits & U_ORIGIN3)
-		ent->msg_origins[0][2] = MSG_ReadCoord (net_message);
+		ent->msg_origins[0][2] = MSG_ReadCoord (net_message, cl.protocolflags);
 	else
 		ent->msg_origins[0][2] = ent->baseline.origin[2];
 	if (bits & U_ANGLE3)
 		if (cl.protocol == PROTOCOL_FITZQUAKE_PLUS)
-			ent->msg_angles[0][2] = MSG_ReadAngle16 (net_message); // Baker change
+			ent->msg_angles[0][2] = MSG_ReadAngle16 (net_message, cl.protocolflags); // Baker change
 		else
-			ent->msg_angles[0][2] = MSG_ReadAngle (net_message);
+			ent->msg_angles[0][2] = MSG_ReadAngle (net_message, cl.protocolflags);
 	else
 		ent->msg_angles[0][2] = ent->baseline.angles[2];
 
@@ -676,8 +676,8 @@ void CL_ParseBaseline (entity_t *ent, int version) //johnfitz -- added argument
 
 	for (i=0 ; i<3 ; i++)
 	{
-		ent->baseline.origin[i] = MSG_ReadCoord (net_message);
-		ent->baseline.angles[i] = MSG_ReadAngle (net_message);
+		ent->baseline.origin[i] = MSG_ReadCoord (net_message, cl.protocolflags);
+		ent->baseline.angles[i] = MSG_ReadAngle (net_message, cl.protocolflags);
 	}
 
 	//johnfitz -- PROTOCOL_FITZQUAKE
@@ -920,7 +920,7 @@ void CL_ParseStaticSound (int version) //johnfitz -- added argument
 	int			i;
 	
 	for (i=0 ; i<3 ; i++)
-		org[i] = MSG_ReadCoord (net_message);
+		org[i] = MSG_ReadCoord (net_message, cl.protocolflags);
 
 	//johnfitz -- PROTOCOL_FITZQUAKE
 	if (cl.protocol == PROTOCOL_FITZQUAKE || cl.protocol == PROTOCOL_FITZQUAKE_PLUS)
@@ -1088,7 +1088,7 @@ void CL_ParseServerMessage (void)
 			
 		case svc_setangle:
 			for (i=0 ; i<3 ; i++)
-				cl.viewangles[i] = MSG_ReadAngle (net_message);
+				cl.viewangles[i] = MSG_ReadAngle (net_message, cl.protocolflags);
 
 			if (!cls.demoplayback)
 			{
@@ -1293,7 +1293,7 @@ void CL_ParseServerMessage (void)
 			
 		case svc_skyboxsize:
 			// Just parse msg
-			MSG_ReadCoord (net_message);
+			MSG_ReadCoord (net_message, cl.protocolflags);
 			break;
 			
 		case svc_bf:

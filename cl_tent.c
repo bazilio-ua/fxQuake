@@ -110,9 +110,9 @@ void CL_ParseTEnt (void)
 	switch (type)
 	{
 	case TE_WIZSPIKE:			// spike hitting wall
-		pos[0] = MSG_ReadCoord (net_message);
-		pos[1] = MSG_ReadCoord (net_message);
-		pos[2] = MSG_ReadCoord (net_message);
+		pos[0] = MSG_ReadCoord (net_message, cl.protocolflags);
+		pos[1] = MSG_ReadCoord (net_message, cl.protocolflags);
+		pos[2] = MSG_ReadCoord (net_message, cl.protocolflags);
 		
 		if (cl_extradlight.value)
 		{
@@ -130,9 +130,9 @@ void CL_ParseTEnt (void)
 		break;
 		
 	case TE_KNIGHTSPIKE:			// spike hitting wall
-		pos[0] = MSG_ReadCoord (net_message);
-		pos[1] = MSG_ReadCoord (net_message);
-		pos[2] = MSG_ReadCoord (net_message);
+		pos[0] = MSG_ReadCoord (net_message, cl.protocolflags);
+		pos[1] = MSG_ReadCoord (net_message, cl.protocolflags);
+		pos[2] = MSG_ReadCoord (net_message, cl.protocolflags);
 		
 		if (cl_extradlight.value)
 		{
@@ -150,9 +150,9 @@ void CL_ParseTEnt (void)
 		break;
 		
 	case TE_SPIKE:			// spike hitting wall
-		pos[0] = MSG_ReadCoord (net_message);
-		pos[1] = MSG_ReadCoord (net_message);
-		pos[2] = MSG_ReadCoord (net_message);
+		pos[0] = MSG_ReadCoord (net_message, cl.protocolflags);
+		pos[1] = MSG_ReadCoord (net_message, cl.protocolflags);
+		pos[2] = MSG_ReadCoord (net_message, cl.protocolflags);
 		
 		R_RunParticleEffect (pos, vec3_origin, 0, 10);
 		if ( rand() % 5 )
@@ -170,9 +170,9 @@ void CL_ParseTEnt (void)
 		break;
 		
 	case TE_SUPERSPIKE:			// super spike hitting wall
-		pos[0] = MSG_ReadCoord (net_message);
-		pos[1] = MSG_ReadCoord (net_message);
-		pos[2] = MSG_ReadCoord (net_message);
+		pos[0] = MSG_ReadCoord (net_message, cl.protocolflags);
+		pos[1] = MSG_ReadCoord (net_message, cl.protocolflags);
+		pos[2] = MSG_ReadCoord (net_message, cl.protocolflags);
 		
 		R_RunParticleEffect (pos, vec3_origin, 0, 20);
 		if ( rand() % 5 )
@@ -190,17 +190,17 @@ void CL_ParseTEnt (void)
 		break;
 		
 	case TE_GUNSHOT:			// bullet hitting wall
-		pos[0] = MSG_ReadCoord (net_message);
-		pos[1] = MSG_ReadCoord (net_message);
-		pos[2] = MSG_ReadCoord (net_message);
+		pos[0] = MSG_ReadCoord (net_message, cl.protocolflags);
+		pos[1] = MSG_ReadCoord (net_message, cl.protocolflags);
+		pos[2] = MSG_ReadCoord (net_message, cl.protocolflags);
 		
 		R_RunParticleEffect (pos, vec3_origin, 0, 20);
 		break;
 		
 	case TE_EXPLOSION:			// rocket explosion
-		pos[0] = MSG_ReadCoord (net_message);
-		pos[1] = MSG_ReadCoord (net_message);
-		pos[2] = MSG_ReadCoord (net_message);
+		pos[0] = MSG_ReadCoord (net_message, cl.protocolflags);
+		pos[1] = MSG_ReadCoord (net_message, cl.protocolflags);
+		pos[2] = MSG_ReadCoord (net_message, cl.protocolflags);
 		
 		dl = CL_AllocDlight (0);
 		VectorCopy (pos, dl->origin);
@@ -215,9 +215,9 @@ void CL_ParseTEnt (void)
 		break;
 		
 	case TE_TAREXPLOSION:			// tarbaby explosion
-		pos[0] = MSG_ReadCoord (net_message);
-		pos[1] = MSG_ReadCoord (net_message);
-		pos[2] = MSG_ReadCoord (net_message);
+		pos[0] = MSG_ReadCoord (net_message, cl.protocolflags);
+		pos[1] = MSG_ReadCoord (net_message, cl.protocolflags);
+		pos[2] = MSG_ReadCoord (net_message, cl.protocolflags);
 		
 		if (cl_extradlight.value)
 		{
@@ -237,13 +237,13 @@ void CL_ParseTEnt (void)
 	case TE_LIGHTNING1:				// lightning bolts
 		ent = MSG_ReadShort (net_message);
 		
-		start[0] = MSG_ReadCoord (net_message);
-		start[1] = MSG_ReadCoord (net_message);
-		start[2] = MSG_ReadCoord (net_message);
+		start[0] = MSG_ReadCoord (net_message, cl.protocolflags);
+		start[1] = MSG_ReadCoord (net_message, cl.protocolflags);
+		start[2] = MSG_ReadCoord (net_message, cl.protocolflags);
 		
-		end[0] = MSG_ReadCoord (net_message);
-		end[1] = MSG_ReadCoord (net_message);
-		end[2] = MSG_ReadCoord (net_message);
+		end[0] = MSG_ReadCoord (net_message, cl.protocolflags);
+		end[1] = MSG_ReadCoord (net_message, cl.protocolflags);
+		end[2] = MSG_ReadCoord (net_message, cl.protocolflags);
 		
 		if (cl_extradlight.value)
 		{
@@ -270,13 +270,13 @@ void CL_ParseTEnt (void)
 	case TE_LIGHTNING2:				// lightning bolts
 		ent = MSG_ReadShort (net_message);
 		
-		start[0] = MSG_ReadCoord (net_message);
-		start[1] = MSG_ReadCoord (net_message);
-		start[2] = MSG_ReadCoord (net_message);
+		start[0] = MSG_ReadCoord (net_message, cl.protocolflags);
+		start[1] = MSG_ReadCoord (net_message, cl.protocolflags);
+		start[2] = MSG_ReadCoord (net_message, cl.protocolflags);
 		
-		end[0] = MSG_ReadCoord (net_message);
-		end[1] = MSG_ReadCoord (net_message);
-		end[2] = MSG_ReadCoord (net_message);
+		end[0] = MSG_ReadCoord (net_message, cl.protocolflags);
+		end[1] = MSG_ReadCoord (net_message, cl.protocolflags);
+		end[2] = MSG_ReadCoord (net_message, cl.protocolflags);
 		
 		if (cl_extradlight.value)
 		{
@@ -303,13 +303,13 @@ void CL_ParseTEnt (void)
 	case TE_LIGHTNING3:				// lightning bolts
 		ent = MSG_ReadShort (net_message);
 		
-		start[0] = MSG_ReadCoord (net_message);
-		start[1] = MSG_ReadCoord (net_message);
-		start[2] = MSG_ReadCoord (net_message);
+		start[0] = MSG_ReadCoord (net_message, cl.protocolflags);
+		start[1] = MSG_ReadCoord (net_message, cl.protocolflags);
+		start[2] = MSG_ReadCoord (net_message, cl.protocolflags);
 		
-		end[0] = MSG_ReadCoord (net_message);
-		end[1] = MSG_ReadCoord (net_message);
-		end[2] = MSG_ReadCoord (net_message);
+		end[0] = MSG_ReadCoord (net_message, cl.protocolflags);
+		end[1] = MSG_ReadCoord (net_message, cl.protocolflags);
+		end[2] = MSG_ReadCoord (net_message, cl.protocolflags);
 		
 		if (cl_extradlight.value)
 		{
@@ -340,13 +340,13 @@ void CL_ParseTEnt (void)
 		
 		ent = MSG_ReadShort (net_message);
 		
-		start[0] = MSG_ReadCoord (net_message);
-		start[1] = MSG_ReadCoord (net_message);
-		start[2] = MSG_ReadCoord (net_message);
+		start[0] = MSG_ReadCoord (net_message, cl.protocolflags);
+		start[1] = MSG_ReadCoord (net_message, cl.protocolflags);
+		start[2] = MSG_ReadCoord (net_message, cl.protocolflags);
 		
-		end[0] = MSG_ReadCoord (net_message);
-		end[1] = MSG_ReadCoord (net_message);
-		end[2] = MSG_ReadCoord (net_message);
+		end[0] = MSG_ReadCoord (net_message, cl.protocolflags);
+		end[1] = MSG_ReadCoord (net_message, cl.protocolflags);
+		end[2] = MSG_ReadCoord (net_message, cl.protocolflags);
 		
 		if (cl_extradlight.value)
 		{
@@ -374,13 +374,13 @@ void CL_ParseTEnt (void)
 	case TE_BEAM:				// grappling hook beam
 		ent = MSG_ReadShort (net_message);
 		
-		start[0] = MSG_ReadCoord (net_message);
-		start[1] = MSG_ReadCoord (net_message);
-		start[2] = MSG_ReadCoord (net_message);
+		start[0] = MSG_ReadCoord (net_message, cl.protocolflags);
+		start[1] = MSG_ReadCoord (net_message, cl.protocolflags);
+		start[2] = MSG_ReadCoord (net_message, cl.protocolflags);
 		
-		end[0] = MSG_ReadCoord (net_message);
-		end[1] = MSG_ReadCoord (net_message);
-		end[2] = MSG_ReadCoord (net_message);
+		end[0] = MSG_ReadCoord (net_message, cl.protocolflags);
+		end[1] = MSG_ReadCoord (net_message, cl.protocolflags);
+		end[2] = MSG_ReadCoord (net_message, cl.protocolflags);
 		
 		if (cl_extradlight.value)
 		{
@@ -406,9 +406,9 @@ void CL_ParseTEnt (void)
 // PGM 01/21/97
 		
 	case TE_LAVASPLASH:			// Chthon
-		pos[0] = MSG_ReadCoord (net_message);
-		pos[1] = MSG_ReadCoord (net_message);
-		pos[2] = MSG_ReadCoord (net_message);
+		pos[0] = MSG_ReadCoord (net_message, cl.protocolflags);
+		pos[1] = MSG_ReadCoord (net_message, cl.protocolflags);
+		pos[2] = MSG_ReadCoord (net_message, cl.protocolflags);
 		
 		if (cl_extradlight.value)
 		{
@@ -425,9 +425,9 @@ void CL_ParseTEnt (void)
 		break;
 		
 	case TE_TELEPORT:			// all teleport
-		pos[0] = MSG_ReadCoord (net_message);
-		pos[1] = MSG_ReadCoord (net_message);
-		pos[2] = MSG_ReadCoord (net_message);
+		pos[0] = MSG_ReadCoord (net_message, cl.protocolflags);
+		pos[1] = MSG_ReadCoord (net_message, cl.protocolflags);
+		pos[2] = MSG_ReadCoord (net_message, cl.protocolflags);
 		
 		if (cl_extradlight.value)
 		{
@@ -444,9 +444,9 @@ void CL_ParseTEnt (void)
 		break;
 		
 	case TE_EXPLOSION2:				// color mapped explosion
-		pos[0] = MSG_ReadCoord (net_message);
-		pos[1] = MSG_ReadCoord (net_message);
-		pos[2] = MSG_ReadCoord (net_message);
+		pos[0] = MSG_ReadCoord (net_message, cl.protocolflags);
+		pos[1] = MSG_ReadCoord (net_message, cl.protocolflags);
+		pos[2] = MSG_ReadCoord (net_message, cl.protocolflags);
 		
 		colorStart = MSG_ReadByte (net_message);
 		colorLength = MSG_ReadByte (net_message);
@@ -471,16 +471,16 @@ void CL_ParseTEnt (void)
 	case TE_SMOKE:
 		// Just parse msg
 		// falls through to explosion 3
-		MSG_ReadCoord (net_message);
-		MSG_ReadCoord (net_message);
-		MSG_ReadCoord (net_message);
+		MSG_ReadCoord (net_message, cl.protocolflags);
+		MSG_ReadCoord (net_message, cl.protocolflags);
+		MSG_ReadCoord (net_message, cl.protocolflags);
 		
 		MSG_ReadByte (net_message);
 		
 	case TE_EXPLOSION3:				// rocket explosion (colored)
-		pos[0] = MSG_ReadCoord (net_message);
-		pos[1] = MSG_ReadCoord (net_message);
-		pos[2] = MSG_ReadCoord (net_message);
+		pos[0] = MSG_ReadCoord (net_message, cl.protocolflags);
+		pos[1] = MSG_ReadCoord (net_message, cl.protocolflags);
+		pos[2] = MSG_ReadCoord (net_message, cl.protocolflags);
 		
 		dl = CL_AllocDlight (0);
 		VectorCopy (pos, dl->origin);
@@ -488,9 +488,9 @@ void CL_ParseTEnt (void)
 		dl->die = cl.time + 0.5;
 		dl->decay = 300;
 		
-		color[0] = MSG_ReadCoord(net_message);
-		color[1] = MSG_ReadCoord(net_message);
-		color[2] = MSG_ReadCoord(net_message);
+		color[0] = MSG_ReadCoord(net_message, cl.protocolflags);
+		color[1] = MSG_ReadCoord(net_message, cl.protocolflags);
+		color[2] = MSG_ReadCoord(net_message, cl.protocolflags);
 		CL_ColorDlight (dl, color[0], color[1], color[2]);
 		
 		S_StartSound (-1, 0, cl_sfx_r_exp3, pos, 1, 1);
@@ -513,9 +513,9 @@ void CL_ParseTEnt (void)
 		
 		// Blind parsing ...
 		// note - this might crash the server at some stage if more data is expected
-		MSG_ReadCoord (net_message);
-		MSG_ReadCoord (net_message);
-		MSG_ReadCoord (net_message);
+		MSG_ReadCoord (net_message, cl.protocolflags);
+		MSG_ReadCoord (net_message, cl.protocolflags);
+		MSG_ReadCoord (net_message, cl.protocolflags);
 		break;
 	}
 }

@@ -253,7 +253,7 @@ void R_ParseParticleEffect (void)
 	int			i, count, msgcount, color;
 	
 	for (i=0 ; i<3 ; i++)
-		org[i] = MSG_ReadCoord (net_message);
+		org[i] = MSG_ReadCoord (net_message, cl.protocolflags);
 	for (i=0 ; i<3 ; i++)
 		dir[i] = MSG_ReadChar (net_message) * (1.0/16);
 	msgcount = MSG_ReadByte (net_message);

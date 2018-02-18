@@ -118,10 +118,10 @@ void MSG_WriteString (sizebuf_t *sb, char *s);
 void MSG_WriteCoord16 (sizebuf_t *sb, float f); //johnfitz -- original behavior, 13.3 fixed point coords, max range +-4096
 void MSG_WriteCoord24 (sizebuf_t *sb, float f); //johnfitz -- 16.8 fixed point coords, max range +-32768
 void MSG_WriteCoord32f (sizebuf_t *sb, float f); //johnfitz -- 32-bit float coords
-void MSG_WriteCoord (sizebuf_t *sb, float f);
-void MSG_WriteAngle (sizebuf_t *sb, float f);
+void MSG_WriteCoord (sizebuf_t *sb, float f, unsigned int flags);
+void MSG_WriteAngle (sizebuf_t *sb, float f, unsigned int flags);
 void MSG_WritePreciseAngle (sizebuf_t *sb, float f); // precise aim for ProQuake
-void MSG_WriteAngle16 (sizebuf_t *sb, float f); //johnfitz -- PROTOCOL_FITZQUAKE
+void MSG_WriteAngle16 (sizebuf_t *sb, float f, unsigned int flags); //johnfitz -- PROTOCOL_FITZQUAKE
 
 typedef struct msg_s {
 	int readcount;
@@ -141,10 +141,10 @@ char *MSG_ReadString (qmsg_t *msg);
 float MSG_ReadCoord16 (qmsg_t *msg); //johnfitz -- original behavior, 13.3 fixed point coords, max range +-4096
 float MSG_ReadCoord24 (qmsg_t *msg); //johnfitz -- 16.8 fixed point coords, max range +-32768
 float MSG_ReadCoord32f (qmsg_t *msg); //johnfitz -- 32-bit float coords
-float MSG_ReadCoord (qmsg_t *msg);
-float MSG_ReadAngle (qmsg_t *msg);
+float MSG_ReadCoord (qmsg_t *msg, unsigned int flags);
+float MSG_ReadAngle (qmsg_t *msg, unsigned int flags);
 float MSG_ReadPreciseAngle (qmsg_t *msg); // precise aim for ProQuake
-float MSG_ReadAngle16 (qmsg_t *msg); //johnfitz -- PROTOCOL_FITZQUAKE
+float MSG_ReadAngle16 (qmsg_t *msg, unsigned int flags); //johnfitz -- PROTOCOL_FITZQUAKE
 
 //============================================================================
 

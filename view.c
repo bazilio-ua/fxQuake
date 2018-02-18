@@ -272,7 +272,7 @@ void V_ParseDamage (void)
 	armor = MSG_ReadByte (net_message);
 	blood = MSG_ReadByte (net_message);
 	for (i=0 ; i<3 ; i++)
-		from[i] = MSG_ReadCoord (net_message);
+		from[i] = MSG_ReadCoord (net_message, cl.protocolflags);
 
 	count = blood*0.5 + armor*0.5;
 	if (count < 10)
