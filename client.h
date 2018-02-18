@@ -250,6 +250,8 @@ typedef struct
 	qboolean		noclip_anglehack;
 
 	int			protocol;
+	unsigned	protocolflags;
+    
 } client_state_t;
 
 

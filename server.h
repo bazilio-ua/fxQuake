@@ -68,6 +68,7 @@ typedef struct
 	byte		signon_buf[MAX_MSGLEN-2]; //8192
 
 	int			protocol;
+	unsigned	protocolflags;
 
 	int			frozen;
 } server_t;
