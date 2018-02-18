@@ -37,7 +37,7 @@ SV_Protocol_f
 ===============
 */
 //static int sv_protocol = PROTOCOL_FITZQUAKE;
-static int sv_protocol = PROTOCOL_FITZQUAKE_PLUS;
+static int sv_protocol = PROTOCOL_MARKV;
 static void SV_Protocol_f (void)
 {
 	int i;
@@ -49,9 +49,9 @@ static void SV_Protocol_f (void)
 		break;
 	case 2:
 		i = atoi(Cmd_Argv(1));
-		if (i != PROTOCOL_NETQUAKE && i != PROTOCOL_FITZQUAKE && i != PROTOCOL_FITZQUAKE_PLUS && i != PROTOCOL_RMQ)
+		if (i != PROTOCOL_NETQUAKE && i != PROTOCOL_FITZQUAKE && i != PROTOCOL_MARKV && i != PROTOCOL_RMQ)
 			Con_Printf ("sv_protocol must be %i, %i, %i or %i\n", 
-				PROTOCOL_NETQUAKE, PROTOCOL_FITZQUAKE, PROTOCOL_FITZQUAKE_PLUS, PROTOCOL_RMQ);
+				PROTOCOL_NETQUAKE, PROTOCOL_FITZQUAKE, PROTOCOL_MARKV, PROTOCOL_RMQ);
 		else
 		{
 			sv_protocol = i;
@@ -115,7 +115,7 @@ void SV_Init (void)
         case PROTOCOL_FITZQUAKE:
             p = "FitzQuake";
             break;
-        case PROTOCOL_FITZQUAKE_PLUS:
+        case PROTOCOL_MARKV:
             p = "MarkV";
             break;
         case PROTOCOL_RMQ:
@@ -123,7 +123,7 @@ void SV_Init (void)
             break;
         default:
             Sys_Error ("Bad protocol version request %i. Accepted values: %i, %i, %i or %i",
-                       sv_protocol, PROTOCOL_NETQUAKE, PROTOCOL_FITZQUAKE, PROTOCOL_FITZQUAKE_PLUS, PROTOCOL_RMQ);
+                       sv_protocol, PROTOCOL_NETQUAKE, PROTOCOL_FITZQUAKE, PROTOCOL_MARKV, PROTOCOL_RMQ);
             return; /* silence compiler */
 	}
 	Sys_Printf ("Server using protocol %i (%s)\n", sv_protocol, p);
@@ -244,14 +244,14 @@ void SV_StartSound (edict_t *entity, int channel, char *sample, int volume, floa
 	//johnfitz -- PROTOCOL_FITZQUAKE
 	if (ent >= 8192)
 	{
-		if (sv.protocol == PROTOCOL_FITZQUAKE || sv.protocol == PROTOCOL_FITZQUAKE_PLUS || sv.protocol == PROTOCOL_RMQ)
+		if (sv.protocol == PROTOCOL_FITZQUAKE || sv.protocol == PROTOCOL_MARKV || sv.protocol == PROTOCOL_RMQ)
 			field_mask |= SND_LARGEENTITY;
 		else
 			return; // don't send any info protocol can't support
 	}
 	if (sound_num >= 256)
 	{
-		if (sv.protocol == PROTOCOL_FITZQUAKE || sv.protocol == PROTOCOL_FITZQUAKE_PLUS || sv.protocol == PROTOCOL_RMQ)
+		if (sv.protocol == PROTOCOL_FITZQUAKE || sv.protocol == PROTOCOL_MARKV || sv.protocol == PROTOCOL_RMQ)
 			field_mask |= SND_LARGESOUND;
 		else
 			return; // don't send any info protocol can't support
@@ -741,7 +741,7 @@ void SV_WriteEntitiesToClient (edict_t	*clent, sizebuf_t *msg)
 		//johnfitz
 
 		//johnfitz -- PROTOCOL_FITZQUAKE
-		if (sv.protocol == PROTOCOL_FITZQUAKE || sv.protocol == PROTOCOL_FITZQUAKE_PLUS || sv.protocol == PROTOCOL_RMQ)
+		if (sv.protocol == PROTOCOL_FITZQUAKE || sv.protocol == PROTOCOL_MARKV || sv.protocol == PROTOCOL_RMQ)
 		{
 			if (ent->baseline.alpha != ent->alpha)
 				bits |= U_ALPHA;
@@ -777,7 +777,7 @@ void SV_WriteEntitiesToClient (edict_t	*clent, sizebuf_t *msg)
 			bits |= U_MOREBITS;
 
 		// PROTOCOL_FITZQUAKE
-		if (sv.protocol == PROTOCOL_FITZQUAKE || sv.protocol == PROTOCOL_FITZQUAKE_PLUS || sv.protocol == PROTOCOL_RMQ)
+		if (sv.protocol == PROTOCOL_FITZQUAKE || sv.protocol == PROTOCOL_MARKV || sv.protocol == PROTOCOL_RMQ)
 		{
 			//johnfitz -- max size for protocol 15 is 18 bytes, not 16 as originally assumed here.
 			//And, for protocol 85(PROTOCOL_FITZQUAKE?) the max size is actually 24 bytes.
@@ -815,7 +815,7 @@ void SV_WriteEntitiesToClient (edict_t	*clent, sizebuf_t *msg)
 		if (bits & U_MOREBITS)
 			MSG_WriteByte (msg, bits>>8);
 
-		if (sv.protocol == PROTOCOL_FITZQUAKE || sv.protocol == PROTOCOL_FITZQUAKE_PLUS || sv.protocol == PROTOCOL_RMQ)
+		if (sv.protocol == PROTOCOL_FITZQUAKE || sv.protocol == PROTOCOL_MARKV || sv.protocol == PROTOCOL_RMQ)
 		{
 			//johnfitz -- PROTOCOL_FITZQUAKE
 			if (bits & U_EXTEND1)
@@ -844,7 +844,7 @@ void SV_WriteEntitiesToClient (edict_t	*clent, sizebuf_t *msg)
 			MSG_WriteCoord (msg, ent->v.origin[0], sv.protocolflags);
 		if (bits & U_ANGLE1)
 		{
-			if (sv.protocol == PROTOCOL_FITZQUAKE_PLUS)
+			if (sv.protocol == PROTOCOL_MARKV)
 				MSG_WriteAngle16(msg, ent->v.angles[0], sv.protocolflags); // Baker change
 			else
 				MSG_WriteAngle(msg, ent->v.angles[0], sv.protocolflags);
@@ -853,7 +853,7 @@ void SV_WriteEntitiesToClient (edict_t	*clent, sizebuf_t *msg)
 			MSG_WriteCoord (msg, ent->v.origin[1], sv.protocolflags);
 		if (bits & U_ANGLE2)
 		{
-			if (sv.protocol == PROTOCOL_FITZQUAKE_PLUS)
+			if (sv.protocol == PROTOCOL_MARKV)
 				MSG_WriteAngle16(msg, ent->v.angles[1], sv.protocolflags); // Baker change
 			else
 				MSG_WriteAngle(msg, ent->v.angles[1], sv.protocolflags);
@@ -862,13 +862,13 @@ void SV_WriteEntitiesToClient (edict_t	*clent, sizebuf_t *msg)
 			MSG_WriteCoord (msg, ent->v.origin[2], sv.protocolflags);
 		if (bits & U_ANGLE3)
 		{
-			if (sv.protocol == PROTOCOL_FITZQUAKE_PLUS)
+			if (sv.protocol == PROTOCOL_MARKV)
 				MSG_WriteAngle16(msg, ent->v.angles[2], sv.protocolflags); // Baker change
 			else
 				MSG_WriteAngle(msg, ent->v.angles[2], sv.protocolflags);
 		}
 
-		if (sv.protocol == PROTOCOL_FITZQUAKE || sv.protocol == PROTOCOL_FITZQUAKE_PLUS || sv.protocol == PROTOCOL_RMQ)
+		if (sv.protocol == PROTOCOL_FITZQUAKE || sv.protocol == PROTOCOL_MARKV || sv.protocol == PROTOCOL_RMQ)
 		{
 			//johnfitz -- PROTOCOL_FITZQUAKE
 			if (bits & U_ALPHA)
@@ -999,7 +999,7 @@ void SV_WriteClientdataToMessage (edict_t *ent, sizebuf_t *msg)
 		bits |= SU_WEAPON;
 
 	//johnfitz -- PROTOCOL_FITZQUAKE
-	if (sv.protocol == PROTOCOL_FITZQUAKE || sv.protocol == PROTOCOL_FITZQUAKE_PLUS || sv.protocol == PROTOCOL_RMQ)
+	if (sv.protocol == PROTOCOL_FITZQUAKE || sv.protocol == PROTOCOL_MARKV || sv.protocol == PROTOCOL_RMQ)
 	{
 		if (bits & SU_WEAPON && SV_ModelIndex(pr_strings+ent->v.weaponmodel) & 0xFF00)
 			bits |= SU_WEAPON2;
@@ -1032,7 +1032,7 @@ void SV_WriteClientdataToMessage (edict_t *ent, sizebuf_t *msg)
 	MSG_WriteShort (msg, bits);
 
 	//johnfitz -- PROTOCOL_FITZQUAKE
-	if (sv.protocol == PROTOCOL_FITZQUAKE || sv.protocol == PROTOCOL_FITZQUAKE_PLUS || sv.protocol == PROTOCOL_RMQ)
+	if (sv.protocol == PROTOCOL_FITZQUAKE || sv.protocol == PROTOCOL_MARKV || sv.protocol == PROTOCOL_RMQ)
 	{
 		if (bits & SU_EXTEND1)
 			MSG_WriteByte(msg, bits>>16);
@@ -1089,7 +1089,7 @@ void SV_WriteClientdataToMessage (edict_t *ent, sizebuf_t *msg)
 	}
 
 	//johnfitz -- PROTOCOL_FITZQUAKE
-	if (sv.protocol == PROTOCOL_FITZQUAKE || sv.protocol == PROTOCOL_FITZQUAKE_PLUS || sv.protocol == PROTOCOL_RMQ)
+	if (sv.protocol == PROTOCOL_FITZQUAKE || sv.protocol == PROTOCOL_MARKV || sv.protocol == PROTOCOL_RMQ)
 	{
 		if (bits & SU_WEAPON2)
 			MSG_WriteByte (msg, SV_ModelIndex(pr_strings+ent->v.weaponmodel) >> 8);
@@ -1371,7 +1371,7 @@ void SV_CreateBaseline (void)
 
 		//johnfitz -- PROTOCOL_FITZQUAKE
 		bits = 0;
-		if (sv.protocol == PROTOCOL_FITZQUAKE || sv.protocol == PROTOCOL_FITZQUAKE_PLUS || sv.protocol == PROTOCOL_RMQ) //decide which extra data needs to be sent
+		if (sv.protocol == PROTOCOL_FITZQUAKE || sv.protocol == PROTOCOL_MARKV || sv.protocol == PROTOCOL_RMQ) //decide which extra data needs to be sent
 		{
 			if (svent->baseline.modelindex & 0xFF00)
 				bits |= B_LARGEMODEL;
@@ -1394,7 +1394,7 @@ void SV_CreateBaseline (void)
 	// add to the message
 	//
 		//johnfitz -- PROTOCOL_FITZQUAKE
-		if (sv.protocol == PROTOCOL_FITZQUAKE || sv.protocol == PROTOCOL_FITZQUAKE_PLUS || sv.protocol == PROTOCOL_RMQ)
+		if (sv.protocol == PROTOCOL_FITZQUAKE || sv.protocol == PROTOCOL_MARKV || sv.protocol == PROTOCOL_RMQ)
 		{
 			if (bits)
 				MSG_WriteByte (&sv.signon, svc_spawnbaseline2);
@@ -1410,7 +1410,7 @@ void SV_CreateBaseline (void)
 		MSG_WriteShort (&sv.signon,entnum);
 
 		//johnfitz -- PROTOCOL_FITZQUAKE
-		if (sv.protocol == PROTOCOL_FITZQUAKE || sv.protocol == PROTOCOL_FITZQUAKE_PLUS || sv.protocol == PROTOCOL_RMQ)
+		if (sv.protocol == PROTOCOL_FITZQUAKE || sv.protocol == PROTOCOL_MARKV || sv.protocol == PROTOCOL_RMQ)
 		{
 			if (bits)
 				MSG_WriteByte (&sv.signon, bits);
@@ -1442,7 +1442,7 @@ void SV_CreateBaseline (void)
 		}
 
 		//johnfitz -- PROTOCOL_FITZQUAKE
-		if (sv.protocol == PROTOCOL_FITZQUAKE || sv.protocol == PROTOCOL_FITZQUAKE_PLUS || sv.protocol == PROTOCOL_RMQ)
+		if (sv.protocol == PROTOCOL_FITZQUAKE || sv.protocol == PROTOCOL_MARKV || sv.protocol == PROTOCOL_RMQ)
 		{
 			if (bits & B_ALPHA)
 				MSG_WriteByte (&sv.signon, svent->baseline.alpha);

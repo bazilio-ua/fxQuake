@@ -20,11 +20,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // protocol.h -- communications protocols
 
 // PROTOCOL_NETQUAKE
-#define	PROTOCOL_NETQUAKE		15		// Standard Quake protocol
+#define	PROTOCOL_NETQUAKE	15		// Standard Quake protocol
 // PROTOCOL_FITZQUAKE
-#define PROTOCOL_FITZQUAKE		666		// johnfitz -- added new protocol for fitzquake 0.85
-#define PROTOCOL_FITZQUAKE_PLUS	668		// Baker: for smooth angles for rotating entities
-#define PROTOCOL_RMQ			999		// mh: RMQ
+#define PROTOCOL_FITZQUAKE	666		// johnfitz -- added new protocol for fitzquake 0.85
+#define PROTOCOL_MARKV		668		// Baker: fitz+ for smooth angles for rotating entities
+#define PROTOCOL_RMQ		999		// mh: RMQ
 
 // PROTOCOL_RMQ protocol flags
 #define PRFL_SHORTANGLE		(1 << 1)

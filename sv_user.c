@@ -453,7 +453,7 @@ void SV_ReadClientMove (usercmd_t *move)
 		for (i=0 ; i<3 ; i++)
 			angle[i] = MSG_ReadPreciseAngle (net_message);
 	}
-	else if (sv.protocol == PROTOCOL_FITZQUAKE || sv.protocol == PROTOCOL_FITZQUAKE_PLUS || sv.protocol == PROTOCOL_RMQ) //johnfitz -- 16-bit angles for PROTOCOL_FITZQUAKE
+	else if (sv.protocol == PROTOCOL_FITZQUAKE || sv.protocol == PROTOCOL_MARKV || sv.protocol == PROTOCOL_RMQ) //johnfitz -- 16-bit angles for PROTOCOL_FITZQUAKE
 	{
 		for (i=0 ; i<3 ; i++)
 			angle[i] = MSG_ReadAngle16 (net_message, sv.protocolflags);
