@@ -103,7 +103,7 @@ R_CullBox
 Returns true if the box is completely outside the frustum
 =================
 */
-inline qboolean R_CullBox (vec3_t mins, vec3_t maxs)
+qboolean R_CullBox (vec3_t mins, vec3_t maxs)
 {
 	int		i;
 
