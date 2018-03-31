@@ -382,11 +382,11 @@ scalar vlen(vector)
 void PF_vlen (void)
 {
 	float	*value1;
-	float	new;
+	double	new;
 
 	value1 = G_VECTOR(OFS_PARM0);
 
-	new = value1[0] * value1[0] + value1[1] * value1[1] + value1[2]*value1[2];
+	new = (double)value1[0] * value1[0] + (double)value1[1] * value1[1] + (double)value1[2] * value1[2];
 	new = sqrt(new);
 
 	G_FLOAT(OFS_RETURN) = new;
