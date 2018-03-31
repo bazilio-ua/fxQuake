@@ -109,7 +109,7 @@ typedef struct
 	vec3_t	start, end;
 } beam_t;
 
-#define	MAX_EFRAGS	4096 // was 2048 // orig. was 640
+#define	MAX_EFRAGS	8192 // fx 4096 // was 2048 // orig. was 640
 
 #define	MAX_MAPSTRING	2048
 #define	MAX_DEMOS		8
@@ -295,7 +295,7 @@ extern	cvar_t	m_side;
 
 
 #define	MAX_TEMP_ENTITIES		512 // was 64			// lightning bolts, etc
-#define	MAX_STATIC_ENTITIES		1024 // old 512 // was 128 //bjp 256	// torches, etc
+#define	MAX_STATIC_ENTITIES		4096 // fx 512 // was 128 //bjp 256	// torches, etc
 
 extern	client_state_t	cl;
 
