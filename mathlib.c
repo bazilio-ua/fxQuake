@@ -33,6 +33,38 @@ float	anglemod(float a)
 
 /*
 ==================
+SphereOnPlaneSide -- MH
+
+Faster but coarser than BoxOnPlaneSide
+==================
+*/
+int SphereOnPlaneSide (float *center, float radius, mplane_t *p)
+{
+	if (p->type < 3)
+	{
+		// fast axial case
+		if (p->dist <= center[p->type] - radius)
+			return BOX_INSIDE_PLANE;
+		else if (p->dist >= center[p->type] + radius)
+			return BOX_OUTSIDE_PLANE;
+		else 
+            return BOX_INTERSECT_PLANE;
+	}
+	else
+	{
+		float dist = DotProduct (center, p->normal) - p->dist;
+        
+		if (dist <= -radius)
+			return BOX_OUTSIDE_PLANE;
+		else if (dist >= radius)
+			return BOX_INSIDE_PLANE;
+		else 
+            return BOX_INTERSECT_PLANE;
+	}
+}
+
+/*
+==================
 BoxOnPlaneSide
 
 Returns 1, 2, or 1 + 2
@@ -42,7 +74,17 @@ int BoxOnPlaneSide (vec3_t emins, vec3_t emaxs, mplane_t *p)
 {
 	float	dist1, dist2;
 	int		sides;
-
+    
+// fast axial cases
+	if (p->type < 3)
+	{
+		if (p->dist <= emins[p->type])
+			return 1;
+		if (p->dist >= emaxs[p->type])
+			return 2;
+		return 3;
+	}
+    
 // general case
 	switch (p->signbits)
 	{
@@ -80,7 +122,7 @@ int BoxOnPlaneSide (vec3_t emins, vec3_t emaxs, mplane_t *p)
 		break;
 	default:
 		dist1 = dist2 = 0;		// make compiler happy
-		Sys_Error ("BoxOnPlaneSide: Bad signbits");
+		Host_Error ("BoxOnPlaneSide: Bad signbits");
 		break;
 	}
 
@@ -94,6 +136,11 @@ int BoxOnPlaneSide (vec3_t emins, vec3_t emaxs, mplane_t *p)
 }
 
 /*-----------------------------------------------------------------*/
+
+vec_t PreciseDotProduct (vec3_t v1, vec3_t v2)
+{
+	return ((double)v1[0]*v2[0] + (double)v1[1]*v2[1] + (double)v1[2]*v2[2]);
+}
 
 vec_t DotProduct (vec3_t v1, vec3_t v2)
 {

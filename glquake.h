@@ -238,7 +238,7 @@ void GL_BeginRendering (int *x, int *y, int *width, int *height);
 void GL_EndRendering (void);
 
 // gl_main.c
-qboolean R_CullBox (vec3_t mins, vec3_t maxs);
+qboolean R_CullBox (vec3_t emins, vec3_t emaxs);
 qboolean R_CullModelForEntity (entity_t *e);
 void R_DrawAliasModel (entity_t *e);
 void R_DrawSpriteModel (entity_t *e);

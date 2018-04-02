@@ -50,10 +50,8 @@ static inline int IS_NAN (float x) {
 
 // Will return minval also if minval > maxval
 #define CLAMP(minval, x, maxval) ((x) < (minval) || (minval) > (maxval) ? (minval) : (x) > (maxval) ? (maxval) : (x)) // johnfitz
-
 #define Q_rint(x) ((x) > 0 ? (int)((x) + 0.5) : (int)((x) - 0.5)) // johnfitz -- from joequake
-
-#define DoublePrecisionDotProduct(x,y) ((double)x[0]*y[0]+(double)x[1]*y[1]+(double)x[2]*y[2])
+#define Q_Random(MIN,MAX) ((rand () & 32767) * (((MAX) - (MIN)) * (1.0f / 32767.0f)) + (MIN)) // MH
 
 /*-----------------------------------------------------------------*/
 
@@ -61,6 +59,7 @@ float	anglemod(float a);
 
 /*-----------------------------------------------------------------*/
 
+vec_t PreciseDotProduct (vec3_t v1, vec3_t v2);
 vec_t DotProduct (vec3_t v1, vec3_t v2);
 void CrossProduct (vec3_t v1, vec3_t v2, vec3_t cross);
 
@@ -88,23 +87,12 @@ void VectorNormalizeFast(vec3_t v);
 
 /*-----------------------------------------------------------------*/
 
+#define BOX_INSIDE_PLANE	1
+#define BOX_OUTSIDE_PLANE	2
+#define BOX_INTERSECT_PLANE	3
+
 struct mplane_s;
 
+int SphereOnPlaneSide (float *center, float radius, struct mplane_s *p);
 int BoxOnPlaneSide (vec3_t emins, vec3_t emaxs, struct mplane_s *p);
-
-#define BOX_ON_PLANE_SIDE(emins, emaxs, p)	\
-	(((p)->type < 3)?						\
-	(										\
-		((p)->dist <= (emins)[(p)->type])?	\
-			1								\
-		:									\
-		(									\
-			((p)->dist >= (emaxs)[(p)->type])?\
-				2							\
-			:								\
-				3							\
-		)									\
-	)										\
-	:										\
-		BoxOnPlaneSide( (emins), (emaxs), (p)))
 

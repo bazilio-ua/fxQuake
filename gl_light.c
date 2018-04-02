@@ -453,8 +453,8 @@ restart:
             // ericw -- added double casts to force 64-bit precision.
             // Without them the zombie at the start of jam3_ericw.bsp was
             // incorrectly being lit up in SSE builds.
-			ds = (int) ((double) DoublePrecisionDotProduct (mid, surf->texinfo->vecs[0]) + surf->texinfo->vecs[0][3]);
-			dt = (int) ((double) DoublePrecisionDotProduct (mid, surf->texinfo->vecs[1]) + surf->texinfo->vecs[1][3]);
+			ds = (int) ((double) PreciseDotProduct (mid, surf->texinfo->vecs[0]) + surf->texinfo->vecs[0][3]);
+			dt = (int) ((double) PreciseDotProduct (mid, surf->texinfo->vecs[1]) + surf->texinfo->vecs[1][3]);
 
 			if (ds < surf->texturemins[0] || dt < surf->texturemins[1])
 				continue;	// out of range

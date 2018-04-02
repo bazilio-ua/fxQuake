@@ -368,7 +368,7 @@ void SV_FindTouchedLeafs (edict_t *ent, mnode_t *node)
 // NODE_MIXED
 
 	splitplane = node->plane;
-	sides = BOX_ON_PLANE_SIDE(ent->v.absmin, ent->v.absmax, splitplane);
+	sides = BoxOnPlaneSide(ent->v.absmin, ent->v.absmax, splitplane);
 	
 // recurse down the contacted sides
 	if (sides & 1)
@@ -516,7 +516,7 @@ int SV_HullPointContents (hull_t *hull, int num, vec3_t p)
 		if (plane->type < 3)
 			d = p[plane->type] - plane->dist;
 		else
-			d = DoublePrecisionDotProduct (plane->normal, p) - plane->dist;
+			d = PreciseDotProduct (plane->normal, p) - plane->dist;
 		if (d < 0)
 			num = node->children[1];
 		else
@@ -632,8 +632,8 @@ restart:
 		t2 = p2[plane->type] - plane->dist;
 		break;
 	default:
-		t1 = DoublePrecisionDotProduct (plane->normal, p1) - plane->dist;
-		t2 = DoublePrecisionDotProduct (plane->normal, p2) - plane->dist;
+		t1 = PreciseDotProduct (plane->normal, p1) - plane->dist;
+		t2 = PreciseDotProduct (plane->normal, p2) - plane->dist;
 		break;
 	}
 
