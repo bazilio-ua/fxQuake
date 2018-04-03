@@ -1043,11 +1043,11 @@ restart:
 			if (surf->visframe != r_framecount)
 				continue;
 
-			if ((dot < 0) ^ !!(surf->flags & SURF_PLANEBACK))
-				continue;		// wrong side
-
 			if (R_CullBox(surf->mins, surf->maxs))
 				continue;		// outside
+
+			if ((dot < 0) ^ !!(surf->flags & SURF_PLANEBACK))
+				continue;		// wrong side
 
 			if (surf->flags & SURF_DRAWSKY)
 			{
