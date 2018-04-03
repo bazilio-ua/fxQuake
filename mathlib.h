@@ -85,14 +85,3 @@ void VectorScale (vec3_t in, vec_t scale, vec3_t out);
 void TurnVector (vec3_t out, vec3_t forward, vec3_t side, float angle);
 void VectorNormalizeFast(vec3_t v);
 
-/*-----------------------------------------------------------------*/
-
-#define BOX_INSIDE_PLANE	1
-#define BOX_OUTSIDE_PLANE	2
-#define BOX_INTERSECT_PLANE	3
-
-struct mplane_s;
-
-int SphereOnPlaneSide (float *center, float radius, struct mplane_s *p);
-int BoxOnPlaneSide (vec3_t emins, vec3_t emaxs, struct mplane_s *p);
-

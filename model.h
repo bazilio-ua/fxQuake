@@ -62,6 +62,9 @@ typedef struct
 #define	SIDE_BACK	1
 #define	SIDE_ON		2
 
+#define BOX_INSIDE_PLANE	1
+#define BOX_OUTSIDE_PLANE	2
+#define BOX_INTERSECT_PLANE	3
 
 // plane_t structure
 typedef struct mplane_s
