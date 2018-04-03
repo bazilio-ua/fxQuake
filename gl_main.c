@@ -951,7 +951,7 @@ static inline int SignbitsForPlane (mplane_t *out)
 {
 	int	bits, j;
 
-	// for fast box on planeside test
+	// for fast box on planeside test - identify which corner(s) of the box to text against the plane
 
 	bits = 0;
 	for (j=0 ; j<3 ; j++)
