@@ -134,7 +134,7 @@ void R_SplitEntityOnNode (mnode_t *node)
 
 // split on this plane
 	splitplane = node->plane;
-	sides = BoxOnPlaneSide(r_emins, r_emaxs, splitplane);
+	sides = BOX_ON_PLANE_SIDE(r_emins, r_emaxs, splitplane);
 
 // recurse down the contacted sides
 	if (sides & 1)

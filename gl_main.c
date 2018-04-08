@@ -98,38 +98,6 @@ cvar_t  gl_oldspr = {"gl_oldspr", "0"}; // Old opaque sprite
 
 /*
 ==================
-SphereOnPlaneSide -- MH
-
-Faster but coarser than BoxOnPlaneSide
-==================
-*/
-int SphereOnPlaneSide (float *center, float radius, mplane_t *p)
-{
-	if (p->type < 3)
-	{
-		// fast axial case
-		if (p->dist <= center[p->type] - radius)
-			return BOX_INSIDE_PLANE;
-		else if (p->dist >= center[p->type] + radius)
-			return BOX_OUTSIDE_PLANE;
-		else 
-            return BOX_INTERSECT_PLANE;
-	}
-	else
-	{
-		float dist = DotProduct (center, p->normal) - p->dist;
-        
-		if (dist <= -radius)
-			return BOX_OUTSIDE_PLANE;
-		else if (dist >= radius)
-			return BOX_INSIDE_PLANE;
-		else 
-            return BOX_INTERSECT_PLANE;
-	}
-}
-
-/*
-==================
 BoxOnPlaneSide
 
 Returns 1, 2, or 1 + 2
@@ -140,6 +108,8 @@ int BoxOnPlaneSide (vec3_t emins, vec3_t emaxs, mplane_t *p)
 	float	dist1, dist2;
 	int		sides;
     
+	// this is done by the BOX_ON_PLANE_SIDE macro before calling this function
+/*    
     // fast axial cases
 	if (p->type < 3)
 	{
@@ -149,7 +119,7 @@ int BoxOnPlaneSide (vec3_t emins, vec3_t emaxs, mplane_t *p)
 			return 2;
 		return 3;
 	}
-    
+*/    
     // general case
 	switch (p->signbits)
 	{
