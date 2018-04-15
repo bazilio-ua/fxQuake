@@ -739,7 +739,7 @@ void IN_CheckActive (void)
                 VID_Gamma_Set ();
 //                IN_GrabKeyboard();
                 active = true;
-                printf("*** Active ***\n");
+//                printf("*** Active ***\n");
             }
         }
         else //if (active)
@@ -753,7 +753,7 @@ void IN_CheckActive (void)
 //                IN_UngrabKeyboard();
                 Key_ClearStates ();
                 active = false;
-                printf("*** Inactive ***\n");
+//                printf("*** Inactive ***\n");
             }
         }
     }

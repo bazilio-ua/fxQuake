@@ -453,7 +453,7 @@ int main (int argc, char *argv[])
             S_UnblockSound ();
             S_ClearBuffer ();
             VID_Gamma_Set ();
-            NSLog(@"*** Active ***");
+//            NSLog(@"*** Active ***");
             active = true;
             }
         }
@@ -465,7 +465,7 @@ int main (int argc, char *argv[])
             S_ClearBuffer ();
             VID_Gamma_Restore ();
             Key_ClearStates ();
-            NSLog(@"*** Inactive ***");
+//            NSLog(@"*** Inactive ***");
             active = false;
             }
         }
