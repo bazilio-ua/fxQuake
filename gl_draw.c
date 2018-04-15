@@ -63,6 +63,8 @@ int		gl_filter_mag = GL_LINEAR;
 float	gl_hardware_max_anisotropy = 1; // just in case
 float 	gl_texture_anisotropy = 1;
 
+qboolean gl_texture_NPOT = false; //ericw
+
 int		gl_hardware_max_size = 1024; // just in case
 int		gl_texture_max_size = 1024;
 
@@ -196,6 +198,7 @@ void GL_CheckExtensions (void)
 	qboolean SWAPcontrol;
 #endif
 	qboolean anisotropy;
+    qboolean npot;
 	int units;
 
 	//
@@ -223,12 +226,13 @@ void GL_CheckExtensions (void)
 
 		qglMultiTexCoord2f = (void *) qglGetProcAddress ("glMultiTexCoord2fARB");
 		qglActiveTexture = (void *) qglGetProcAddress ("glActiveTextureARB");
+        qglClientActiveTexture = (void *) qglGetProcAddress ("glClientActiveTextureARB");
 
 		if (units < 2)
 		{
 			Con_Warning ("Only %i TMU available, multitexture not supported\n", units);
 		}
-		else if (!qglMultiTexCoord2f || !qglActiveTexture)
+		else if (!qglMultiTexCoord2f || !qglActiveTexture || !qglClientActiveTexture)
 		{
 			Con_Warning ("Multitexture not supported (qglGetProcAddress failed)\n");
 		}
@@ -358,6 +362,25 @@ void GL_CheckExtensions (void)
 	else
 	{
 		Con_Warning ("Anisotropic filtering not supported (extension not found)\n");
+	}
+    
+    //
+    // Texture non power of two
+	//
+    npot = strstr (gl_extensions, "GL_ARB_texture_non_power_of_two") != NULL;
+    
+	if (COM_CheckParm("-notexturenpot"))
+	{
+		Con_Warning ("Texture non power of two disabled at command line\n");
+	}
+	else if (npot)
+    {
+		Con_Printf ("GL_ARB_texture_non_power_of_two extension found\n");
+		gl_texture_NPOT = true;
+    }
+	else
+	{
+		Con_Warning ("Texture non power of two not supported (extension not found)\n");
 	}
 }
 
