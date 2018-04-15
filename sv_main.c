@@ -486,10 +486,11 @@ crosses a waterline.
 =============================================================================
 */
 
-int		fatbytes;
-byte	fatpvs[MAX_MAP_LEAFS/8];
+static int	fatbytes;
+static byte	*fatpvs;
+static int	fatpvs_capacity;
 
-void SV_AddToFatPVS (vec3_t org, mnode_t *node, model_t *worldmodel)
+void SV_AddToFatPVS (vec3_t org, mnode_t *node, model_t *worldmodel) //johnfitz -- added worldmodel as a parameter
 {
 	int		i;
 	byte	*pvs;
@@ -532,11 +533,20 @@ Calculates a PVS that is the inclusive or of all leafs within 8 pixels of the
 given point.
 =============
 */
-byte *SV_FatPVS (vec3_t org, model_t *worldmodel)
+byte *SV_FatPVS (vec3_t org, model_t *worldmodel) //johnfitz -- added worldmodel as a parameter
 {
-	fatbytes = (worldmodel->numleafs+31)>>3;
+	fatbytes = (worldmodel->numleafs+7)>>3; // ericw -- was +31, assumed to be a bug/typo
+	if (fatpvs == NULL || fatbytes > fatpvs_capacity)
+	{
+		fatpvs_capacity = fatbytes;
+		fatpvs = (byte *) realloc (fatpvs, fatpvs_capacity);
+		if (!fatpvs)
+			Host_Error ("SV_FatPVS: realloc() failed on %d bytes", fatpvs_capacity);
+	}
+    
 	memset (fatpvs, 0, fatbytes);
 	SV_AddToFatPVS (org, worldmodel->nodes, worldmodel);
+    
 	return fatpvs;
 }
 

@@ -32,9 +32,13 @@ void Mod_LoadBrushModel (model_t *mod, void *buffer);
 void Mod_LoadAliasModel (model_t *mod, void *buffer);
 model_t *Mod_LoadModel (model_t *mod, qboolean crash);
 
-byte	mod_novis[MAX_MAP_LEAFS/8];
+static byte	*mod_novis;
+static int	mod_novis_capacity;
 
-#define	MAX_MOD_KNOWN	2048 //was 512
+static byte	*mod_decompressed;
+static int	mod_decompressed_capacity;
+
+#define	MAX_MOD_KNOWN	2048 // was 512
 model_t	mod_known[MAX_MOD_KNOWN];
 int		mod_numknown;
 
@@ -62,8 +66,6 @@ void Mod_Init (void)
 	Cvar_RegisterVariable (&external_lit, Mod_External);
 	Cvar_RegisterVariable (&external_vis, Mod_External);
 	Cvar_RegisterVariable (&external_ent, Mod_External);
-
-	memset (mod_novis, 0xff, sizeof(mod_novis));
 }
 
 /*
@@ -126,13 +128,21 @@ Mod_DecompressVis
 */
 byte *Mod_DecompressVis (byte *in, model_t *model)
 {
-	static byte	decompressed[MAX_MAP_LEAFS/8];
 	int		c;
 	byte	*out;
+	byte	*outend;
 	int		row;
 
 	row = (model->numleafs+7)>>3;
-	out = decompressed;
+	if (mod_decompressed == NULL || row > mod_decompressed_capacity)
+	{
+		mod_decompressed_capacity = row;
+		mod_decompressed = (byte *) realloc (mod_decompressed, mod_decompressed_capacity);
+		if (!mod_decompressed)
+			Host_Error ("Mod_DecompressVis: realloc() failed on %d bytes", mod_decompressed_capacity);
+	}
+	out = mod_decompressed;
+	outend = mod_decompressed + row;
 
 	if (!in || r_novis.value == 2)
 	{	// no vis info, so make all visible
@@ -141,7 +151,7 @@ byte *Mod_DecompressVis (byte *in, model_t *model)
 			*out++ = 0xff;
 			row--;
 		}
-		return decompressed;
+		return mod_decompressed;
 	}
 
 	do
@@ -156,12 +166,20 @@ byte *Mod_DecompressVis (byte *in, model_t *model)
 		in += 2;
 		while (c)
 		{
+			if (out == outend)
+			{
+				if(!model->viswarn) {
+					model->viswarn = true;
+					Con_Warning("Mod_DecompressVis: output overrun on model \"%s\"\n", model->name);
+				}
+				return mod_decompressed;
+			}
 			*out++ = 0;
 			c--;
 		}
-	} while (out - decompressed < row);
+	} while (out - mod_decompressed < row);
 	
-	return decompressed;
+	return mod_decompressed;
 }
 
 /*
@@ -172,8 +190,30 @@ Mod_LeafPVS
 byte *Mod_LeafPVS (mleaf_t *leaf, model_t *model)
 {
 	if (leaf == model->leafs)
-		return mod_novis;
+        return Mod_NoVisPVS (model);
 	return Mod_DecompressVis (leaf->compressed_vis, model);
+}
+
+/*
+=================
+Mod_NoVisPVS
+=================
+*/
+byte *Mod_NoVisPVS (model_t *model)
+{
+	int pvsbytes;
+    
+	pvsbytes = (model->numleafs+7)>>3;
+	if (mod_novis == NULL || pvsbytes > mod_novis_capacity)
+	{
+		mod_novis_capacity = pvsbytes;
+		mod_novis = (byte *) realloc (mod_novis, mod_novis_capacity);
+		if (!mod_novis)
+			Host_Error ("Mod_NoVisPVS: realloc() failed on %d bytes", mod_novis_capacity);
+		
+		memset(mod_novis, 0xff, mod_novis_capacity);
+	}
+	return mod_novis;
 }
 
 /*
@@ -694,6 +734,7 @@ void Mod_LoadVisibility (lump_t *l)
 	vispatch_t	vispatch;
 	unsigned int path_id;
 
+	loadmodel->viswarn = false;
 	loadmodel->visdata = NULL;
 
 	extleafdata = NULL;
@@ -921,9 +962,6 @@ void Mod_LoadSubmodels (lump_t *l)
 
 	// check world visleafs
 	out = loadmodel->submodels;
-
-	if (out->visleafs > MAX_MAP_LEAFS)
-		Host_Error ("Mod_LoadSubmodels: too many visleafs (%d, max = %d) in %s", out->visleafs, MAX_MAP_LEAFS, loadmodel->name);
 
 	if (out->visleafs > 8192) // old limit warning
 		Con_DWarning ("Mod_LoadSubmodels: visleafs exceeds standard limit (%d, normal max = %d) in %s\n", out->visleafs, 8192, loadmodel->name);
@@ -1728,8 +1766,6 @@ void Mod_LoadLeafs_L1 (lump_t *l)
 	if (filelen % sizeof(*in))
 		Host_Error ("Mod_LoadLeafs_L1: funny lump size in %s",loadmodel->name);
 	count = filelen / sizeof(*in);
-	if (count > MAX_MAP_LEAFS) // bsp2 limit exceed
-		Host_Error ("Mod_LoadLeafs_L1: leafs exceeds bsp2 limit (%d, max = %d) in %s", count, MAX_MAP_LEAFS, loadmodel->name);
 	out = (mleaf_t *) Hunk_AllocName ( count*sizeof(*out), loadname);
 
 	loadmodel->leafs = out;
@@ -1793,8 +1829,6 @@ void Mod_LoadLeafs_L2 (lump_t *l)
 	if (filelen % sizeof(*in))
 		Host_Error ("Mod_LoadLeafs_L2: funny lump size in %s",loadmodel->name);
 	count = filelen / sizeof(*in);
-	if (count > MAX_MAP_LEAFS) // bsp2 limit exceed
-		Host_Error ("Mod_LoadLeafs_L2: leafs exceeds bsp2 limit (%d, max = %d) in %s", count, MAX_MAP_LEAFS, loadmodel->name);
 	out = (mleaf_t *) Hunk_AllocName ( count*sizeof(*out), loadname);
 
 	loadmodel->leafs = out;

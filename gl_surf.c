@@ -51,8 +51,6 @@ float		d_overbrightscale = OVERBRIGHT_SCALE;
 
 msurface_t  *skychain = NULL;
 
-extern byte	mod_novis[MAX_MAP_LEAFS/8];
-
 /*
 ============================================================================================================
 
@@ -1163,9 +1161,7 @@ void R_MarkLeaves (void)
 
 	// choose vis data
 	if (r_novis.value || r_viewleaf->contents == CONTENTS_SOLID || r_viewleaf->contents == CONTENTS_SKY)
-	{
-		vis = &mod_novis[0]; 
-	}
+        vis = Mod_NoVisPVS (cl.worldmodel);
 	else if (nearwaterportal)
 		vis = SV_FatPVS (r_origin, cl.worldmodel);
 	else

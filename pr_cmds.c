@@ -696,7 +696,8 @@ void PF_checkpos (void)
 
 //============================================================================
 
-byte	checkpvs[MAX_MAP_LEAFS/8];
+static byte	*checkpvs;	//ericw -- changed to malloc
+static int	checkpvs_capacity;
 
 int PF_newcheckclient (int check)
 {
@@ -705,6 +706,7 @@ int PF_newcheckclient (int check)
 	edict_t	*ent;
 	mleaf_t	*leaf;
 	vec3_t	org;
+	int		pvsbytes;
 
 // cycle to the next one
 
@@ -743,7 +745,16 @@ int PF_newcheckclient (int check)
 	VectorAdd (ent->v.origin, ent->v.view_ofs, org);
 	leaf = Mod_PointInLeaf (org, sv.worldmodel);
 	pvs = Mod_LeafPVS (leaf, sv.worldmodel);
-	memcpy (checkpvs, pvs, (sv.worldmodel->numleafs+7)>>3 );
+    
+	pvsbytes = (sv.worldmodel->numleafs+7)>>3;
+	if (checkpvs == NULL || pvsbytes > checkpvs_capacity)
+	{
+		checkpvs_capacity = pvsbytes;
+		checkpvs = (byte *) realloc (checkpvs, checkpvs_capacity);
+		if (!checkpvs)
+			Host_Error ("PF_newcheckclient: realloc() failed on %d bytes", checkpvs_capacity);
+	}
+	memcpy (checkpvs, pvs, pvsbytes);
 
 	return i;
 }
@@ -794,13 +805,13 @@ void PF_checkclient (void)
 	l = (leaf - sv.worldmodel->leafs) - 1;
 	if ( (l<0) || !(checkpvs[l>>3] & (1<<(l&7)) ) )
 	{
-c_notvis++;
+		c_notvis++;
 		RETURN_EDICT(sv.edicts);
 		return;
 	}
 
 // might be able to see it
-c_invis++;
+    c_invis++;
 	RETURN_EDICT(ent);
 }
 
