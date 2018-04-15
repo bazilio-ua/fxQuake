@@ -516,6 +516,7 @@ int main (int argc, char *argv[])
 
 - (void)windowDidResize:(NSNotification *)notification {
     [glcontext update];
+	GL_UploadWarpImage();
     
     Host_Frame(0.02);
 }

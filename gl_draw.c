@@ -132,7 +132,7 @@ choose correct warpimage size and reload existing warpimage textures if needed
 */
 void GL_UploadWarpImage (void)
 {
-	int	oldsize;
+//	int	oldsize;
 	int mark;
 	gltexture_t *glt;
 	byte *dummy;
@@ -140,7 +140,7 @@ void GL_UploadWarpImage (void)
 	//
 	// find the new correct size
 	//
-	oldsize = gl_warpimage_size;
+//	oldsize = gl_warpimage_size;
 
 	if ((int)gl_warp_image_size.value < 32)
 		Cvar_SetValue ("gl_warp_image_size", 32);
@@ -158,9 +158,12 @@ void GL_UploadWarpImage (void)
 	if (gl_warpimage_size != gl_warp_image_size.value)
 		Cvar_SetValue ("gl_warp_image_size", gl_warpimage_size);
 
-	if (gl_warpimage_size == oldsize)
-		return;
-
+//	if (gl_warpimage_size == oldsize)
+//		return;
+    
+    // ericw -- removed early exit if (gl_warpimage_size == oldsize).
+	// after reloads textures to source width/height, which might not match oldsize.
+    
 	//
 	// resize the textures in opengl
 	//
