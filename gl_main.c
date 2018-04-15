@@ -1254,8 +1254,8 @@ void GL_DrawAliasFrame (aliashdr_t *paliashdr, lerpdata_t lerpdata)
 
 			if (mtexenabled)
 			{
-				qglMultiTexCoord2f (TEXTURE0, u, v);
-				qglMultiTexCoord2f (TEXTURE1, u, v);
+				qglMultiTexCoord2f (GL_TEXTURE0_ARB, u, v);
+				qglMultiTexCoord2f (GL_TEXTURE1_ARB, u, v);
 			}
 			else
 			{

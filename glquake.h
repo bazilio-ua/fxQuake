@@ -122,7 +122,6 @@ void (GLAPIENTRY *qglClientActiveTexture) (GLenum);
 #define GL_SOURCE1_ALPHA_EXT			0x8589
 
 // Multitexture
-extern GLenum TEXTURE0, TEXTURE1;
 extern qboolean mtexenabled;
 
 extern const char *gl_vendor;
@@ -259,6 +258,7 @@ void GL_SetFilterModes (gltexture_t *glt);
 void GL_Set2D (void);
 void GL_SelectTexture (GLenum target);
 void GL_Bind (gltexture_t *texture);
+void GL_DeleteTexture (gltexture_t *texture);
 void GL_DisableMultitexture (void);
 void GL_EnableMultitexture (void);
 void GL_Init (void);
@@ -332,6 +332,8 @@ extern float turbsin[];
 
 
 extern	int glx, gly, glwidth, glheight;
+
+#define	GL_UNUSED_TEXTURE	(~(GLuint)0)
 
 // private refresh defs
 

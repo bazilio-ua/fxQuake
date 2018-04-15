@@ -74,8 +74,8 @@ int		gl_warpimage_size = 256; // fitzquake has 512, for water warp
 gltexture_t	*active_gltextures, *free_gltextures;
 int			numgltextures;
 
-GLuint currenttexture = (GLuint)-1; // to avoid unnecessary texture sets
-GLenum TEXTURE0, TEXTURE1;
+static GLuint currenttexture[3] = {GL_UNUSED_TEXTURE, GL_UNUSED_TEXTURE, GL_UNUSED_TEXTURE}; // to avoid unnecessary texture sets
+static GLenum currenttarget = GL_TEXTURE0_ARB;
 qboolean mtexenabled = false;
 
 unsigned int d_8to24table[256];
@@ -238,9 +238,6 @@ void GL_CheckExtensions (void)
 		}
 		else
 		{
-			TEXTURE0 = GL_TEXTURE0_ARB;
-			TEXTURE1 = GL_TEXTURE1_ARB;
-
 			Con_Printf ("GL_ARB_multitexture extension found\n");
 			Con_Printf ("   %i TMUs on hardware\n", units);
 
@@ -554,10 +551,48 @@ void GL_Bind (gltexture_t *texture)
 	if (!texture)
 		texture = nulltexture;
 
-	if (texture->texnum != currenttexture)
+	if (texture->texnum != currenttexture[currenttarget - GL_TEXTURE0_ARB])
 	{
-		currenttexture = texture->texnum;
-		glBindTexture (GL_TEXTURE_2D, currenttexture);
+		currenttexture[currenttarget - GL_TEXTURE0_ARB] = texture->texnum;
+		glBindTexture (GL_TEXTURE_2D, texture->texnum);
+	}
+}
+
+/*
+================
+GL_DeleteTexture -- ericw
+
+Wrapper around glDeleteTextures that also clears the given texture number
+from our per-TMU cached texture binding table.
+================
+*/
+void GL_DeleteTexture (gltexture_t *texture)
+{
+	glDeleteTextures (1, &texture->texnum);
+    
+	if (texture->texnum == currenttexture[0]) currenttexture[0] = GL_UNUSED_TEXTURE;
+	if (texture->texnum == currenttexture[1]) currenttexture[1] = GL_UNUSED_TEXTURE;
+	if (texture->texnum == currenttexture[2]) currenttexture[2] = GL_UNUSED_TEXTURE;
+    
+	texture->texnum = 0;
+}
+
+/*
+================
+GL_ClearBindings -- ericw
+
+Invalidates cached bindings, so the next GL_Bind calls for each TMU will
+make real glBindTexture calls.
+Call this after changing the binding outside of GL_Bind.
+================
+*/
+void GL_ClearBindings(void)
+{
+	int i;
+    
+	for (i = 0; i < 3; i++)
+	{
+		currenttexture[i] = GL_UNUSED_TEXTURE;
 	}
 }
 
@@ -568,25 +603,10 @@ GL_SelectTexture
 */
 void GL_SelectTexture (GLenum target)
 {
-	static GLenum currenttarget;
-	static int ct0, ct1;
-
 	if (target == currenttarget)
 		return;
 
 	qglActiveTexture (target);
-
-	if (target == TEXTURE0)
-	{
-		ct1 = currenttexture;
-		currenttexture = ct0;
-	}
-	else //target == TEXTURE1
-	{
-		ct0 = currenttexture;
-		currenttexture = ct1;
-	}
-
 	currenttarget = target;
 }
 
@@ -602,7 +622,7 @@ void GL_DisableMultitexture (void)
 	if (mtexenabled) 
 	{
 		glDisable (GL_TEXTURE_2D);
-		GL_SelectTexture (TEXTURE0);
+		GL_SelectTexture (GL_TEXTURE0_ARB);
 		mtexenabled = false;
 	}
 }
@@ -618,7 +638,7 @@ void GL_EnableMultitexture (void)
 {
 	if (gl_mtexable) 
 	{
-		GL_SelectTexture (TEXTURE1);
+		GL_SelectTexture (GL_TEXTURE1_ARB);
 		glEnable (GL_TEXTURE_2D);
 		mtexenabled = true;
 	}
@@ -1913,7 +1933,7 @@ void GL_FreeTexture (gltexture_t *purge)
 		purge->next = free_gltextures;
 		free_gltextures = purge;
 
-		glDeleteTextures(1, &purge->texnum);
+		GL_DeleteTexture(purge);
 		numgltextures--;
 		return;
 	}
@@ -1926,7 +1946,7 @@ void GL_FreeTexture (gltexture_t *purge)
 			purge->next = free_gltextures;
 			free_gltextures = purge;
 
-			glDeleteTextures(1, &purge->texnum);
+            GL_DeleteTexture(purge);
 			numgltextures--;
 			return;
 		}
