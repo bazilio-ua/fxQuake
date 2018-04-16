@@ -1877,7 +1877,7 @@ void GL_Upload8 (gltexture_t *glt, byte *data)
 GL_FindTexture
 ================
 */
-gltexture_t *GL_FindTexture (model_t *owner, char *name)
+gltexture_t *GL_FindTexture (qmodel_t *owner, char *name)
 {
 	gltexture_t	*glt;
 
@@ -1963,7 +1963,7 @@ void GL_FreeTexture (gltexture_t *purge)
 GL_FreeTextures
 ================
 */
-void GL_FreeTextures (model_t *owner)
+void GL_FreeTextures (qmodel_t *owner)
 {
 	gltexture_t *glt, *next;
 
@@ -1982,7 +1982,7 @@ GL_LoadTexture
 the one entry point for loading all textures
 ================
 */
-gltexture_t *GL_LoadTexture (model_t *owner, char *name, int width, int height, enum srcformat format, byte *data, char *source_file, unsigned source_offset, unsigned flags)
+gltexture_t *GL_LoadTexture (qmodel_t *owner, char *name, int width, int height, enum srcformat format, byte *data, char *source_file, unsigned source_offset, unsigned flags)
 {
 	int size = 0; // keep compiler happy
 	gltexture_t	*glt;

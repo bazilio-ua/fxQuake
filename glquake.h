@@ -189,7 +189,7 @@ typedef struct gltexture_s {
 //managed by texture manager
 	GLuint				texnum;
 	struct gltexture_s	*next;
-	model_t				*owner;
+	qmodel_t				*owner;
 //managed by image loading
 	char				name[64];
 	unsigned int		width;						// size of image as it exists in opengl
@@ -230,7 +230,7 @@ typedef struct particle_s
 } particle_t;
 
 
-extern	model_t	*loadmodel;
+extern	qmodel_t	*loadmodel;
 
 // vid_*gl*.c
 void GL_BeginRendering (int *x, int *y, int *width, int *height);
@@ -249,11 +249,11 @@ void GL_Upload32 (gltexture_t *glt, unsigned *data);
 void GL_UploadBloom (gltexture_t *glt, unsigned *data);
 void GL_UploadLightmap (gltexture_t *glt, byte *data);
 void GL_FreeTexture (gltexture_t *purge);
-void GL_FreeTextures (model_t *owner);
+void GL_FreeTextures (qmodel_t *owner);
 void GL_ReloadTexture (gltexture_t *glt);
 void GL_ReloadTextures_f (void);
-gltexture_t *GL_LoadTexture (model_t *owner, char *name, int width, int height, enum srcformat format, byte *data, char *source_file, unsigned source_offset, unsigned flags);
-gltexture_t *GL_FindTexture (model_t *owner, char *name);
+gltexture_t *GL_LoadTexture (qmodel_t *owner, char *name, int width, int height, enum srcformat format, byte *data, char *source_file, unsigned source_offset, unsigned flags);
+gltexture_t *GL_FindTexture (qmodel_t *owner, char *name);
 void GL_SetFilterModes (gltexture_t *glt);
 void GL_Set2D (void);
 void GL_SelectTexture (GLenum target);
@@ -267,7 +267,7 @@ void GL_SwapInterval (void);
 void GL_UploadWarpImage (void);
 
 // gl_mesh.c
-void R_MakeAliasModelDisplayLists (model_t *m, aliashdr_t *hdr);
+void R_MakeAliasModelDisplayLists (qmodel_t *m, aliashdr_t *hdr);
 
 // gl_misc.c
 void R_InitTranslatePlayerTextures (void);

@@ -293,7 +293,7 @@ void R_TranslatePlayerSkin (int playernum)
 	byte	translate[256];
 	int		i, size;
 	entity_t	*e;
-	model_t	*model;
+	qmodel_t	*model;
 	aliashdr_t *paliashdr;
 	byte	*original;
 	byte	*src, *dst; 

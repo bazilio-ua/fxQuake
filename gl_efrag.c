@@ -151,7 +151,7 @@ R_AddEfrags
 */
 void R_AddEfrags (entity_t *ent)
 {
-	model_t		*entmodel;
+	qmodel_t		*entmodel;
 	int			i;
 		
 	if (!ent->model)
@@ -186,7 +186,7 @@ R_StoreEfrags
 void R_StoreEfrags (efrag_t **ppefrag)
 {
 	entity_t	*pent;
-	model_t		*clmodel;
+	qmodel_t		*clmodel;
 	efrag_t		*pefrag;
 
 	while ((pefrag = *ppefrag) != NULL)

@@ -837,7 +837,7 @@ void R_DrawBrushModel (entity_t *e)
 	msurface_t	*psurf;
 	float		dot;
 	mplane_t	*pplane;
-	model_t		*clmodel;
+	qmodel_t		*clmodel;
 	qboolean	rotated = false;
 	float		alpha;
 	
@@ -1253,7 +1253,7 @@ R_BuildSurfaceDisplayList
 ================
 */
 mvertex_t	*r_pcurrentvertbase;
-model_t		*currentmodel;
+qmodel_t		*currentmodel;
 
 void R_BuildSurfaceDisplayList (msurface_t *surf)
 {
@@ -1359,7 +1359,7 @@ void R_BuildLightmaps (void)
 	char	name[64];
 	byte	*data;
 	int		i, j;
-	model_t	*m;
+	qmodel_t	*m;
 
 	memset (allocated, 0, sizeof(allocated));
 	last_lightmap_allocated = 0;
