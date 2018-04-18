@@ -51,6 +51,8 @@ float		d_overbrightscale = OVERBRIGHT_SCALE;
 
 msurface_t  *skychain = NULL;
 
+int vis_changed; //if true, force pvs to be refreshed
+
 /*
 ============================================================================================================
 
@@ -1180,6 +1182,192 @@ void R_MarkLeaves (void)
 				node->visframe = r_visframecount;
 				node = node->parent;
 			} while (node);
+		}
+	}
+}
+
+// new rendering way (FITZ & QS)
+
+/*
+================
+R_ChainSurface -- ericw
+
+adds the given surface to its texture chain
+================
+*/
+void R_ChainSurface (msurface_t *surf, texchain_t chain)
+{
+	surf->texturechain = surf->texinfo->texture->texturechains[chain];
+	surf->texinfo->texture->texturechains[chain] = surf;
+}
+
+/*
+===============
+R_MarkSurfaces -- johnfitz
+
+mark surfaces based on PVS and rebuild texture chains
+===============
+*/
+void R_MarkSurfaces (void)
+{
+	byte		*vis;
+	mleaf_t		*leaf;
+	mnode_t		*node;
+	msurface_t	*surf, **mark;
+	int			i, j;
+	qboolean	nearwaterportal = false;
+    
+	// clear lightmap chains
+	memset (lightmap_polys, 0, sizeof(lightmap_polys));
+    
+	// check this leaf for water portals
+	// TODO: loop through all water surfs and use distance to leaf cullbox
+	for (i=0, mark = r_viewleaf->firstmarksurface; i < r_viewleaf->nummarksurfaces; i++, mark++)
+		if ((*mark)->flags & SURF_DRAWTURB)
+        {
+			nearwaterportal = true;
+            break;
+        }
+    
+	// choose vis data
+	if (r_novis.value || r_viewleaf->contents == CONTENTS_SOLID || r_viewleaf->contents == CONTENTS_SKY)
+		vis = Mod_NoVisPVS (cl.worldmodel);
+	else if (nearwaterportal)
+		vis = SV_FatPVS (r_origin, cl.worldmodel);
+	else
+		vis = Mod_LeafPVS (r_viewleaf, cl.worldmodel);
+    
+	// if surface chains don't need regenerating, just add static entities and return
+	if (r_oldviewleaf == r_viewleaf && !vis_changed && !nearwaterportal)
+	{
+		leaf = &cl.worldmodel->leafs[1];
+		for (i=0 ; i<cl.worldmodel->numleafs ; i++, leaf++)
+			if (vis[i>>3] & (1<<(i&7)))
+				if (leaf->efrags)
+					R_StoreEfrags (&leaf->efrags);
+		return;
+	}
+    
+	vis_changed = false;
+	r_visframecount++;
+	r_oldviewleaf = r_viewleaf;
+    
+	// iterate through leaves, marking surfaces
+	leaf = &cl.worldmodel->leafs[1];
+	for (i=0 ; i<cl.worldmodel->numleafs ; i++, leaf++)
+	{
+		if (vis[i>>3] & (1<<(i&7)))
+		{
+			if (leaf->contents != CONTENTS_SKY)
+				for (j=0, mark = leaf->firstmarksurface; j<leaf->nummarksurfaces; j++, mark++)
+					(*mark)->visframe = r_visframecount;
+            
+			// add static models
+			if (leaf->efrags)
+				R_StoreEfrags (&leaf->efrags);
+		}
+	}
+    
+	// set all chains to null
+	for (i=0 ; i<cl.worldmodel->numtextures ; i++)
+		if (cl.worldmodel->textures[i])
+			cl.worldmodel->textures[i]->texturechains[chain_world] = NULL;
+    
+	// rebuild chains
+    
+#if 1
+	//iterate through surfaces one node at a time to rebuild chains
+	//need to do it this way if we want to work with tyrann's skip removal tool
+	//becuase his tool doesn't actually remove the surfaces from the bsp surfaces lump
+	//nor does it remove references to them in each leaf's marksurfaces list
+	for (i=0, node = cl.worldmodel->nodes ; i<cl.worldmodel->numnodes ; i++, node++)
+		for (j=0, surf=&cl.worldmodel->surfaces[node->firstsurface] ; j<node->numsurfaces ; j++, surf++)
+			if (surf->visframe == r_visframecount)
+			{
+				R_ChainSurface(surf, chain_world);
+			}
+#else
+	//the old way
+	surf = &cl.worldmodel->surfaces[cl.worldmodel->firstmodelsurface];
+	for (i=0 ; i<cl.worldmodel->nummodelsurfaces ; i++, surf++)
+	{
+		if (surf->visframe == r_visframecount)
+		{
+			R_ChainSurface(surf, chain_world);
+		}
+	}
+#endif
+}
+
+
+/*
+================
+R_BackFaceCull -- johnfitz
+
+returns true if the surface is facing away from vieworg
+================
+*/
+qboolean R_BackFaceCull (msurface_t *surf)
+{
+	double dot;
+    
+	switch (surf->plane->type)
+	{
+        case PLANE_X:
+            dot = r_refdef.vieworg[0] - surf->plane->dist;
+            break;
+        case PLANE_Y:
+            dot = r_refdef.vieworg[1] - surf->plane->dist;
+            break;
+        case PLANE_Z:
+            dot = r_refdef.vieworg[2] - surf->plane->dist;
+            break;
+        default:
+            dot = DotProduct (r_refdef.vieworg, surf->plane->normal) - surf->plane->dist;
+            break;
+	}
+    
+	if ((dot < 0) ^ !!(surf->flags & SURF_PLANEBACK))
+		return true;
+    
+	return false;
+}
+
+/*
+================
+R_CullSurfaces -- johnfitz
+================
+*/
+void R_CullSurfaces (void)
+{
+	msurface_t *s;
+	texture_t *t;
+	int i;
+    
+	if (!r_drawworld.value)
+		return;
+    
+    // ericw -- instead of testing (s->visframe == r_visframecount) on all world
+    // surfaces, use the chained surfaces, which is exactly the same set of sufaces
+	for (i=0 ; i<cl.worldmodel->numtextures ; i++)
+	{
+		t = cl.worldmodel->textures[i];
+        
+		if (!t || !t->texturechains[chain_world])
+			continue;
+        
+		for (s = t->texturechains[chain_world]; s; s = s->texturechain)
+		{
+			if (R_CullBox(s->mins, s->maxs) || R_BackFaceCull (s))
+				s->culled = true;
+			else
+			{
+				s->culled = false;
+                rs_c_brush_polys++; // r_speeds, count wpolys here
+
+				if (s->texinfo->texture->warpimage)
+					s->texinfo->texture->update_warp = true;
+			}
 		}
 	}
 }

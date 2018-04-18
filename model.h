@@ -88,6 +88,14 @@ typedef struct mplane_s
 	byte	pad[2];
 } mplane_t;
 
+// ericw -- each texture has two chains,
+// so we can clear the model chains without affecting the world
+typedef enum 
+{
+	chain_world = 0,
+	chain_model = 1
+} texchain_t;
+
 typedef struct texture_s
 {
 	char		name[16];
@@ -96,7 +104,8 @@ typedef struct texture_s
 	struct gltexture_s	*fullbright; // fullbright mask texture
 	struct gltexture_s	*warpimage; // for water animation
 	qboolean	update_warp;			// update warp this frame
-	struct msurface_s	*texturechain;	// for texture chains
+	struct msurface_s	*texturechain;	// for texture chains (OLD way)
+	struct msurface_s	*texturechains[2];	// for texture chains
 	int			anim_total;				// total tenths in sequence ( 0 = no)
 	int			anim_min, anim_max;		// time for this frame min <=time< max
 	struct texture_s *anim_next;		// in the animation sequence
@@ -151,8 +160,9 @@ typedef struct msurface_s
 	mtexinfo_t	*texinfo;
 	
 	int			visframe;		// should be drawn when node is crossed
-	float		mins[3];		// for frustum culling
-	float		maxs[3];		// for frustum culling
+	qboolean	culled;			// johnfitz -- for frustum culling
+	float		mins[3];		// johnfitz -- for frustum culling
+	float		maxs[3];		// johnfitz -- for frustum culling
 	
 	float		midp[3];		// for alpha sorting
 
