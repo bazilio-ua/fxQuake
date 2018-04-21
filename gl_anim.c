@@ -1388,6 +1388,7 @@ void R_SkyProcessPoly (glpoly_t *p)
 	}
 }
 
+#if 0
 /*
 ================
 R_SkyProcessTextureChains
@@ -1412,6 +1413,37 @@ void R_SkyProcessTextureChains (void)
 		skychain = NULL;
 	}
 }
+#endif
+
+/*
+================
+R_SkyProcessTextureChains -- fitz
+
+handles sky polys in world model
+================
+*/
+void R_SkyProcessTextureChains (void)
+{
+	int			i;
+	msurface_t	*s;
+	texture_t	*t;
+    
+	if (!r_drawworld.value)
+		return;
+    
+	for (i=0 ; i<cl.worldmodel->numtextures ; i++)
+	{
+		t = cl.worldmodel->textures[i];
+        
+		if (!t || !t->texturechains[chain_world] || !(t->texturechains[chain_world]->flags & SURF_DRAWSKY))
+			continue;
+        
+		for (s = t->texturechains[chain_world]; s; s = s->texturechain)
+			if (!s->culled)
+				R_SkyProcessPoly (s->polys);
+	}
+}
+
 
 /*
 ================
