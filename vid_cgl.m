@@ -384,12 +384,12 @@ void VID_Init (void)
     // Get the GL pixel format
     NSOpenGLPixelFormatAttribute pixelAttributes[] = {
         NSOpenGLPFANoRecovery,      //0
-        NSOpenGLPFAMinimumPolicy,   //1
+        NSOpenGLPFAClosestPolicy,   //1
         NSOpenGLPFAAccelerated,     //2
         NSOpenGLPFADoubleBuffer,    //3
-        NSOpenGLPFADepthSize, 1,    //4 5
-        NSOpenGLPFAAlphaSize, 0,    //6 7
-        NSOpenGLPFAStencilSize, 0,  //8 9
+        NSOpenGLPFADepthSize, 24,   //4 5
+        NSOpenGLPFAAlphaSize, 8,    //6 7
+        NSOpenGLPFAStencilSize, 8,  //8 9
         NSOpenGLPFAAccumSize, 0,    //10 11
         NSOpenGLPFAColorSize, 32,   //12 13
         0, 0, 0, 0                  //14 15 16 17 - reserved
