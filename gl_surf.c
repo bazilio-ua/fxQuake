@@ -889,6 +889,11 @@ void R_DrawBrushModel (entity_t *e)
 	
 	glGetFloatv (GL_MODELVIEW_MATRIX, e->matrix); // save entity matrix
 	
+    //
+	// set all chains to null
+    //
+    R_ClearTextureChains(clmodel, chain_model);
+    
 	//
 	// draw it
 	//
@@ -942,6 +947,8 @@ void R_DrawBrushModel (entity_t *e)
 		}
 	}
 	
+    R_DrawTextureChains (clmodel, e, chain_model);
+    
 	glPopMatrix ();
 }
 
