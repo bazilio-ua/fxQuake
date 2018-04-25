@@ -1555,6 +1555,8 @@ void R_DrawTextureChains (qmodel_t *model, entity_t *ent, texchain_t chain)
     
 	R_BeginTransparentDrawing (entalpha);
     
+	R_DrawTextureChains_Water (model, ent, chain);
+    
 	R_DrawTextureChains_NoTexture (model, chain);
     
 	// OpenGL 2 fast path
