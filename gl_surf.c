@@ -1722,7 +1722,8 @@ void R_MarkSurfaces (void)
 	msurface_t	*surf, **mark;
 	int			i, j;
 	qboolean	nearwaterportal = false;
-    
+    float		alpha = 1.0;
+
 	// clear lightmap chains
 	memset (lightmap_polys, 0, sizeof(lightmap_polys));
     
@@ -1792,7 +1793,30 @@ void R_MarkSurfaces (void)
 		for (j=0, surf=&cl.worldmodel->surfaces[node->firstsurface] ; j<node->numsurfaces ; j++, surf++)
 			if (surf->visframe == r_visframecount)
 			{
-				R_ChainSurface(surf, chain_world);
+                
+//                if (surf->flags & SURF_DRAWSKY)
+//                {
+//                    surf->texturechain = skychain;
+//                    skychain = surf;
+//                }
+//                else 
+                if (((surf->flags & SURF_DRAWTURB) && (alpha = R_GetTurbAlpha(surf)) < 1.0) || surf->flags & SURF_DRAWFENCE)
+                {
+                    vec_t midp_dist;
+                    
+                    midp_dist = R_GetAlphaDist(surf->midp);
+                    R_AddToAlpha (ALPHA_SURFACE, midp_dist, surf, NULL, alpha);
+                }
+                else
+                {
+                    // sort by texture
+//                    surf->texturechain = surf->texinfo->texture->texturechain;
+//                    surf->texinfo->texture->texturechain = surf;
+                    
+                    R_ChainSurface(surf, chain_world);
+
+                }
+                
 			}
 }
 

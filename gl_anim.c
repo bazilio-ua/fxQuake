@@ -1396,23 +1396,23 @@ R_SkyProcessTextureChains
 handles sky polys in world model
 ================
 */
-void R_SkyProcessTextureChains (void)
-{
-	msurface_t	*s;
-
-	if (!r_drawworld.value)
-		return;
-
-	if (skychain)
-	{
-		for (s = skychain; s; s = s->texturechain)
-		{
-			R_SkyProcessPoly (s->polys);
-		}
-
-		skychain = NULL;
-	}
-}
+//void R_SkyProcessTextureChains (void)
+//{
+//	msurface_t	*s;
+//
+//	if (!r_drawworld.value)
+//		return;
+//
+//	if (skychain)
+//	{
+//		for (s = skychain; s; s = s->texturechain)
+//		{
+//			R_SkyProcessPoly (s->polys);
+//		}
+//
+//		skychain = NULL;
+//	}
+//}
 #endif
 
 /*
