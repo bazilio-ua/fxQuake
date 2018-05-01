@@ -1051,7 +1051,7 @@ void R_SetupGL (void)
 	GL_SetFrustum (r_fovx, r_fovy);
 
 //	glCullFace (GL_FRONT);
-//	glCullFace (GL_BACK); // glquake used CCW with backwards culling -- let's do it right
+//	glCullFace (GL_BACK); // johnfitz -- glquake used CCW with backwards culling -- let's do it right
 
 	glMatrixMode (GL_MODELVIEW);
 	glLoadIdentity ();
