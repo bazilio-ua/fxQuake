@@ -1124,7 +1124,7 @@ void R_DrawWorld (void)
 
 	R_UploadLightmaps ();
 
-	VectorCopy (r_refdef.vieworg, modelorg);
+	VectorCopy (r_refdef.vieworg, modelorg); // copy modelorg for recursiveWorldNode
 
 	recursivecount = 0;
 	R_RecursiveWorldNode (cl.worldmodel->nodes);
@@ -1202,6 +1202,24 @@ void R_ChainSurface (msurface_t *surf, texchain_t chain)
 }
 
 /*
+================
+R_ClearTextureChains -- ericw 
+
+clears texture chains for all textures used by the given model, and also
+clears the lightmap chains
+================
+*/
+void R_ClearTextureChains (qmodel_t *model, texchain_t chain)
+{
+	int i;
+    
+	// set all chains to null
+	for (i=0 ; i<model->numtextures ; i++)
+		if (model->textures[i])
+			model->textures[i]->texturechains[chain] = NULL;
+}
+
+/*
 ===============
 R_MarkSurfaces -- johnfitz
 
@@ -1216,9 +1234,6 @@ void R_MarkSurfaces (void)
 	msurface_t	*surf, **mark;
 	int			i, j;
 	qboolean	nearwaterportal = false;
-    
-	// clear lightmap chains
-	memset (lightmap_polys, 0, sizeof(lightmap_polys));
     
 	// check this leaf for water portals
 	// TODO: loop through all water surfs and use distance to leaf cullbox
@@ -1269,13 +1284,11 @@ void R_MarkSurfaces (void)
 	}
     
 	// set all chains to null
-	for (i=0 ; i<cl.worldmodel->numtextures ; i++)
-		if (cl.worldmodel->textures[i])
-			cl.worldmodel->textures[i]->texturechains[chain_world] = NULL;
+    
+    R_ClearTextureChains(cl.worldmodel, chain_world);
     
 	// rebuild chains
     
-#if 1
 	//iterate through surfaces one node at a time to rebuild chains
 	//need to do it this way if we want to work with tyrann's skip removal tool
 	//becuase his tool doesn't actually remove the surfaces from the bsp surfaces lump
@@ -1286,17 +1299,6 @@ void R_MarkSurfaces (void)
 			{
 				R_ChainSurface(surf, chain_world);
 			}
-#else
-	//the old way
-	surf = &cl.worldmodel->surfaces[cl.worldmodel->firstmodelsurface];
-	for (i=0 ; i<cl.worldmodel->nummodelsurfaces ; i++, surf++)
-	{
-		if (surf->visframe == r_visframecount)
-		{
-			R_ChainSurface(surf, chain_world);
-		}
-	}
-#endif
 }
 
 
