@@ -889,6 +889,11 @@ void R_DrawBrushModel (entity_t *e)
 	
 	glGetFloatv (GL_MODELVIEW_MATRIX, e->matrix); // save entity matrix
 	
+    //
+	// set all chains to null
+    //
+    R_ClearTextureChains(clmodel, chain_model);
+    
 	//
 	// draw it
 	//
@@ -931,12 +936,18 @@ void R_DrawBrushModel (entity_t *e)
 				R_AddToAlpha (ALPHA_SURFACE, midp_dist, psurf, e, alpha);
 			}
 			else
-				R_DrawSequentialPoly (psurf, alpha, e->frame); // draw entities
+            {
+//				R_DrawSequentialPoly (psurf, alpha, e->frame); // draw entities
+                
+                R_ChainSurface (psurf, chain_model);
+            }
 			
 			rs_c_brush_polys++; // r_speeds
 		}
 	}
 	
+    R_DrawTextureChains (clmodel, e, chain_model);
+    
 	glPopMatrix ();
 }
 
