@@ -290,10 +290,15 @@ void R_SetupDlights (void);
 void R_RenderDlight (dlight_t *light);
 
 // gl_surf.c
-void R_MarkLeaves (void);
+//void R_MarkLeaves (void);
+void R_MarkSurfaces (void);
+void R_CullSurfaces (void);
+void R_ClearTextureChains (qmodel_t *model, texchain_t chain);
+void R_ChainSurface (msurface_t *surf, texchain_t chain);
+void R_DrawTextureChains (qmodel_t *model, entity_t *ent, texchain_t chain);
 void R_DrawBrushModel (entity_t *e);
 void R_DrawWorld (void);
-void R_DrawOpaque (void);
+//void R_DrawOpaque (void);
 void R_DrawGLPoly34 (glpoly_t *p);
 void R_DrawGLPoly56 (glpoly_t *p);
 void R_DrawSequentialPoly (msurface_t *s, float alpha, int frame);

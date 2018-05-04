@@ -1397,20 +1397,34 @@ handles sky polys in world model
 */
 void R_SkyProcessTextureChains (void)
 {
+	int			i;
 	msurface_t	*s;
+	texture_t	*t;
 
 	if (!r_drawworld.value)
 		return;
 
-	if (skychain)
+	for (i=0 ; i<cl.worldmodel->numtextures ; i++)
 	{
-		for (s = skychain; s; s = s->texturechain)
-		{
-			R_SkyProcessPoly (s->polys);
-		}
-
-		skychain = NULL;
+		t = cl.worldmodel->textures[i];
+        
+		if (!t || !t->texturechains[chain_world] || !(t->texturechains[chain_world]->flags & SURF_DRAWSKY))
+			continue;
+        
+		for (s = t->texturechains[chain_world]; s; s = s->texturechain)
+			if (!s->culled)
+				R_SkyProcessPoly (s->polys);
 	}
+    
+//	if (skychain)
+//	{
+//		for (s = skychain; s; s = s->texturechain)
+//		{
+//			R_SkyProcessPoly (s->polys);
+//		}
+//
+//		skychain = NULL;
+//	}
 }
 
 /*

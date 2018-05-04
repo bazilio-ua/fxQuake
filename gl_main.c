@@ -1122,7 +1122,9 @@ void R_RenderView (void)
 	// render normal view
 	// r_refdef must be set before the first call
 	R_SetupFrame ();
-	R_MarkLeaves ();	// done here so we know if we're in water
+//	R_MarkLeaves ();	// done here so we know if we're in water
+    R_MarkSurfaces();   // johnfitz -- create texture chains from PVS
+    R_CullSurfaces();   // johnfitz -- do after R_SetFrustum and R_MarkSurfaces
 	R_UpdateWarpTextures ();	// do this before R_Clear
 	R_Clear ();
 	R_SetupGL ();
@@ -1130,9 +1132,10 @@ void R_RenderView (void)
 	S_ExtraUpdateTime ();	// don't let sound get messed up if going slow
 
 	R_FogEnableGFog ();
-	R_DrawWorld (); // adds static entities to the list
 	R_DrawSky (); // handle worldspawn and bmodels
-	R_DrawOpaque ();
+	R_DrawWorld (); // adds static entities to the list
+//	R_DrawSky (); // handle worldspawn and bmodels
+//	R_DrawOpaque ();
 	R_DrawEntities ();
 	
 	R_SetupParticles ();
