@@ -1609,6 +1609,7 @@ void R_MarkSurfaces (void)
 	msurface_t	*surf, **mark;
 	int			i, j;
 	qboolean	nearwaterportal = false;
+    float		alpha = 1.0;
     
 	// check this leaf for water portals
 	// TODO: loop through all water surfs and use distance to leaf cullbox
@@ -1658,8 +1659,9 @@ void R_MarkSurfaces (void)
 		}
 	}
     
+    //
 	// set all chains to null
-    
+    //
     R_ClearTextureChains(cl.worldmodel, chain_world);
     
 	// rebuild chains
@@ -1672,7 +1674,17 @@ void R_MarkSurfaces (void)
 		for (j=0, surf=&cl.worldmodel->surfaces[node->firstsurface] ; j<node->numsurfaces ; j++, surf++)
 			if (surf->visframe == r_visframecount)
 			{
-				R_ChainSurface(surf, chain_world);
+                if (((surf->flags & SURF_DRAWTURB) && (alpha = R_GetTurbAlpha(surf)) < 1.0) || surf->flags & SURF_DRAWFENCE)
+                {
+                    vec_t midp_dist;
+                    
+                    midp_dist = R_GetAlphaDist(surf->midp);
+                    R_AddToAlpha (ALPHA_SURFACE, midp_dist, surf, NULL, alpha);
+                }
+                else
+                {
+                    R_ChainSurface(surf, chain_world);
+                }
 			}
 }
 
