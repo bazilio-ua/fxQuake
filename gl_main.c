@@ -1124,7 +1124,7 @@ void R_RenderView (void)
 	R_SetupFrame ();
 //	R_MarkLeaves ();	// done here so we know if we're in water
     R_MarkSurfaces();   // johnfitz -- create texture chains from PVS
-    R_CullSurfaces();   // johnfitz -- do after R_SetFrustum and R_MarkSurfaces
+//    R_CullSurfaces();   // johnfitz -- do after R_SetFrustum and R_MarkSurfaces
 	R_UpdateWarpTextures ();	// do this before R_Clear
 	R_Clear ();
 	R_SetupGL ();

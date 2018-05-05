@@ -603,7 +603,10 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, int frame)
 	float		*v;
 	float		lfog = 0; // keep compiler happy
 	int			i;
-
+    
+    if (s->culled)
+        return;
+    
 	//
 	// sky poly
 	//
@@ -1094,31 +1097,31 @@ restart:
 R_DrawOpaque
 =============
 */
-void R_DrawOpaque (void)
-{
-	int			i;
-	msurface_t	*s;
-	texture_t	*t; 
-	
-	if (!r_drawworld.value)
-		return;
-
-	for (i=0 ; i<cl.worldmodel->numtextures ; i++)
-	{
-		t = cl.worldmodel->textures[i];
-		if (!t)
-			continue;
-		
-		s = t->texturechain;
-		if (!s)
-			continue;
-
-		for ( ; s ; s=s->texturechain)
-			R_DrawSequentialPoly (s, 1.0, 0); // draw opaque (worldspawn)
-		
-		t->texturechain = NULL;
-	} 
-}
+//void R_DrawOpaque (void)
+//{
+//	int			i;
+//	msurface_t	*s;
+//	texture_t	*t; 
+//	
+//	if (!r_drawworld.value)
+//		return;
+//
+//	for (i=0 ; i<cl.worldmodel->numtextures ; i++)
+//	{
+//		t = cl.worldmodel->textures[i];
+//		if (!t)
+//			continue;
+//		
+//		s = t->texturechain;
+//		if (!s)
+//			continue;
+//
+//		for ( ; s ; s=s->texturechain)
+//			R_DrawSequentialPoly (s, 1.0, 0); // draw opaque (worldspawn)
+//		
+//		t->texturechain = NULL;
+//	} 
+//}
 
 // Texture Chains
 
@@ -1629,15 +1632,15 @@ void R_MarkSurfaces (void)
 		vis = Mod_LeafPVS (r_viewleaf, cl.worldmodel);
     
 	// if surface chains don't need regenerating, just add static entities and return
-	if (r_oldviewleaf == r_viewleaf && !vis_changed && !nearwaterportal)
-	{
-		leaf = &cl.worldmodel->leafs[1];
-		for (i=0 ; i<cl.worldmodel->numleafs ; i++, leaf++)
-			if (vis[i>>3] & (1<<(i&7)))
-				if (leaf->efrags)
-					R_StoreEfrags (&leaf->efrags);
-		return;
-	}
+//	if (r_oldviewleaf == r_viewleaf && !vis_changed && !nearwaterportal)
+//	{
+//		leaf = &cl.worldmodel->leafs[1];
+//		for (i=0 ; i<cl.worldmodel->numleafs ; i++, leaf++)
+//			if (vis[i>>3] & (1<<(i&7)))
+//				if (leaf->efrags)
+//					R_StoreEfrags (&leaf->efrags);
+//		return;
+//	}
     
 	vis_changed = false;
 	r_visframecount++;
@@ -1674,6 +1677,18 @@ void R_MarkSurfaces (void)
 		for (j=0, surf=&cl.worldmodel->surfaces[node->firstsurface] ; j<node->numsurfaces ; j++, surf++)
 			if (surf->visframe == r_visframecount)
 			{
+                
+                if (R_CullBox(surf->mins, surf->maxs) || R_BackFaceCull (surf))
+                    surf->culled = true;
+                else
+                {
+                    surf->culled = false;
+                    rs_c_brush_polys++; // r_speeds, count wpolys here
+                    
+                    if (surf->texinfo->texture->warpimage)
+                        surf->texinfo->texture->update_warp = true;
+                }
+                
                 if (((surf->flags & SURF_DRAWTURB) && (alpha = R_GetTurbAlpha(surf)) < 1.0) || surf->flags & SURF_DRAWFENCE)
                 {
                     vec_t midp_dist;
