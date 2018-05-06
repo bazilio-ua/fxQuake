@@ -398,6 +398,7 @@ void IN_ProcessEvents (void)
             break;
             
         default:
+            [NSApp sendEvent:event];
             break;
         }
     }
