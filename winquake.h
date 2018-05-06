@@ -33,6 +33,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define WM_MOUSEWHEEL		0x020A
 #endif
 
+// Only present in Vista SDK, and it probably isn't available with w32api,
+// either.
+#ifndef WM_MOUSEHWHEEL
+#define WM_MOUSEHWHEEL		0x020E
+#endif
+
 // LordHavoc: thanks to backslash for this support for mouse buttons 4 and 5
 /* These are #ifdefed out for non-Win2K in the February 2001 version of
    MS's platform SDK, but we need them for compilation... */
