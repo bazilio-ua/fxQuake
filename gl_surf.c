@@ -845,7 +845,8 @@ void R_DrawBrushModel (entity_t *e)
 	qmodel_t		*clmodel;
 	qboolean	rotated = false;
 	float		alpha;
-	
+    qboolean	saved;
+
 	if (R_CullModelForEntity(e))
 		return;
 	
@@ -890,7 +891,8 @@ void R_DrawBrushModel (entity_t *e)
 		glRotatef (e->angles[2],  1, 0, 0);
 	}
 	
-	glGetFloatv (GL_MODELVIEW_MATRIX, e->matrix); // save entity matrix
+//	glGetFloatv (GL_MODELVIEW_MATRIX, e->matrix); // save entity matrix
+    saved = false;
 	
     //
 	// set all chains to null
@@ -912,11 +914,17 @@ void R_DrawBrushModel (entity_t *e)
 		if (((psurf->flags & SURF_PLANEBACK) && (dot < -BACKFACE_EPSILON)) ||
 			(!(psurf->flags & SURF_PLANEBACK) && (dot > BACKFACE_EPSILON)))
 		{
-			if (alpha < 1.0 || ((psurf->flags & SURF_DRAWTURB) && (alpha = R_GetTurbAlpha(psurf)) < 1.0) || psurf->flags & SURF_DRAWFENCE)
+			if (alpha < 1.0 || ((psurf->flags & SURF_DRAWTURB) && (alpha = R_GetTurbAlpha(psurf)) < 1.0) /* || psurf->flags & SURF_DRAWFENCE */)
 			{
 				vec3_t	midp;
 				vec_t	midp_dist;
 				
+                if (!saved) {
+                    glGetFloatv (GL_MODELVIEW_MATRIX, e->matrix); // save entity matrix
+                    
+					saved = true;
+                }
+                
 				// transform the surface midpoint
 				if (rotated)
 				{
@@ -1619,7 +1627,7 @@ void R_MarkSurfaces (void)
 	for (i=0, mark = r_viewleaf->firstmarksurface; i < r_viewleaf->nummarksurfaces; i++, mark++)
 		if ((*mark)->flags & SURF_DRAWTURB)
         {
-			Con_SafePrintf ("R_MarkSurfaces: nearwaterportal, surfs=%d\n", r_viewleaf->nummarksurfaces);
+//			Con_SafePrintf ("R_MarkSurfaces: nearwaterportal, surfs=%d\n", r_viewleaf->nummarksurfaces);
 			nearwaterportal = true;
             break;
         }
@@ -1735,7 +1743,7 @@ void R_MarkSurfaces (void)
 //                    skychain = surf;
 //                }
 //                else 
-                if (((surf->flags & SURF_DRAWTURB) && (alpha = R_GetTurbAlpha(surf)) < 1.0) || surf->flags & SURF_DRAWFENCE)
+                if (((surf->flags & SURF_DRAWTURB) && (alpha = R_GetTurbAlpha(surf)) < 1.0) /* || surf->flags & SURF_DRAWFENCE */)
                 {
                     vec_t midp_dist;
                     
