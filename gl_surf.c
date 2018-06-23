@@ -1436,7 +1436,7 @@ void R_DrawTextureChains (qmodel_t *model, entity_t *ent, texchain_t chain)
         glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB_EXT, GL_MODULATE);
         glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB_EXT, GL_PREVIOUS_EXT);
         glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB_EXT, GL_TEXTURE);
-        glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, 2.0f);
+        glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, d_overbrightscale);
         GL_DisableMultitexture ();
         R_DrawTextureChains_Multitexture (model, ent, chain);
         GL_EnableMultitexture ();
@@ -1457,12 +1457,14 @@ void R_DrawTextureChains (qmodel_t *model, entity_t *ent, texchain_t chain)
         R_FogDisableGFog ();
         R_DrawTextureChains_TextureOnly (model, ent, chain);
         R_FogEnableGFog ();
+        
         glDepthMask (GL_FALSE);
         glEnable (GL_BLEND);
         glBlendFunc (GL_DST_COLOR, GL_SRC_COLOR); //2x modulate
         R_FogStartAdditive ();
         R_DrawLightmapChains ();
         R_FogStopAdditive ();
+        
         if (R_FogGetDensity() > 0)
         {
             glBlendFunc(GL_ONE, GL_ONE); //add
@@ -1472,6 +1474,7 @@ void R_DrawTextureChains (qmodel_t *model, entity_t *ent, texchain_t chain)
             glColor3f(1,1,1);
             glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
         }
+        
         glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glDisable (GL_BLEND);
         glDepthMask (GL_TRUE);
@@ -1490,7 +1493,6 @@ void R_DrawTextureChains (qmodel_t *model, entity_t *ent, texchain_t chain)
     glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glDisable (GL_BLEND);
     glDepthMask (GL_TRUE);
-    
 }
 
 

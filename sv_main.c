@@ -681,7 +681,14 @@ void SV_WriteEntitiesToClient (edict_t	*clent, sizebuf_t *msg)
 					if (pvs[ent->leafnums[i] >> 3] & (1 << (ent->leafnums[i]&7) ))
 						break;
 
-				if (i == ent->num_leafs)
+                // ericw -- added ent->num_leafs < MAX_ENT_LEAFS condition.
+                //
+                // if ent->num_leafs == MAX_ENT_LEAFS, the ent is visible from too many leafs
+                // for us to say whether it's in the PVS, so don't try to vis cull it.
+                // this commonly happens with rotators, because they often have huge bboxes
+                // spanning the entire map, or really tall lifts, etc.
+                if (i == ent->num_leafs && ent->num_leafs < MAX_ENT_LEAFS)
+//				if (i == ent->num_leafs)
 					continue;	// not visible
 
 			}
