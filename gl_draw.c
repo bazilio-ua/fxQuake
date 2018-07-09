@@ -96,6 +96,7 @@ qboolean gl_mtexable = false;
 qboolean gl_texture_env_combine = false;
 qboolean gl_texture_env_add = false;
 qboolean gl_swap_control = false;
+int gl_stencilbits;
 
 /*
 ================================================
@@ -382,6 +383,9 @@ void GL_CheckExtensions (void)
 	{
 		Con_Warning ("Texture non power of two not supported (extension not found)\n");
 	}
+    
+    // read stencil bits
+    glGetIntegerv (GL_STENCIL_BITS, &gl_stencilbits);
 }
 
 /*

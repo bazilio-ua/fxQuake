@@ -194,14 +194,14 @@ void VID_Init (void)
 {
 	int i;
 	int attrib[] = {
-		GLX_RGBA,
-		GLX_RED_SIZE, 8,
-		GLX_GREEN_SIZE, 8,
-		GLX_BLUE_SIZE, 8,
-		GLX_DOUBLEBUFFER,
-		GLX_DEPTH_SIZE, 24,
-        GLX_STENCIL_SIZE, 8,
-        GLX_ALPHA_SIZE, 8,
+		GLX_RGBA,				// 0
+		GLX_RED_SIZE, 8,		// 1, 2
+		GLX_GREEN_SIZE, 8,		// 3, 4
+		GLX_BLUE_SIZE, 8,		// 5, 6
+		GLX_DOUBLEBUFFER,		// 7
+		GLX_DEPTH_SIZE, 24,		// 8, 9
+		GLX_STENCIL_SIZE, 8,	// 10, 11
+		GLX_ALPHA_SIZE, 8,		// 12, 13
 		None
 	};
 

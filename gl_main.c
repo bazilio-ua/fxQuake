@@ -960,14 +960,22 @@ void R_SetFrustum (float fovx, float fovy)
 /*
 =============
 R_Clear
+ 
+johnfitz -- rewritten and gutted
 =============
 */
 void R_Clear (void)
 {
+    unsigned int clearbits;
+    
+    clearbits = GL_DEPTH_BUFFER_BIT;
+	// from mh -- if we get a stencil buffer, we should clear it, even though we don't use it
+	if (gl_stencilbits)
+		clearbits |= GL_STENCIL_BUFFER_BIT;
 	if (gl_clear.value || isIntel) // intel video workaround
-		glClear (GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-	else
-		glClear (GL_DEPTH_BUFFER_BIT);
+		clearbits |= GL_COLOR_BUFFER_BIT;
+    
+	glClear (clearbits);
 }
 
 /*
@@ -1017,6 +1025,11 @@ void R_SetupFrame (void)
 	R_SetFrustum (r_fovx, r_fovy); // use r_fov* vars
 }
 
+/*
+=============
+GL_SetFrustum
+=============
+*/
 void GL_SetFrustum (float fovx, float fovy)
 {
 	float xmin, xmax, ymin, ymax;
