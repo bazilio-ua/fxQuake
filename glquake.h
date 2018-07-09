@@ -353,8 +353,8 @@ extern	int glx, gly, glwidth, glheight;
 #define BACKFACE_EPSILON	0.01
 #define COLINEAR_EPSILON	0.001
 
-#define FARCLIP		1048576 // enough? was 16384 // orig. 4096
-#define NEARCLIP		1 // 4
+#define FARCLIP			16384 // orig. 4096
+#define NEARCLIP		4
 
 void R_TimeRefresh_f (void);
 void R_ReadPointFile_f (void);
