@@ -629,7 +629,7 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, int frame)
 		}
 
 		GL_Bind (s->texinfo->texture->warpimage);
-		s->texinfo->texture->update_warp = true; // FIXME: one frame too late!
+//		s->texinfo->texture->update_warp = true; // FIXME: one frame too late!
 
 		if ( !(s->flags & (SURF_DRAWLAVA | SURF_DRAWSLIME)) )
 		{
@@ -914,6 +914,10 @@ void R_DrawBrushModel (entity_t *e)
 		if (((psurf->flags & SURF_PLANEBACK) && (dot < -BACKFACE_EPSILON)) ||
 			(!(psurf->flags & SURF_PLANEBACK) && (dot > BACKFACE_EPSILON)))
 		{
+            
+            if (psurf->texinfo->texture->warpimage)
+                psurf->texinfo->texture->update_warp = true; // FIXME: one frame too late!
+            
 			if (alpha < 1.0 || ((psurf->flags & SURF_DRAWTURB) && (alpha = R_GetTurbAlpha(psurf)) < 1.0) /* || psurf->flags & SURF_DRAWFENCE */)
 			{
 				vec3_t	midp;
@@ -1192,13 +1196,13 @@ void R_DrawTextureChains_Water (qmodel_t *model, entity_t *ent, texchain_t chain
                 {
                     GL_Bind (t->warpimage);
                     
-                    if (model != cl.worldmodel)
-                    {
-                        // ericw -- this is copied from R_DrawSequentialPoly.
-                        // If the poly is not part of the world we have to
-                        // set this flag
-                        t->update_warp = true; // FIXME: one frame too late!
-                    }
+//                    if (model != cl.worldmodel)
+//                    {
+//                        // ericw -- this is copied from R_DrawSequentialPoly.
+//                        // If the poly is not part of the world we have to
+//                        // set this flag
+//                        t->update_warp = true; // FIXME: one frame too late!
+//                    }
                     
                     bound = true;
                 }
