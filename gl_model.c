@@ -1341,7 +1341,7 @@ void Mod_LoadFaces_S (lump_t *l)
 {
 	dface_s_t	*in;
 	msurface_t 	*out;
-	int		i, count, surfnum;
+	int		i, count, surfnum, lofs;
 	int			planenum, side;
 
 	in = (dface_s_t *)(mod_base + l->fileofs);
@@ -1377,11 +1377,11 @@ void Mod_LoadFaces_S (lump_t *l)
 		// lighting info
 		for (i=0 ; i<MAXLIGHTMAPS ; i++)
 			out->styles[i] = in->styles[i];
-		i = LittleLong(in->lightofs);
-		if (i == -1)
+		lofs = LittleLong(in->lightofs);
+		if (lofs == -1)
 			out->samples = NULL;
 		else
-			out->samples = loadmodel->lightdata + (i * 3); // lit support via lordhavoc (was "+ i") 
+			out->samples = loadmodel->lightdata + (lofs * 3); // lit support via lordhavoc (was "+ i") 
 		
 		Mod_SetDrawingFlags (out); // set the drawing flags flag
 	}
@@ -1398,7 +1398,7 @@ void Mod_LoadFaces_L (lump_t *l)
 {
 	dface_l_t	*in;
 	msurface_t 	*out;
-	int		i, count, surfnum;
+	int		i, count, surfnum, lofs;
 	int			planenum, side;
 
 	in = (dface_l_t *)(mod_base + l->fileofs);
@@ -1434,11 +1434,11 @@ void Mod_LoadFaces_L (lump_t *l)
 		// lighting info
 		for (i=0 ; i<MAXLIGHTMAPS ; i++)
 			out->styles[i] = in->styles[i];
-		i = LittleLong(in->lightofs);
-		if (i == -1)
+		lofs = LittleLong(in->lightofs);
+		if (lofs == -1)
 			out->samples = NULL;
 		else
-			out->samples = loadmodel->lightdata + (i * 3); // lit support via lordhavoc (was "+ i") 
+			out->samples = loadmodel->lightdata + (lofs * 3); // lit support via lordhavoc (was "+ i") 
 		
 		Mod_SetDrawingFlags (out); // set the drawing flags flag
 	}
