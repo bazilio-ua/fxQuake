@@ -249,7 +249,7 @@ void SV_StartSound (edict_t *entity, int channel, char *sample, int volume, floa
 		else
 			return; // don't send any info protocol can't support
 	}
-	if (sound_num >= 256)
+	if (sound_num >= 256 || channel >= 8)
 	{
 		if (sv.protocol == PROTOCOL_FITZQUAKE || sv.protocol == PROTOCOL_MARKV || sv.protocol == PROTOCOL_RMQ)
 			field_mask |= SND_LARGESOUND;

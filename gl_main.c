@@ -1079,7 +1079,7 @@ void R_SetupGL (void)
 	//
 	// get world matrix
 	//
-	glGetFloatv (GL_MODELVIEW_MATRIX, r_worldentity.matrix);
+//	glGetFloatv (GL_MODELVIEW_MATRIX, r_worldentity.matrix);
 
 	//
 	// set drawing parms
