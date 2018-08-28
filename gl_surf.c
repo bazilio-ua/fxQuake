@@ -1163,7 +1163,7 @@ void R_BuildLightmapChains (qmodel_t *model, texchain_t chain)
 			continue;
         
 		for (s = t->texturechains[chain]; s; s = s->texturechain)
-//			if (!s->culled)
+			if (!s->culled)
 				R_RenderDynamicLightmaps (s);
 	}
 }
@@ -1190,7 +1190,7 @@ void R_DrawTextureChains_Water (qmodel_t *model, entity_t *ent, texchain_t chain
         bound = false;
         entalpha = 1.0f;
         for (s = t->texturechains[chain]; s; s = s->texturechain)
-//            if (!s->culled)
+            if (!s->culled)
             {
                 if (!bound) //only bind once we are sure we need this texture
                 {
@@ -1236,7 +1236,7 @@ void R_DrawTextureChains_NoTexture (qmodel_t *model, texchain_t chain)
 		bound = false;
         
 		for (s = t->texturechains[chain]; s; s = s->texturechain)
-//			if (!s->culled)
+			if (!s->culled)
 			{
 				if (!bound) //only bind once we are sure we need this texture
 				{
@@ -1271,7 +1271,7 @@ void R_DrawTextureChains_Multitexture (qmodel_t *model, entity_t *ent, texchain_
         
 		bound = false;
 		for (s = t->texturechains[chain]; s; s = s->texturechain)
-//			if (!s->culled)
+			if (!s->culled)
 			{
 				if (!bound) //only bind once we are sure we need this texture
 				{
@@ -1324,7 +1324,7 @@ void R_DrawTextureChains_TextureOnly (qmodel_t *model, entity_t *ent, texchain_t
 		bound = false;
         
 		for (s = t->texturechains[chain]; s; s = s->texturechain)
-//			if (!s->culled)
+			if (!s->culled)
 			{
 				if (!bound) //only bind once we are sure we need this texture
 				{
@@ -1401,7 +1401,7 @@ void R_DrawTextureChains_Glow (qmodel_t *model, entity_t *ent, texchain_t chain)
 		bound = false;
         
 		for (s = t->texturechains[chain]; s; s = s->texturechain)
-//			if (!s->culled)
+			if (!s->culled)
 			{
 				if (!bound) //only bind once we are sure we need this texture
 				{
@@ -1647,15 +1647,15 @@ void R_MarkSurfaces (void)
 		vis = Mod_LeafPVS (r_viewleaf, cl.worldmodel);
     
 	// if surface chains don't need regenerating, just add static entities and return
-//	if (r_oldviewleaf == r_viewleaf && !vis_changed && !nearwaterportal)
-//	{
-//		leaf = &cl.worldmodel->leafs[1];
-//		for (i=0 ; i<cl.worldmodel->numleafs ; i++, leaf++)
-//			if (vis[i>>3] & (1<<(i&7)))
-//				if (leaf->efrags)
-//					R_StoreEfrags (&leaf->efrags);
-//		return;
-//	}
+	if (r_oldviewleaf == r_viewleaf && !vis_changed && !nearwaterportal)
+	{
+		leaf = &cl.worldmodel->leafs[1];
+		for (i=0 ; i<cl.worldmodel->numleafs ; i++, leaf++)
+			if (vis[i>>3] & (1<<(i&7)))
+				if (leaf->efrags)
+					R_StoreEfrags (&leaf->efrags);
+		return;
+	}
     
 	vis_changed = false;
 	r_visframecount++;
@@ -1693,62 +1693,13 @@ void R_MarkSurfaces (void)
 			if (surf->visframe == r_visframecount)
 			{
                 
-                
 //                if (R_CullBox(surf->mins, surf->maxs) || R_BackFaceCull (surf))
-//                    surf->culled = true;
-//                else
-//                {
-//                    surf->culled = false;
-//                    rs_c_brush_polys++; // r_speeds, count wpolys here
-//                    
-//                    if (surf->texinfo->texture->warpimage)
-//                        surf->texinfo->texture->update_warp = true;
-//                }
+//                    continue;		// outside
 //                
-//                if (((surf->flags & SURF_DRAWTURB) && (alpha = R_GetTurbAlpha(surf)) < 1.0) || surf->flags & SURF_DRAWFENCE)
-//                {
-//                    vec_t midp_dist;
-//                    
-//                    midp_dist = R_GetAlphaDist(surf->midp);
-//                    R_AddToAlpha (ALPHA_SURFACE, midp_dist, surf, NULL, alpha);
-//                }
-//                else
-//                {
-//                    R_ChainSurface(surf, chain_world);
-//                }
+//                
+//                if (surf->texinfo->texture->warpimage)
+//                    surf->texinfo->texture->update_warp = true;
                 
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-//                if (surf->visframe != r_framecount)
-//                    continue;
-                
-                if (R_CullBox(surf->mins, surf->maxs) || R_BackFaceCull (surf))
-                    continue;		// outside
-                
-                
-                if (surf->texinfo->texture->warpimage)
-                    surf->texinfo->texture->update_warp = true;
-
-                
-//                if ((dot < 0) ^ !!(surf->flags & SURF_PLANEBACK))
-//                    continue;		// wrong side
-                
-//                if (surf->flags & SURF_DRAWSKY)
-//                {
-//                    surf->texturechain = skychain;
-//                    skychain = surf;
-//                }
-//                else 
                 if (((surf->flags & SURF_DRAWTURB) && (alpha = R_GetTurbAlpha(surf)) < 1.0) /* || surf->flags & SURF_DRAWFENCE */)
                 {
                     vec_t midp_dist;
@@ -1759,18 +1710,12 @@ void R_MarkSurfaces (void)
                 else
                 {
 //                    // sort by texture
-//                    surf->texturechain = surf->texinfo->texture->texturechain;
-//                    surf->texinfo->texture->texturechain = surf;
                     
                     R_ChainSurface(surf, chain_world);
 
                 }
                 
-                rs_c_brush_polys++; // r_speeds (count wpolys here)
-
-                
-                
-                
+//                rs_c_brush_polys++; // r_speeds (count wpolys here)
                 
 			}
 }
@@ -1814,69 +1759,39 @@ qboolean R_BackFaceCull (msurface_t *surf)
 R_CullSurfaces -- johnfitz
 ================
 */
-//void R_CullSurfaces (void)
-//{
-//	msurface_t *s;
-//	texture_t *t;
-//	int i;
-//    
-//	if (!r_drawworld.value)
-//		return;
-//    
-//    // ericw -- instead of testing (s->visframe == r_visframecount) on all world
-//    // surfaces, use the chained surfaces, which is exactly the same set of sufaces
-//	for (i=0 ; i<cl.worldmodel->numtextures ; i++)
-//	{
-//		t = cl.worldmodel->textures[i];
-//        
-//		if (!t || !t->texturechains[chain_world])
-//			continue;
-//        
-//		for (s = t->texturechains[chain_world]; s; s = s->texturechain)
-//		{
-//			if (R_CullBox(s->mins, s->maxs) || R_BackFaceCull (s))
-//				s->culled = true;
-//			else
-//			{
-//				s->culled = false;
-//                rs_c_brush_polys++; // r_speeds, count wpolys here
-//
-//				if (s->texinfo->texture->warpimage)
-//					s->texinfo->texture->update_warp = true;
-//			}
-//		}
-//	}
-//}
+void R_CullSurfaces (void)
+{
+	msurface_t *s;
+	texture_t *t;
+	int i;
+    
+	if (!r_drawworld.value)
+		return;
+    
+    // ericw -- instead of testing (s->visframe == r_visframecount) on all world
+    // surfaces, use the chained surfaces, which is exactly the same set of sufaces
+	for (i=0 ; i<cl.worldmodel->numtextures ; i++)
+	{
+		t = cl.worldmodel->textures[i];
+        
+		if (!t || !t->texturechains[chain_world])
+			continue;
+        
+		for (s = t->texturechains[chain_world]; s; s = s->texturechain)
+		{
+			if (R_CullBox(s->mins, s->maxs) || R_BackFaceCull (s))
+				s->culled = true;
+			else
+			{
+				s->culled = false;
+                rs_c_brush_polys++; // r_speeds, count wpolys here
 
-/*
- ================
- R_FilterSurfaces
- 
- do after R_CullSurfaces(), to filter out alpha, fence surfaces and create alpha list
- ================
- */
-//void R_FilterSurfaces (void)
-//{
-//	msurface_t *s;
-//	texture_t *t;
-//	int i;
-//    
-//	if (!r_drawworld.value)
-//		return;
-//    
-//	for (i=0 ; i<cl.worldmodel->numtextures ; i++)
-//	{
-//		t = cl.worldmodel->textures[i];
-//        
-//		if (!t || !t->texturechains[chain_world])
-//			continue;
-//        
-//		for (s = t->texturechains[chain_world]; s; s = s->texturechain)
-//		{
-//            
-//        }
-//    }
-//}
+				if (s->texinfo->texture->warpimage)
+					s->texinfo->texture->update_warp = true;
+			}
+		}
+	}
+}
 
 
 /*

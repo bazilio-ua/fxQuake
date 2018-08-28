@@ -1412,7 +1412,7 @@ void R_SkyProcessTextureChains (void)
 			continue;
         
 		for (s = t->texturechains[chain_world]; s; s = s->texturechain)
-//			if (!s->culled)
+			if (!s->culled)
 				R_SkyProcessPoly (s->polys);
 	}
     
