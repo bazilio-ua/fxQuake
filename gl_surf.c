@@ -629,7 +629,6 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, int frame)
 		}
 
 		GL_Bind (s->texinfo->texture->warpimage);
-//		s->texinfo->texture->update_warp = true; // FIXME: one frame too late!
 
 		if ( !(s->flags & (SURF_DRAWLAVA | SURF_DRAWSLIME)) )
 		{
@@ -952,8 +951,6 @@ void R_DrawBrushModel (entity_t *e)
 			}
 			else
             {
-//				R_DrawSequentialPoly (psurf, alpha, e->frame); // draw entities
-                
                 R_ChainSurface (psurf, chain_model);
             }
 			
@@ -1178,7 +1175,6 @@ void R_DrawTextureChains_Water (qmodel_t *model, entity_t *ent, texchain_t chain
 	int			i;
 	msurface_t	*s;
 	texture_t	*t;
-//	glpoly_t	*p;
 	qboolean	bound;
 	float entalpha;
     
@@ -1195,15 +1191,6 @@ void R_DrawTextureChains_Water (qmodel_t *model, entity_t *ent, texchain_t chain
                 if (!bound) //only bind once we are sure we need this texture
                 {
                     GL_Bind (t->warpimage);
-                    
-//                    if (model != cl.worldmodel)
-//                    {
-//                        // ericw -- this is copied from R_DrawSequentialPoly.
-//                        // If the poly is not part of the world we have to
-//                        // set this flag
-//                        t->update_warp = true; // FIXME: one frame too late!
-//                    }
-                    
                     bound = true;
                 }
                 R_DrawGLPoly34 (s->polys);
@@ -1590,6 +1577,7 @@ adds the given surface to its texture chain
 */
 void R_ChainSurface (msurface_t *surf, texchain_t chain)
 {
+    // sort by texture
 	surf->texturechain = surf->texinfo->texture->texturechains[chain];
 	surf->texinfo->texture->texturechains[chain] = surf;
 }
@@ -1682,8 +1670,9 @@ void R_MarkSurfaces (void)
     //
     R_ClearTextureChains(cl.worldmodel, chain_world);
     
+    //
 	// rebuild chains
-    
+    //
 	//iterate through surfaces one node at a time to rebuild chains
 	//need to do it this way if we want to work with tyrann's skip removal tool
 	//becuase his tool doesn't actually remove the surfaces from the bsp surfaces lump
@@ -1692,14 +1681,6 @@ void R_MarkSurfaces (void)
 		for (j=0, surf=&cl.worldmodel->surfaces[node->firstsurface] ; j<node->numsurfaces ; j++, surf++)
 			if (surf->visframe == r_visframecount)
 			{
-                
-//                if (R_CullBox(surf->mins, surf->maxs) || R_BackFaceCull (surf))
-//                    continue;		// outside
-//                
-//                
-//                if (surf->texinfo->texture->warpimage)
-//                    surf->texinfo->texture->update_warp = true;
-                
                 if (((surf->flags & SURF_DRAWTURB) && (alpha = R_GetTurbAlpha(surf)) < 1.0) /* || surf->flags & SURF_DRAWFENCE */)
                 {
                     vec_t midp_dist;
@@ -1709,14 +1690,8 @@ void R_MarkSurfaces (void)
                 }
                 else
                 {
-//                    // sort by texture
-                    
                     R_ChainSurface(surf, chain_world);
-
                 }
-                
-//                rs_c_brush_polys++; // r_speeds (count wpolys here)
-                
 			}
 }
 
