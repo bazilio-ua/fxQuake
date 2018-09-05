@@ -1175,25 +1175,40 @@ void R_DrawTextureChains_Water (qmodel_t *model, entity_t *ent, texchain_t chain
 	int			i;
 	msurface_t	*s;
 	texture_t	*t;
-	qboolean	bound;
-	float entalpha;
+//	qboolean	bound;
+    float		alpha = 1.0;
     
     for (i=0 ; i<model->numtextures ; i++)
     {
         t = model->textures[i];
         if (!t || !t->texturechains[chain] || !(t->texturechains[chain]->flags & SURF_DRAWTURB))
             continue;
-        bound = false;
-        entalpha = 1.0f;
+//        bound = false;
         for (s = t->texturechains[chain]; s; s = s->texturechain)
             if (!s->culled)
             {
-                if (!bound) //only bind once we are sure we need this texture
+                
+                if ( /* ((s->flags & SURF_DRAWTURB) && */ (alpha = R_GetTurbAlpha(s)) < 1.0) /* || s->flags & SURF_DRAWFENCE) */
+                {
+                    vec_t midp_dist;
+                    
+                    midp_dist = R_GetAlphaDist(s->midp);
+                    R_AddToAlpha (ALPHA_SURFACE, midp_dist, s, NULL, alpha);
+                }
+                else
+                {
+                
+//                if (!bound) //only bind once we are sure we need this texture
+                if (!t->bound) //only bind once we are sure we need this texture
                 {
                     GL_Bind (t->warpimage);
-                    bound = true;
+//                    bound = true;
+                    t->bound = true;
                 }
                 R_DrawGLPoly34 (s->polys);
+                    
+                }
+                
                 rs_c_brush_passes++;
             }
     }
@@ -1595,8 +1610,10 @@ void R_ClearTextureChains (qmodel_t *model, texchain_t chain)
     
 	// set all chains to null
 	for (i=0 ; i<model->numtextures ; i++)
-		if (model->textures[i])
+		if (model->textures[i]) {
 			model->textures[i]->texturechains[chain] = NULL;
+            model->textures[i]->bound = false; // unbound
+        }
 }
 
 /*
@@ -1614,7 +1631,7 @@ void R_MarkSurfaces (void)
 	msurface_t	*surf, **mark;
 	int			i, j;
 	qboolean	nearwaterportal = false;
-    float		alpha = 1.0;
+//    float		alpha = 1.0;
     
 	// check this leaf for water portals
 	// TODO: loop through all water surfs and use distance to leaf cullbox
@@ -1681,14 +1698,14 @@ void R_MarkSurfaces (void)
 		for (j=0, surf=&cl.worldmodel->surfaces[node->firstsurface] ; j<node->numsurfaces ; j++, surf++)
 			if (surf->visframe == r_visframecount)
 			{
-                if (((surf->flags & SURF_DRAWTURB) && (alpha = R_GetTurbAlpha(surf)) < 1.0) /* || surf->flags & SURF_DRAWFENCE */)
-                {
-                    vec_t midp_dist;
-                    
-                    midp_dist = R_GetAlphaDist(surf->midp);
-                    R_AddToAlpha (ALPHA_SURFACE, midp_dist, surf, NULL, alpha);
-                }
-                else
+//                if (((surf->flags & SURF_DRAWTURB) && (alpha = R_GetTurbAlpha(surf)) < 1.0) /* || surf->flags & SURF_DRAWFENCE */)
+//                {
+//                    vec_t midp_dist;
+//                    
+//                    midp_dist = R_GetAlphaDist(surf->midp);
+//                    R_AddToAlpha (ALPHA_SURFACE, midp_dist, surf, NULL, alpha);
+//                }
+//                else
                 {
                     R_ChainSurface(surf, chain_world);
                 }
