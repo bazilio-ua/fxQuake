@@ -1175,7 +1175,7 @@ void R_DrawTextureChains_Water (qmodel_t *model, entity_t *ent, texchain_t chain
 	int			i;
 	msurface_t	*s;
 	texture_t	*t;
-//	qboolean	bound;
+	qboolean	bound;
     float		alpha = 1.0;
     
     for (i=0 ; i<model->numtextures ; i++)
@@ -1183,7 +1183,7 @@ void R_DrawTextureChains_Water (qmodel_t *model, entity_t *ent, texchain_t chain
         t = model->textures[i];
         if (!t || !t->texturechains[chain] || !(t->texturechains[chain]->flags & SURF_DRAWTURB))
             continue;
-//        bound = false;
+        bound = false;
         for (s = t->texturechains[chain]; s; s = s->texturechain)
             if (!s->culled)
             {
@@ -1198,12 +1198,10 @@ void R_DrawTextureChains_Water (qmodel_t *model, entity_t *ent, texchain_t chain
                 else
                 {
                 
-//                if (!bound) //only bind once we are sure we need this texture
-                if (!t->bound) //only bind once we are sure we need this texture
+                if (!bound) //only bind once we are sure we need this texture
                 {
                     GL_Bind (t->warpimage);
-//                    bound = true;
-                    t->bound = true;
+                    bound = true;
                 }
                 R_DrawGLPoly34 (s->polys);
                     
@@ -1612,7 +1610,6 @@ void R_ClearTextureChains (qmodel_t *model, texchain_t chain)
 	for (i=0 ; i<model->numtextures ; i++)
 		if (model->textures[i]) {
 			model->textures[i]->texturechains[chain] = NULL;
-            model->textures[i]->bound = false; // unbound
         }
 }
 
