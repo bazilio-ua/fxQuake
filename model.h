@@ -164,7 +164,8 @@ typedef struct msurface_s
 	qboolean	culled;			// johnfitz -- for frustum culling
 	float		mins[3];		// johnfitz -- for frustum culling
 	float		maxs[3];		// johnfitz -- for frustum culling
-	
+
+    float		alpha;			// alpha value
 	float		midp[3];		// for alpha sorting
 
 	mplane_t	*plane;
