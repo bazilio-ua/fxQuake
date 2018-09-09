@@ -865,6 +865,7 @@ void R_DrawBrushModel (entity_t *e)
 	qboolean	rotated = false;
 	float		alpha;
 //    qboolean	saved;
+    qboolean	hasalpha = false;
 
 	if (R_CullModelForEntity(e))
 		return;
@@ -887,6 +888,8 @@ void R_DrawBrushModel (entity_t *e)
 		modelorg[2] = DotProduct (temp, up);
 	}
 
+    e->rotated = rotated;
+    
 	// calculate dynamic lighting for bmodel if it's not an instanced model
 	if (clmodel->firstmodelsurface != 0) // EER1
 	{
@@ -937,48 +940,54 @@ void R_DrawBrushModel (entity_t *e)
             if (psurf->texinfo->texture->warpimage)
                 psurf->texinfo->texture->update_warp = true; // FIXME: one frame too late!
             
-			if (alpha < 1.0 || ((psurf->flags & SURF_DRAWTURB) && (alpha = R_GetTurbAlpha(psurf)) < 1.0) /* || psurf->flags & SURF_DRAWFENCE */)
-			{
-				vec3_t	midp;
-				vec_t	midp_dist;
-				
-//                if (!saved) {
-//                    glGetFloatv (GL_MODELVIEW_MATRIX, e->matrix); // save entity matrix
-//                    
-//					saved = true;
-//                }
-                
-				// transform the surface midpoint
-				if (rotated)
-				{
-					vec3_t	temp_midp;
-					vec3_t	forward, right, up;
-					
-					AngleVectors (e->angles, forward, right, up);
-					
-					VectorCopy (psurf->midp, temp_midp);
-					midp[0] = (DotProduct (temp_midp, forward) + e->origin[0]);
-					midp[1] = (DotProduct (temp_midp, right) + e->origin[1]);
-					midp[2] = (DotProduct (temp_midp, up) + e->origin[2]);
-				}
-				else
-				{
-					VectorAdd (psurf->midp, e->origin, midp);
-				}
-				
-				midp_dist = R_GetAlphaDist(midp);
-				R_AddToAlpha (ALPHA_SURFACE, midp_dist, psurf, e, alpha);
-			}
-			else
-            {
+//			if (alpha < 1.0 || ((psurf->flags & SURF_DRAWTURB) && (alpha = R_GetTurbAlpha(psurf)) < 1.0) /* || psurf->flags & SURF_DRAWFENCE */)
+//			{
+//				vec3_t	midp;
+//				vec_t	midp_dist;
+//				
+////                if (!saved) {
+////                    glGetFloatv (GL_MODELVIEW_MATRIX, e->matrix); // save entity matrix
+////                    
+////					saved = true;
+////                }
+//                
+//				// transform the surface midpoint
+//				if (rotated)
+//				{
+//					vec3_t	temp_midp;
+//					vec3_t	forward, right, up;
+//					
+//					AngleVectors (e->angles, forward, right, up);
+//					
+//					VectorCopy (psurf->midp, temp_midp);
+//					midp[0] = (DotProduct (temp_midp, forward) + e->origin[0]);
+//					midp[1] = (DotProduct (temp_midp, right) + e->origin[1]);
+//					midp[2] = (DotProduct (temp_midp, up) + e->origin[2]);
+//				}
+//				else
+//				{
+//					VectorAdd (psurf->midp, e->origin, midp);
+//				}
+//				
+//				midp_dist = R_GetAlphaDist(midp);
+//				R_AddToAlpha (ALPHA_SURFACE, midp_dist, psurf, e, alpha);
+//			}
+//			else
+//            {
+            
+                hasalpha = R_SetAlphaSurface(psurf, alpha);
+            
+            
                 R_ChainSurface (psurf, chain_model);
-            }
+            
+//            }
 			
 			rs_c_brush_polys++; // r_speeds
 		}
 	}
 	
-    if (alpha < 1.0) 
+//    if (alpha < 1.0)
+    if (hasalpha)
         glGetFloatv (GL_MODELVIEW_MATRIX, e->matrix); // save entity matrix
     
     R_DrawTextureChains (clmodel, e, chain_model);
@@ -1205,7 +1214,7 @@ void R_DrawTextureChains_Alpha (qmodel_t *model, entity_t *e, texchain_t chain)
     for (i=0 ; i<model->numtextures ; i++)
     {
         t = model->textures[i];
-        if (!t || !t->texturechains[chain] || (t->texturechains[chain]->alpha == 1.0))
+        if (!t || !t->texturechains[chain] || t->texturechains[chain]->alpha == 1.0)
             continue;
         
         bound = false;
@@ -1265,12 +1274,12 @@ void R_DrawTextureChains_Water (qmodel_t *model, entity_t *ent, texchain_t chain
 	msurface_t	*s;
 	texture_t	*t;
 	qboolean	bound;
-    float		alpha = 1.0;
+//    float		alpha = 1.0;
     
     for (i=0 ; i<model->numtextures ; i++)
     {
         t = model->textures[i];
-        if (!t || !t->texturechains[chain] || !(t->texturechains[chain]->flags & SURF_DRAWTURB))
+        if (!t || !t->texturechains[chain] || t->texturechains[chain]->alpha < 1.0 || !(t->texturechains[chain]->flags & SURF_DRAWTURB))
             continue;
         
         bound = false;
@@ -1279,15 +1288,15 @@ void R_DrawTextureChains_Water (qmodel_t *model, entity_t *ent, texchain_t chain
             if (!s->culled)
             {
                 
-                if ( /* ((s->flags & SURF_DRAWTURB) && */ (alpha = R_GetTurbAlpha(s)) < 1.0) /* || s->flags & SURF_DRAWFENCE) */
-                {
-                    vec_t midp_dist;
-                    
-                    midp_dist = R_GetAlphaDist(s->midp);
-                    R_AddToAlpha (ALPHA_SURFACE, midp_dist, s, NULL, alpha);
-                }
-                else
-                {
+//                if ( /* ((s->flags & SURF_DRAWTURB) && */ (alpha = R_GetTurbAlpha(s)) < 1.0) /* || s->flags & SURF_DRAWFENCE) */
+//                {
+//                    vec_t midp_dist;
+//                    
+//                    midp_dist = R_GetAlphaDist(s->midp);
+//                    R_AddToAlpha (ALPHA_SURFACE, midp_dist, s, NULL, alpha);
+//                }
+//                else
+//                {
                 
                 if (!bound) //only bind once we are sure we need this texture
                 {
@@ -1296,7 +1305,7 @@ void R_DrawTextureChains_Water (qmodel_t *model, entity_t *ent, texchain_t chain
                 }
                 R_DrawGLPoly34 (s->polys);
                     
-                }
+//                }
                 
                 rs_c_brush_passes++;
             }
@@ -1321,7 +1330,7 @@ void R_DrawTextureChains_NoTexture (qmodel_t *model, texchain_t chain)
 	{
 		t = model->textures[i];
         
-		if (!t || !t->texturechains[chain] || !(t->texturechains[chain]->flags & SURF_NOTEXTURE))
+		if (!t || !t->texturechains[chain] || t->texturechains[chain]->alpha < 1.0 || !(t->texturechains[chain]->flags & SURF_NOTEXTURE))
 			continue;
         
 		bound = false;
@@ -1357,10 +1366,11 @@ void R_DrawTextureChains_Multitexture (qmodel_t *model, entity_t *ent, texchain_
 	{
 		t = model->textures[i];
         
-		if (!t || !t->texturechains[chain] || t->texturechains[chain]->flags & (SURF_DRAWTILED | SURF_NOTEXTURE))
+		if (!t || !t->texturechains[chain] || t->texturechains[chain]->alpha < 1.0 || t->texturechains[chain]->flags & (SURF_DRAWTILED | SURF_NOTEXTURE))
 			continue;
         
 		bound = false;
+        
 		for (s = t->texturechains[chain]; s; s = s->texturechain)
 			if (!s->culled)
 			{
@@ -1409,7 +1419,7 @@ void R_DrawTextureChains_TextureOnly (qmodel_t *model, entity_t *ent, texchain_t
 	{
 		t = model->textures[i];
         
-		if (!t || !t->texturechains[chain] || t->texturechains[chain]->flags & (SURF_DRAWTURB | SURF_DRAWSKY))
+		if (!t || !t->texturechains[chain] || t->texturechains[chain]->alpha < 1.0 || t->texturechains[chain]->flags & (SURF_DRAWTURB | SURF_DRAWSKY))
 			continue;
         
 		bound = false;
@@ -1486,7 +1496,7 @@ void R_DrawTextureChains_Glow (qmodel_t *model, entity_t *ent, texchain_t chain)
 	{
 		t = model->textures[i];
         
-		if (!t || !t->texturechains[chain] || !(glt = R_TextureAnimation(t, ent != NULL ? ent->frame : 0)->fullbright))
+		if (!t || !t->texturechains[chain] || t->texturechains[chain]->alpha < 1.0 || !(glt = R_TextureAnimation(t, ent != NULL ? ent->frame : 0)->fullbright))
 			continue;
         
 		bound = false;
@@ -1521,6 +1531,7 @@ void R_DrawTextureChains (qmodel_t *model, entity_t *ent, texchain_t chain)
 	R_BuildLightmapChains (model, chain);
 	R_UploadLightmaps ();
     
+    R_DrawTextureChains_Alpha (model, ent, chain);
     R_DrawTextureChains_Water (model, ent, chain);
     R_DrawTextureChains_NoTexture (model, chain);
     
@@ -1796,15 +1807,11 @@ void R_MarkSurfaces (void)
 //                else
 //                {
                 
-                
-                
-                
-//                    R_SetAlphaSurface(surf, 1.0);
-                
-                
+                    R_SetAlphaSurface(surf, 1.0);
                 
                 
                     R_ChainSurface(surf, chain_world);
+                
 //                }
 			}
 }
