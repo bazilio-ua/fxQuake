@@ -72,6 +72,7 @@ typedef struct entity_s
 	int						skinnum;		// for Alias models
 	int						visframe;		// last frame this entity was found in an active leaf
 
+	qboolean				rotated;
 	float					matrix[16];		// the matrix used for transforming this entity
 	
 	float					dist;			// distance from client (for depth sorting)

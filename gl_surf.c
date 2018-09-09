@@ -66,6 +66,26 @@ int				gl_alphalist_num = 0;
 
 /*
 ===============
+R_SetAlphaSurface
+===============
+*/
+qboolean R_SetAlphaSurface(msurface_t *s, float alpha)
+{
+    if (alpha < 1.0) {
+        // do nothing
+    } else if (s->flags & SURF_DRAWALPHA) { // TODO: trans 33/66 values
+        alpha = 0.5f;
+    } else if (s->flags & SURF_DRAWTURB) {
+        alpha = R_GetTurbAlpha(s);
+    }
+    
+    s->alpha = alpha;
+    
+    return (alpha < 1.0);
+}
+
+/*
+===============
 R_GetTurbAlpha
 ===============
 */
@@ -844,7 +864,7 @@ void R_DrawBrushModel (entity_t *e)
 	qmodel_t		*clmodel;
 	qboolean	rotated = false;
 	float		alpha;
-    qboolean	saved;
+//    qboolean	saved;
 
 	if (R_CullModelForEntity(e))
 		return;
@@ -891,7 +911,7 @@ void R_DrawBrushModel (entity_t *e)
 	}
 	
 //	glGetFloatv (GL_MODELVIEW_MATRIX, e->matrix); // save entity matrix
-    saved = false;
+//    saved = false;
 	
     //
 	// set all chains to null
@@ -922,11 +942,11 @@ void R_DrawBrushModel (entity_t *e)
 				vec3_t	midp;
 				vec_t	midp_dist;
 				
-                if (!saved) {
-                    glGetFloatv (GL_MODELVIEW_MATRIX, e->matrix); // save entity matrix
-                    
-					saved = true;
-                }
+//                if (!saved) {
+//                    glGetFloatv (GL_MODELVIEW_MATRIX, e->matrix); // save entity matrix
+//                    
+//					saved = true;
+//                }
                 
 				// transform the surface midpoint
 				if (rotated)
@@ -958,6 +978,9 @@ void R_DrawBrushModel (entity_t *e)
 		}
 	}
 	
+    if (alpha < 1.0) 
+        glGetFloatv (GL_MODELVIEW_MATRIX, e->matrix); // save entity matrix
+    
     R_DrawTextureChains (clmodel, e, chain_model);
     
 	glPopMatrix ();
@@ -1703,9 +1726,18 @@ void R_MarkSurfaces (void)
 //                    R_AddToAlpha (ALPHA_SURFACE, midp_dist, surf, NULL, alpha);
 //                }
 //                else
-                {
+//                {
+                
+                
+                
+                
+//                    R_SetAlphaSurface(surf, 1.0);
+                
+                
+                
+                
                     R_ChainSurface(surf, chain_world);
-                }
+//                }
 			}
 }
 

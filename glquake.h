@@ -390,6 +390,7 @@ typedef struct gl_alphalist_s
 extern gl_alphalist_t	gl_alphalist[MAX_ALPHA_ITEMS];
 extern int				gl_alphalist_num;
 
+qboolean R_SetAlphaSurface(msurface_t *s, float alpha);
 float R_GetTurbAlpha (msurface_t *s);
 vec_t R_GetAlphaDist (vec3_t origin);
 void R_AddToAlpha (int type, vec_t dist, void *data, entity_t *entity, float alpha);
