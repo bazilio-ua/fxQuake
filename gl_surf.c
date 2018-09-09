@@ -1188,6 +1188,72 @@ void R_BuildLightmapChains (qmodel_t *model, texchain_t chain)
 	}
 }
 
+
+/*
+================
+R_DrawTextureChains_Alpha -- EER1
+================
+*/
+void R_DrawTextureChains_Alpha (qmodel_t *model, entity_t *e, texchain_t chain)
+{
+	int			i;
+	msurface_t	*s;
+	texture_t	*t;
+	qboolean	bound;
+//    float		alpha = 1.0;
+    
+    for (i=0 ; i<model->numtextures ; i++)
+    {
+        t = model->textures[i];
+        if (!t || !t->texturechains[chain] || (t->texturechains[chain]->alpha == 1.0))
+            continue;
+        
+        bound = false;
+        
+        for (s = t->texturechains[chain]; s; s = s->texturechain)
+            if (!s->culled)
+            {
+                
+                if (e) 
+                {
+                    vec3_t	midp;
+                    vec_t	midp_dist;
+                    
+                    // transform the surface midpoint
+                    if (e->rotated)
+                    {
+                        vec3_t	temp_midp;
+                        vec3_t	forward, right, up;
+                        
+                        AngleVectors (e->angles, forward, right, up);
+                        
+                        VectorCopy (s->midp, temp_midp);
+                        midp[0] = (DotProduct (temp_midp, forward) + e->origin[0]);
+                        midp[1] = (DotProduct (temp_midp, right) + e->origin[1]);
+                        midp[2] = (DotProduct (temp_midp, up) + e->origin[2]);
+                    }
+                    else
+                    {
+                        VectorAdd (s->midp, e->origin, midp);
+                    }
+                    
+                    midp_dist = R_GetAlphaDist(midp);
+                    R_AddToAlpha (ALPHA_SURFACE, midp_dist, s, e, s->alpha);
+                }
+                else 
+                {
+                    vec_t midp_dist;
+                    
+                    midp_dist = R_GetAlphaDist(s->midp);
+                    R_AddToAlpha (ALPHA_SURFACE, midp_dist, s, NULL, s->alpha);
+                }
+                
+//                rs_c_brush_passes++;
+            }
+    }
+}
+
+
 /*
 ================
 R_DrawTextureChains_Water -- johnfitz
