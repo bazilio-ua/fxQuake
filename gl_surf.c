@@ -1206,7 +1206,9 @@ void R_DrawTextureChains_Water (qmodel_t *model, entity_t *ent, texchain_t chain
         t = model->textures[i];
         if (!t || !t->texturechains[chain] || !(t->texturechains[chain]->flags & SURF_DRAWTURB))
             continue;
+        
         bound = false;
+        
         for (s = t->texturechains[chain]; s; s = s->texturechain)
             if (!s->culled)
             {
