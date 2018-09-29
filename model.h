@@ -104,7 +104,6 @@ typedef struct texture_s
 	struct gltexture_s	*fullbright; // fullbright mask texture
 	struct gltexture_s	*warpimage; // for water animation
 	qboolean	update_warp;			// update warp this frame
-    qboolean    bound;                  // bind to texture
 	struct msurface_s	*texturechain;	// for texture chains (OLD way)
 	struct msurface_s	*texturechains[2];	// for texture chains
 	int			anim_total;				// total tenths in sequence ( 0 = no)
