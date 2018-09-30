@@ -504,7 +504,7 @@ void R_DrawAliasModel (entity_t *e)
 	int			lnum;
 	vec3_t		dist;
 	float		add;
-	qmodel_t		*clmodel;
+	model_t		*clmodel;
 	aliashdr_t	*paliashdr;
 	int			anim;
 	qboolean	isclient = false;

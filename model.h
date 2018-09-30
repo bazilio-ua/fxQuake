@@ -486,17 +486,17 @@ typedef struct model_s
 //
 	cache_user_t	cache;		// only access through Mod_Extradata
 
-} qmodel_t;
+} model_t;
 
 //============================================================================
 
 void	Mod_Init (void);
 void	Mod_ClearAll (void);
-qmodel_t *Mod_ForName (char *name, qboolean crash);
-void	*Mod_Extradata (qmodel_t *mod);	// handles caching
+model_t *Mod_ForName (char *name, qboolean crash);
+void	*Mod_Extradata (model_t *mod);	// handles caching
 void	Mod_TouchModel (char *name);
 
-mleaf_t *Mod_PointInLeaf (float *p, qmodel_t *model);
-byte	*Mod_LeafPVS (mleaf_t *leaf, qmodel_t *model);
-byte	*Mod_NoVisPVS (qmodel_t *model);
+mleaf_t *Mod_PointInLeaf (float *p, model_t *model);
+byte	*Mod_LeafPVS (mleaf_t *leaf, model_t *model);
+byte	*Mod_NoVisPVS (model_t *model);
 

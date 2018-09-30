@@ -861,7 +861,7 @@ void R_DrawBrushModel (entity_t *e)
 	msurface_t	*psurf;
 	float		dot;
 	mplane_t	*pplane;
-	qmodel_t		*clmodel;
+	model_t		*clmodel;
 	qboolean	rotated = false;
 	float		alpha;
 //    qboolean	saved;
@@ -1174,7 +1174,7 @@ ericw -- now always used at the start of R_DrawTextureChains for the
 mh dynamic lighting speedup
 ================
 */
-void R_BuildLightmapChains (qmodel_t *model, texchain_t chain)
+void R_BuildLightmapChains (model_t *model, texchain_t chain)
 {
 	texture_t *t;
 	msurface_t *s;
@@ -1203,7 +1203,7 @@ void R_BuildLightmapChains (qmodel_t *model, texchain_t chain)
 R_DrawTextureChains_Alpha -- EER1
 ================
 */
-void R_DrawTextureChains_Alpha (qmodel_t *model, entity_t *e, texchain_t chain)
+void R_DrawTextureChains_Alpha (model_t *model, entity_t *e, texchain_t chain)
 {
 	int			i;
 	msurface_t	*s;
@@ -1268,7 +1268,7 @@ void R_DrawTextureChains_Alpha (qmodel_t *model, entity_t *e, texchain_t chain)
 R_DrawTextureChains_Water -- johnfitz
 ================
 */
-void R_DrawTextureChains_Water (qmodel_t *model, entity_t *ent, texchain_t chain)
+void R_DrawTextureChains_Water (model_t *model, entity_t *ent, texchain_t chain)
 {
 	int			i;
 	msurface_t	*s;
@@ -1319,7 +1319,7 @@ R_DrawTextureChains_NoTexture -- johnfitz
 draws surfs whose textures were missing from the BSP
 ================
 */
-void R_DrawTextureChains_NoTexture (qmodel_t *model, texchain_t chain)
+void R_DrawTextureChains_NoTexture (model_t *model, texchain_t chain)
 {
 	int			i;
 	msurface_t	*s;
@@ -1354,7 +1354,7 @@ void R_DrawTextureChains_NoTexture (qmodel_t *model, texchain_t chain)
 R_DrawTextureChains_Multitexture -- johnfitz
 ================
 */
-void R_DrawTextureChains_Multitexture (qmodel_t *model, entity_t *ent, texchain_t chain)
+void R_DrawTextureChains_Multitexture (model_t *model, entity_t *ent, texchain_t chain)
 {
 	int			i, j;
 	msurface_t	*s;
@@ -1408,7 +1408,7 @@ void R_DrawTextureChains_Multitexture (qmodel_t *model, entity_t *ent, texchain_
 R_DrawTextureChains_TextureOnly -- johnfitz
 ================
 */
-void R_DrawTextureChains_TextureOnly (qmodel_t *model, entity_t *ent, texchain_t chain)
+void R_DrawTextureChains_TextureOnly (model_t *model, entity_t *ent, texchain_t chain)
 {
 	int			i;
 	msurface_t	*s;
@@ -1484,7 +1484,7 @@ void R_DrawLightmapChains (void)
 R_DrawTextureChains_Glow -- johnfitz
 ================
 */
-void R_DrawTextureChains_Glow (qmodel_t *model, entity_t *ent, texchain_t chain)
+void R_DrawTextureChains_Glow (model_t *model, entity_t *ent, texchain_t chain)
 {
 	int			i;
 	msurface_t	*s;
@@ -1520,7 +1520,7 @@ void R_DrawTextureChains_Glow (qmodel_t *model, entity_t *ent, texchain_t chain)
 R_DrawTextureChains -- johnfitz
 =============
 */
-void R_DrawTextureChains (qmodel_t *model, entity_t *ent, texchain_t chain)
+void R_DrawTextureChains (model_t *model, entity_t *ent, texchain_t chain)
 {
     float entalpha = 1.0f;
 
@@ -1704,7 +1704,7 @@ R_ClearTextureChains -- ericw
 clears texture chains for all textures used by the given model
 ================
 */
-void R_ClearTextureChains (qmodel_t *model, texchain_t chain)
+void R_ClearTextureChains (model_t *model, texchain_t chain)
 {
 	int i;
     
@@ -1958,7 +1958,7 @@ R_BuildSurfaceDisplayList
 ================
 */
 mvertex_t	*r_pcurrentvertbase;
-qmodel_t		*currentmodel;
+model_t		*currentmodel;
 
 void R_BuildSurfaceDisplayList (msurface_t *surf)
 {
@@ -2064,7 +2064,7 @@ void R_BuildLightmaps (void)
 	char	name[64];
 	byte	*data;
 	int		i, j;
-	qmodel_t	*m;
+	model_t	*m;
 
 	memset (allocated, 0, sizeof(allocated));
 	last_lightmap_allocated = 0;

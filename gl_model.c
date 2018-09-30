@@ -24,13 +24,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "quakedef.h"
 
-qmodel_t	*loadmodel;
+model_t	*loadmodel;
 char	loadname[32];	// for hunk tags
 
-void Mod_LoadSpriteModel (qmodel_t *mod, void *buffer);
-void Mod_LoadBrushModel (qmodel_t *mod, void *buffer);
-void Mod_LoadAliasModel (qmodel_t *mod, void *buffer);
-qmodel_t *Mod_LoadModel (qmodel_t *mod, qboolean crash);
+void Mod_LoadSpriteModel (model_t *mod, void *buffer);
+void Mod_LoadBrushModel (model_t *mod, void *buffer);
+void Mod_LoadAliasModel (model_t *mod, void *buffer);
+model_t *Mod_LoadModel (model_t *mod, qboolean crash);
 
 static byte	*mod_novis;
 static int	mod_novis_capacity;
@@ -39,7 +39,7 @@ static byte	*mod_decompressed;
 static int	mod_decompressed_capacity;
 
 #define	MAX_MOD_KNOWN	2048 // was 512
-qmodel_t	mod_known[MAX_MOD_KNOWN];
+model_t	mod_known[MAX_MOD_KNOWN];
 int		mod_numknown;
 
 cvar_t	external_lit = {"external_lit","1"};
@@ -75,7 +75,7 @@ Mod_Extradata
 Caches the data if needed
 ===============
 */
-void *Mod_Extradata (qmodel_t *mod)
+void *Mod_Extradata (model_t *mod)
 {
 	void	*r;
 	
@@ -95,7 +95,7 @@ void *Mod_Extradata (qmodel_t *mod)
 Mod_PointInLeaf
 ===============
 */
-mleaf_t *Mod_PointInLeaf (vec3_t p, qmodel_t *model)
+mleaf_t *Mod_PointInLeaf (vec3_t p, model_t *model)
 {
 	mnode_t		*node;
 	float		d;
@@ -126,7 +126,7 @@ mleaf_t *Mod_PointInLeaf (vec3_t p, qmodel_t *model)
 Mod_DecompressVis
 ===================
 */
-byte *Mod_DecompressVis (byte *in, qmodel_t *model)
+byte *Mod_DecompressVis (byte *in, model_t *model)
 {
 	int		c;
 	byte	*out;
@@ -187,7 +187,7 @@ byte *Mod_DecompressVis (byte *in, qmodel_t *model)
 Mod_LeafPVS
 =================
 */
-byte *Mod_LeafPVS (mleaf_t *leaf, qmodel_t *model)
+byte *Mod_LeafPVS (mleaf_t *leaf, model_t *model)
 {
 	if (leaf == model->leafs)
         return Mod_NoVisPVS (model);
@@ -199,7 +199,7 @@ byte *Mod_LeafPVS (mleaf_t *leaf, qmodel_t *model)
 Mod_NoVisPVS
 =================
 */
-byte *Mod_NoVisPVS (qmodel_t *model)
+byte *Mod_NoVisPVS (model_t *model)
 {
 	int pvsbytes;
     
@@ -224,7 +224,7 @@ Mod_ClearAll
 void Mod_ClearAll (void)
 {
 	int		i;
-	qmodel_t	*mod;
+	model_t	*mod;
 
 	for (i=0 , mod=mod_known ; i<mod_numknown ; i++, mod++)
 	{
@@ -242,10 +242,10 @@ Mod_FindName
 
 ==================
 */
-qmodel_t *Mod_FindName (char *name)
+model_t *Mod_FindName (char *name)
 {
 	int		i;
-	qmodel_t	*mod;
+	model_t	*mod;
 	
 	if (!name[0])
 		Host_Error ("Mod_FindName: NULL name");
@@ -278,7 +278,7 @@ Mod_TouchModel
 */
 void Mod_TouchModel (char *name)
 {
-	qmodel_t	*mod;
+	model_t	*mod;
 	
 	mod = Mod_FindName (name);
 
@@ -296,7 +296,7 @@ Mod_LoadModel
 Loads a model into the cache
 ==================
 */
-qmodel_t *Mod_LoadModel (qmodel_t *mod, qboolean crash)
+model_t *Mod_LoadModel (model_t *mod, qboolean crash)
 {
 	void	*d;
 	unsigned *buf;
@@ -372,9 +372,9 @@ Mod_ForName
 Loads in a model for the given name
 ==================
 */
-qmodel_t *Mod_ForName (char *name, qboolean crash)
+model_t *Mod_ForName (char *name, qboolean crash)
 {
-	qmodel_t	*mod;
+	model_t	*mod;
 	
 	mod = Mod_FindName (name);
 	
@@ -2223,7 +2223,7 @@ float RadiusFromBounds (vec3_t mins, vec3_t maxs)
 Mod_LoadBrushModel
 =================
 */
-void Mod_LoadBrushModel (qmodel_t *mod, void *buffer)
+void Mod_LoadBrushModel (model_t *mod, void *buffer)
 {
 	int			i, j;
 	int			bsp2 = 0; // bsp2 support
@@ -2717,7 +2717,7 @@ void Mod_CalcAliasBounds (aliashdr_t *a)
 Mod_LoadAliasModel
 =================
 */
-void Mod_LoadAliasModel (qmodel_t *mod, void *buffer)
+void Mod_LoadAliasModel (model_t *mod, void *buffer)
 {
 	int					i, j;
 	mdl_t				*pinmodel;
@@ -3001,7 +3001,7 @@ void *Mod_LoadSpriteGroup (void *pin, mspriteframe_t **ppframe, int framenum, in
 Mod_LoadSpriteModel
 =================
 */
-void Mod_LoadSpriteModel (qmodel_t *mod, void *buffer)
+void Mod_LoadSpriteModel (model_t *mod, void *buffer)
 {
 	int					i;
 	int					version;
@@ -3087,7 +3087,7 @@ Mod_Print
 void Mod_Print (void)
 {
 	int	i, total;
-	qmodel_t	*mod;
+	model_t	*mod;
 
 	Con_SafePrintf ("Cached models:\n");
 	total = 0;

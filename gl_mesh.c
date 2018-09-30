@@ -29,7 +29,7 @@ ALIAS MODEL DISPLAY LIST GENERATION
 =================================================================
 */
 
-qmodel_t		*aliasmodel;
+model_t		*aliasmodel;
 aliashdr_t	*paliashdr;
 
 #define MAX_CMDS 16384 // was 8192
@@ -314,7 +314,7 @@ void BuildTris (void)
 R_MakeAliasModelDisplayLists
 ================
 */
-void R_MakeAliasModelDisplayLists (qmodel_t *m, aliashdr_t *hdr)
+void R_MakeAliasModelDisplayLists (model_t *m, aliashdr_t *hdr)
 {
 	int		i, j;
 	int			*cmds;

@@ -490,7 +490,7 @@ static int	fatbytes;
 static byte	*fatpvs;
 static int	fatpvs_capacity;
 
-void SV_AddToFatPVS (vec3_t org, mnode_t *node, qmodel_t *worldmodel) //johnfitz -- added worldmodel as a parameter
+void SV_AddToFatPVS (vec3_t org, mnode_t *node, model_t *worldmodel) //johnfitz -- added worldmodel as a parameter
 {
 	int		i;
 	byte	*pvs;
@@ -533,7 +533,7 @@ Calculates a PVS that is the inclusive or of all leafs within 8 pixels of the
 given point.
 =============
 */
-byte *SV_FatPVS (vec3_t org, qmodel_t *worldmodel) //johnfitz -- added worldmodel as a parameter
+byte *SV_FatPVS (vec3_t org, model_t *worldmodel) //johnfitz -- added worldmodel as a parameter
 {
 	fatbytes = (worldmodel->numleafs+7)>>3; // ericw -- was +31, assumed to be a bug/typo
 	if (fatpvs == NULL || fatbytes > fatpvs_capacity)
@@ -557,7 +557,7 @@ SV_Trace
 renamed from Q1BSP_Trace
 =============
 */
-qboolean SV_Trace (qmodel_t *model, int forcehullnum, int frame, vec3_t start, vec3_t end, vec3_t mins, vec3_t maxs, trace_t *trace)
+qboolean SV_Trace (model_t *model, int forcehullnum, int frame, vec3_t start, vec3_t end, vec3_t mins, vec3_t maxs, trace_t *trace)
 {
 	hull_t *hull;
 	vec3_t size;
