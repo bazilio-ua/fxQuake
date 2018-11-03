@@ -49,7 +49,7 @@ byte		lightmaps[4*MAX_LIGHTMAPS*BLOCK_WIDTH*BLOCK_HEIGHT]; // (4)lightmap_bytes*
 int			d_overbright = 1;
 float		d_overbrightscale = OVERBRIGHT_SCALE;
 
-msurface_t  *skychain = NULL;
+//msurface_t  *skychain = NULL;
 
 int vis_changed; //if true, force pvs to be refreshed
 
@@ -1018,7 +1018,7 @@ void R_RecursiveWorldNode (mnode_t *node)
 	msurface_t	*surf, **mark;
 	mleaf_t		*pleaf;
 	float		dot;
-	float		alpha = 1.0;
+//	float		alpha = 1.0;
 	
 restart:
 	if (node->contents == CONTENTS_SOLID)
@@ -1104,25 +1104,35 @@ restart:
 			if ((dot < 0) ^ !!(surf->flags & SURF_PLANEBACK))
 				continue;		// wrong side
 
-			if (surf->flags & SURF_DRAWSKY)
-			{
-				surf->texturechain = skychain;
-				skychain = surf;
-			}
-			else if (((surf->flags & SURF_DRAWTURB) && (alpha = R_GetTurbAlpha(surf)) < 1.0) || surf->flags & SURF_DRAWFENCE)
-			{
-				vec_t midp_dist;
+//			if (surf->flags & SURF_DRAWSKY)
+//			{
+//				surf->texturechain = skychain;
+//				skychain = surf;
+//			}
+//			else if (((surf->flags & SURF_DRAWTURB) && (alpha = R_GetTurbAlpha(surf)) < 1.0) || surf->flags & SURF_DRAWFENCE)
+//			{
+//				vec_t midp_dist;
+//
+//				midp_dist = R_GetAlphaDist(surf->midp);
+//				R_AddToAlpha (ALPHA_SURFACE, midp_dist, surf, NULL, alpha);
+//			}
+//			else
+//			{
+//				// sort by texture
+//				surf->texturechain = surf->texinfo->texture->texturechain;
+//				surf->texinfo->texture->texturechain = surf;
+//			}
 
-				midp_dist = R_GetAlphaDist(surf->midp);
-				R_AddToAlpha (ALPHA_SURFACE, midp_dist, surf, NULL, alpha);
-			}
-			else
-			{
-				// sort by texture
-				surf->texturechain = surf->texinfo->texture->texturechain;
-				surf->texinfo->texture->texturechain = surf;
-			}
-			
+            
+            if (surf->texinfo->texture->warpimage)
+                surf->texinfo->texture->update_warp = true;
+            
+            
+            R_SetAlphaSurface(surf, 1.0);
+            
+            
+            R_ChainSurface(surf, chain_world);
+
 			rs_c_brush_polys++; // r_speeds (count wpolys here)
 		}
 	}
@@ -1131,6 +1141,30 @@ restart:
 // optimize tail recursion
 	node = node->children[!side];
 	goto restart;
+}
+
+/*
+===============
+R_SetupSurfaces
+
+setup surfaces based on PVS and rebuild texture chains
+===============
+*/
+void R_SetupSurfaces (void)
+{
+    //
+	// set all chains to null
+    //
+    R_ClearTextureChains(cl.worldmodel, chain_world);
+    
+    //
+	// recursive rebuild chains
+    //
+    VectorCopy (r_refdef.vieworg, modelorg); // copy modelorg for recursiveWorldNode
+    
+    recursivecount = 0;
+    R_RecursiveWorldNode (cl.worldmodel->nodes);
+    
 }
 
 /*
@@ -1192,7 +1226,7 @@ void R_BuildLightmapChains (model_t *model, texchain_t chain)
 			continue;
         
 		for (s = t->texturechains[chain]; s; s = s->texturechain)
-			if (!s->culled)
+//			if (!s->culled)
 				R_RenderDynamicLightmaps (s);
 	}
 }
@@ -1220,7 +1254,7 @@ void R_DrawTextureChains_Alpha (model_t *model, entity_t *e, texchain_t chain)
         bound = false;
         
         for (s = t->texturechains[chain]; s; s = s->texturechain)
-            if (!s->culled)
+//            if (!s->culled)
             {
                 
                 if (e) 
@@ -1285,7 +1319,7 @@ void R_DrawTextureChains_Water (model_t *model, entity_t *ent, texchain_t chain)
         bound = false;
         
         for (s = t->texturechains[chain]; s; s = s->texturechain)
-            if (!s->culled)
+//            if (!s->culled)
             {
                 
 //                if ( /* ((s->flags & SURF_DRAWTURB) && */ (alpha = R_GetTurbAlpha(s)) < 1.0) /* || s->flags & SURF_DRAWFENCE) */
@@ -1336,7 +1370,7 @@ void R_DrawTextureChains_NoTexture (model_t *model, texchain_t chain)
 		bound = false;
         
 		for (s = t->texturechains[chain]; s; s = s->texturechain)
-			if (!s->culled)
+//			if (!s->culled)
 			{
 				if (!bound) //only bind once we are sure we need this texture
 				{
@@ -1372,7 +1406,7 @@ void R_DrawTextureChains_Multitexture (model_t *model, entity_t *ent, texchain_t
 		bound = false;
         
 		for (s = t->texturechains[chain]; s; s = s->texturechain)
-			if (!s->culled)
+//			if (!s->culled)
 			{
 				if (!bound) //only bind once we are sure we need this texture
 				{
@@ -1425,7 +1459,7 @@ void R_DrawTextureChains_TextureOnly (model_t *model, entity_t *ent, texchain_t 
 		bound = false;
         
 		for (s = t->texturechains[chain]; s; s = s->texturechain)
-			if (!s->culled)
+//			if (!s->culled)
 			{
 				if (!bound) //only bind once we are sure we need this texture
 				{
@@ -1502,7 +1536,7 @@ void R_DrawTextureChains_Glow (model_t *model, entity_t *ent, texchain_t chain)
 		bound = false;
         
 		for (s = t->texturechains[chain]; s; s = s->texturechain)
-			if (!s->culled)
+//			if (!s->culled)
 			{
 				if (!bound) //only bind once we are sure we need this texture
 				{
@@ -1824,70 +1858,70 @@ R_BackFaceCull -- johnfitz
 returns true if the surface is facing away from vieworg
 ================
 */
-qboolean R_BackFaceCull (msurface_t *surf)
-{
-	double dot;
-    
-	switch (surf->plane->type)
-	{
-        case PLANE_X:
-            dot = r_refdef.vieworg[0] - surf->plane->dist;
-            break;
-        case PLANE_Y:
-            dot = r_refdef.vieworg[1] - surf->plane->dist;
-            break;
-        case PLANE_Z:
-            dot = r_refdef.vieworg[2] - surf->plane->dist;
-            break;
-        default:
-            dot = DotProduct (r_refdef.vieworg, surf->plane->normal) - surf->plane->dist;
-            break;
-	}
-    
-	if ((dot < 0) ^ !!(surf->flags & SURF_PLANEBACK))
-		return true;
-    
-	return false;
-}
+//qboolean R_BackFaceCull (msurface_t *surf)
+//{
+//	double dot;
+//    
+//	switch (surf->plane->type)
+//	{
+//        case PLANE_X:
+//            dot = r_refdef.vieworg[0] - surf->plane->dist;
+//            break;
+//        case PLANE_Y:
+//            dot = r_refdef.vieworg[1] - surf->plane->dist;
+//            break;
+//        case PLANE_Z:
+//            dot = r_refdef.vieworg[2] - surf->plane->dist;
+//            break;
+//        default:
+//            dot = DotProduct (r_refdef.vieworg, surf->plane->normal) - surf->plane->dist;
+//            break;
+//	}
+//    
+//	if ((dot < 0) ^ !!(surf->flags & SURF_PLANEBACK))
+//		return true;
+//    
+//	return false;
+//}
 
 /*
 ================
 R_CullSurfaces -- johnfitz
 ================
 */
-void R_CullSurfaces (void)
-{
-	msurface_t *s;
-	texture_t *t;
-	int i;
-    
-	if (!r_drawworld.value)
-		return;
-    
-    // ericw -- instead of testing (s->visframe == r_visframecount) on all world
-    // surfaces, use the chained surfaces, which is exactly the same set of sufaces
-	for (i=0 ; i<cl.worldmodel->numtextures ; i++)
-	{
-		t = cl.worldmodel->textures[i];
-        
-		if (!t || !t->texturechains[chain_world])
-			continue;
-        
-		for (s = t->texturechains[chain_world]; s; s = s->texturechain)
-		{
-			if (R_CullBox(s->mins, s->maxs) || R_BackFaceCull (s))
-				s->culled = true;
-			else
-			{
-				s->culled = false;
-                rs_c_brush_polys++; // r_speeds, count wpolys here
-
-				if (s->texinfo->texture->warpimage)
-					s->texinfo->texture->update_warp = true;
-			}
-		}
-	}
-}
+//void R_CullSurfaces (void)
+//{
+//	msurface_t *s;
+//	texture_t *t;
+//	int i;
+//    
+//	if (!r_drawworld.value)
+//		return;
+//    
+//    // ericw -- instead of testing (s->visframe == r_visframecount) on all world
+//    // surfaces, use the chained surfaces, which is exactly the same set of sufaces
+//	for (i=0 ; i<cl.worldmodel->numtextures ; i++)
+//	{
+//		t = cl.worldmodel->textures[i];
+//        
+//		if (!t || !t->texturechains[chain_world])
+//			continue;
+//        
+//		for (s = t->texturechains[chain_world]; s; s = s->texturechain)
+//		{
+//			if (R_CullBox(s->mins, s->maxs) || R_BackFaceCull (s))
+//				s->culled = true;
+//			else
+//			{
+//				s->culled = false;
+//                rs_c_brush_polys++; // r_speeds, count wpolys here
+//
+//				if (s->texinfo->texture->warpimage)
+//					s->texinfo->texture->update_warp = true;
+//			}
+//		}
+//	}
+//}
 
 
 /*
