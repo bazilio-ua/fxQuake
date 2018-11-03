@@ -147,7 +147,7 @@ R_FullBright
 void R_FullBright (void)
 {
 	// Refresh lightmaps
-	R_BuildLightmaps ();
+    R_RebuildAllLightmaps ();
 }
 
 /*
@@ -177,7 +177,7 @@ void GL_Overbright (void)
 		d_overbrightscale = OVERBRIGHT_SCALE * d_overbright;
 
 		// Refresh lightmaps
-		R_BuildLightmaps ();
+        R_RebuildAllLightmaps ();
 	}
 }
 

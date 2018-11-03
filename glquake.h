@@ -306,6 +306,7 @@ void R_DrawGLPoly56 (glpoly_t *p);
 void R_DrawSequentialPoly (msurface_t *s, float alpha, int frame);
 void R_BuildLightmaps (void);
 void R_UploadLightmaps (void);
+void R_RebuildAllLightmaps (void);
 
 // gl_screen.c
 void SCR_TileClear (void);

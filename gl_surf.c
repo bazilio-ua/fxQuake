@@ -2119,3 +2119,46 @@ void R_BuildLightmaps (void)
 		Con_DWarning ("R_BuildLightmaps: lightmaps exceeds standard limit (%d, normal max = %d)\n", i, 64);
 }
 
+
+/*
+================
+R_RebuildAllLightmaps -- johnfitz -- called when gl_overbright gets toggled
+================
+*/
+void R_RebuildAllLightmaps (void)
+{
+	int			i, j;
+	model_t		*mod;
+	msurface_t	*fa;
+	byte		*base;
+    
+	if (!cl.worldmodel) // is this the correct test?
+		return;
+    
+	//for each surface in each model, rebuild lightmap with new scale
+	for (i=1; i<MAX_MODELS; i++)
+	{
+		if (!(mod = cl.model_precache[i]))
+			continue;
+		fa = &mod->surfaces[mod->firstmodelsurface];
+		for (j=0; j<mod->nummodelsurfaces; j++, fa++)
+		{
+			if (fa->flags & SURF_DRAWTILED)
+				continue;
+			base = lightmaps + fa->lightmaptexture*lightmap_bytes*BLOCK_WIDTH*BLOCK_HEIGHT;
+			base += fa->light_t * BLOCK_WIDTH * lightmap_bytes + fa->light_s * lightmap_bytes;
+			R_BuildLightMap (fa, base, BLOCK_WIDTH*lightmap_bytes);
+		}
+	}
+    
+	//for each lightmap, upload it
+	for (i=0; i<MAX_LIGHTMAPS; i++)
+	{
+		if (!allocated[i][0])
+			break;
+		GL_Bind (lightmap_textures[i]);
+		glTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, BLOCK_WIDTH, BLOCK_HEIGHT, GL_RGBA,
+                         GL_UNSIGNED_BYTE, lightmaps+i*BLOCK_WIDTH*BLOCK_HEIGHT*lightmap_bytes);
+	}
+}
+
