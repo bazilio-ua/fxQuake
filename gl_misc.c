@@ -173,12 +173,15 @@ void GL_Overbright (void)
 {
 	if (gl_mtexable && gl_texture_env_combine && gl_texture_env_add)
 	{
-		d_overbright = CLAMP(1.0, gl_overbright.value, 2.0);
-		d_overbrightscale = OVERBRIGHT_SCALE * d_overbright;
-
-		// Refresh lightmaps
-        R_RebuildAllLightmaps ();
+		float m;
+		
+		d_overbright = CLAMP(0.0, gl_overbright.value, 2.0);
+		m = d_overbright > 0 ? d_overbright : 0.5f;
+		d_overbrightscale = OVERBRIGHT_SCALE * m;
 	}
+	
+	// Refresh lightmaps
+	R_RebuildAllLightmaps ();
 }
 
 /*

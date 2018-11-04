@@ -648,7 +648,7 @@ void R_DrawAliasModel (entity_t *e)
 		VectorScale (lightcolor, add, lightcolor);
 
 	shadedots = r_avertexnormal_dots[((int)(e->angles[1] * (SHADEDOT_QUANT / 360.0))) & (SHADEDOT_QUANT - 1)];
-	VectorScale (lightcolor, 1.0f / (160.0f * d_overbright), lightcolor); //FX, new value (orig. was 192.0f)
+	VectorScale (lightcolor, 1.0f / (80.0f * d_overbrightscale), lightcolor); //FX, new value (orig. was 192.0f)
 
 	//
 	// set up textures
