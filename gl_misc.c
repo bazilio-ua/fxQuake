@@ -171,7 +171,7 @@ GL_Overbright
 */
 void GL_Overbright (void)
 {
-	if (gl_mtexable && gl_texture_env_combine && gl_texture_env_add)
+	if (gl_texture_env_combine) // overbright can't be done in a single pass without combiners
 	{
 		float m;
 		
