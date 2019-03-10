@@ -179,13 +179,17 @@ R_CullBox -- johnfitz -- replaced with new function from lordhavoc
 Returns true if the box is completely outside the frustum
 =================
 */
-qboolean R_CullBox (vec3_t emins, vec3_t emaxs)
+//qboolean R_CullBox (vec3_t emins, vec3_t emaxs)
+qboolean R_CullBox (vec3_t emins, vec3_t emaxs, int clipflags)
 {
 	int		i;
 	mplane_t *p;
     
 	for (i=0 ; i<4 ; i++)
     {
+        if (! (clipflags & (1<<i)) )
+            continue;	// don't need to clip against it
+        
 		p = frustum + i;
 		switch(p->signbits)
 		{
@@ -255,7 +259,7 @@ qboolean R_CullModelForEntity (entity_t *e)
 		VectorAdd (e->origin, e->model->maxs, maxs);
 	}
 
-	return R_CullBox (mins, maxs);
+	return R_CullBox (mins, maxs, 15);
 }
 
 
