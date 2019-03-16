@@ -51,7 +51,7 @@ float		d_overbrightscale = OVERBRIGHT_SCALE;
 
 //msurface_t  *skychain = NULL;
 
-int vis_changed; //if true, force pvs to be refreshed
+//int vis_changed; //if true, force pvs to be refreshed
 
 /*
 ============================================================================================================
@@ -1756,99 +1756,99 @@ R_MarkSurfaces -- johnfitz
 mark surfaces based on PVS and rebuild texture chains
 ===============
 */
-void R_MarkSurfaces (void)
-{
-	byte		*vis;
-	mleaf_t		*leaf;
-	mnode_t		*node;
-	msurface_t	*surf, **mark;
-	int			i, j;
-	qboolean	nearwaterportal = false;
-//    float		alpha = 1.0;
-    
-	// check this leaf for water portals
-	// TODO: loop through all water surfs and use distance to leaf cullbox
-	for (i=0, mark = r_viewleaf->firstmarksurface; i < r_viewleaf->nummarksurfaces; i++, mark++)
-		if ((*mark)->flags & SURF_DRAWTURB)
-        {
-//			Con_SafePrintf ("R_MarkSurfaces: nearwaterportal, surfs=%d\n", r_viewleaf->nummarksurfaces);
-			nearwaterportal = true;
-            break;
-        }
-    
-	// choose vis data
-	if (r_novis.value || r_viewleaf->contents == CONTENTS_SOLID || r_viewleaf->contents == CONTENTS_SKY)
-		vis = Mod_NoVisPVS (cl.worldmodel);
-	else if (nearwaterportal)
-		vis = SV_FatPVS (r_origin, cl.worldmodel);
-	else
-		vis = Mod_LeafPVS (r_viewleaf, cl.worldmodel);
-    
-	// if surface chains don't need regenerating, just add static entities and return
-	if (r_oldviewleaf == r_viewleaf && !vis_changed && !nearwaterportal)
-	{
-		leaf = &cl.worldmodel->leafs[1];
-		for (i=0 ; i<cl.worldmodel->numleafs ; i++, leaf++)
-			if (vis[i>>3] & (1<<(i&7)))
-				if (leaf->efrags)
-					R_StoreEfrags (&leaf->efrags);
-		return;
-	}
-    
-	vis_changed = false;
-	r_visframecount++;
-	r_oldviewleaf = r_viewleaf;
-    
-	// iterate through leaves, marking surfaces
-	leaf = &cl.worldmodel->leafs[1];
-	for (i=0 ; i<cl.worldmodel->numleafs ; i++, leaf++)
-	{
-		if (vis[i>>3] & (1<<(i&7)))
-		{
-			if (leaf->contents != CONTENTS_SKY)
-				for (j=0, mark = leaf->firstmarksurface; j<leaf->nummarksurfaces; j++, mark++)
-					(*mark)->visframe = r_visframecount;
-            
-			// add static models
-			if (leaf->efrags)
-				R_StoreEfrags (&leaf->efrags);
-		}
-	}
-    
-    //
-	// set all chains to null
-    //
-    R_ClearTextureChains(cl.worldmodel, chain_world);
-    
-    //
-	// rebuild chains
-    //
-	//iterate through surfaces one node at a time to rebuild chains
-	//need to do it this way if we want to work with tyrann's skip removal tool
-	//becuase his tool doesn't actually remove the surfaces from the bsp surfaces lump
-	//nor does it remove references to them in each leaf's marksurfaces list
-	for (i=0, node = cl.worldmodel->nodes ; i<cl.worldmodel->numnodes ; i++, node++)
-		for (j=0, surf=&cl.worldmodel->surfaces[node->firstsurface] ; j<node->numsurfaces ; j++, surf++)
-			if (surf->visframe == r_visframecount)
-			{
-//                if (((surf->flags & SURF_DRAWTURB) && (alpha = R_GetTurbAlpha(surf)) < 1.0) /* || surf->flags & SURF_DRAWFENCE */)
-//                {
-//                    vec_t midp_dist;
-//                    
-//                    midp_dist = R_GetAlphaDist(surf->midp);
-//                    R_AddToAlpha (ALPHA_SURFACE, midp_dist, surf, NULL, alpha);
-//                }
-//                else
-//                {
-                
-                    R_SetAlphaSurface(surf, 1.0);
-                
-                
-                    R_ChainSurface(surf, chain_world);
-                
-//                }
-			}
-}
+//void R_MarkSurfaces (void)
+//{
+//	byte		*vis;
+//	mleaf_t		*leaf;
+//	mnode_t		*node;
+//	msurface_t	*surf, **mark;
+//	int			i, j;
+//	qboolean	nearwaterportal = false;
+////    float		alpha = 1.0;
+//    
+//	// check this leaf for water portals
+//	// TODO: loop through all water surfs and use distance to leaf cullbox
+//	for (i=0, mark = r_viewleaf->firstmarksurface; i < r_viewleaf->nummarksurfaces; i++, mark++)
+//		if ((*mark)->flags & SURF_DRAWTURB)
+//        {
+////			Con_SafePrintf ("R_MarkSurfaces: nearwaterportal, surfs=%d\n", r_viewleaf->nummarksurfaces);
+//			nearwaterportal = true;
+//            break;
+//        }
+//    
+//	// choose vis data
+//	if (r_novis.value || r_viewleaf->contents == CONTENTS_SOLID || r_viewleaf->contents == CONTENTS_SKY)
+//		vis = Mod_NoVisPVS (cl.worldmodel);
+//	else if (nearwaterportal)
+//		vis = SV_FatPVS (r_origin, cl.worldmodel);
+//	else
+//		vis = Mod_LeafPVS (r_viewleaf, cl.worldmodel);
+//    
+//	// if surface chains don't need regenerating, just add static entities and return
+//	if (r_oldviewleaf == r_viewleaf && !vis_changed && !nearwaterportal)
+//	{
+//		leaf = &cl.worldmodel->leafs[1];
+//		for (i=0 ; i<cl.worldmodel->numleafs ; i++, leaf++)
+//			if (vis[i>>3] & (1<<(i&7)))
+//				if (leaf->efrags)
+//					R_StoreEfrags (&leaf->efrags);
+//		return;
+//	}
+//    
+//	vis_changed = false;
+//	r_visframecount++;
+//	r_oldviewleaf = r_viewleaf;
+//    
+//	// iterate through leaves, marking surfaces
+//	leaf = &cl.worldmodel->leafs[1];
+//	for (i=0 ; i<cl.worldmodel->numleafs ; i++, leaf++)
+//	{
+//		if (vis[i>>3] & (1<<(i&7)))
+//		{
+//			if (leaf->contents != CONTENTS_SKY)
+//				for (j=0, mark = leaf->firstmarksurface; j<leaf->nummarksurfaces; j++, mark++)
+//					(*mark)->visframe = r_visframecount;
+//            
+//			// add static models
+//			if (leaf->efrags)
+//				R_StoreEfrags (&leaf->efrags);
+//		}
+//	}
+//    
+//    //
+//	// set all chains to null
+//    //
+//    R_ClearTextureChains(cl.worldmodel, chain_world);
+//    
+//    //
+//	// rebuild chains
+//    //
+//	//iterate through surfaces one node at a time to rebuild chains
+//	//need to do it this way if we want to work with tyrann's skip removal tool
+//	//becuase his tool doesn't actually remove the surfaces from the bsp surfaces lump
+//	//nor does it remove references to them in each leaf's marksurfaces list
+//	for (i=0, node = cl.worldmodel->nodes ; i<cl.worldmodel->numnodes ; i++, node++)
+//		for (j=0, surf=&cl.worldmodel->surfaces[node->firstsurface] ; j<node->numsurfaces ; j++, surf++)
+//			if (surf->visframe == r_visframecount)
+//			{
+////                if (((surf->flags & SURF_DRAWTURB) && (alpha = R_GetTurbAlpha(surf)) < 1.0) /* || surf->flags & SURF_DRAWFENCE */)
+////                {
+////                    vec_t midp_dist;
+////                    
+////                    midp_dist = R_GetAlphaDist(surf->midp);
+////                    R_AddToAlpha (ALPHA_SURFACE, midp_dist, surf, NULL, alpha);
+////                }
+////                else
+////                {
+//                
+//                    R_SetAlphaSurface(surf, 1.0);
+//                
+//                
+//                    R_ChainSurface(surf, chain_world);
+//                
+////                }
+//			}
+//}
 
 
 /*
