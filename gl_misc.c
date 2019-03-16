@@ -408,8 +408,6 @@ void R_NewMap (void)
 
 	r_viewleaf = NULL;
 	
-//	skychain = NULL;
-
 	R_ClearParticles ();
 
 	R_BuildLightmaps ();

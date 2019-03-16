@@ -293,15 +293,11 @@ void R_RenderDlight (dlight_t *light);
 // gl_surf.c
 void R_MarkLeaves (void);
 void R_SetupSurfaces (void);
-//void R_MarkSurfaces (void);
-//void R_CullSurfaces (void);
-//qboolean R_BackFaceCull (msurface_t *surf);
 void R_ClearTextureChains (model_t *model, texchain_t chain);
 void R_ChainSurface (msurface_t *surf, texchain_t chain);
 void R_DrawTextureChains (model_t *model, entity_t *ent, texchain_t chain);
 void R_DrawBrushModel (entity_t *e);
 void R_DrawWorld (void);
-//void R_DrawOpaque (void);
 void R_DrawGLPoly34 (glpoly_t *p);
 void R_DrawGLPoly56 (glpoly_t *p);
 void R_DrawSequentialPoly (msurface_t *s, float alpha, int frame);
@@ -450,7 +446,6 @@ extern	float globalwateralpha;
 extern	int		d_overbright;
 extern	float	d_overbrightscale;
 
-//extern	msurface_t *skychain;
 
 //
 // cvars
