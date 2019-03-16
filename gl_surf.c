@@ -1167,8 +1167,7 @@ void R_BuildLightmapChains (model_t *model, texchain_t chain)
 			continue;
         
 		for (s = t->texturechains[chain]; s; s = s->texturechain)
-//			if (!s->culled)
-				R_RenderDynamicLightmaps (s);
+            R_RenderDynamicLightmaps (s);
 	}
 }
 
@@ -1195,44 +1194,43 @@ void R_DrawTextureChains_Alpha (model_t *model, entity_t *e, texchain_t chain)
         bound = false;
         
         for (s = t->texturechains[chain]; s; s = s->texturechain)
-//            if (!s->culled)
+        {
+            if (e) 
             {
-                if (e) 
+                vec3_t	midp;
+                vec_t	midp_dist;
+                
+                // transform the surface midpoint
+                if (e->rotated)
                 {
-                    vec3_t	midp;
-                    vec_t	midp_dist;
+                    vec3_t	temp_midp;
+                    vec3_t	forward, right, up;
                     
-                    // transform the surface midpoint
-                    if (e->rotated)
-                    {
-                        vec3_t	temp_midp;
-                        vec3_t	forward, right, up;
-                        
-                        AngleVectors (e->angles, forward, right, up);
-                        
-                        VectorCopy (s->midp, temp_midp);
-                        midp[0] = (DotProduct (temp_midp, forward) + e->origin[0]);
-                        midp[1] = (DotProduct (temp_midp, right) + e->origin[1]);
-                        midp[2] = (DotProduct (temp_midp, up) + e->origin[2]);
-                    }
-                    else
-                    {
-                        VectorAdd (s->midp, e->origin, midp);
-                    }
+                    AngleVectors (e->angles, forward, right, up);
                     
-                    midp_dist = R_GetAlphaDist(midp);
-                    R_AddToAlpha (ALPHA_SURFACE, midp_dist, s, e, s->alpha);
+                    VectorCopy (s->midp, temp_midp);
+                    midp[0] = (DotProduct (temp_midp, forward) + e->origin[0]);
+                    midp[1] = (DotProduct (temp_midp, right) + e->origin[1]);
+                    midp[2] = (DotProduct (temp_midp, up) + e->origin[2]);
                 }
-                else 
+                else
                 {
-                    vec_t midp_dist;
-                    
-                    midp_dist = R_GetAlphaDist(s->midp);
-                    R_AddToAlpha (ALPHA_SURFACE, midp_dist, s, NULL, s->alpha);
+                    VectorAdd (s->midp, e->origin, midp);
                 }
                 
-//                rs_c_brush_passes++;
+                midp_dist = R_GetAlphaDist(midp);
+                R_AddToAlpha (ALPHA_SURFACE, midp_dist, s, e, s->alpha);
             }
+            else 
+            {
+                vec_t midp_dist;
+                
+                midp_dist = R_GetAlphaDist(s->midp);
+                R_AddToAlpha (ALPHA_SURFACE, midp_dist, s, NULL, s->alpha);
+            }
+            
+//            rs_c_brush_passes++;
+        }
     }
 }
 
@@ -1259,16 +1257,15 @@ void R_DrawTextureChains_Water (model_t *model, entity_t *ent, texchain_t chain)
         bound = false;
         
         for (s = t->texturechains[chain]; s; s = s->texturechain)
-//            if (!s->culled)
+        {
+            if (!bound) //only bind once we are sure we need this texture
             {
-                if (!bound) //only bind once we are sure we need this texture
-                {
-                    GL_Bind (t->warpimage);
-                    bound = true;
-                }
-                R_DrawGLPoly34 (s->polys);
-                rs_c_brush_passes++;
+                GL_Bind (t->warpimage);
+                bound = true;
             }
+            R_DrawGLPoly34 (s->polys);
+            rs_c_brush_passes++;
+        }
     }
 }
 
@@ -1289,23 +1286,21 @@ void R_DrawTextureChains_NoTexture (model_t *model, texchain_t chain)
 	for (i=0 ; i<model->numtextures ; i++)
 	{
 		t = model->textures[i];
-        
 		if (!t || !t->texturechains[chain] || t->texturechains[chain]->alpha < 1.0 || !(t->texturechains[chain]->flags & SURF_NOTEXTURE))
 			continue;
         
 		bound = false;
         
 		for (s = t->texturechains[chain]; s; s = s->texturechain)
-//			if (!s->culled)
-			{
-				if (!bound) //only bind once we are sure we need this texture
-				{
-					GL_Bind (t->gltexture);
-					bound = true;
-				}
-				R_DrawGLPoly34 (s->polys);
-				rs_c_brush_passes++;
-			}
+        {
+            if (!bound) //only bind once we are sure we need this texture
+            {
+                GL_Bind (t->gltexture);
+                bound = true;
+            }
+            R_DrawGLPoly34 (s->polys);
+            rs_c_brush_passes++;
+        }
 	}
 }
 
@@ -1332,30 +1327,29 @@ void R_DrawTextureChains_Multitexture (model_t *model, entity_t *ent, texchain_t
 		bound = false;
         
 		for (s = t->texturechains[chain]; s; s = s->texturechain)
-//			if (!s->culled)
-			{
-				if (!bound) //only bind once we are sure we need this texture
-				{
-					GL_Bind ((R_TextureAnimation(t, ent != NULL ? ent->frame : 0))->gltexture);
-					
-					if (t->texturechains[chain]->flags & SURF_DRAWFENCE)
-						glEnable (GL_ALPHA_TEST); // Flip alpha test back on
-					
-					GL_EnableMultitexture(); // selects TEXTURE1
-					bound = true;
-				}
-				GL_Bind (lightmap_textures[s->lightmaptexture]);
-				glBegin(GL_POLYGON);
-				v = s->polys->verts[0];
-				for (j=0 ; j<s->polys->numverts ; j++, v+= VERTEXSIZE)
-				{
-					qglMultiTexCoord2f (GL_TEXTURE0_ARB, v[3], v[4]);
-					qglMultiTexCoord2f (GL_TEXTURE1_ARB, v[5], v[6]);
-					glVertex3fv (v);
-				}
-				glEnd ();
-				rs_c_brush_passes++;
-			}
+        {
+            if (!bound) //only bind once we are sure we need this texture
+            {
+                GL_Bind ((R_TextureAnimation(t, ent != NULL ? ent->frame : 0))->gltexture);
+                
+                if (t->texturechains[chain]->flags & SURF_DRAWFENCE)
+                    glEnable (GL_ALPHA_TEST); // Flip alpha test back on
+                
+                GL_EnableMultitexture(); // selects TEXTURE1
+                bound = true;
+            }
+            GL_Bind (lightmap_textures[s->lightmaptexture]);
+            glBegin(GL_POLYGON);
+            v = s->polys->verts[0];
+            for (j=0 ; j<s->polys->numverts ; j++, v+= VERTEXSIZE)
+            {
+                qglMultiTexCoord2f (GL_TEXTURE0_ARB, v[3], v[4]);
+                qglMultiTexCoord2f (GL_TEXTURE1_ARB, v[5], v[6]);
+                glVertex3fv (v);
+            }
+            glEnd ();
+            rs_c_brush_passes++;
+        }
 		GL_DisableMultitexture(); // selects TEXTURE0
         
 		if (bound && t->texturechains[chain]->flags & SURF_DRAWFENCE)
@@ -1385,20 +1379,19 @@ void R_DrawTextureChains_TextureOnly (model_t *model, entity_t *ent, texchain_t 
 		bound = false;
         
 		for (s = t->texturechains[chain]; s; s = s->texturechain)
-//			if (!s->culled)
-			{
-				if (!bound) //only bind once we are sure we need this texture
-				{
-					GL_Bind ((R_TextureAnimation(t, ent != NULL ? ent->frame : 0))->gltexture);
-					
-					if (t->texturechains[chain]->flags & SURF_DRAWFENCE)
-						glEnable (GL_ALPHA_TEST); // Flip alpha test back on
-					
-					bound = true;
-				}
-				R_DrawGLPoly34 (s->polys);
-				rs_c_brush_passes++;
-			}
+        {
+            if (!bound) //only bind once we are sure we need this texture
+            {
+                GL_Bind ((R_TextureAnimation(t, ent != NULL ? ent->frame : 0))->gltexture);
+                
+                if (t->texturechains[chain]->flags & SURF_DRAWFENCE)
+                    glEnable (GL_ALPHA_TEST); // Flip alpha test back on
+                
+                bound = true;
+            }
+            R_DrawGLPoly34 (s->polys);
+            rs_c_brush_passes++;
+        }
         
 		if (bound && t->texturechains[chain]->flags & SURF_DRAWFENCE)
 			glDisable (GL_ALPHA_TEST); // Flip alpha test back off
@@ -1462,16 +1455,15 @@ void R_DrawTextureChains_Glow (model_t *model, entity_t *ent, texchain_t chain)
 		bound = false;
         
 		for (s = t->texturechains[chain]; s; s = s->texturechain)
-//			if (!s->culled)
-			{
-				if (!bound) //only bind once we are sure we need this texture
-				{
-					GL_Bind (glt);
-					bound = true;
-				}
-				R_DrawGLPoly34 (s->polys);
-				rs_c_brush_passes++;
-			}
+        {
+            if (!bound) //only bind once we are sure we need this texture
+            {
+                GL_Bind (glt);
+                bound = true;
+            }
+            R_DrawGLPoly34 (s->polys);
+            rs_c_brush_passes++;
+        }
 	}
 }
 
