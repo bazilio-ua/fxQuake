@@ -1197,7 +1197,6 @@ void R_DrawTextureChains_Alpha (model_t *model, entity_t *e, texchain_t chain)
         for (s = t->texturechains[chain]; s; s = s->texturechain)
 //            if (!s->culled)
             {
-                
                 if (e) 
                 {
                     vec3_t	midp;
@@ -1262,26 +1261,12 @@ void R_DrawTextureChains_Water (model_t *model, entity_t *ent, texchain_t chain)
         for (s = t->texturechains[chain]; s; s = s->texturechain)
 //            if (!s->culled)
             {
-                
-//                if ( /* ((s->flags & SURF_DRAWTURB) && */ (alpha = R_GetTurbAlpha(s)) < 1.0) /* || s->flags & SURF_DRAWFENCE) */
-//                {
-//                    vec_t midp_dist;
-//                    
-//                    midp_dist = R_GetAlphaDist(s->midp);
-//                    R_AddToAlpha (ALPHA_SURFACE, midp_dist, s, NULL, alpha);
-//                }
-//                else
-//                {
-                
                 if (!bound) //only bind once we are sure we need this texture
                 {
                     GL_Bind (t->warpimage);
                     bound = true;
                 }
                 R_DrawGLPoly34 (s->polys);
-                    
-//                }
-                
                 rs_c_brush_passes++;
             }
     }
