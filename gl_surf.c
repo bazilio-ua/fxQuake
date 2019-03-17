@@ -1039,7 +1039,7 @@ restart:
 	{
 		surf = cl.worldmodel->surfaces + node->firstsurface;
 
-		if (dot < 0 -BACKFACE_EPSILON)
+		if (dot < -BACKFACE_EPSILON)
 			side = SURF_PLANEBACK;
 		else if (dot > BACKFACE_EPSILON)
 			side = 0;
@@ -1147,7 +1147,6 @@ void R_DrawTextureChains_Alpha (model_t *model, entity_t *e, texchain_t chain)
 	msurface_t	*s;
 	texture_t	*t;
 	qboolean	bound;
-//    float		alpha = 1.0;
     
     for (i=0 ; i<model->numtextures ; i++)
     {
@@ -1210,7 +1209,6 @@ void R_DrawTextureChains_Water (model_t *model, entity_t *ent, texchain_t chain)
 	msurface_t	*s;
 	texture_t	*t;
 	qboolean	bound;
-//    float		alpha = 1.0;
     
     for (i=0 ; i<model->numtextures ; i++)
     {
@@ -1438,7 +1436,7 @@ R_DrawTextureChains -- johnfitz
 */
 void R_DrawTextureChains (model_t *model, entity_t *ent, texchain_t chain)
 {
-    float entalpha = 1.0f;
+    float alpha = 1.0f;
 
     // ericw -- the mh dynamic lightmap speedup: make a first pass through all
     // surfaces we are going to draw, and rebuild any lightmaps that need it.
@@ -1467,7 +1465,7 @@ void R_DrawTextureChains (model_t *model, entity_t *ent, texchain_t chain)
         GL_DisableMultitexture ();
         glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
     }
-    else if (entalpha < 1) //case 2: can't do multipass if entity has alpha, so just draw the texture
+    else if (alpha < 1) //case 2: can't do multipass if entity has alpha, so just draw the texture
     {
         R_DrawTextureChains_TextureOnly (model, ent, chain);
     }
@@ -1506,7 +1504,7 @@ void R_DrawTextureChains (model_t *model, entity_t *ent, texchain_t chain)
     glEnable (GL_BLEND);
     glBlendFunc (GL_ONE, GL_ONE);
     glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-    glColor3f (entalpha, entalpha, entalpha);
+    glColor3f (alpha, alpha, alpha);
     R_FogStartAdditive ();
     R_DrawTextureChains_Glow (model, ent, chain);
     R_FogStopAdditive ();
