@@ -858,7 +858,6 @@ void R_DrawBrushModel (entity_t *e)
 	model_t		*clmodel;
 	qboolean	rotated = false;
 	float		alpha;
-//    qboolean	saved;
     qboolean	hasalpha = false;
 
 	if (R_CullModelForEntity(e))
@@ -907,9 +906,6 @@ void R_DrawBrushModel (entity_t *e)
 		glRotatef (e->angles[2],  1, 0, 0);
 	}
 	
-//	glGetFloatv (GL_MODELVIEW_MATRIX, e->matrix); // save entity matrix
-//    saved = false;
-	
     //
 	// set all chains to null
     //
@@ -934,53 +930,14 @@ void R_DrawBrushModel (entity_t *e)
             if (psurf->texinfo->texture->warpimage)
                 psurf->texinfo->texture->update_warp = true; // FIXME: one frame too late!
             
-//			if (alpha < 1.0 || ((psurf->flags & SURF_DRAWTURB) && (alpha = R_GetTurbAlpha(psurf)) < 1.0) /* || psurf->flags & SURF_DRAWFENCE */)
-//			{
-//				vec3_t	midp;
-//				vec_t	midp_dist;
-//				
-////                if (!saved) {
-////                    glGetFloatv (GL_MODELVIEW_MATRIX, e->matrix); // save entity matrix
-////                    
-////					saved = true;
-////                }
-//                
-//				// transform the surface midpoint
-//				if (rotated)
-//				{
-//					vec3_t	temp_midp;
-//					vec3_t	forward, right, up;
-//					
-//					AngleVectors (e->angles, forward, right, up);
-//					
-//					VectorCopy (psurf->midp, temp_midp);
-//					midp[0] = (DotProduct (temp_midp, forward) + e->origin[0]);
-//					midp[1] = (DotProduct (temp_midp, right) + e->origin[1]);
-//					midp[2] = (DotProduct (temp_midp, up) + e->origin[2]);
-//				}
-//				else
-//				{
-//					VectorAdd (psurf->midp, e->origin, midp);
-//				}
-//				
-//				midp_dist = R_GetAlphaDist(midp);
-//				R_AddToAlpha (ALPHA_SURFACE, midp_dist, psurf, e, alpha);
-//			}
-//			else
-//            {
+            hasalpha = R_SetAlphaSurface(psurf, alpha);
             
-                hasalpha = R_SetAlphaSurface(psurf, alpha);
-            
-            
-                R_ChainSurface (psurf, chain_model);
-            
-//            }
+            R_ChainSurface (psurf, chain_model);
 			
 			rs_c_brush_polys++; // r_speeds
 		}
 	}
 	
-//    if (alpha < 1.0)
     if (hasalpha)
         glGetFloatv (GL_MODELVIEW_MATRIX, e->matrix); // save entity matrix
     
@@ -1571,16 +1528,6 @@ void R_DrawWorld (void)
 	if (!r_drawworld.value)
 		return;
 
-//	// clear lightmap chains
-//	memset (lightmap_polys, 0, sizeof(lightmap_polys));
-//
-//	R_UploadLightmaps ();
-
-//	VectorCopy (r_refdef.vieworg, modelorg); // copy modelorg for recursiveWorldNode
-//
-//	recursivecount = 0;
-//	R_RecursiveWorldNode (cl.worldmodel->nodes);
-    
     R_DrawTextureChains(cl.worldmodel, NULL, chain_world);
 }
 
@@ -1640,7 +1587,6 @@ void R_MarkLeaves (void)
 	}
 }
 
-// new rendering way (FITZ & QS)
 
 /*
 ================
