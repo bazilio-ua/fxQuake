@@ -452,7 +452,11 @@ void SV_LinkEdict (edict_t *ent, qboolean touch_triggers)
 // link to PVS leafs
 	ent->num_leafs = 0;
 	if (ent->v.modelindex)
+    {
+        Mod_SphereFromBounds(ent->v.absmin, ent->v.absmax, ent->bsphere);
+        
 		SV_FindTouchedLeafs (ent, sv.worldmodel->nodes);
+    }
 
 	if (ent->v.solid == SOLID_NOT)
 		return;

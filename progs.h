@@ -46,6 +46,8 @@ typedef struct edict_s
 	float		fullbright;
 	qboolean	sendinterval;		// johnfitz -- send time until nextthink to client for better lerp timing
 	float		freetime;			// sv.time when the object was freed
+    float		bsphere[4];
+    
 	entvars_t	v;					// C exported fields from progs
 // other fields from progs come immediately after
 } edict_t;
