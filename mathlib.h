@@ -84,4 +84,5 @@ void VectorClear (vec3_t v);
 void VectorScale (vec3_t in, vec_t scale, vec3_t out);
 void TurnVector (vec3_t out, vec3_t forward, vec3_t side, float angle);
 void VectorNormalizeFast(vec3_t v);
+void CalcBoundingSphere(vec3_t *firstposition, int numverts, vec3_t center, float *radius);
 

@@ -68,6 +68,33 @@ void Mod_Init (void)
 	Cvar_RegisterVariable (&external_ent, Mod_External);
 }
 
+
+/*
+===============
+Mod_SphereFromBounds -- MH
+===============
+*/
+void Mod_SphereFromBounds (float *mins, float *maxs, float *sphere)
+{
+    int i;
+	vec3_t points[2];
+	vec3_t center;
+	float radius;
+    
+	for (i=0 ; i<3 ; i++)
+	{
+		points[0][i] = mins[i];
+		points[1][i] = maxs[i];
+	}
+    
+    CalcBoundingSphere(points, 2, center, &radius);
+    
+	sphere[0] = center[0];
+	sphere[1] = center[1];
+	sphere[2] = center[2];
+	sphere[3] = radius;
+}
+
 /*
 ===============
 Mod_Extradata
@@ -1502,7 +1529,9 @@ void Mod_LoadNodes_S (lump_t *l)
 			out->mins[j] = LittleShort (in->mins[j]);
 			out->maxs[j] = LittleShort (in->maxs[j]);
 		}
-	
+        
+        Mod_SphereFromBounds(out->mins, out->maxs, out->sphere);
+        
 		p = LittleLong (in->planenum);
 		out->plane = loadmodel->planes + p;
 
@@ -1563,7 +1592,9 @@ void Mod_LoadNodes_L1 (lump_t *l)
 			out->mins[j] = LittleShort (in->mins[j]);
 			out->maxs[j] = LittleShort (in->maxs[j]);
 		}
-	
+        
+        Mod_SphereFromBounds(out->mins, out->maxs, out->sphere);
+        
 		p = LittleLong (in->planenum);
 		out->plane = loadmodel->planes + p;
 
@@ -1624,7 +1655,9 @@ void Mod_LoadNodes_L2 (lump_t *l)
 			out->mins[j] = LittleFloat (in->mins[j]);
 			out->maxs[j] = LittleFloat (in->maxs[j]);
 		}
-	
+        
+        Mod_SphereFromBounds(out->mins, out->maxs, out->sphere);
+        
 		p = LittleLong (in->planenum);
 		out->plane = loadmodel->planes + p;
 
@@ -1716,6 +1749,8 @@ void Mod_LoadLeafs_S (lump_t *l)
 			out->maxs[j] = LittleShort (in->maxs[j]);
 		}
 
+        Mod_SphereFromBounds(out->mins, out->maxs, out->sphere);
+        
 		p = LittleLong(in->contents);
 		out->contents = p;
 
@@ -1778,7 +1813,9 @@ void Mod_LoadLeafs_L1 (lump_t *l)
 			out->mins[j] = LittleShort (in->mins[j]);
 			out->maxs[j] = LittleShort (in->maxs[j]);
 		}
-
+        
+        Mod_SphereFromBounds(out->mins, out->maxs, out->sphere);
+        
 		p = LittleLong(in->contents);
 		out->contents = p;
 
@@ -1841,7 +1878,9 @@ void Mod_LoadLeafs_L2 (lump_t *l)
 			out->mins[j] = LittleFloat (in->mins[j]);
 			out->maxs[j] = LittleFloat (in->maxs[j]);
 		}
-
+        
+        Mod_SphereFromBounds(out->mins, out->maxs, out->sphere);
+        
 		p = LittleLong(in->contents);
 		out->contents = p;
 

@@ -248,3 +248,32 @@ void VectorNormalizeFast(vec3_t v)
 	}
 } 
 
+
+/*
+===============
+CalcBoundingSphere -- EER1
+===============
+*/
+void CalcBoundingSphere(vec3_t *firstposition, int numverts, vec3_t center, float *radius)
+{
+    vec3_t temp;
+    float d;
+    int i;
+    
+    VectorSet(temp, 0, 0, 0);
+    *radius = 0.0f;
+    
+    for(i=0; i<numverts; i++)
+        VectorAdd(temp, firstposition[i], temp);
+    
+    VectorScale(temp, 1.0f / numverts, center);
+    
+    for(i=0; i<numverts; i++)
+    {
+        VectorSubtract(firstposition[i], center, temp);
+        d = VectorLength(temp);
+        if (d > *radius)
+            *radius = d;
+    }
+}
+
