@@ -978,7 +978,7 @@ restart:
 	if (node->visframe != r_visframecount)
 		return;
 
-	if (R_CullBox (node->minmaxs, node->minmaxs+3))
+	if (R_CullBox (node->mins, node->maxs))
 		return;
 
 // if a leaf node, draw stuff
