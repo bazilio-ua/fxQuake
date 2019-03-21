@@ -78,6 +78,10 @@ typedef struct
     :										\
         BoxOnPlaneSide( (emins), (emaxs), (p)))
 
+#define BOX_INSIDE_PLANE	1
+#define BOX_OUTSIDE_PLANE	2
+#define BOX_INTERSECT_PLANE	3
+
 // plane_t structure
 typedef struct mplane_s
 {
@@ -160,8 +164,10 @@ typedef struct msurface_s
 	mtexinfo_t	*texinfo;
 	
 	int			visframe;		// should be drawn when node is crossed
+	int			clipflags;
 	float		mins[3];		// johnfitz -- for frustum culling
 	float		maxs[3];		// johnfitz -- for frustum culling
+	float		sphere[4];
 
     float		alpha;			// alpha value
 	float		midp[3];		// for alpha sorting

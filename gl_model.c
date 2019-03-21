@@ -1301,6 +1301,8 @@ void Mod_CalcSurfaceBounds (msurface_t *s)
 		// get midpoint
 		s->midp[i] = s->mins[i] + (s->maxs[i] - s->mins[i]) * 0.5f;
 	}
+    
+    Mod_SphereFromBounds (s->mins, s->maxs, s->sphere);
 }
 
 

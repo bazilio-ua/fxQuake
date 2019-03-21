@@ -98,6 +98,36 @@ cvar_t  gl_oldspr = {"gl_oldspr", "0"}; // Old opaque sprite
 
 /*
 ==================
+SphereOnPlaneSide
+
+Faster but coarser than BoxOnPlaneSide
+==================
+*/
+int SphereOnPlaneSide (float *center, float radius, mplane_t *p)
+{
+	if (p->type < 3)
+	{
+		// fast axial case
+		if (p->dist <= center[p->type] - radius)
+			return BOX_INSIDE_PLANE;
+		else if (p->dist >= center[p->type] + radius)
+			return BOX_OUTSIDE_PLANE;
+		else return BOX_INTERSECT_PLANE;
+	}
+	else
+	{
+		float dist = DotProduct (center, p->normal) - p->dist;
+        
+		if (dist <= -radius)
+			return BOX_OUTSIDE_PLANE;
+		else if (dist >= radius)
+			return BOX_INSIDE_PLANE;
+		else return BOX_INTERSECT_PLANE;
+	}
+}
+
+/*
+==================
 BoxOnPlaneSide
 
 Returns 1, 2, or 1 + 2
@@ -171,6 +201,30 @@ int BoxOnPlaneSide (vec3_t emins, vec3_t emaxs, mplane_t *p)
 }
 
 /*-----------------------------------------------------------------*/
+
+
+/*
+=================
+R_CullSphere -- MH
+ 
+Returns true if the sphere is completely outside the frustum
+=================
+*/
+qboolean R_CullSphere (float *center, float radius, int clipflags)
+{
+	int		i;
+	mplane_t *p;
+    
+	for (i=0, p = frustum ; i<4 ; i++, p++)
+	{
+		if (!(clipflags & (1 << i))) 
+            continue;
+		if ((DotProduct (center, p->normal) - p->dist) <= -radius) 
+            return true;
+	}
+    
+	return false;
+}
 
 /*
 =================

@@ -92,7 +92,7 @@ R_SplitEntityOnNode
 void R_SplitEntityOnNode (mnode_t *node, r_efragdef_t *ed)
 {
 	efrag_t		*ef;
-	mplane_t	*splitplane;
+//	mplane_t	*splitplane;
 	mleaf_t		*leaf;
 	int			sides;
 	
@@ -120,8 +120,11 @@ void R_SplitEntityOnNode (mnode_t *node, r_efragdef_t *ed)
 // NODE_MIXED
 
 // split on this plane
-	splitplane = node->plane;
-	sides = BOX_ON_PLANE_SIDE(ed->mins, ed->maxs, splitplane);
+//	splitplane = node->plane;
+//	sides = BOX_ON_PLANE_SIDE(ed->mins, ed->maxs, splitplane);
+    
+// split on this plane
+	sides = SphereOnPlaneSide (ed->sphere, ed->sphere[3], node->plane);
 
 // recurse down the contacted sides
 	if (sides & 1)

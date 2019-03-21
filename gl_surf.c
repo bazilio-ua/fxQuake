@@ -962,7 +962,7 @@ R_RecursiveWorldNode
 this now only builds a surface chains and leafs
 ================
 */
-void R_RecursiveWorldNode (mnode_t *node)
+void R_RecursiveWorldNode (mnode_t *node, int clipflags)
 {
 	int			c, side;
 	mplane_t	*plane;
@@ -978,9 +978,28 @@ restart:
 	if (node->visframe != r_visframecount)
 		return;
 
-	if (R_CullBox (node->mins, node->maxs))
-		return;
+//	if (R_CullBox (node->mins, node->maxs))
+//		return;
+    
+	if (clipflags)
+	{
+		for (c = 0, side = 0; c < 4; c++)
+		{
+			// a parent is already fully inside the frustum on this side
+			if (!(clipflags & (1 << c))) 
+                continue;
+            
+			// if the box is fully outside on any side then it is fully outside on all sides and there is no need to process children
+			if ((side = SphereOnPlaneSide (node->sphere, node->sphere[3], &frustum[c])) == BOX_OUTSIDE_PLANE) 
+                return;
+            
+			// if the box is fully inside on this side then there is no need to test children on this side (it may be outside on another side)
+			if (side == BOX_INSIDE_PLANE) 
+                clipflags &= ~(1 << c);
+		}
+	}
 
+    
 // if a leaf node, draw stuff
 	if (node->contents < 0)
 	{
@@ -993,6 +1012,7 @@ restart:
 			do
 			{
 				(*mark)->visframe = r_framecount;
+				(*mark)->clipflags = clipflags;
 				mark++;
 			} while (--c);
 		}
@@ -1030,7 +1050,7 @@ restart:
 		S_ExtraUpdateTime ();	// don't let sound get messed up if going slow
 
 // recurse down the children, front side first
-	R_RecursiveWorldNode (node->children[side]);
+	R_RecursiveWorldNode (node->children[side], clipflags);
 
 // draw stuff
 	c = node->numsurfaces;
@@ -1049,9 +1069,13 @@ restart:
 			if (surf->visframe != r_framecount)
 				continue;
 
-			if (R_CullBox(surf->mins, surf->maxs))
-				continue;		// outside
-
+//			if (R_CullBox(surf->mins, surf->maxs))
+//				continue;		// outside
+			// only check for culling if both the node and leaf containing this surf intersect the frustum
+			if (clipflags && surf->clipflags)
+				if (R_CullSphere (surf->sphere, surf->sphere[3], surf->clipflags)) 
+                    continue;
+            
 			if ((dot < 0) ^ !!(surf->flags & SURF_PLANEBACK))
 				continue;		// wrong side
 
@@ -1092,7 +1116,7 @@ void R_SetupSurfaces (void)
     VectorCopy (r_refdef.vieworg, modelorg); // copy modelorg for recursiveWorldNode
     
     recursivecount = 0;
-    R_RecursiveWorldNode (cl.worldmodel->nodes);
+    R_RecursiveWorldNode (cl.worldmodel->nodes, 15);
 }
 
 
