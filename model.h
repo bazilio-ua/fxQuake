@@ -200,7 +200,6 @@ typedef struct mnode_s
 	
 	float		mins[3];		// for bounding box culling
 	float		maxs[3];		// for bounding box culling
-	float		sphere[4];
 
 	struct mnode_s	*parent;
 
@@ -221,7 +220,6 @@ typedef struct mleaf_s
 
 	float		mins[3];		// for bounding box culling
 	float		maxs[3];		// for bounding box culling
-	float		sphere[4];
 
 	struct mnode_s	*parent;
 

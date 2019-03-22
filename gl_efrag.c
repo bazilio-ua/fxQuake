@@ -45,9 +45,8 @@ http://forums.insideqc.com/viewtopic.php?t=1930
 // let's get rid of some more globals...
 typedef struct r_efragdef_s
 {
-    vec3_t		r_emins, r_emaxs;
-	float		sphere[4];
-    entity_t	*r_addent;
+    vec3_t		mins, maxs;
+    entity_t	*addent;
 } r_efragdef_t;
 
 #define EXTRA_EFRAGS	128
@@ -97,9 +96,7 @@ void R_SplitEntityOnNode (mnode_t *node, r_efragdef_t *ed)
 	int			sides;
 	
 	if (node->contents == CONTENTS_SOLID)
-	{
 		return;
-	}
 	
 // add an efrag if the node is a leaf
 	if (node->contents < 0)
@@ -108,7 +105,7 @@ void R_SplitEntityOnNode (mnode_t *node, r_efragdef_t *ed)
         
 // grab an efrag off the free list
 		ef = R_GetEfrag();
-		ef->entity = ed->r_addent;
+		ef->entity = ed->addent;
         
 // set the leaf links
 		ef->leafnext = leaf->efrags;
@@ -121,7 +118,7 @@ void R_SplitEntityOnNode (mnode_t *node, r_efragdef_t *ed)
 
 // split on this plane
 	splitplane = node->plane;
-	sides = BOX_ON_PLANE_SIDE(ed->r_emins, ed->r_emaxs, splitplane);
+	sides = BOX_ON_PLANE_SIDE(ed->mins, ed->maxs, splitplane);
 
 // recurse down the contacted sides
 	if (sides & 1)
@@ -151,14 +148,14 @@ void R_AddEfrags (entity_t *ent)
         return;
 
 	// init the efrag definition struct so that we can avoid more ugly globals
-	ed.r_addent = ent;
+	ed.addent = ent;
 			
 	entmodel = ent->model;
 
 	for (i=0 ; i<3 ; i++)
 	{
-		ed.r_emins[i] = ent->origin[i] + entmodel->mins[i];
-		ed.r_emaxs[i] = ent->origin[i] + entmodel->maxs[i];
+		ed.mins[i] = ent->origin[i] + entmodel->mins[i];
+		ed.maxs[i] = ent->origin[i] + entmodel->maxs[i];
 	}
 
 	if (!cl.worldmodel)

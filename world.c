@@ -351,7 +351,6 @@ void SV_FindTouchedLeafs (edict_t *ent, mnode_t *node)
 		return;
 	
 // add an efrag if the node is a leaf
-
 	if ( node->contents < 0)
 	{
 		if (ent->num_leafs == MAX_ENT_LEAFS)
@@ -367,6 +366,7 @@ void SV_FindTouchedLeafs (edict_t *ent, mnode_t *node)
 	
 // NODE_MIXED
 
+// split on this plane
 	splitplane = node->plane;
 	sides = BOX_ON_PLANE_SIDE(ent->v.absmin, ent->v.absmax, splitplane);
 	
