@@ -241,7 +241,7 @@ void GL_EndRendering (void);
 int SphereOnPlaneSide (float *center, float radius, struct mplane_s *p);
 int BoxOnPlaneSide (vec3_t emins, vec3_t emaxs, mplane_t *p);
 qboolean R_CullSphere (float *center, float radius, int clipflags);
-qboolean R_CullBox (vec3_t emins, vec3_t emaxs);
+qboolean R_CullBox (vec3_t emins, vec3_t emaxs, int clipflags);
 qboolean R_CullModelForEntity (entity_t *e);
 void R_DrawAliasModel (entity_t *e);
 void R_DrawSpriteModel (entity_t *e);
