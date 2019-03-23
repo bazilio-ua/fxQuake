@@ -1495,6 +1495,118 @@ void GL_Set2D (void)
 
 //====================================================================
 
+/*
+================================================================================
+
+TEXTURE LOADING
+
+================================================================================
+*/
+
+/*
+================
+GL_Pad
+ 
+return smallest power of two greater than or equal to size
+================
+*/
+int GL_Pad (int size)
+{
+	int i;
+    
+	for (i=1 ; i<size ; i<<=1)
+		;
+    
+	return i;
+}
+
+/*
+===============
+GL_SafeTextureSize
+ 
+return a size with hardware and user prefs in mind
+===============
+*/
+int GL_SafeTextureSize (int size)
+{
+	if (!gl_texture_NPOT)
+		size = GL_Pad(size);
+    
+	if (gl_texture_max_size > 0)
+        size = min(GL_Pad(gl_texture_max_size), size);
+    
+	size = min(gl_hardware_max_size, size);
+    
+	return size;
+}
+
+/*
+================
+GL_PadConditional
+ 
+only pad if a texture of that size would be padded. (used for tex coords)
+================
+*/
+int GL_PadConditional (int size)
+{
+	if (size < GL_SafeTextureSize(size))
+		return GL_Pad(size);
+	else
+		return size;
+}
+
+/*
+================
+GL_MipMapW
+================
+*/
+unsigned *GL_MipMapW (unsigned *data, int width, int height)
+{
+	int	i, size;
+	byte	*out, *in;
+    
+	out = in = (byte *)data;
+	size = (width*height)>>1;
+    
+	for (i=0; i<size; i++, out+=4, in+=8)
+	{
+		out[0] = (in[0] + in[4])>>1;
+		out[1] = (in[1] + in[5])>>1;
+		out[2] = (in[2] + in[6])>>1;
+		out[3] = (in[3] + in[7])>>1;
+	}
+    
+	return data;
+}
+
+/*
+================
+GL_MipMapH
+================
+*/
+unsigned *GL_MipMapH (unsigned *data, int width, int height)
+{
+	int	i, j;
+	byte	*out, *in;
+    
+	out = in = (byte *)data;
+	height>>=1;
+	width<<=2;
+    
+	for (i=0; i<height; i++, in+=width)
+	{
+		for (j=0; j<width; j+=4, out+=4, in+=4)
+		{
+			out[0] = (in[0] + in[width+0])>>1;
+			out[1] = (in[1] + in[width+1])>>1;
+			out[2] = (in[2] + in[width+2])>>1;
+			out[3] = (in[3] + in[width+3])>>1;
+		}
+	}
+    
+	return data;
+}
+
 
 /*
 ================
@@ -1640,6 +1752,86 @@ void GL_AlphaEdgeFix (byte *data, int width, int height)
 				n = c[0] = c[1] = c[2] = 0;
 			}
 		}
+	}
+}
+
+/*
+===============
+GL_PadEdgeFixW
+ 
+special case of AlphaEdgeFix for textures that only need it because they were padded
+operates in place on 32bit data, and expects unpadded height and width values
+===============
+*/
+void GL_PadEdgeFixW (byte *data, int width, int height)
+{
+	byte *src, *dst;
+	int i, padw, padh;
+    
+	padw = GL_PadConditional(width);
+	padh = GL_PadConditional(height);
+    
+	//copy last full column to first empty column, leaving alpha byte at zero
+	src = data + (width - 1) * 4;
+	for (i = 0; i < padh; i++)
+	{
+		src[4] = src[0];
+		src[5] = src[1];
+		src[6] = src[2];
+		src += padw * 4;
+	}
+    
+	//copy first full column to last empty column, leaving alpha byte at zero
+	src = data;
+	dst = data + (padw - 1) * 4;
+	for (i = 0; i < padh; i++)
+	{
+		dst[0] = src[0];
+		dst[1] = src[1];
+		dst[2] = src[2];
+		src += padw * 4;
+		dst += padw * 4;
+	}
+}
+
+/*
+===============
+GL_PadEdgeFixH
+ 
+special case of AlphaEdgeFix for textures that only need it because they were padded
+operates in place on 32bit data, and expects unpadded height and width values
+===============
+*/
+void GL_PadEdgeFixH (byte *data, int width, int height)
+{
+	byte *src, *dst;
+	int i, padw, padh;
+    
+	padw = GL_PadConditional(width);
+	padh = GL_PadConditional(height);
+    
+	//copy last full row to first empty row, leaving alpha byte at zero
+	dst = data + height * padw * 4;
+	src = dst - padw * 4;
+	for (i = 0; i < padw; i++)
+	{
+		dst[0] = src[0];
+		dst[1] = src[1];
+		dst[2] = src[2];
+		src += 4;
+		dst += 4;
+	}
+    
+	//copy first full row to last empty row, leaving alpha byte at zero
+	dst = data + (padh - 1) * padw * 4;
+	src = data;
+	for (i = 0; i < padw; i++)
+	{
+		dst[0] = src[0];
+		dst[1] = src[1];
+		dst[2] = src[2];
+		src += 4;
+		dst += 4;
 	}
 }
 
@@ -1790,6 +1982,86 @@ void GL_UploadLightmap (gltexture_t *glt, byte *data)
 	GL_SetFilterModes (glt);
 }
 
+
+
+/*
+================
+GL_PadImageW
+ 
+return image with width padded up to power-of-two dimentions
+================
+*/
+byte *GL_PadImageW (byte *in, int width, int height, byte padbyte)
+{
+	int i, j, outwidth;
+	byte *out, *data;
+    
+	if (width == GL_Pad(width))
+		return in;
+    
+	outwidth = GL_Pad(width);
+    
+	out = data = (byte *) Hunk_Alloc (outwidth*height);
+    
+	for (i = 0; i < height; i++)
+	{
+		for (j = 0; j < width; j++)
+			*out++ = *in++;
+		for (  ; j < outwidth; j++)
+			*out++ = padbyte;
+	}
+    
+	return data;
+}
+
+/*
+================
+GL_PadImageH
+ 
+return image with height padded up to power-of-two dimentions
+================
+*/
+byte *GL_PadImageH (byte *in, int width, int height, byte padbyte)
+{
+	int i, srcpix, dstpix;
+	byte *data, *out;
+    
+	if (height == GL_Pad(height))
+		return in;
+    
+	srcpix = width * height;
+	dstpix = width * GL_Pad(height);
+    
+	out = data = (byte *) Hunk_Alloc (dstpix);
+    
+	for (i = 0; i < srcpix; i++)
+		*out++ = *in++;
+	for (     ; i < dstpix; i++)
+		*out++ = padbyte;
+    
+	return data;
+}
+
+/*
+================
+GL_Convert8to32
+ 
+convert 8bit source data into 32bit
+================
+*/
+unsigned *GL_Convert8to32 (byte *in, int size, unsigned int *pal)
+{
+	int i;
+	unsigned *out, *data;
+    
+	out = data = (unsigned *) Hunk_Alloc (size * sizeof(unsigned)); // 4
+    
+	for (i=0 ; i<size ; i++)
+		*out++ = pal[*in++];
+    
+	return data;
+}
+
 /*
 ===============
 GL_Upload8
@@ -1801,10 +2073,11 @@ void GL_Upload8 (gltexture_t *glt, byte *data)
 {
 	int			i, size;
 	int			p;
-	unsigned	*trans = NULL;
+	qboolean	padw = false, padh = false;
+	byte		padbyte;
 	unsigned int	*pal;
 
-	// HACK HACK HACK -- taken from fitzquake
+	// HACK HACK HACK -- taken from tomazquake
 	if (strstr(glt->name, "shot1sid") && glt->width==32 && glt->height==32 && CRC_Block(data, 1024) == 65393)
 	{
 		// This texture in b_shell1.bsp has some of the first 32 pixels painted white.
@@ -1816,9 +2089,6 @@ void GL_Upload8 (gltexture_t *glt, byte *data)
 	size = glt->width * glt->height;
 	if (size & 3)
 		Con_DWarning ("GL_Upload8: size %d is not a multiple of 4 in '%s'\n", size, glt->name); // should be an error but ... (EER1)
-
-	// allocate dynamic memory
-	trans = Hunk_Alloc (size * sizeof(unsigned)); // 4
 
 	// detect false alpha cases
 	if (glt->flags & TEXPREF_ALPHA && !(glt->flags & TEXPREF_CONCHARS))
@@ -1833,13 +2103,15 @@ void GL_Upload8 (gltexture_t *glt, byte *data)
 			glt->flags &= ~TEXPREF_ALPHA;
 	}
 
-	// choose palette /* and convert to 32bit */
+	// choose palette and padbyte
 	if (glt->flags & TEXPREF_FULLBRIGHT)
 	{
 		if (glt->flags & TEXPREF_ALPHA)
 			pal = d_8to24table_fbright_fence;
 		else
 			pal = d_8to24table_fbright;
+        
+		padbyte = 0;
 	}
 	else if (glt->flags & TEXPREF_NOBRIGHT)
 	{
@@ -1847,31 +2119,53 @@ void GL_Upload8 (gltexture_t *glt, byte *data)
 			pal = d_8to24table_nobright_fence;
 		else
 			pal = d_8to24table_nobright;
+        
+		padbyte = 0;
 	}
 	else if (glt->flags & TEXPREF_CONCHARS)
 	{
 		pal = d_8to24table_conchars;
+		padbyte = 0;
 	}
 	else
 	{
 		pal = d_8to24table;
+		padbyte = 255;
 	}
 
-	// convert to 32bit
-	for (i=0 ; i<size ; ++i)
+    // pad each dimention, but only if it's not going to be downsampled later
+	if (glt->flags & TEXPREF_PAD)
 	{
-		p = data[i];
-		trans[i] = pal[p];
+		if ((int) glt->width < GL_SafeTextureSize(glt->width))
+		{
+			data = GL_PadImageW (data, glt->width, glt->height, padbyte);
+			glt->width = GL_Pad(glt->width);
+			padw = true;
+		}
+		if ((int) glt->height < GL_SafeTextureSize(glt->height))
+		{
+			data = GL_PadImageH (data, glt->width, glt->height, padbyte);
+			glt->height = GL_Pad(glt->height);
+			padh = true;
+		}
 	}
+
+	// convert 8bit data to 32bit
+	data = (byte *)GL_Convert8to32(data, size, pal);
 
 	// fix edges
 	if (glt->flags & TEXPREF_ALPHA)
-		GL_AlphaEdgeFix ((byte *)trans, glt->width, glt->height);
+		GL_AlphaEdgeFix (data, glt->width, glt->height);
+	else
+	{
+		if (padw)
+			GL_PadEdgeFixW (data, glt->source_width, glt->source_height);
+		if (padh)
+			GL_PadEdgeFixH (data, glt->source_width, glt->source_height);
+	}
 
 	// upload it
-	GL_Upload32 (glt, trans);
-
-	// free allocated memory
+	GL_Upload32 (glt, (unsigned *)data);
 }
 
 
