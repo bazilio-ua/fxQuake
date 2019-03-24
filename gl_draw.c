@@ -1804,7 +1804,7 @@ void GL_Upload8 (gltexture_t *glt, byte *data)
 	unsigned	*trans = NULL;
 	unsigned int	*pal;
 
-	// HACK HACK HACK -- taken from fitzquake
+	// HACK HACK HACK -- taken from tomazquake
 	if (strstr(glt->name, "shot1sid") && glt->width==32 && glt->height==32 && CRC_Block(data, 1024) == 65393)
 	{
 		// This texture in b_shell1.bsp has some of the first 32 pixels painted white.
