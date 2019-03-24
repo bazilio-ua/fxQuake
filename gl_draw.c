@@ -149,8 +149,9 @@ void GL_UploadWarpImage (void)
 	//
 	// make sure warpimage size is a power of two
 	//
-	gl_warpimage_size = GL_CheckSize((int)gl_warp_image_size.value);
-
+//	gl_warpimage_size = GL_CheckSize((int)gl_warp_image_size.value);
+	gl_warpimage_size = GL_SafeTextureSize ((int)gl_warp_image_size.value);
+    
 	while (gl_warpimage_size > vid.width)
 		gl_warpimage_size >>= 1;
 	while (gl_warpimage_size > vid.height)
@@ -788,9 +789,11 @@ qpic_t *Draw_PicFromWad (char *name)
 		offset = (unsigned)p - (unsigned)wad_base + sizeof(int)*2; //johnfitz
 		gl->gltexture = GL_LoadTexture (NULL, texturename, p->width, p->height, SRC_INDEXED, p->data, WADFILE, offset, TEXPREF_ALPHA | TEXPREF_PAD | TEXPREF_NOPICMIP);
 		gl->sl = 0;
-		gl->sh = 1;
+//		gl->sh = 1;
+		gl->sh = (float)p->width/(float)GL_PadConditional(p->width); //johnfitz
 		gl->tl = 0;
-		gl->th = 1;
+//		gl->th = 1;
+		gl->th = (float)p->height/(float)GL_PadConditional(p->height); //johnfitz
 	}
 	return p;
 }
@@ -837,9 +840,11 @@ qpic_t *Draw_CachePic (char *path)
 	// fix gcc warnings
 	gl.gltexture = GL_LoadTexture (NULL, path, dat->width, dat->height, SRC_INDEXED, dat->data, path, sizeof(int)*2, TEXPREF_ALPHA | TEXPREF_PAD | TEXPREF_NOPICMIP);
 	gl.sl = 0;
-	gl.sh = 1;
+//	gl.sh = 1;
+	gl.sh = (float)dat->width/(float)GL_PadConditional(dat->width); //johnfitz
 	gl.tl = 0;
-	gl.th = 1;
+//	gl.th = 1;
+	gl.th = (float)dat->height/(float)GL_PadConditional(dat->height); //johnfitz
 	memcpy (pic->pic.data, &gl, sizeof(glpic_t));
 
 	return &pic->pic;
@@ -1294,9 +1299,11 @@ void Draw_TransPicTranslate (int x, int y, qpic_t *pic, byte *translation)
 	gl = (glpic_t *)pic->data;
 	gl->gltexture = GL_LoadTexture (NULL, name, pic->width, pic->height, SRC_INDEXED, data, "", (unsigned)data, TEXPREF_ALPHA | TEXPREF_PAD | TEXPREF_NOPICMIP);
 	gl->sl = 0;
-	gl->sh = 1;
+//	gl->sh = 1;
+    gl->sh = (float)pic->width/(float)GL_PadConditional(pic->width); //johnfitz
 	gl->tl = 0;
-	gl->th = 1;
+//	gl->th = 1;
+    gl->th = (float)pic->height/(float)GL_PadConditional(pic->height); //johnfitz
 
 	Draw_Pic (x, y, pic);
 
@@ -1557,6 +1564,34 @@ int GL_PadConditional (int size)
 
 /*
 ================
+GL_MipMap
+
+Operates in place, quartering the size of the texture
+================
+*/
+void GL_MipMap (byte *in, int width, int height)
+{
+	int		i, j;
+	byte	*out;
+    
+	width <<=2;
+	height >>= 1;
+	out = in;
+    
+	for (i=0 ; i<height ; i++, in+=width)
+	{
+		for (j=0 ; j<width ; j+=8, out+=4, in+=8)
+		{
+			out[0] = (in[0] + in[4] + in[width+0] + in[width+4])>>2;
+			out[1] = (in[1] + in[5] + in[width+1] + in[width+5])>>2;
+			out[2] = (in[2] + in[6] + in[width+2] + in[width+6])>>2;
+			out[3] = (in[3] + in[7] + in[width+3] + in[width+7])>>2;
+		}
+	}
+}
+
+/*
+================
 GL_MipMapW
 ================
 */
@@ -1607,7 +1642,6 @@ unsigned *GL_MipMapH (unsigned *data, int width, int height)
 	return data;
 }
 
-
 /*
 ================
 GL_ResampleTextureQuality
@@ -1615,19 +1649,30 @@ GL_ResampleTextureQuality
 bilinear resample
 ================
 */
-void GL_ResampleTextureQuality (unsigned *in, int inwidth, int inheight, unsigned *out,  int outwidth, int outheight, qboolean alpha)
+unsigned *GL_ResampleTextureQuality (unsigned *in, int inwidth, int inheight, qboolean alpha)
 {
-	byte	 *nwpx, *nepx, *swpx, *sepx, *dest, *inlimit;
+	byte	 *nwpx, *nepx, *swpx, *sepx, *dest/*, *inlimit*/;
 	unsigned xfrac, yfrac, x, y, modx, mody, imodx, imody, injump, outjump;
-	int	 i, j;
+    unsigned *out;
+	int	 i, j, outwidth, outheight;
 
-	// Sanity ...
-	if (inwidth <= 0 || inheight <= 0 || outwidth <= 0 || outheight <= 0 ||
-		inwidth * 0x10000 & 0xC0000000 || inheight * outheight & 0xC0000000 ||
-		inwidth * inheight & 0xC0000000)
-		Sys_Error ("GL_ResampleTextureQuality: invalid parameters (in:%dx%d, out:%dx%d)", inwidth, inheight, outwidth, outheight);
+//	// Sanity ...
+//	if (inwidth <= 0 || inheight <= 0 || outwidth <= 0 || outheight <= 0 ||
+//		inwidth * 0x10000 & 0xC0000000 || inheight * outheight & 0xC0000000 ||
+//		inwidth * inheight & 0xC0000000)
+//		Sys_Error ("GL_ResampleTextureQuality: invalid parameters (in:%dx%d, out:%dx%d)", inwidth, inheight, outwidth, outheight);
 
-	inlimit = (byte *)(in + inwidth * inheight);
+	if (inwidth == GL_Pad(inwidth) && inheight == GL_Pad(inheight))
+		return in;
+
+//	inlimit = (byte *)(in + inwidth * inheight);
+
+	outwidth = GL_Pad(inwidth);
+	outheight = GL_Pad(inheight);
+	out = (unsigned *) Hunk_Alloc (outwidth * outheight * sizeof(unsigned)); // 4
+
+//	// allocate dynamic memory
+//	scaled = Hunk_Alloc (scaled_width * scaled_height * sizeof(unsigned));
 
 	// Make sure "out" size is at least 2x2!
 	xfrac = ((inwidth-1) << 16) / (outwidth-1);
@@ -1652,11 +1697,11 @@ void GL_ResampleTextureQuality (unsigned *in, int inwidth, int inheight, unsigne
 			swpx = nwpx + inwidth * sizeof(int); // Next line
 
 			// Don't exceed "in" size
-			if (swpx + sizeof(int) >= inlimit)
-			{
-//				Con_Error ("GL_ResampleTextureQuality: %4d\n", swpx + sizeof(int) - inlimit);
-				swpx = nwpx; // There's no next line
-			}
+//			if (swpx + sizeof(int) >= inlimit)
+//			{
+////				Con_Error ("GL_ResampleTextureQuality: %4d\n", swpx + sizeof(int) - inlimit);
+//				swpx = nwpx; // There's no next line
+//			}
 
 			sepx = swpx + sizeof(int);
 
@@ -1675,34 +1720,8 @@ void GL_ResampleTextureQuality (unsigned *in, int inwidth, int inheight, unsigne
 		outjump += outwidth;
 		y += yfrac;
 	}
-}
-
-/*
-================
-GL_MipMap
-
-Operates in place, quartering the size of the texture
-================
-*/
-void GL_MipMap (byte *in, int width, int height)
-{
-	int		i, j;
-	byte	*out;
-
-	width <<=2;
-	height >>= 1;
-	out = in;
-
-	for (i=0 ; i<height ; i++, in+=width)
-	{
-		for (j=0 ; j<width ; j+=8, out+=4, in+=8)
-		{
-			out[0] = (in[0] + in[4] + in[width+0] + in[width+4])>>2;
-			out[1] = (in[1] + in[5] + in[width+1] + in[width+5])>>2;
-			out[2] = (in[2] + in[6] + in[width+2] + in[width+6])>>2;
-			out[3] = (in[3] + in[7] + in[width+3] + in[width+7])>>2;
-		}
-	}
+    
+	return out;
 }
 
 /*
@@ -1865,83 +1884,132 @@ handles 32bit source data
 void GL_Upload32 (gltexture_t *glt, unsigned *data)
 {
 	int			internalformat;
-	int			scaled_width, scaled_height;
-	int			picmip;
-	unsigned	*scaled = NULL;
+//	int			scaled_width, scaled_height;
+	int			miplevel, mipwidth, mipheight, picmip;
+//	unsigned	*scaled = NULL;
 
-	scaled_width = GL_ScaleSize (glt->width, false);
-	scaled_height = GL_ScaleSize (glt->height, false);
+//	scaled_width = GL_ScaleSize (glt->width, false);
+//	scaled_height = GL_ScaleSize (glt->height, false);
 
-	if (glt->width && glt->height) // Don't process 0-sized images
-	{
-		// Preserve proportions
-		while (glt->width > glt->height && scaled_width < scaled_height)
-			scaled_width *= 2;
-
-		while (glt->width < glt->height && scaled_width > scaled_height)
-			scaled_height *= 2;
-	}
+//	if (glt->width && glt->height) // Don't process 0-sized images
+//	{
+//		// Preserve proportions
+//		while (glt->width > glt->height && scaled_width < scaled_height)
+//			scaled_width *= 2;
+//
+//		while (glt->width < glt->height && scaled_width > scaled_height)
+//			scaled_height *= 2;
+//	}
 
 	// Note: Can't use Con_Printf here!
-	if (developer.value > 1 && (scaled_width != GL_ScaleSize (glt->width, true) || scaled_height != GL_ScaleSize (glt->height, true)))
-		Con_DPrintf ("GL_Upload32: in:%dx%d, out:%dx%d, '%s'\n", glt->width, glt->height, scaled_width, scaled_height, glt->name);
+//	if (developer.value > 1 && (scaled_width != GL_ScaleSize (glt->width, true) || scaled_height != GL_ScaleSize (glt->height, true)))
+//		Con_DPrintf ("GL_Upload32: in:%dx%d, out:%dx%d, '%s'\n", glt->width, glt->height, scaled_width, scaled_height, glt->name);
 
 	// Prevent too large or too small images (might otherwise crash resampling)
-	scaled_width = CLAMP(2, scaled_width, gl_texture_max_size);
-	scaled_height = CLAMP(2, scaled_height, gl_texture_max_size);
+//	scaled_width = CLAMP(2, scaled_width, gl_texture_max_size);
+//	scaled_height = CLAMP(2, scaled_height, gl_texture_max_size);
 
 	// allocate dynamic memory
-	scaled = Hunk_Alloc (scaled_width * scaled_height * sizeof(unsigned)); // 4
+//	scaled = Hunk_Alloc (scaled_width * scaled_height * sizeof(unsigned)); // 4
 
 	// Resample up
-	if (glt->width && glt->height) // Don't resample 0-sized images
-		GL_ResampleTextureQuality (data, glt->width, glt->height, scaled, scaled_width, scaled_height, (glt->flags & TEXPREF_ALPHA));
-	else
-		memcpy (scaled, data, scaled_width * scaled_height * rgba_bytes); // FIXME: 0-sized texture, so we just copy it
+//	if (glt->width && glt->height) // Don't resample 0-sized images
+//		GL_ResampleTextureQuality (data, glt->width, glt->height, scaled, scaled_width, scaled_height, (glt->flags & TEXPREF_ALPHA));
+//	else
+//		memcpy (scaled, data, scaled_width * scaled_height * rgba_bytes); // FIXME: 0-sized texture, so we just copy it
+
+	// Resample up
+    if (!gl_texture_NPOT)
+    {
+        data = GL_ResampleTextureQuality (data, glt->width, glt->height, (glt->flags & TEXPREF_ALPHA));
+		glt->width = GL_Pad(glt->width);
+		glt->height = GL_Pad(glt->height);
+    }
 
 	// mipmap down
 	picmip = (glt->flags & TEXPREF_NOPICMIP) ? 0 : max((int)gl_picmip.value, 0);
 	if (glt->flags & TEXPREF_MIPMAP)
 	{
-		int i;
-
-		// Only affect mipmapped texes, typically not console graphics
-		for (i = 0; i < picmip && (scaled_width > 1 || scaled_height > 1); ++i)
-		{
-			GL_MipMap ((byte *)scaled, scaled_width, scaled_height);
-			scaled_width >>= 1;
-			scaled_height >>= 1;
-			scaled_width = max(scaled_width, 1);
-			scaled_height = max(scaled_height, 1);
-
-			if (glt->flags & TEXPREF_ALPHA)
-				GL_AlphaEdgeFix ((byte *)scaled, scaled_width, scaled_height);
-		}
+        
+        mipwidth = GL_SafeTextureSize (glt->width >> picmip);
+        mipheight = GL_SafeTextureSize (glt->height >> picmip);
+        
+//		int i;
+//
+//		// Only affect mipmapped texes, typically not console graphics
+//		for (i = 0; i < picmip && (scaled_width > 1 || scaled_height > 1); ++i)
+//		{
+//			GL_MipMap ((byte *)scaled, scaled_width, scaled_height);
+//			scaled_width >>= 1;
+//			scaled_height >>= 1;
+//			scaled_width = max(scaled_width, 1);
+//			scaled_height = max(scaled_height, 1);
+//
+//			if (glt->flags & TEXPREF_ALPHA)
+//				GL_AlphaEdgeFix ((byte *)scaled, scaled_width, scaled_height);
+//		}
+        
+        while ((int) glt->width > mipwidth)
+        {
+            GL_MipMapW (data, glt->width, glt->height);
+            glt->width >>= 1;
+            
+            if (glt->flags & TEXPREF_ALPHA)
+                GL_AlphaEdgeFix ((byte *)data, glt->width, glt->height);
+        }
+        while ((int) glt->height > mipheight)
+        {
+            GL_MipMapH (data, glt->width, glt->height);
+            glt->height >>= 1;
+            
+            if (glt->flags & TEXPREF_ALPHA)
+                GL_AlphaEdgeFix ((byte *)data, glt->width, glt->height);
+        }
 	}
 
 	// upload
 	GL_Bind (glt);
 	internalformat = (glt->flags & TEXPREF_ALPHA) ? GL_RGBA : GL_RGB;
-	glTexImage2D (GL_TEXTURE_2D, 0, internalformat, scaled_width, scaled_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, scaled);
+//	glTexImage2D (GL_TEXTURE_2D, 0, internalformat, scaled_width, scaled_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data); // scaled
+	glTexImage2D (GL_TEXTURE_2D, 0, internalformat, glt->width, glt->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 
 	// upload mipmaps
 	if (glt->flags & TEXPREF_MIPMAP)
 	{
-		int miplevel = 0;
-
-		while (scaled_width > 1 || scaled_height > 1)
+//		int miplevel = 0;
+//
+//		while (scaled_width > 1 || scaled_height > 1)
+//		{
+//			GL_MipMap ((byte *)scaled, scaled_width, scaled_height);
+//			scaled_width >>= 1;
+//			scaled_height >>= 1;
+//			scaled_width = max(scaled_width, 1);
+//			scaled_height = max(scaled_height, 1);
+//
+//			miplevel++;
+//			glTexImage2D (GL_TEXTURE_2D, miplevel, internalformat, scaled_width, scaled_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, scaled);
+//		}
+        
+		mipwidth = glt->width;
+		mipheight = glt->height;
+        
+		for (miplevel=1; mipwidth > 1 || mipheight > 1; miplevel++)
 		{
-			GL_MipMap ((byte *)scaled, scaled_width, scaled_height);
-			scaled_width >>= 1;
-			scaled_height >>= 1;
-			scaled_width = max(scaled_width, 1);
-			scaled_height = max(scaled_height, 1);
-
-			miplevel++;
-			glTexImage2D (GL_TEXTURE_2D, miplevel, internalformat, scaled_width, scaled_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, scaled);
+			if (mipwidth > 1)
+			{
+				GL_MipMapW (data, mipwidth, mipheight);
+				mipwidth >>= 1;
+			}
+			if (mipheight > 1)
+			{
+				GL_MipMapH (data, mipwidth, mipheight);
+				mipheight >>= 1;
+			}
+			glTexImage2D (GL_TEXTURE_2D, miplevel, internalformat, mipwidth, mipheight, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+//            glTexImage2D (GL_TEXTURE_2D, miplevel, internalformat, scaled_width, scaled_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, scaled);
 		}
 	}
-
+    
 	// set filter modes
 	GL_SetFilterModes (glt);
 

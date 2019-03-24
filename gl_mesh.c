@@ -319,6 +319,14 @@ void R_MakeAliasModelDisplayLists (model_t *m, aliashdr_t *hdr)
 	int		i, j;
 	int			*cmds;
 	trivertx_t	*verts;
+	float	hscale, vscale; //johnfitz -- padded skins
+	int		count; //johnfitz -- precompute texcoords for padded skins
+	int		*loadcmds; //johnfitz
+
+    //johnfitz -- padded skins
+	hscale = (float)hdr->skinwidth/(float)GL_PadConditional(hdr->skinwidth);
+	vscale = (float)hdr->skinheight/(float)GL_PadConditional(hdr->skinheight);
+	//johnfitz
 
 	aliasmodel = m;
 	paliashdr = hdr;	// (aliashdr_t *)Mod_Extradata (m);
@@ -334,8 +342,29 @@ void R_MakeAliasModelDisplayLists (model_t *m, aliashdr_t *hdr)
 
 	cmds = Hunk_AllocName (numcommands * 4, "cmds");
 	paliashdr->commands = (byte *)cmds - (byte *)paliashdr;
-	memcpy (cmds, commands, numcommands * 4);
+    
+//	memcpy (cmds, commands, numcommands * 4);
 
+    //johnfitz -- precompute texcoords for padded skins
+	loadcmds = commands;
+	while(1)
+	{
+		*cmds++ = count = *loadcmds++;
+        
+		if (!count)
+			break;
+        
+		if (count < 0)
+			count = -count;
+        
+		do
+		{
+			*(float *)cmds++ = hscale * (*(float *)loadcmds++);
+			*(float *)cmds++ = vscale * (*(float *)loadcmds++);
+		} while (--count);
+	}
+	//johnfitz
+    
 	verts = Hunk_AllocName (paliashdr->numposes * paliashdr->poseverts * sizeof(trivertx_t), "verts");
 	paliashdr->posedata = (byte *)verts - (byte *)paliashdr;
 	for (i=0 ; i<paliashdr->numposes ; i++)
