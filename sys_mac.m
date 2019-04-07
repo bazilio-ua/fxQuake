@@ -174,6 +174,8 @@ void Sys_Error (char *error, ...)
     
 	fprintf (stderr, "Quake Error: %s\n", string);
     
+    IN_Shutdown();
+    
     NSString *message = [NSString stringWithCString:string encoding:NSASCIIStringEncoding];
     NSLog(@"Quake Error: %@", message);
     NSRunCriticalAlertPanel(@"Quake Error", message, @"OK", nil, nil);
