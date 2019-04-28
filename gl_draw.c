@@ -2236,7 +2236,7 @@ void GL_Upload8 (gltexture_t *glt, byte *data)
 		Con_DWarning ("GL_Upload8: size %d is not a multiple of 4 in '%s'\n", size, glt->name); // should be an error but ... (EER1)
 
 	// allocate dynamic memory
-	trans = Hunk_Alloc (size * sizeof(unsigned)); // 4
+//	trans = Hunk_Alloc (size * sizeof(unsigned)); // 4
 
 	// detect false alpha cases
 	if (glt->flags & TEXPREF_ALPHA && !(glt->flags & TEXPREF_CONCHARS))
@@ -2626,7 +2626,8 @@ void GL_ReloadTextures_f (void)
 	{
         if (!(glt->flags & TEXPREF_WARPIMAGE)) 
         {
-            glGenTextures(1, &glt->texnum);
+//            glDeleteTextures(1, &glt->texnum);
+//            glGenTextures(1, &glt->texnum);
             GL_ReloadTexture (glt);
         }
 	}
