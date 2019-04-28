@@ -746,7 +746,7 @@ byte		menuplyr_pixels[4096];
 qpic_t *Draw_PicFromWad (char *name)
 {
 	qpic_t	*p;
-	glpic_t	*gl;
+	glpic_t	gl;
 	unsigned offset; //johnfitz
 	char texturename[64]; //johnfitz
 
@@ -755,8 +755,6 @@ qpic_t *Draw_PicFromWad (char *name)
 	// Sanity ...
 	if (p->width & 0xC0000000 || p->height & 0xC0000000)
 		Sys_Error ("Draw_PicFromWad: invalid dimensions (%dx%d) for '%s'", p->width, p->height, name);
-
-	gl = (glpic_t *)p->data;
 
 	// load little ones into the scrap
 	if (p->width < 64 && p->height < 64)
@@ -775,25 +773,26 @@ qpic_t *Draw_PicFromWad (char *name)
 			for (j=0 ; j<p->width ; j++, k++)
 				scrap_texels[texnum][(y+i)*BLOCK_WIDTH + x + j] = p->data[k];
 
-		gl->gltexture = scrap_textures[texnum]; // changed to an array
+		gl.gltexture = scrap_textures[texnum]; // changed to an array
 		// no longer go from 0.01 to 0.99
-		gl->sl = x/(float)BLOCK_WIDTH;
-		gl->sh = (x+p->width)/(float)BLOCK_WIDTH;
-		gl->tl = y/(float)BLOCK_WIDTH;
-		gl->th = (y+p->height)/(float)BLOCK_WIDTH;
+		gl.sl = x/(float)BLOCK_WIDTH;
+		gl.sh = (x+p->width)/(float)BLOCK_WIDTH;
+		gl.tl = y/(float)BLOCK_WIDTH;
+		gl.th = (y+p->height)/(float)BLOCK_WIDTH;
 	}
 	else
 	{
 		sprintf (texturename, "%s:%s", WADFILE, name); //johnfitz
 		offset = (unsigned)p - (unsigned)wad_base + sizeof(int)*2; //johnfitz
-		gl->gltexture = GL_LoadTexture (NULL, texturename, p->width, p->height, SRC_INDEXED, p->data, WADFILE, offset, TEXPREF_ALPHA | TEXPREF_PAD | TEXPREF_NOPICMIP);
-		gl->sl = 0;
-//		gl->sh = 1;
-        gl->sh = (float)p->width/(float)TexMgr_PadConditional(p->width); //johnfitz
-		gl->tl = 0;
-//		gl->th = 1;
-		gl->th = (float)p->height/(float)TexMgr_PadConditional(p->height); //johnfitz
+		gl.gltexture = GL_LoadTexture (NULL, texturename, p->width, p->height, SRC_INDEXED, p->data, WADFILE, offset, TEXPREF_ALPHA | TEXPREF_PAD | TEXPREF_NOPICMIP);
+		gl.sl = 0;
+        gl.sh = (float)p->width/(float)TexMgr_PadConditional(p->width); //johnfitz
+		gl.tl = 0;
+		gl.th = (float)p->height/(float)TexMgr_PadConditional(p->height); //johnfitz
 	}
+    
+    memcpy (p->data, &gl, sizeof(glpic_t));
+    
 	return p;
 }
 
@@ -839,11 +838,10 @@ qpic_t *Draw_CachePic (char *path)
 	// fix gcc warnings
 	gl.gltexture = GL_LoadTexture (NULL, path, dat->width, dat->height, SRC_INDEXED, dat->data, path, sizeof(int)*2, TEXPREF_ALPHA | TEXPREF_PAD | TEXPREF_NOPICMIP);
 	gl.sl = 0;
-//	gl.sh = 1;
 	gl.sh = (float)dat->width/(float)TexMgr_PadConditional(dat->width); //johnfitz
 	gl.tl = 0;
-//	gl.th = 1;
 	gl.th = (float)dat->height/(float)TexMgr_PadConditional(dat->height); //johnfitz
+    
 	memcpy (pic->pic.data, &gl, sizeof(glpic_t));
 
 	return &pic->pic;
@@ -1276,7 +1274,7 @@ void Draw_TransPicTranslate (int x, int y, qpic_t *pic, byte *translation)
 	byte	*data;
 	byte	*trans = NULL;
 	char	name[64];
-	glpic_t	*gl;
+	glpic_t	gl;
 
 	mark = Hunk_LowMark ();
 
@@ -1295,15 +1293,14 @@ void Draw_TransPicTranslate (int x, int y, qpic_t *pic, byte *translation)
 
 	data = trans;
 
-	gl = (glpic_t *)pic->data;
-	gl->gltexture = GL_LoadTexture (NULL, name, pic->width, pic->height, SRC_INDEXED, data, "", (unsigned)data, TEXPREF_ALPHA | TEXPREF_PAD | TEXPREF_NOPICMIP);
-	gl->sl = 0;
-//	gl->sh = 1;
-    gl->sh = (float)pic->width/(float)TexMgr_PadConditional(pic->width); //johnfitz
-	gl->tl = 0;
-//	gl->th = 1;
-    gl->th = (float)pic->height/(float)TexMgr_PadConditional(pic->height); //johnfitz 
+	gl.gltexture = GL_LoadTexture (NULL, name, pic->width, pic->height, SRC_INDEXED, data, "", (unsigned)data, TEXPREF_ALPHA | TEXPREF_PAD | TEXPREF_NOPICMIP);
+	gl.sl = 0;
+    gl.sh = (float)pic->width/(float)TexMgr_PadConditional(pic->width); //johnfitz
+	gl.tl = 0;
+    gl.th = (float)pic->height/(float)TexMgr_PadConditional(pic->height); //johnfitz 
 
+    memcpy (pic->data, &gl, sizeof(glpic_t));
+    
 	Draw_Pic (x, y, pic);
 
 	// free allocated memory
