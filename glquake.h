@@ -266,6 +266,7 @@ void GL_Init (void);
 void GL_SetupState (void);
 void GL_SwapInterval (void);
 void GL_UploadWarpImage (void);
+int TexMgr_PadConditional (int s);
 
 // gl_mesh.c
 void R_MakeAliasModelDisplayLists (model_t *m, aliashdr_t *hdr);
