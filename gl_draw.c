@@ -149,7 +149,8 @@ void GL_UploadWarpImage (void)
 	//
 	// make sure warpimage size is a power of two
 	//
-	gl_warpimage_size = GL_CheckSize((int)gl_warp_image_size.value);
+//	gl_warpimage_size = GL_CheckSize((int)gl_warp_image_size.value);
+	gl_warpimage_size = TexMgr_SafeTextureSize((int)gl_warp_image_size.value);
 
 	while (gl_warpimage_size > vid.width)
 		gl_warpimage_size >>= 1;
