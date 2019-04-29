@@ -22,7 +22,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "quakedef.h"
 
 cvar_t		scr_conalpha = {"scr_conalpha", "1", true};
+cvar_t		gl_max_size = {"gl_max_size", "0"};
 cvar_t		gl_picmip = {"gl_picmip", "0"};
+cvar_t		gl_texquality = {"gl_texquality", "1"};
 cvar_t		gl_swapinterval = {"gl_swapinterval", "0", true};
 cvar_t		gl_warp_image_size = {"gl_warp_image_size", "256", true}; // was 512, for water warp
 
@@ -65,8 +67,8 @@ float 	gl_texture_anisotropy = 1;
 
 qboolean gl_texture_NPOT = false; //ericw
 
-int		gl_hardware_max_size = 1024; // just in case
-int		gl_texture_max_size = 1024;
+GLint		gl_hardware_max_size = 1024; // just in case
+//int		gl_texture_max_size = 1024;
 
 int		gl_warpimage_size = 256; // fitzquake has 512, for water warp
 
@@ -213,7 +215,7 @@ void GL_CheckExtensions (void)
 	Con_Printf ("Maximum texture size %i\n", gl_hardware_max_size);
 
 	// by default we sets maxsize as hardware maxsize
-	gl_texture_max_size = gl_hardware_max_size; 
+//	gl_texture_max_size = gl_hardware_max_size; 
 
 	//
 	// Multitexture
@@ -1011,7 +1013,9 @@ void Draw_Init (void)
 	numgltextures = 0;
 
 	Cvar_RegisterVariable (&scr_conalpha, NULL);
+	Cvar_RegisterVariable (&gl_max_size, NULL);
 	Cvar_RegisterVariable (&gl_picmip, NULL);
+	Cvar_RegisterVariable (&gl_texquality, NULL);
 	Cvar_RegisterVariable (&gl_warp_image_size, GL_UploadWarpImage);
 
 	Cmd_AddCommand ("gl_texturemode", &GL_TextureMode_f);
@@ -1523,8 +1527,8 @@ TexMgr_SafeTextureSize -- return a size with hardware and user prefs in mind
 int TexMgr_SafeTextureSize (int s)
 {
 	s = TexMgr_Pad(s);
-	if (gl_texture_max_size > 0)
-		s = min(TexMgr_Pad(gl_texture_max_size), s);
+	if ((int)gl_max_size.value > 0)
+		s = min(TexMgr_Pad((int)gl_max_size.value), s);
 	s = min(gl_hardware_max_size, s);
     
 	return s;

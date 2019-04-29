@@ -139,8 +139,8 @@ extern qboolean gl_texture_env_combine;
 extern qboolean gl_texture_env_add;
 extern int		gl_stencilbits;
 
-extern int gl_hardware_max_size;
-extern int gl_texture_max_size;
+extern GLint gl_hardware_max_size;
+//extern int gl_texture_max_size;
 
 extern int gl_warpimage_size;
 

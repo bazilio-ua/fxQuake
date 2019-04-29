@@ -1892,7 +1892,8 @@ static void R_Bloom_InitTextures (void)
 		;
 
 	// disable blooms if we can't handle a texture of that size
-	if (screen_texture_width > gl_texture_max_size || screen_texture_height > gl_texture_max_size)
+//	if (screen_texture_width > gl_texture_max_size || screen_texture_height > gl_texture_max_size)
+	if (screen_texture_width > TexMgr_SafeTextureSize(screen_texture_width) || screen_texture_height > TexMgr_SafeTextureSize(screen_texture_height))
 	{
 		screen_texture_width = screen_texture_height = 0;
 		Cvar_SetValue ("r_bloom", 0);
