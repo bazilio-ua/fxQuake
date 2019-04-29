@@ -1702,7 +1702,7 @@ void COM_InitFilesystem (void)
 	if (i && i < com_argc-1)
 		strcpy (com_basedir, com_argv[i+1]);
 	else
-		strcpy (com_basedir, host_parms.basedir);
+		strcpy (com_basedir, host_parms->basedir);
 
 	j = strlen (com_basedir);
 	if (j > 0)
@@ -1724,8 +1724,8 @@ void COM_InitFilesystem (void)
 		else
 			strcpy (com_cachedir, com_argv[i+1]);
 	}
-	else if (host_parms.cachedir)
-		strcpy (com_cachedir, host_parms.cachedir);
+	else if (host_parms->cachedir)
+		strcpy (com_cachedir, host_parms->cachedir);
 	else
 		com_cachedir[0] = 0;
 

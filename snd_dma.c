@@ -166,7 +166,7 @@ void S_Init (void)
 	Cvar_RegisterVariable(&snd_show, NULL);
 	Cvar_RegisterVariable(&snd_mixahead, NULL);
 
-	if (host_parms.memsize < 0x800000)
+	if (host_parms->memsize < 0x800000)
 	{
 		Cvar_Set ("loadas8bit", "1");
 		Con_Printf ("loading all sounds as 8bit\n");

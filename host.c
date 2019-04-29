@@ -34,7 +34,7 @@ Memory is cleared / released when a server or client begins, not when they end.
 
 void Host_WriteConfiguration (char *configname);
 
-quakeparms_t host_parms;
+quakeparms_t *host_parms;
 
 qboolean	host_initialized;		// true if into command execution
 
@@ -294,7 +294,7 @@ void Host_WriteConfiguration (char *configname)
 
 // dedicated servers initialize the host but don't parse and set the
 // config.cfg cvars
-	if (host_initialized && cls.state != ca_dedicated)
+	if (host_initialized && cls.state != ca_dedicated && !host_parms->errstate)
 	{
 		f = fopen (va("%s/%s",com_gamedir, configname), "w");
 		if (!f)
@@ -820,7 +820,8 @@ void Host_Frame (double time)
 Host_Init
 ====================
 */
-void Host_Init (quakeparms_t *parms)
+//void Host_Init (quakeparms_t *parms)
+void Host_Init (void)
 {
 	if (standard_quake)
 		minimum_memory = MINIMUM_MEMORY;
@@ -828,17 +829,17 @@ void Host_Init (quakeparms_t *parms)
 		minimum_memory = MINIMUM_MEMORY_LEVELPAK;
 
 	if (COM_CheckParm ("-minmemory"))
-		parms->memsize = minimum_memory;
+		host_parms->memsize = minimum_memory;
 
-	host_parms = *parms;
+//	host_parms = *parms;
 
-	if (parms->memsize < minimum_memory)
-		Sys_Error ("Only %4.1f megs of memory available, can't execute game", parms->memsize / (float)0x100000);
+	if (host_parms->memsize < minimum_memory)
+		Sys_Error ("Only %4.1f megs of memory available, can't execute game", host_parms->memsize / (float)0x100000);
 
-	com_argc = parms->argc;
-	com_argv = parms->argv;
+	com_argc = host_parms->argc;
+	com_argv = host_parms->argv;
 
-	Memory_Init (parms->membase, parms->memsize);
+	Memory_Init (host_parms->membase, host_parms->memsize);
 	Cbuf_Init ();
 	Cmd_Init ();
 	Cvar_Init ();
@@ -853,7 +854,7 @@ void Host_Init (quakeparms_t *parms)
 	Con_Init ();
 
 	Con_Printf ("Compiled: "__TIME__" "__DATE__"\n");
-	Con_Printf ("%4.1f megabyte heap\n", parms->memsize / (1024*1024.0));
+	Con_Printf ("%4.1f megabyte heap\n", host_parms->memsize / (1024*1024.0));
 
 	M_Init ();
 	PR_Init ();

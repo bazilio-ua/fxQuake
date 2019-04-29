@@ -252,6 +252,8 @@ typedef struct
 	char	**argv;
 	void	*membase;
 	int		memsize;
+	int		numcpus;
+	int		errstate;
 } quakeparms_t;
 
 
@@ -261,7 +263,7 @@ typedef struct
 //
 // host
 //
-extern	quakeparms_t host_parms;
+extern	quakeparms_t *host_parms;
 
 extern	cvar_t		sys_ticrate;
 //extern	cvar_t		sys_nostdout;
@@ -279,7 +281,8 @@ void Host_ClearMemory (void);
 void Host_ServerFrame (void);
 void Host_InitFileList (void);
 void Host_InitCommands (void);
-void Host_Init (quakeparms_t *parms);
+//void Host_Init (quakeparms_t *parms);
+void Host_Init (void);
 void Host_Shutdown(void);
 void Host_Error (char *error, ...);
 void Host_EndGame (char *message, ...);
