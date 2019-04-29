@@ -138,6 +138,7 @@ void Sys_Init(void)
     if (numcpus != -1)
         numcpus = (numcpus < 1) ? 1 : numcpus;
     
+    host_parms->numcpus = numcpus;
     has_smp = (numcpus > 1) ? true : false;
     Sys_Printf("Detected %d CPU%s.\n", numcpus, has_smp ? "s" : "");
 }
@@ -180,6 +181,8 @@ void Sys_Error (char *error, ...)
 { 
 	va_list     argptr;
 	char        string[MAX_PRINTMSG]; // was 1024
+
+	host_parms->errstate++;
 
 // change stdin to non blocking
 	fcntl (STDIN_FILENO, F_SETFL, fcntl(STDIN_FILENO, F_GETFL, 0) & ~O_NONBLOCK);
@@ -376,9 +379,13 @@ int main (int argc, char **argv)
 
 	memset(&parms, 0, sizeof(parms));
 
+    host_parms = &parms;
+
 	COM_InitArgv (argc, argv);
 	parms.argc = com_argc;
 	parms.argv = com_argv;
+
+    parms.errstate = 0;
 
 	parms.memsize = DEFAULT_MEMORY_SIZE * 1024 * 1024;
 
@@ -414,7 +421,8 @@ int main (int argc, char **argv)
 	Sys_Init();
 
 	Sys_Printf ("Host init started\n");
-	Host_Init (&parms);
+//	Host_Init (&parms);
+	Host_Init ();
 
 	// Make stdin non-blocking
 	if (!nostdout)
