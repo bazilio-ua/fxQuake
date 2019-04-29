@@ -147,7 +147,8 @@ void Sys_Init (void)
 
 		WinNT = false;
     }
-    
+
+    host_parms->numcpus = numcpus;
     has_smp = (numcpus > 1) ? true : false;
     Sys_Printf("Detected %d CPU%s.\n", numcpus, has_smp ? "s" : "");
 }
@@ -188,6 +189,8 @@ void Sys_Error (char *error, ...)
 	static int	in_sys_error1 = 0;
 	static int	in_sys_error2 = 0;
 	static int	in_sys_error3 = 0;
+
+	host_parms->errstate++;
 
 	va_start (argptr, error);
 	vsnprintf (text, sizeof(text), error, argptr);
@@ -555,6 +558,8 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 	if (qcwd[strlen(qcwd)-1] == '/')
 		qcwd[strlen(qcwd)-1] = 0;
 
+	host_parms = &parms;
+
 	parms.basedir = qcwd;
 	parms.cachedir = NULL;
 
@@ -589,6 +594,8 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 
 	parms.argc = com_argc;
 	parms.argv = com_argv;
+
+	parms.errstate = 0;
 
 	if (!COM_CheckParm ("-dedicated"))
 	{
@@ -686,7 +693,8 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 	S_BlockSound ();
 
 	Sys_Printf ("Host init started\n");
-	Host_Init (&parms);
+//	Host_Init (&parms);
+	Host_Init ();
 
 	oldtime = Sys_DoubleTime () - 0.1;
 	// main message loop
