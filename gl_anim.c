@@ -1904,7 +1904,7 @@ static void R_Bloom_InitTextures (void)
 	mark = Hunk_LowMark ();
 
 	// init the screen texture
-	bloomscreendata = Hunk_Alloc (screen_texture_width * screen_texture_height * sizeof(int));
+	bloomscreendata = Hunk_Alloc (screen_texture_width * screen_texture_height * 4); //sizeof(int)
 	bloomscreentexture = GL_LoadTexture (NULL, "bloomscreentexture", screen_texture_width, screen_texture_height, SRC_BLOOM, bloomscreendata, "", (unsigned)bloomscreendata, TEXPREF_BLOOM /* | TEXPREF_OVERWRITE */ );
 
 	// validate bloom size
@@ -1922,7 +1922,7 @@ static void R_Bloom_InitTextures (void)
 		Cvar_SetValue ("r_bloom_sample_size", bloom_size);
 
 	// init the bloom effect texture
-	bloomeffectdata = Hunk_Alloc (bloom_size * bloom_size * sizeof(int));
+	bloomeffectdata = Hunk_Alloc (bloom_size * bloom_size * 4); //sizeof(int)
 	bloomeffecttexture = GL_LoadTexture (NULL, "bloomeffecttexture", bloom_size, bloom_size, SRC_BLOOM, bloomeffectdata, "", (unsigned)bloomeffectdata, TEXPREF_BLOOM /* | TEXPREF_OVERWRITE */ );
 
 	// if screen size is more than 2x the bloom effect texture, set up for stepped downsampling
@@ -1932,7 +1932,7 @@ static void R_Bloom_InitTextures (void)
 	if ( (glwidth > (bloom_size * 2) || glheight > (bloom_size * 2) ) && !r_bloom_fast_sample.value)
 	{
 		screen_downsampling_texture_size = (int)(bloom_size * 2);
-		bloomdownsamplingdata = Hunk_Alloc (screen_downsampling_texture_size * screen_downsampling_texture_size * sizeof(int));
+		bloomdownsamplingdata = Hunk_Alloc (screen_downsampling_texture_size * screen_downsampling_texture_size * 4); //sizeof(int)
 		bloomdownsamplingtexture = GL_LoadTexture (NULL, "bloomdownsamplingtexture", screen_downsampling_texture_size, screen_downsampling_texture_size, SRC_BLOOM, bloomdownsamplingdata, "", (unsigned)bloomdownsamplingdata, TEXPREF_BLOOM /* | TEXPREF_OVERWRITE */ );
 	}
 
@@ -1948,7 +1948,7 @@ static void R_Bloom_InitTextures (void)
 		screen_backup_texture_height = bloom_size;
 	}
 
-	bloombackupdata = Hunk_Alloc (screen_backup_texture_width * screen_backup_texture_height * sizeof(int));
+	bloombackupdata = Hunk_Alloc (screen_backup_texture_width * screen_backup_texture_height * 4); //sizeof(int)
 	bloombackuptexture = GL_LoadTexture (NULL, "bloombackuptexture", screen_backup_texture_width, screen_backup_texture_height, SRC_BLOOM, bloombackupdata, "", (unsigned)bloombackupdata, TEXPREF_BLOOM /* | TEXPREF_OVERWRITE */ );
 
 	Hunk_FreeToLowMark (mark);
