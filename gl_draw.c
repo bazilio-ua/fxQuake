@@ -1513,7 +1513,7 @@ int TexMgr_Pad (int s)
 {
 	int i;
     
-	for (i = 1; i < s; i<<=1)
+	for (i=1; i<s; i<<=1)
         ;
     
 	return i;
@@ -1526,7 +1526,8 @@ TexMgr_SafeTextureSize -- return a size with hardware and user prefs in mind
 */
 int TexMgr_SafeTextureSize (int s)
 {
-	s = TexMgr_Pad(s);
+	if (!gl_texture_NPOT)
+        s = TexMgr_Pad(s);
 	if ((int)gl_max_size.value > 0)
 		s = min(TexMgr_Pad((int)gl_max_size.value), s);
 	s = min(gl_hardware_max_size, s);
@@ -2122,10 +2123,13 @@ void GL_Upload32 (gltexture_t *glt, unsigned *data)
     int	internalformat,	miplevel, mipwidth, mipheight, picmip;
     unsigned	*scaled = NULL;
     
-	// resample up
-	scaled = TexMgr_ResampleTexture (data, glt->width, glt->height, glt->flags & TEXPREF_ALPHA);
-	glt->width = TexMgr_Pad(glt->width);
-	glt->height = TexMgr_Pad(glt->height);
+    if (!gl_texture_NPOT) {
+        // resample up
+        scaled = TexMgr_ResampleTexture (data, glt->width, glt->height, glt->flags & TEXPREF_ALPHA);
+        glt->width = TexMgr_Pad(glt->width);
+        glt->height = TexMgr_Pad(glt->height);
+    } else
+        scaled = data;
     
 	// mipmap down
 	picmip = (glt->flags & TEXPREF_NOPICMIP) ? 0 : max ((int)gl_picmip.value, 0);
