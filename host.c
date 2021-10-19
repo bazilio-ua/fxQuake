@@ -60,6 +60,7 @@ cvar_t	host_speeds = {"host_speeds","0"};			// set for running times
 cvar_t	host_maxfps = {"host_maxfps", "72"};
 
 cvar_t	sys_ticrate = {"sys_ticrate","0.05"};
+cvar_t	sys_throttle = {"sys_throttle","0.02",true};
 cvar_t	serverprofile = {"serverprofile","0"};
 
 cvar_t	fraglimit = {"fraglimit","0",false,true};
@@ -248,6 +249,7 @@ void Host_InitLocal (void)
 	Cvar_RegisterVariable (&host_maxfps, NULL);
 
 	Cvar_RegisterVariable (&sys_ticrate, NULL);
+	Cvar_RegisterVariable (&sys_throttle, NULL);
 	Cvar_RegisterVariable (&serverprofile, NULL);
 
 	Cvar_RegisterVariable (&fraglimit, NULL);
