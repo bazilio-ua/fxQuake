@@ -442,8 +442,14 @@ void VID_Init (void)
         [window setAcceptsMouseMovedEvents:YES];
         [window setDelegate:(id<NSWindowDelegate>)[NSApp delegate]];
         
+        // Note: as of the macOS 10.15 SDK, this defaults to YES instead of NO when the NSHighResolutionCapable boolean is set in Info.plist.
+        NSView *contentView = [window contentView];
+        if ([contentView respondsToSelector:@selector(setWantsBestResolutionOpenGLSurface:)]) {
+            [contentView setWantsBestResolutionOpenGLSurface:NO];
+        }
+        
         // Direct the context to draw in this window
-        [glcontext setView:[window contentView]];
+        [glcontext setView:contentView];
     } else {
         // Set the context to full screen
         CGLError glerr = CGLSetFullScreenOnDisplay([glcontext CGLContextObj], CGDisplayIDToOpenGLDisplayMask(display));
