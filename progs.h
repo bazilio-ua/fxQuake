@@ -143,10 +143,11 @@ dfunction_t *ED_FindFunction (char *name);
 //
 // PR Strings stuff
 //
-#define MAX_PRSTR 1024
+void PR_InitStringTable(void);
+const char *PR_GetString(int num);
+int PR_SetString(const char *s);
 
-extern char *pr_strtbl[MAX_PRSTR];
-extern int num_prstr;
-
-char *PR_GetString(int num);
-int PR_SetString(char *s);
+//
+// tyr: Somehow, I don't think this should be exposed - but better to have it here than have hidden exports between .c files.
+//
+void PF_changeyaw (void);

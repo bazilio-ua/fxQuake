@@ -680,10 +680,22 @@ while (1)
 
 /*----------------------*/
 
-char *pr_strtbl[MAX_PRSTR];
+#define PR_STRTBL_CHUNK 256
+const char **pr_strtbl = NULL;
+int pr_strtbl_size;
 int num_prstr;
 
-char *PR_GetString(int num)
+void PR_InitStringTable(void)
+{
+    if (pr_strtbl) {
+        Z_Free(pr_strtbl);
+        pr_strtbl = NULL;
+    }
+    pr_strtbl_size = 0;
+    num_prstr = 0;
+}
+
+const char *PR_GetString(int num)
 {
     if (num >= 0 && num < pr_strings_size - 1)
         return pr_strings + num;
@@ -695,7 +707,7 @@ char *PR_GetString(int num)
     return "";
 }
 
-int PR_SetString(char *s)
+int PR_SetString(const char *s)
 {
     int i;
     
@@ -705,8 +717,10 @@ int PR_SetString(char *s)
                 break;
         if (i < num_prstr)
             return -i - 1;
-        if (num_prstr == MAX_PRSTR - 1)
-            Host_Error("PR_SetString: MAX_PRSTR");
+        if (num_prstr == pr_strtbl_size) {
+            pr_strtbl_size += PR_STRTBL_CHUNK;
+            pr_strtbl = Z_Realloc(pr_strtbl, pr_strtbl_size * sizeof(char *));
+        }
         pr_strtbl[num_prstr] = s;
         num_prstr++;
         return -num_prstr;

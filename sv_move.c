@@ -229,7 +229,6 @@ facing it.
 
 ======================
 */
-void PF_changeyaw (void);
 qboolean SV_StepDirection (edict_t *ent, float yaw, float dist)
 {
 	vec3_t		move, oldorigin;
