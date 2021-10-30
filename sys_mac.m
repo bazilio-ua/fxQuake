@@ -276,11 +276,12 @@ char *Sys_GetClipboardData (void)
     if ([types containsObject:NSStringPboardType]) {
         NSString *clipboardText = [pasteboard stringForType:NSStringPboardType];
         NSUInteger length = [clipboardText length];
-        if (length > 0) {
+        const char *string = [clipboardText cStringUsingEncoding:NSASCIIStringEncoding];
+        if (string && length > 0) {
             size_t size = length + 1;
             size = min(SYS_CLIPBOARD_SIZE, size);
             clipboard = (char *)Z_Malloc(size);
-            strcpy(clipboard, [clipboardText cStringUsingEncoding:NSASCIIStringEncoding]);
+            strcpy(clipboard, string);
         }
     }
 	
