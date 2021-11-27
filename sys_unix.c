@@ -431,12 +431,13 @@ int main (int argc, char **argv)
 		printf ("fxQuake %4.2f\n", (float)VERSION);
 	}
 
-	oldtime = Sys_DoubleTime () - 0.1;
+//	oldtime = Sys_DoubleTime () - 0.1;
+    oldtime = Sys_DoubleTime();
 	// main message loop
 	while (1)
 	{
 		// find time spent rendering last frame
-		newtime = Sys_DoubleTime ();
+		newtime = Sys_DoubleTime();
 		time = newtime - oldtime;
 
 		if (cls.state == ca_dedicated)
@@ -446,7 +447,7 @@ int main (int argc, char **argv)
 				Sys_Sleep ();
 				continue; // not time to run a server only tic yet
 			}
-			time = sys_ticrate.value;
+//			time = sys_ticrate.value;
 		}
 		else
 		{
@@ -455,12 +456,17 @@ int main (int argc, char **argv)
 				Sys_Sleep (); // Prevent CPU hogging
 		}
 
-		if (time > sys_ticrate.value * 2)
-			oldtime = newtime;
-		else
-			oldtime += time;
+//		if (time > sys_ticrate.value * 2)
+//			oldtime = newtime;
+//		else
+//			oldtime += time;
 
 		Host_Frame (time);
+        
+        if (time < sys_throttle.value && !cls.timedemo)
+            Sys_Sleep();
+        
+        oldtime = newtime;
 	}
 
 	// return success of application
