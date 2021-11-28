@@ -149,7 +149,7 @@ cvar_t		vid_contrast = {"contrast", "1", true}; // QuakeSpasm, MarkV
 
 unsigned short vid_gammaramp[768];
 unsigned short vid_systemgammaramp[768]; // to restore gamma on exit
-qboolean vid_gammaworks;
+qboolean vid_gammaworks = false;
 
 /*
 ================
@@ -238,9 +238,11 @@ call on init
 */
 void VID_Gamma_Init (void)
 {
-	vid_gammaworks = false;
-
-	vid_gammaworks = GetDeviceGammaRamp (maindc, vid_systemgammaramp);
+    qboolean success = GetDeviceGammaRamp (maindc, vid_systemgammaramp);
+    if (!success)
+        Con_Printf ("VID_Gamma_Init: failed on GetDeviceGammaRamp\n");
+    else
+        vid_gammaworks = true;
 
 	if (!vid_gammaworks)
 		Con_Printf ("Hardware gamma unavailable\n");

@@ -50,7 +50,7 @@ const char *glx_extensions;
 
 unsigned short	 vid_gammaramp[3][256];
 unsigned short	 vid_systemgammaramp[3][256]; // to restore gamma
-qboolean vid_gammaworks;
+qboolean vid_gammaworks = false;
 
 /*
 ================
@@ -141,15 +141,15 @@ void VID_Gamma_Init (void)
 {
 	int	xf86vm_gammaramp_size;
 
-	vid_gammaworks = false;
-
 	XF86VidModeGetGammaRampSize (x_disp, scrnum, &xf86vm_gammaramp_size);
-	vid_gammaworks = (xf86vm_gammaramp_size == 256);
-	if (vid_gammaworks)
-		XF86VidModeGetGammaRamp (x_disp, scrnum, xf86vm_gammaramp_size, vid_systemgammaramp[0], vid_systemgammaramp[1], vid_systemgammaramp[2]);
-
-	if (!vid_gammaworks)
+    if (xf86vm_gammaramp_size >= 256) {
+        if (!XF86VidModeGetGammaRamp (x_disp, scrnum, 256, vid_systemgammaramp[0], vid_systemgammaramp[1], vid_systemgammaramp[2]))
+            Con_Printf ("VID_Gamma_Init: failed on XF86VidModeGetGammaRamp\n");
+        else
+            vid_gammaworks = true;
+    } else {
 		Con_Printf ("Hardware gamma unavailable\n");
+    }
 }
 
 //====================================

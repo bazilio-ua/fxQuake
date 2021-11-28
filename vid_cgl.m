@@ -43,7 +43,7 @@ cvar_t		vid_contrast = {"contrast", "1", true}; // QuakeSpasm, MarkV
 
 CGGammaValue	 vid_gammaramp[3][256];
 CGGammaValue	 vid_systemgammaramp[3][256]; // to restore gamma
-qboolean vid_gammaworks;
+qboolean vid_gammaworks = false;
 
 /*
 ================
@@ -136,13 +136,14 @@ void VID_Gamma_Init (void)
     uint32_t capacity = CGDisplayGammaTableCapacity(display);
     uint32_t sampleCount;
     
-	vid_gammaworks = (capacity == 256);
-    if (vid_gammaworks) {
-        CGError err = CGGetDisplayTransferByTable(display, capacity, 
+    if (capacity >= 256) {
+        CGError err = CGGetDisplayTransferByTable(display, 256,
                                                   vid_systemgammaramp[0], 
                                                   vid_systemgammaramp[1], 
                                                   vid_systemgammaramp[2], &sampleCount);
-        if (err != kCGErrorSuccess)
+        if (err == kCGErrorSuccess)
+            vid_gammaworks = true;
+        else
             Con_Printf ("VID_Gamma_Init: Failed to get gamma table ramp\n");
     } else {
 		Con_Printf ("Hardware gamma unavailable\n");
