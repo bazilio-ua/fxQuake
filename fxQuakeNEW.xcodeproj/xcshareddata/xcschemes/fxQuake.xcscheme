@@ -53,11 +53,15 @@
       <CommandLineArguments>
          <CommandLineArgument
             argument = "-window"
-            isEnabled = "YES">
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-sndspeed 96000"
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-current"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>
    </LaunchAction>
