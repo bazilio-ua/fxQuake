@@ -224,7 +224,7 @@
 				42ED55A71DFF223900012B3F /* Resources */,
 				42ED563B1DFF23F800012B3F /* progdefs.q1 */,
 			);
-			path = fxQuake;
+			name = fxQuake;
 			sourceTree = "<group>";
 		};
 		428D9ED11DFF26A6000ACF30 /* Frameworks */ = {
