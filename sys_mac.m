@@ -124,7 +124,7 @@ void Sys_Init (void)
     
     host_parms->numcpus = numcpus;
     has_smp = (numcpus > 1) ? true : false;
-    Sys_Printf("Detected %d CPU%s.\n", numcpus, has_smp ? "s" : "");
+    Sys_Printf("System has %d CPU%s.\n", numcpus, has_smp ? "s" : "");
 }
 
 void Sys_Printf (char *fmt, ...)
@@ -357,6 +357,8 @@ int main (int argc, char *argv[])
 	parms.argv = com_argv;
     
     parms.errstate = 0;
+    
+    Sys_Printf ("Starting Quake...\n");
     
 	parms.memsize = DEFAULT_MEMORY_SIZE * 1024 * 1024;
     
