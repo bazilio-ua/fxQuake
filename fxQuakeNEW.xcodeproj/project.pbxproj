@@ -393,7 +393,7 @@
 				en,
 			);
 			mainGroup = 427469A71DFF1F0700B436A0;
-			productRefGroup = 427469B31DFF1F0700B436A0 /* Products */;
+			productRefGroup = 427469A71DFF1F0700B436A0;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
