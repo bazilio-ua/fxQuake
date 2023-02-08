@@ -1020,7 +1020,7 @@ void Host_Loadgame_f (void)
 	if (version != SAVEGAME_VERSION)
 	{
 		fclose (f);
-		Con_Printf ("Savegame is version %i, not %i\n", version, SAVEGAME_VERSION);
+        Host_Error ("Savegame is version %i, not %i", version, SAVEGAME_VERSION);
 		return;
 	}
 	fscanf (f, "%s\n", str);
@@ -1073,14 +1073,14 @@ void Host_Loadgame_f (void)
 			}
 		}
 		if (i == sizeof(str)-1)
-			Sys_Error ("Loadgame buffer overflow");
+            Host_Error ("Loadgame buffer overflow");
 		str[i] = 0;
 		start = str;
 		start = COM_Parse(str);
 		if (!com_token[0])
 			break;		// end of file
 		if (strcmp(com_token,"{"))
-			Sys_Error ("First token isn't a brace");
+            Host_Error ("First token isn't a brace");
 
 		if (entnum == -1)
 		{	// parse the global vars
