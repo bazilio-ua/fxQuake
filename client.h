@@ -73,8 +73,6 @@ typedef struct
 // client_state_t should hold all pieces of the client state
 //
 
-#define	SIGNONS		4			// signon messages to receive before connected
-
 #define	MAX_DLIGHTS		128 //was 64 //johnfitz -- was 32
 typedef struct
 {
@@ -115,6 +113,7 @@ typedef struct
 #define	MAX_DEMOS		8
 #define	MAX_DEMONAME	16
 
+#define    SIGNONS        4            // signon messages to receive before connected
 typedef enum 
 {
 	ca_dedicated, 		// a dedicated server with no ability to start a client
