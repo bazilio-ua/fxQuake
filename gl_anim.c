@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-// gl_anim.c -- handle warping sky/water animation, fog and bloom (2D lighting post process effect) routines
+// gl_anim.c -- handle warping sky/water animation, fog and bloom
 
 #include "quakedef.h"
 
@@ -41,7 +41,7 @@ cvar_t	gl_fogblue = {"gl_fogblue","0.5"};
 /*
 =================================================================
 
-	IMAGE LOADING ROUTINES
+	IMAGE LOADING
 
 =================================================================
 */
@@ -496,7 +496,7 @@ void R_UpdateWarpTextures (void)
 /*
 ==============================================================================
 
-	FOG DRAW ROUTINES
+	FOG DRAW
 
 ==============================================================================
 */
@@ -722,7 +722,7 @@ void R_FogStopAdditive (void)
 /*
 ==============================================================================
 
-	SKY DRAW ROUTINES
+	SKY DRAW
 
 ==============================================================================
 */
@@ -1788,8 +1788,9 @@ void R_ParseWorldspawn (void)
 /*
 ============================================================================== 
 
-	LIGHT BLOOMS ROUTINES
+	LIGHT BLOOMS
 
+2D lighting post process effect - adapted from fteqw
 ============================================================================== 
 */
 
