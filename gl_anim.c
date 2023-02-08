@@ -1877,7 +1877,7 @@ static float sample_texture_coord_height;
 R_Bloom_InitTextures
 =================
 */
-static void R_Bloom_InitTextures (void)
+void R_Bloom_InitTextures (void)
 {
 	byte *bloomscreendata;
 	byte *bloomeffectdata;
@@ -2016,7 +2016,7 @@ static inline void R_Bloom_Quad (int x, int y, int width, int height, float texw
 R_Bloom_DrawEffect
 =================
 */
-static void R_Bloom_DrawEffect (void)
+void R_Bloom_DrawEffect (void)
 {
 	float	alpha;
 
@@ -2049,7 +2049,7 @@ static void R_Bloom_DrawEffect (void)
 R_Bloom_GeneratexDiamonds
 =================
 */
-static void R_Bloom_GeneratexDiamonds (void)
+void R_Bloom_GeneratexDiamonds (void)
 {
 	int		i, j, k;
 	float	intensity, scale, *diamond;
@@ -2152,7 +2152,7 @@ static void R_Bloom_GeneratexDiamonds (void)
 R_Bloom_DownsampleView
 =================
 */
-static void R_Bloom_DownsampleView (void)
+void R_Bloom_DownsampleView (void)
 {
 	//
 	// setup textures coordinates
