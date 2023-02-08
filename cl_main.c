@@ -157,6 +157,9 @@ void CL_Disconnect (void)
 
 	cls.demoplayback = cls.timedemo = false;
 	cls.signon = 0;
+
+// allow normal screen updates
+    SCR_EndLoadingPlaque ();
 }
 
 /*
