@@ -158,7 +158,7 @@ void CL_Disconnect (void)
 	cls.demoplayback = cls.timedemo = false;
 	cls.signon = 0;
 
-// allow normal screen updates
+// If we failed to load the requested level, we don't stuck with loading plaque...
     SCR_EndLoadingPlaque ();
 }
 
