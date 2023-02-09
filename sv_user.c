@@ -600,6 +600,8 @@ nextmsg:
 					ret = 1; // qcexec command for qc testing
 				else if (strncasecmp(s, "setpos", 6) == 0)
 					ret = 1;
+                else if (strncasecmp(s, "error", 5) == 0)
+                    ret = 1; // error command for shutdown testing
 				
 				if (ret == 1)
 					Cmd_ExecuteString (s, src_client);

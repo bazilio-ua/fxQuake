@@ -179,11 +179,12 @@ void Sys_Error (char *error, ...)
     
     NSString *message = [NSString stringWithCString:string encoding:NSASCIIStringEncoding];
     NSLog(@"Quake Error: %@", message);
-    NSRunCriticalAlertPanel(@"Quake Error", message, @"OK", nil, nil);
     
 	Host_Shutdown ();
     
 	Sys_Shutdown ();
+    
+    NSRunCriticalAlertPanel(@"Quake Error", message, @"OK", nil, nil);
     
 	exit (1);
 } 

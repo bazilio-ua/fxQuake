@@ -106,6 +106,38 @@ void Host_Quit_f (void)
 }
 
 /*
+==================
+Host_Sys_Error_f
+
+Just throw a system error to
+test error shutdown procedures
+==================
+*/
+void Host_Sys_Error_f (void)
+{
+    if (cmd_source == src_command)
+    {
+        Cmd_ForwardToServer ();
+        return;
+    }
+    
+    if (pr_global_struct->deathmatch || pr_global_struct->coop)
+        return;
+    
+    if (!developer.value)
+        return;
+    
+    if (Cmd_Argc() == 1)
+    {
+        Con_Printf ("specify a message, please\n");
+        Con_Printf ("error <\"message\">\n");
+        return;
+    }
+    
+    Sys_Error (Cmd_Argv(1));
+}
+
+/*
 ===============================================================================
 
 	FILELIST MANAGEMENT
@@ -2252,4 +2284,6 @@ void Host_InitCommands (void)
 	Cmd_AddCommand ("qclist", Host_QC_List_f); // qclist console command
 
 	Cmd_AddCommand ("setpos", Host_SetPos_f); //QuakeSpasm
+    
+    Cmd_AddCommand ("error", Host_Sys_Error_f); // error console command
 }
