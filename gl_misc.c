@@ -245,10 +245,10 @@ void R_Init (void)
 	Cvar_RegisterVariable (&gl_fogblue, NULL);
 
 	Cvar_RegisterVariable (&r_bloom, NULL);
+	Cvar_RegisterVariable (&r_bloom_darken, NULL);
 	Cvar_RegisterVariable (&r_bloom_alpha, NULL);
+	Cvar_RegisterVariable (&r_bloom_intensity, NULL);
 	Cvar_RegisterVariable (&r_bloom_diamond_size, NULL);
-    Cvar_RegisterVariable (&r_bloom_intensity, NULL);
-    Cvar_RegisterVariable (&r_bloom_darken, NULL);
 	Cvar_RegisterVariable (&r_bloom_sample_size, R_InitBloomTextures); // NULL
 	Cvar_RegisterVariable (&r_bloom_fast_sample, NULL);
 

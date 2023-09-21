@@ -1845,10 +1845,10 @@ static float Diamond4x[4][4] =
 static int bloom_size;
 
 cvar_t r_bloom					= {"r_bloom", "0", true};
+cvar_t r_bloom_darken			= {"r_bloom_darken", "1", true};
 cvar_t r_bloom_alpha			= {"r_bloom_alpha", "0.2", true};
+cvar_t r_bloom_intensity		= {"r_bloom_intensity", "0.8", true};
 cvar_t r_bloom_diamond_size		= {"r_bloom_diamond_size", "8", true};
-cvar_t r_bloom_intensity        = {"r_bloom_intensity", "0.8", true};
-cvar_t r_bloom_darken            = {"r_bloom_darken", "1", true};
 cvar_t r_bloom_sample_size		= {"r_bloom_sample_size", "64", true}; // was 512
 cvar_t r_bloom_fast_sample		= {"r_bloom_fast_sample", "0", true};
 

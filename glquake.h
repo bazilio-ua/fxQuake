@@ -499,10 +499,10 @@ extern	cvar_t  gl_foggreen;
 extern	cvar_t  gl_fogblue;
 
 extern	cvar_t	r_bloom;
+extern	cvar_t	r_bloom_darken;
 extern	cvar_t	r_bloom_alpha;
+extern	cvar_t	r_bloom_intensity;
 extern	cvar_t	r_bloom_diamond_size;
-extern    cvar_t    r_bloom_intensity;
-extern    cvar_t    r_bloom_darken;
 extern	cvar_t	r_bloom_sample_size;
 extern	cvar_t	r_bloom_fast_sample;
 
