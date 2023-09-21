@@ -1791,6 +1791,7 @@ void R_ParseWorldspawn (void)
 	LIGHT BLOOMS
 
 2D lighting post process effect - adapted from fteqw
+bloom (light bleeding from bright objects)
 ============================================================================== 
 */
 
@@ -1812,35 +1813,6 @@ http://prideout.net/archive/bloom/ contains some sample code
 old link: http://www.quakesrc.org/forums/viewtopic.php?t=4340&start=0
 */
 
-static float Diamond8x[8][8] = 
-{
-	{0.0f, 0.0f, 0.0f, 0.1f, 0.1f, 0.0f, 0.0f, 0.0f},
-	{0.0f, 0.0f, 0.2f, 0.3f, 0.3f, 0.2f, 0.0f, 0.0f},
-	{0.0f, 0.2f, 0.4f, 0.6f, 0.6f, 0.4f, 0.2f, 0.0f},
-	{0.1f, 0.3f, 0.6f, 0.9f, 0.9f, 0.6f, 0.3f, 0.1f},
-	{0.1f, 0.3f, 0.6f, 0.9f, 0.9f, 0.6f, 0.3f, 0.1f},
-	{0.0f, 0.2f, 0.4f, 0.6f, 0.6f, 0.4f, 0.2f, 0.0f},
-	{0.0f, 0.0f, 0.2f, 0.3f, 0.3f, 0.2f, 0.0f, 0.0f},
-	{0.0f, 0.0f, 0.0f, 0.1f, 0.1f, 0.0f, 0.0f, 0.0f}
-};
-
-static float Diamond6x[6][6] = 
-{
-	{0.0f, 0.0f, 0.1f, 0.1f, 0.0f, 0.0f},
-	{0.0f, 0.3f, 0.5f, 0.5f, 0.3f, 0.0f},
-	{0.1f, 0.5f, 0.9f, 0.9f, 0.5f, 0.1f},
-	{0.1f, 0.5f, 0.9f, 0.9f, 0.5f, 0.1f},
-	{0.0f, 0.3f, 0.5f, 0.5f, 0.3f, 0.0f},
-	{0.0f, 0.0f, 0.1f, 0.1f, 0.0f, 0.0f}
-};
-
-static float Diamond4x[4][4] = 
-{
-	{0.3f, 0.4f, 0.4f, 0.3f},
-	{0.4f, 0.9f, 0.9f, 0.4f},
-	{0.4f, 0.9f, 0.9f, 0.4f},
-	{0.3f, 0.4f, 0.4f, 0.3f}
-};
 
 static int bloom_size;
 
@@ -2051,8 +2023,8 @@ R_Bloom_GeneratexDiamonds
 */
 void R_Bloom_GeneratexDiamonds (void)
 {
-	int		i, j, k;
-	float	intensity, scale, *diamond;
+	int		i, j;
+	float	intensity, scale, rad, point;
 
 	// setup sample size workspace
 	glViewport (0, 0, sample_texture_width, sample_texture_height);
@@ -2076,68 +2048,39 @@ void R_Bloom_GeneratexDiamonds (void)
 	// darkening passes
 	if (r_bloom_darken.value < 0)
 		Cvar_SetValue("r_bloom_darken", 0);
-	if (r_bloom_darken.value >= 0)
-	{
-		glBlendFunc (GL_DST_COLOR, GL_ZERO);
-		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
-		for (i = 0; i < r_bloom_darken.value; i++) 
-		{
-			R_Bloom_SamplePass (0, 0);
-		}
+    glBlendFunc (GL_DST_COLOR, GL_ZERO);
+    glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
-		glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, 0, 0, sample_texture_width, sample_texture_height);
-	}
+    for (i = 0; i < r_bloom_darken.value; i++) 
+    {
+        R_Bloom_SamplePass (0, 0);
+    }
+
+    glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, 0, 0, sample_texture_width, sample_texture_height);
 
 	// bluring passes
-	if (r_bloom_diamond_size.value > 7 || r_bloom_diamond_size.value <= 3)
-	{
-		if (r_bloom_diamond_size.value != 8)
-			Cvar_SetValue("r_bloom_diamond_size", 8);
-	}
-	else if (r_bloom_diamond_size.value > 5)
-	{
-		if (r_bloom_diamond_size.value != 6) 
-			Cvar_SetValue("r_bloom_diamond_size", 6);
-	}
-	else if (r_bloom_diamond_size.value > 3)
-	{
-		if (r_bloom_diamond_size.value != 4)
-			Cvar_SetValue("r_bloom_diamond_size", 4);
-	}
+    if (r_bloom_diamond_size.value < 2)
+        Cvar_SetValue("r_bloom_diamond_size", 2);
+    if (r_bloom_intensity.value < 0)
+        Cvar_SetValue("r_bloom_intensity", 0);
 
-	switch( (int)r_bloom_diamond_size.value )
-	{
-	case 4:
-		k = 2;
-		diamond = &Diamond4x[0][0];
-		scale = r_bloom_intensity.value * 0.8f;
-		break;
-	case 6:
-		k = 3;
-		diamond = &Diamond6x[0][0];
-		scale = r_bloom_intensity.value * 0.5f;
-		break;
-	case 8:
-	default:
-		k = 4;
-		diamond = &Diamond8x[0][0];
-		scale = r_bloom_intensity.value * 0.3f;
-		break;
-	}
+    rad = r_bloom_diamond_size.value / 2.0f;
+    point = (r_bloom_diamond_size.value - 1) / 2.0f;
+    scale = min(1.0f, r_bloom_intensity.value * 2.0f / rad);
 
 	glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 
 	for (i = 0; i < r_bloom_diamond_size.value; i++) 
 	{
-		for (j = 0; j < r_bloom_diamond_size.value; j++, diamond++) 
+		for (j = 0; j < r_bloom_diamond_size.value; j++) 
 		{
-			intensity = *diamond * scale;
-			if (intensity < 0.01f)
+			intensity = scale * ((point + 1.0f) - (fabs(point - i) + fabs(point - j))) / (point + 1.0f);
+			if (intensity < 0.005f)
 				continue;
 
 			glColor4f (intensity, intensity, intensity, 1.0f);
-			R_Bloom_SamplePass (i - k, j - k);
+			R_Bloom_SamplePass (i - rad, j - rad);
 		}
 	}
 
