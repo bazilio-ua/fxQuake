@@ -360,7 +360,7 @@ void VID_Init (void)
             bestModeIndex = modeIndex;
         }
         
-        if (bestModeIndex == 0xFFFFFFFF) {
+        if (bestModeIndex == 0xFFFFFFFF || modeIndex == modeCount) {
             Sys_Error("No suitable display mode available");
         }
         

@@ -165,6 +165,10 @@ void Sys_Error (char *error, ...)
 { 
 	va_list     argptr;
 	char        string[MAX_PRINTMSG]; // was 1024
+    static int    in_sys_error0 = 0;
+    static int    in_sys_error1 = 0;
+    static int    in_sys_error2 = 0;
+    static int    in_sys_error3 = 0;
     
     host_parms->errstate++;
 
@@ -175,16 +179,59 @@ void Sys_Error (char *error, ...)
 	vsnprintf (string, sizeof(string), error, argptr);
 	va_end (argptr);
     
-	fprintf (stderr, "Quake Error: %s\n", string);
+    Con_Printf ("Quake Error: %s\n", string); // write to console log as well
     
-    NSString *message = [NSString stringWithCString:string encoding:NSASCIIStringEncoding];
-    NSLog(@"Quake Error: %@", message);
+    if (cls.state == ca_dedicated && host_initialized)
+    {
+        // do nothing
+    }
+    else
+    {
+        qboolean NoMsgBox = COM_CheckParm ("-nomsgbox") != 0;
+        
+        // Prevent screen updates, otherwise secondary faults might
+        // occur and mask the real error
+        block_drawing = true;
+
+        S_ClearBuffer (); // Avoid looping sounds
+
+        // switch to windowed so the message box is visible, unless we already
+        // tried that and failed
+        if (!in_sys_error0)
+        {
+            in_sys_error0 = 1;
+            IN_Shutdown ();
+            if (vid_activewindow)
+                VID_Shutdown ();
+        }
+
+        if (!in_sys_error1)
+        {
+            in_sys_error1 = 1;
+
+            if (!NoMsgBox)
+                NSRunCriticalAlertPanel(@"Quake Error", [NSString stringWithCString:string encoding:NSASCIIStringEncoding], @"OK", nil, nil);
+        }
+        else
+        {
+            if (!NoMsgBox)
+                NSRunCriticalAlertPanel(@"Double Quake Error", [NSString stringWithCString:string encoding:NSASCIIStringEncoding], @"OK", nil, nil);
+        }
+
+        block_drawing = false; // Make sure to restore
+    }
     
-	Host_Shutdown ();
+    if (!in_sys_error2)
+    {
+        in_sys_error2 = 1;
+        Host_Shutdown ();
+    }
     
-	Sys_Shutdown ();
-    
-    NSRunCriticalAlertPanel(@"Quake Error", message, @"OK", nil, nil);
+    if (!in_sys_error3)
+    {
+        in_sys_error3 = 1;
+        Sys_Shutdown ();
+    }
     
 	exit (1);
 } 
