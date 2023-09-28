@@ -181,6 +181,10 @@ void Sys_Error (char *error, ...)
 { 
 	va_list     argptr;
 	char        string[MAX_PRINTMSG]; // was 1024
+//    static int    in_sys_error0 = 0;
+//    static int    in_sys_error1 = 0;
+    static int    in_sys_error2 = 0;
+    static int    in_sys_error3 = 0;
 
 	host_parms->errstate++;
 
@@ -191,11 +195,19 @@ void Sys_Error (char *error, ...)
 	vsnprintf (string, sizeof(string), error, argptr);
 	va_end (argptr);
 
-	fprintf (stderr, "Quake Error: %s\n", string);
+    Con_Printf ("Quake Error: %s\n", string); // write to console log as well
 
-	Host_Shutdown ();
-
-	Sys_Shutdown ();
+    if (!in_sys_error2)
+    {
+        in_sys_error2 = 1;
+        Host_Shutdown ();
+    }
+    
+    if (!in_sys_error3)
+    {
+        in_sys_error3 = 1;
+        Sys_Shutdown ();
+    }
 
 	exit (1);
 } 
