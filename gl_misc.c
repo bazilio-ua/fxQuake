@@ -58,6 +58,9 @@ void R_LoadPalette (void)
 	host_basepal = COM_LoadHunkFile ("gfx/palette.lmp", NULL);
 	if (!host_basepal)
 		Sys_Error ("R_LoadPalette: couldn't load gfx/palette.lmp");
+    host_colormap = COM_LoadHunkFile ("gfx/colormap.lmp", NULL);
+    if (!host_colormap)
+        Sys_Error ("R_LoadPalette: couldn't load gfx/colormap.lmp");
 
 	pal = host_basepal;
 

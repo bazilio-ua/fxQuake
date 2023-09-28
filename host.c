@@ -53,6 +53,7 @@ client_t	*host_client;			// current client
 jmp_buf 	host_abortserver;
 
 byte		*host_basepal = NULL; // set to null
+byte        *host_colormap = NULL;  // set to null
 
 cvar_t	host_framerate = {"host_framerate","0"};	// set for slow motion
 cvar_t	host_timescale = {"host_timescale","0"};	// more sensitivity slow motion

@@ -1457,6 +1457,8 @@ void VID_Init (void)
 
 	vid_initialized = true;
 
+    vid.colormap = host_colormap;
+
 	DestroyWindow (hwnd_dialog);
 
 	VID_SetMode (vid_default);

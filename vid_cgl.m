@@ -219,6 +219,7 @@ void VID_Init (void)
 	vid.width = 640;
 	vid.height = 480;
 	vid.numpages = 2;
+    vid.colormap = host_colormap;
     
     // Get the active display list
     err = CGGetActiveDisplayList(MAX_DISPLAYS, displays, &displayCount);
