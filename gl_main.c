@@ -659,7 +659,7 @@ void R_DrawAliasModel (entity_t *e)
 
 	// we can't dynamically colormap textures, so they are cached
 	// seperately for the players.  Heads are just uncolored.
-	if (e->colormap /* */)
+	if (e->colormap != vid.colormap)
 	{
 		if (isclient)
 			tx = playertextures[client_no - 1];

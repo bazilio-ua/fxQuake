@@ -551,6 +551,7 @@ entity_t *CL_NewTempEntity (void)
 	cl_visedicts[cl_numvisedicts] = ent;
 	cl_numvisedicts++;
 
+	ent->colormap = vid.colormap;
 	return ent;
 }
 
