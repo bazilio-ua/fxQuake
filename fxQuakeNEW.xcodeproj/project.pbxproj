@@ -208,6 +208,7 @@
 				427469B31DFF1F0700B436A0 /* Products */,
 			);
 			sourceTree = "<group>";
+			usesTabs = 1;
 		};
 		427469B31DFF1F0700B436A0 /* Products */ = {
 			isa = PBXGroup;
