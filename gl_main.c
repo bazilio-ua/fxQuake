@@ -93,7 +93,8 @@ cvar_t	gl_polyblend = {"gl_polyblend","1", true};
 cvar_t	gl_flashblend = {"gl_flashblend","1", true};
 cvar_t	gl_flashblendview = {"gl_flashblendview","1", true};
 cvar_t	gl_overbright = {"gl_overbright", "1", true};
-cvar_t  gl_oldspr = {"gl_oldspr", "0"}; // Old opaque sprite
+cvar_t	gl_oldspr = {"gl_oldspr", "0"}; // Old opaque sprite
+cvar_t	gl_nocolors = {"gl_nocolors","0"};
 
 
 /*
@@ -659,7 +660,7 @@ void R_DrawAliasModel (entity_t *e)
 
 	// we can't dynamically colormap textures, so they are cached
 	// seperately for the players.  Heads are just uncolored.
-	if (e->colormap != vid.colormap)
+	if (e->colormap != vid.colormap && !gl_nocolors.value)
 	{
 		if (isclient)
 			tx = playertextures[client_no - 1];

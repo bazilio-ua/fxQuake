@@ -239,6 +239,7 @@ void R_Init (void)
 	Cvar_RegisterVariable (&gl_flashblendview, NULL);
 	Cvar_RegisterVariable (&gl_overbright, GL_Overbright);
 	Cvar_RegisterVariable (&gl_oldspr, NULL);
+	Cvar_RegisterVariable (&gl_nocolors, NULL);
 
 	// Nehahra
 	Cvar_RegisterVariable (&gl_fogenable, NULL);
