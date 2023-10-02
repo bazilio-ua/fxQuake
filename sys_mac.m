@@ -328,7 +328,7 @@ char *Sys_GetClipboardData (void)
         if (string && length > 0) {
             size_t size = length + 1;
             size = min(SYS_CLIPBOARD_SIZE, size);
-            clipboard = (char *)Z_Malloc(size);
+            clipboard = Z_Malloc (size);
             strcpy(clipboard, string);
         }
     }

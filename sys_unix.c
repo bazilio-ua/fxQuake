@@ -339,7 +339,7 @@ char *Sys_GetClipboardData (void)
 				 * here, otherwise we may experience Z_Malloc()
 				 * failures and all other not-oh-so-fun stuff. */
 				size = min(SYS_CLIPBOARD_SIZE, size);
-				clipboard = Z_Malloc(size);
+				clipboard = Z_Malloc (size);
 				strcpy (clipboard, cliptext);
 			}
 			

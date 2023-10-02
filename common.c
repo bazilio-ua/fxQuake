@@ -1851,7 +1851,7 @@ void COM_FileListAdd (const char *name, filelist_t **list)
 			return;
 	}
 
-	item = (filelist_t *) Z_Malloc(sizeof(filelist_t));
+	item = Z_Malloc (sizeof(filelist_t));
 	strcpy (item->name, name);
 
 	// insert each entry in alphabetical order
