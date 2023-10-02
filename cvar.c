@@ -369,16 +369,15 @@ void Cvar_Set (char *var_name, char *value)
 	
 	Z_Free (var->string);	// free the old value string
 	
-	var->string = Z_Malloc (strlen(value)+1);
-	strcpy (var->string, value);
+	var->string = Z_Strdup (value);
 	var->value = atof (var->string);
 
 	//johnfitz -- during initialization, update default too
 	if (!host_initialized)
 	{
 		Z_Free (var->default_string);
-		var->default_string = Z_Malloc (strlen(value)+1);
-		strcpy (var->default_string, value);
+		
+		var->default_string = Z_Strdup (value);
 	}
 	//johnfitz
 
