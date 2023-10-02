@@ -356,7 +356,6 @@ Cvar_Set
 void Cvar_Set (char *var_name, char *value)
 {
 	cvar_t	*var;
-	qboolean changed;
 	
 	var = Cvar_FindVar (var_name);
 	if (!var)
@@ -365,7 +364,8 @@ void Cvar_Set (char *var_name, char *value)
 		return;
 	}
 
-	changed = strcmp(var->string, value);
+	if (!strcmp(var->string, value))
+		return;	// no change
 	
 	Z_Free (var->string);	// free the old value string
 	
@@ -381,14 +381,14 @@ void Cvar_Set (char *var_name, char *value)
 	}
 	//johnfitz
 
-	if (var->server && changed)
+	if (var->server)
 	{
 		if (sv.active)
 			SV_BroadcastPrintf ("\"%s\" changed to \"%s\"\n", var->name, var->string);
 	}
 
 	//johnfitz
-	if(var->callback && changed)
+	if(var->callback)
 		var->callback();
 	//johnfitz
 
