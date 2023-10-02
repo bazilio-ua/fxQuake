@@ -688,7 +688,7 @@ int num_prstr;
 void PR_InitStringTable(void)
 {
     if (pr_strtbl) {
-        Z_Free(pr_strtbl);
+        Z_Free (pr_strtbl);
         pr_strtbl = NULL;
     }
     pr_strtbl_size = 0;

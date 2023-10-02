@@ -235,7 +235,7 @@ void K_PasteFromClipboard (void)
 	keyeditline[mvlen + inslen] = '\0';
 	
 done:
-	Z_Free(clipboardtext);
+	Z_Free (clipboardtext);
 }
 
 /*
@@ -602,7 +602,7 @@ void Key_SetBinding (int keynum, char *binding)
 	
 // allocate memory for new binding
 	if (binding)
-		keybindings[keynum] = Z_Strdup(binding);
+		keybindings[keynum] = Z_Strdup (binding);
 }
 
 /*

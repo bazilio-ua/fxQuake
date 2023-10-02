@@ -1887,7 +1887,7 @@ void COM_FileListClear (filelist_t **list)
 	while (*list)
 	{
 		item = (*list)->next;
-		Z_Free(*list);
+		Z_Free (*list);
 		*list = item;
 	}
 }

@@ -402,7 +402,7 @@ char *GL_MakeExtensionsList (char *in)
 	int i, count;
 
 	if (!in) 
-		return Z_Strdup("(none)");
+		return Z_Strdup ("(none)");
 
 	// each space will be replaced by 4 chars, so count the spaces before we malloc
 	for (i = 0, count = 1; i < (int)strlen(in); i++)
