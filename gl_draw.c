@@ -396,20 +396,23 @@ void GL_CheckExtensions (void)
 GL_MakeExtensionsList
 ===============
 */
-char *GL_MakeExtensionsList (const char *in)
+char *GL_MakeExtensionsList (char *in)
 {
 	char *copy, *token, *out;
 	int i, count;
+
+	if (!in) 
+		return Z_Strdup("(none)");
 
 	// each space will be replaced by 4 chars, so count the spaces before we malloc
 	for (i = 0, count = 1; i < (int)strlen(in); i++)
 		if (in[i] == ' ')
 			count++;
+
 	out = Z_Malloc (strlen(in) + count*3 + 1); // usually about 1-2k
 	out[0] = 0;
 
-	copy = Z_Malloc (strlen(in) + 1);
-	strcpy(copy, in);
+	copy = Z_Strdup (in);
 
 	for (token = strtok(copy, " "); token; token = strtok(NULL, " "))
 	{

@@ -435,7 +435,6 @@ Adds a freestanding variable to the variable list.
 */
 void Cvar_RegisterVariable (cvar_t *variable, void *function)
 {
-	char	*oldstr;
 	cvar_t	*cursor,*prev; //johnfitz -- sorted list insert
 
 // first check to see if it has already been defined
@@ -453,14 +452,11 @@ void Cvar_RegisterVariable (cvar_t *variable, void *function)
 	}
 		
 // copy the value off, because future sets will Z_Free it
-	oldstr = variable->string;
-	variable->string = Z_Malloc (strlen(variable->string)+1);	
-	strcpy (variable->string, oldstr);
+	variable->string = Z_Strdup (variable->string);	
 	variable->value = atof (variable->string);
 
 	//johnfitz -- save initial value for "reset" command
-	variable->default_string = Z_Malloc (strlen(variable->string)+1);
-	strcpy (variable->default_string, oldstr);
+	variable->default_string = Z_Strdup (variable->string);
 	//johnfitz
 
 // link the variable in
