@@ -60,9 +60,9 @@ typedef struct cvar_s
 	qboolean archive;		// set to true to cause it to be saved to vars.rc
 	qboolean server;		// notifies players when changed
 	float	value;
-	struct cvar_s *next;
 	char	*default_string; //johnfitz -- remember defaults for reset function
 	void (*callback) (void); //johnfitz
+	struct cvar_s *next;
 } cvar_t;
 
 void	Cvar_Init (void);
