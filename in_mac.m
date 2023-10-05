@@ -286,12 +286,8 @@ void IN_ProcessEvents (void)
         case NSOtherMouseDragged: // other mouse dragged
             if (mouse_active) 
             {
-                static int32_t	dx, dy;
-                
-                CGGetLastMouseDelta (&dx, &dy);
-                
-                mouse_x = (float)dx;
-                mouse_y = (float)dy;
+                mouse_x = [event deltaX];
+                mouse_y = [event deltaY];
             }
             break;
             
