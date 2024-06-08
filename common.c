@@ -30,7 +30,7 @@ static char     *safeargvs[NUM_SAFE_ARGVS] =
 	{"-nolan", "-nosound", "-nocdaudio", "-nojoy", "-nomouse"};
 
 cvar_t  registered = {"registered","0", CVAR_NONE};
-cvar_t  cmdline = {"cmdline","", CVAR_SERVER}; // TODO: CVAR_ROM
+cvar_t  cmdline = {"cmdline","", CVAR_ROM};
 
 qboolean        com_modified;   // set true if using non-id files
 
@@ -870,7 +870,7 @@ void COM_CheckRegistered (void)
 		if (pop[i] != (unsigned short)BigShort (check[i]))
 			Sys_Error ("Corrupted data file.");
 	
-	Cvar_Set ("cmdline", com_cmdline+1); // johnfitz: eliminate leading space
+	Cvar_SetROM ("cmdline", com_cmdline+1); // johnfitz: eliminate leading space
 	Cvar_Set ("registered", "1");
 
 	static_registered = 1;

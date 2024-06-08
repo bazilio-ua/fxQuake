@@ -84,6 +84,10 @@ void 	Cvar_Set (char *var_name, char *value);
 void	Cvar_SetValue (char *var_name, float value);
 // expands value to a string and calls Cvar_Set
 
+void	Cvar_SetROM (char *var_name, char *value);
+void	Cvar_SetValueROM (char *var_name, float value);
+// sets a CVAR_ROM variable from within the engine
+
 float	Cvar_VariableValue (char *var_name);
 // returns 0 if not defined or non numeric
 

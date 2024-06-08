@@ -467,6 +467,41 @@ void Cvar_SetValue (char *var_name, float value)
 
 /*
 ============
+Cvar_SetROM
+============
+*/
+void Cvar_SetROM (char *var_name, char *value)
+{
+	cvar_t *var = Cvar_FindVar (var_name);
+	
+	if (var)
+	{
+		var->flags &= ~CVAR_ROM;
+		Cvar_Set (var->name, value);
+		var->flags |= CVAR_ROM;
+	}
+}
+
+/*
+============
+Cvar_SetValueROM
+============
+*/
+void Cvar_SetValueROM (char *var_name, float value)
+{
+	cvar_t *var = Cvar_FindVar (var_name);
+	
+	if (var)
+	{
+		var->flags &= ~CVAR_ROM;
+		Cvar_SetValue (var->name, value);
+		var->flags |= CVAR_ROM;
+	}
+}
+
+
+/*
+============
 Cvar_RegisterVariable
 
 Adds a freestanding variable to the variable list.
