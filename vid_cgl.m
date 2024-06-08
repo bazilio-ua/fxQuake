@@ -484,8 +484,8 @@ void VID_Init (void)
     
 	VID_Gamma_Init ();
     
-    Cvar_RegisterVariable (&vid_gamma, VID_Gamma);
-	Cvar_RegisterVariable (&vid_contrast, VID_Gamma);
+	Cvar_RegisterVariableCallback (&vid_gamma, VID_Gamma);
+	Cvar_RegisterVariableCallback (&vid_contrast, VID_Gamma);
     
     vid.recalc_refdef = true; // force a surface cache flush
     

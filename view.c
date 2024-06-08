@@ -874,35 +874,35 @@ void V_Init (void)
 	Cmd_AddCommand ("bf", V_BonusFlash_f);
 	Cmd_AddCommand ("centerview", V_StartPitchDrift);
 
-	Cvar_RegisterVariable (&v_centermove, NULL);
-	Cvar_RegisterVariable (&v_centerspeed, NULL);
+	Cvar_RegisterVariable (&v_centermove);
+	Cvar_RegisterVariable (&v_centerspeed);
 
-	Cvar_RegisterVariable (&v_iyaw_cycle, NULL);
-	Cvar_RegisterVariable (&v_iroll_cycle, NULL);
-	Cvar_RegisterVariable (&v_ipitch_cycle, NULL);
-	Cvar_RegisterVariable (&v_iyaw_level, NULL);
-	Cvar_RegisterVariable (&v_iroll_level, NULL);
-	Cvar_RegisterVariable (&v_ipitch_level, NULL);
+	Cvar_RegisterVariable (&v_iyaw_cycle);
+	Cvar_RegisterVariable (&v_iroll_cycle);
+	Cvar_RegisterVariable (&v_ipitch_cycle);
+	Cvar_RegisterVariable (&v_iyaw_level);
+	Cvar_RegisterVariable (&v_iroll_level);
+	Cvar_RegisterVariable (&v_ipitch_level);
 
-	Cvar_RegisterVariable (&v_idlescale, NULL);
-	Cvar_RegisterVariable (&crosshair, NULL);
-	Cvar_RegisterVariable (&cl_crossx, NULL);
-	Cvar_RegisterVariable (&cl_crossy, NULL);
-	Cvar_RegisterVariable (&gl_cshiftpercent, NULL);
+	Cvar_RegisterVariable (&v_idlescale);
+	Cvar_RegisterVariable (&crosshair);
+	Cvar_RegisterVariable (&cl_crossx);
+	Cvar_RegisterVariable (&cl_crossy);
+	Cvar_RegisterVariable (&gl_cshiftpercent);
 
-	Cvar_RegisterVariable (&scr_ofsx, NULL);
-	Cvar_RegisterVariable (&scr_ofsy, NULL);
-	Cvar_RegisterVariable (&scr_ofsz, NULL);
-	Cvar_RegisterVariable (&cl_rollspeed, NULL);
-	Cvar_RegisterVariable (&cl_rollangle, NULL);
-	Cvar_RegisterVariable (&cl_bob, NULL);
-	Cvar_RegisterVariable (&cl_bobcycle, NULL);
-	Cvar_RegisterVariable (&cl_bobup, NULL);
+	Cvar_RegisterVariable (&scr_ofsx);
+	Cvar_RegisterVariable (&scr_ofsy);
+	Cvar_RegisterVariable (&scr_ofsz);
+	Cvar_RegisterVariable (&cl_rollspeed);
+	Cvar_RegisterVariable (&cl_rollangle);
+	Cvar_RegisterVariable (&cl_bob);
+	Cvar_RegisterVariable (&cl_bobcycle);
+	Cvar_RegisterVariable (&cl_bobup);
 
-	Cvar_RegisterVariable (&v_kicktime, NULL);
-	Cvar_RegisterVariable (&v_kickroll, NULL);
-	Cvar_RegisterVariable (&v_kickpitch, NULL);
-	Cvar_RegisterVariable (&v_gunkick, NULL);	
+	Cvar_RegisterVariable (&v_kicktime);
+	Cvar_RegisterVariable (&v_kickroll);
+	Cvar_RegisterVariable (&v_kickpitch);
+	Cvar_RegisterVariable (&v_gunkick);	
 }
 
 

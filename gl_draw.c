@@ -539,7 +539,7 @@ void GL_Init (void)
 	Cmd_AddCommand ("gl_info", GL_Info_f);
 	Cmd_AddCommand ("gl_reloadtextures", GL_ReloadTextures_f);
 
-	Cvar_RegisterVariable (&gl_swapinterval, GL_SwapInterval);
+	Cvar_RegisterVariableCallback (&gl_swapinterval, GL_SwapInterval);
 
 	Con_Printf ("OpenGL initialized\n");
 
@@ -1015,11 +1015,11 @@ void Draw_Init (void)
 	free_gltextures[i].next = NULL;
 	numgltextures = 0;
 
-	Cvar_RegisterVariable (&scr_conalpha, NULL);
-	Cvar_RegisterVariable (&gl_max_size, NULL);
-	Cvar_RegisterVariable (&gl_picmip, NULL);
-	Cvar_RegisterVariable (&gl_texquality, NULL);
-	Cvar_RegisterVariable (&gl_warp_image_size, GL_UploadWarpImage);
+	Cvar_RegisterVariable (&scr_conalpha);
+	Cvar_RegisterVariable (&gl_max_size);
+	Cvar_RegisterVariable (&gl_picmip);
+	Cvar_RegisterVariable (&gl_texquality);
+	Cvar_RegisterVariableCallback (&gl_warp_image_size, GL_UploadWarpImage);
 
 	Cmd_AddCommand ("gl_texturemode", &GL_TextureMode_f);
 	Cmd_AddCommand ("gl_texture_anisotropy", &GL_Texture_Anisotropy_f);

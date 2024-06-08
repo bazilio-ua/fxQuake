@@ -201,60 +201,60 @@ void R_Init (void)
 	Cmd_AddCommand ("loadsky", R_Sky_f); // Nehahra
 	Cmd_AddCommand ("fog", R_Fog_f);
 
-	Cvar_RegisterVariable (&r_norefresh, NULL);
-	Cvar_RegisterVariable (&r_fullbright, R_FullBright);
-	Cvar_RegisterVariable (&r_drawentities, NULL);
-	Cvar_RegisterVariable (&r_drawworld, NULL);
-	Cvar_RegisterVariable (&r_drawviewmodel, NULL);
-	Cvar_RegisterVariable (&r_waterquality, NULL);
-	Cvar_RegisterVariable (&r_wateralpha, NULL);
-	Cvar_RegisterVariable (&r_lockalpha, NULL);
-	Cvar_RegisterVariable (&r_lavafog, NULL);
-	Cvar_RegisterVariable (&r_slimefog, NULL);
-	Cvar_RegisterVariable (&r_lavaalpha, NULL);
-	Cvar_RegisterVariable (&r_slimealpha, NULL);
-	Cvar_RegisterVariable (&r_teleportalpha, NULL);
-	Cvar_RegisterVariable (&r_dynamic, NULL);
-	Cvar_RegisterVariable (&r_dynamicscale, NULL);
-	Cvar_RegisterVariable (&r_novis, NULL);
-	Cvar_RegisterVariable (&r_lockfrustum, NULL);
-	Cvar_RegisterVariable (&r_lockpvs, NULL);
-	Cvar_RegisterVariable (&r_speeds, NULL);
-	Cvar_RegisterVariable (&r_waterwarp, NULL);
-	Cvar_RegisterVariable (&r_clearcolor, R_ClearColor);
-	Cvar_RegisterVariable (&r_fastsky, NULL);
-	Cvar_RegisterVariable (&r_skyquality, NULL);
-	Cvar_RegisterVariable (&r_skyalpha, NULL);
-	Cvar_RegisterVariable (&r_skyfog, NULL);
-	Cvar_RegisterVariable (&r_oldsky, NULL);
+	Cvar_RegisterVariable (&r_norefresh);
+	Cvar_RegisterVariableCallback (&r_fullbright, R_FullBright);
+	Cvar_RegisterVariable (&r_drawentities);
+	Cvar_RegisterVariable (&r_drawworld);
+	Cvar_RegisterVariable (&r_drawviewmodel);
+	Cvar_RegisterVariable (&r_waterquality);
+	Cvar_RegisterVariable (&r_wateralpha);
+	Cvar_RegisterVariable (&r_lockalpha);
+	Cvar_RegisterVariable (&r_lavafog);
+	Cvar_RegisterVariable (&r_slimefog);
+	Cvar_RegisterVariable (&r_lavaalpha);
+	Cvar_RegisterVariable (&r_slimealpha);
+	Cvar_RegisterVariable (&r_teleportalpha);
+	Cvar_RegisterVariable (&r_dynamic);
+	Cvar_RegisterVariable (&r_dynamicscale);
+	Cvar_RegisterVariable (&r_novis);
+	Cvar_RegisterVariable (&r_lockfrustum);
+	Cvar_RegisterVariable (&r_lockpvs);
+	Cvar_RegisterVariable (&r_speeds);
+	Cvar_RegisterVariable (&r_waterwarp);
+	Cvar_RegisterVariableCallback (&r_clearcolor, R_ClearColor);
+	Cvar_RegisterVariable (&r_fastsky);
+	Cvar_RegisterVariable (&r_skyquality);
+	Cvar_RegisterVariable (&r_skyalpha);
+	Cvar_RegisterVariable (&r_skyfog);
+	Cvar_RegisterVariable (&r_oldsky);
 
-	Cvar_RegisterVariable (&gl_finish, NULL);
-	Cvar_RegisterVariable (&gl_clear, NULL);
-	Cvar_RegisterVariable (&gl_cull, NULL);
-	Cvar_RegisterVariable (&gl_farclip, NULL);
-	Cvar_RegisterVariable (&gl_smoothmodels, NULL);
-	Cvar_RegisterVariable (&gl_affinemodels, NULL);
-	Cvar_RegisterVariable (&gl_polyblend, NULL);
-	Cvar_RegisterVariable (&gl_flashblend, NULL);
-	Cvar_RegisterVariable (&gl_flashblendview, NULL);
-	Cvar_RegisterVariable (&gl_overbright, GL_Overbright);
-	Cvar_RegisterVariable (&gl_oldspr, NULL);
-	Cvar_RegisterVariable (&gl_nocolors, NULL);
+	Cvar_RegisterVariable (&gl_finish);
+	Cvar_RegisterVariable (&gl_clear);
+	Cvar_RegisterVariable (&gl_cull);
+	Cvar_RegisterVariable (&gl_farclip);
+	Cvar_RegisterVariable (&gl_smoothmodels);
+	Cvar_RegisterVariable (&gl_affinemodels);
+	Cvar_RegisterVariable (&gl_polyblend);
+	Cvar_RegisterVariable (&gl_flashblend);
+	Cvar_RegisterVariable (&gl_flashblendview);
+	Cvar_RegisterVariableCallback (&gl_overbright, GL_Overbright);
+	Cvar_RegisterVariable (&gl_oldspr);
+	Cvar_RegisterVariable (&gl_nocolors);
 
 	// Nehahra
-	Cvar_RegisterVariable (&gl_fogenable, NULL);
-	Cvar_RegisterVariable (&gl_fogdensity, NULL);
-	Cvar_RegisterVariable (&gl_fogred, NULL);
-	Cvar_RegisterVariable (&gl_foggreen, NULL);
-	Cvar_RegisterVariable (&gl_fogblue, NULL);
+	Cvar_RegisterVariable (&gl_fogenable);
+	Cvar_RegisterVariable (&gl_fogdensity);
+	Cvar_RegisterVariable (&gl_fogred);
+	Cvar_RegisterVariable (&gl_foggreen);
+	Cvar_RegisterVariable (&gl_fogblue);
 
-	Cvar_RegisterVariable (&r_bloom, NULL);
-	Cvar_RegisterVariable (&r_bloom_darken, NULL);
-	Cvar_RegisterVariable (&r_bloom_alpha, NULL);
-	Cvar_RegisterVariable (&r_bloom_intensity, NULL);
-	Cvar_RegisterVariable (&r_bloom_diamond_size, NULL);
-	Cvar_RegisterVariable (&r_bloom_sample_size, R_InitBloomTextures); // NULL
-	Cvar_RegisterVariable (&r_bloom_fast_sample, NULL);
+	Cvar_RegisterVariable (&r_bloom);
+	Cvar_RegisterVariable (&r_bloom_darken);
+	Cvar_RegisterVariable (&r_bloom_alpha);
+	Cvar_RegisterVariable (&r_bloom_intensity);
+	Cvar_RegisterVariable (&r_bloom_diamond_size);
+	Cvar_RegisterVariableCallback (&r_bloom_sample_size, R_InitBloomTextures); // NULL
+	Cvar_RegisterVariable (&r_bloom_fast_sample);
 
 	R_InitParticles ();
 

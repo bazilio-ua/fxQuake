@@ -156,15 +156,15 @@ void S_Init (void)
 	Cmd_AddCommand("soundlist", S_SoundList);
 	Cmd_AddCommand("soundinfo", S_SoundInfo_f);
 
-	Cvar_RegisterVariable(&nosound, NULL);
-	Cvar_RegisterVariable(&volume, NULL);
-	Cvar_RegisterVariable(&precache, NULL);
-	Cvar_RegisterVariable(&loadas8bit, NULL);
-	Cvar_RegisterVariable(&ambient_level, NULL);
-	Cvar_RegisterVariable(&ambient_fade, NULL);
-	Cvar_RegisterVariable(&snd_noextraupdate, NULL);
-	Cvar_RegisterVariable(&snd_show, NULL);
-	Cvar_RegisterVariable(&snd_mixahead, NULL);
+	Cvar_RegisterVariable(&nosound);
+	Cvar_RegisterVariable(&volume);
+	Cvar_RegisterVariable(&precache);
+	Cvar_RegisterVariable(&loadas8bit);
+	Cvar_RegisterVariable(&ambient_level);
+	Cvar_RegisterVariable(&ambient_fade);
+	Cvar_RegisterVariable(&snd_noextraupdate);
+	Cvar_RegisterVariable(&snd_show);
+	Cvar_RegisterVariable(&snd_mixahead);
 
 	if (host_parms->memsize < 0x800000)
 	{

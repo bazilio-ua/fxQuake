@@ -898,33 +898,33 @@ void CL_Init (void)
 //
 // register our commands
 //
-	Cvar_RegisterVariable (&cl_name, NULL);
-	Cvar_RegisterVariable (&cl_color, NULL);
-	Cvar_RegisterVariable (&cl_upspeed, NULL);
-	Cvar_RegisterVariable (&cl_forwardspeed, NULL);
-	Cvar_RegisterVariable (&cl_backspeed, NULL);
-	Cvar_RegisterVariable (&cl_sidespeed, NULL);
-	Cvar_RegisterVariable (&cl_movespeedkey, NULL);
-	Cvar_RegisterVariable (&cl_yawspeed, NULL);
-	Cvar_RegisterVariable (&cl_pitchspeed, NULL);
-	Cvar_RegisterVariable (&cl_maxpitch, NULL); // variable pitch clamping
-	Cvar_RegisterVariable (&cl_minpitch, NULL); // variable pitch clamping
-	Cvar_RegisterVariable (&cl_anglespeedkey, NULL);
-	Cvar_RegisterVariable (&cl_shownet, NULL);
-	Cvar_RegisterVariable (&cl_nolerp, NULL);
-	Cvar_RegisterVariable (&cl_lerpmuzzleflash, NULL);
+	Cvar_RegisterVariable (&cl_name);
+	Cvar_RegisterVariable (&cl_color);
+	Cvar_RegisterVariable (&cl_upspeed);
+	Cvar_RegisterVariable (&cl_forwardspeed);
+	Cvar_RegisterVariable (&cl_backspeed);
+	Cvar_RegisterVariable (&cl_sidespeed);
+	Cvar_RegisterVariable (&cl_movespeedkey);
+	Cvar_RegisterVariable (&cl_yawspeed);
+	Cvar_RegisterVariable (&cl_pitchspeed);
+	Cvar_RegisterVariable (&cl_maxpitch); // variable pitch clamping
+	Cvar_RegisterVariable (&cl_minpitch); // variable pitch clamping
+	Cvar_RegisterVariable (&cl_anglespeedkey);
+	Cvar_RegisterVariable (&cl_shownet);
+	Cvar_RegisterVariable (&cl_nolerp);
+	Cvar_RegisterVariable (&cl_lerpmuzzleflash);
 
-	Cvar_RegisterVariable (&cl_coloredlight, NULL);
-	Cvar_RegisterVariable (&cl_extradlight, NULL);
+	Cvar_RegisterVariable (&cl_coloredlight);
+	Cvar_RegisterVariable (&cl_extradlight);
 
-	Cvar_RegisterVariable (&lookspring, NULL);
-	Cvar_RegisterVariable (&lookstrafe, NULL);
-	Cvar_RegisterVariable (&sensitivity, NULL);
+	Cvar_RegisterVariable (&lookspring);
+	Cvar_RegisterVariable (&lookstrafe);
+	Cvar_RegisterVariable (&sensitivity);
 
-	Cvar_RegisterVariable (&m_pitch, NULL);
-	Cvar_RegisterVariable (&m_yaw, NULL);
-	Cvar_RegisterVariable (&m_forward, NULL);
-	Cvar_RegisterVariable (&m_side, NULL);
+	Cvar_RegisterVariable (&m_pitch);
+	Cvar_RegisterVariable (&m_yaw);
+	Cvar_RegisterVariable (&m_forward);
+	Cvar_RegisterVariable (&m_side);
 
 	Cmd_AddCommand ("entities", CL_PrintEntities_f);
 	Cmd_AddCommand ("record", CL_Record_f);

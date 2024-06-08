@@ -244,27 +244,27 @@ void Host_InitLocal (void)
 
 	Cmd_AddCommand ("saveconfig", Host_SaveConfig_f);
 
-	Cvar_RegisterVariable (&host_framerate, NULL);
-	Cvar_RegisterVariable (&host_timescale, NULL);
-	Cvar_RegisterVariable (&host_speeds, NULL);
-	Cvar_RegisterVariable (&host_maxfps, NULL);
+	Cvar_RegisterVariable (&host_framerate);
+	Cvar_RegisterVariable (&host_timescale);
+	Cvar_RegisterVariable (&host_speeds);
+	Cvar_RegisterVariable (&host_maxfps);
 
-	Cvar_RegisterVariable (&sys_ticrate, NULL);
-	Cvar_RegisterVariable (&sys_throttle, NULL);
-	Cvar_RegisterVariable (&serverprofile, NULL);
+	Cvar_RegisterVariable (&sys_ticrate);
+	Cvar_RegisterVariable (&sys_throttle);
+	Cvar_RegisterVariable (&serverprofile);
 
-	Cvar_RegisterVariable (&fraglimit, NULL);
-	Cvar_RegisterVariable (&timelimit, NULL);
-	Cvar_RegisterVariable (&teamplay, NULL);
-	Cvar_RegisterVariable (&samelevel, NULL);
-	Cvar_RegisterVariable (&noexit, NULL);
-	Cvar_RegisterVariable (&skill, NULL);
-	Cvar_RegisterVariable (&deathmatch, NULL);
-	Cvar_RegisterVariable (&coop, NULL);
+	Cvar_RegisterVariable (&fraglimit);
+	Cvar_RegisterVariable (&timelimit);
+	Cvar_RegisterVariable (&teamplay);
+	Cvar_RegisterVariable (&samelevel);
+	Cvar_RegisterVariable (&noexit);
+	Cvar_RegisterVariable (&skill);
+	Cvar_RegisterVariable (&deathmatch);
+	Cvar_RegisterVariable (&coop);
 
-	Cvar_RegisterVariable (&pausable, NULL);
+	Cvar_RegisterVariable (&pausable);
 
-	Cvar_RegisterVariable (&developer, NULL);
+	Cvar_RegisterVariable (&developer);
 	i = COM_CheckParm ("-developer");
 	if (i)
 	{
@@ -274,9 +274,9 @@ void Host_InitLocal (void)
 			Cvar_SetValue ("developer", 1);
 	}
 
-	Cvar_RegisterVariable (&temp1, NULL);
+	Cvar_RegisterVariable (&temp1);
 
-	Cvar_RegisterVariable (&cutscene, NULL); // Nehahra
+	Cvar_RegisterVariable (&cutscene); // Nehahra
 
 	Host_FindMaxClients ();
 
