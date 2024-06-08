@@ -37,15 +37,15 @@ qboolean	onground;
 
 usercmd_t	cmd;
 
-cvar_t	sv_edgefriction = {"sv_edgefriction", "2"};
-cvar_t	sv_idealpitchscale = {"sv_idealpitchscale", "0.8"};
-cvar_t	sv_altnoclip = {"sv_altnoclip", "0"};
-cvar_t	sv_maxspeed = {"sv_maxspeed", "320", false, true};
-cvar_t	sv_maxairspeed = {"sv_maxairspeed", "30"};
-cvar_t	sv_accelerate = {"sv_accelerate", "10"};
-cvar_t	sv_airaccelerate = {"sv_airaccelerate", "10"};
-cvar_t	sv_q2airaccelerate = {"sv_q2airaccelerate", "0"}; // Quake2-style air acceleration
-cvar_t	sv_wateraccelerate = {"sv_wateraccelerate", "10"};
+cvar_t	sv_edgefriction = {"sv_edgefriction", "2", CVAR_NONE};
+cvar_t	sv_idealpitchscale = {"sv_idealpitchscale", "0.8", CVAR_NONE};
+cvar_t	sv_altnoclip = {"sv_altnoclip", "0", CVAR_NONE};
+cvar_t	sv_maxspeed = {"sv_maxspeed", "320", CVAR_SERVER};
+cvar_t	sv_maxairspeed = {"sv_maxairspeed", "30", CVAR_NONE};
+cvar_t	sv_accelerate = {"sv_accelerate", "10", CVAR_NONE};
+cvar_t	sv_airaccelerate = {"sv_airaccelerate", "10", CVAR_NONE};
+cvar_t	sv_q2airaccelerate = {"sv_q2airaccelerate", "0", CVAR_NONE}; // Quake2-style air acceleration
+cvar_t	sv_wateraccelerate = {"sv_wateraccelerate", "10", CVAR_NONE};
 
 /*
 ===============

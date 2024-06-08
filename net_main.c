@@ -57,12 +57,12 @@ int messagesReceived = 0;
 int unreliableMessagesSent = 0;
 int unreliableMessagesReceived = 0;
 
-cvar_t	net_messagetimeout = {"net_messagetimeout","300"};
-cvar_t	net_connecttimeout = {"net_connecttimeout","10"}; // qkick/qflood protection
-cvar_t	hostname = {"hostname", "UNNAMED"};
-cvar_t	pq_password = {"pq_password", ""}; // password protection for server
-cvar_t	rcon_password = {"rcon_password", ""}; // rcon password
-cvar_t	rcon_server = {"rcon_server", ""}; // rcon server
+cvar_t	net_messagetimeout = {"net_messagetimeout","300", CVAR_NONE};
+cvar_t	net_connecttimeout = {"net_connecttimeout","10", CVAR_NONE}; // qkick/qflood protection
+cvar_t	hostname = {"hostname", "UNNAMED", CVAR_NONE};
+cvar_t	pq_password = {"pq_password", "", CVAR_NONE}; // password protection for server
+cvar_t	rcon_password = {"rcon_password", "", CVAR_NONE}; // rcon password
+cvar_t	rcon_server = {"rcon_server", "", CVAR_NONE}; // rcon server
 char	server_name[MAX_QPATH]; // use the current server if rcon_server is not set
 
 // rcon

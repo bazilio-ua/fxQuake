@@ -30,7 +30,7 @@ qboolean mouse_active;
 float mouse_x=0, mouse_y=0;
 static float old_mouse_x, old_mouse_y;
 
-cvar_t m_filter = {"m_filter", "0", true};
+cvar_t m_filter = {"m_filter", "0", CVAR_ARCHIVE};
 
 qboolean vidmode_fullscreen = false; // was vidmode_active
 

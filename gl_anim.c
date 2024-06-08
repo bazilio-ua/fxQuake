@@ -21,20 +21,20 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "quakedef.h"
 
-cvar_t	r_fastsky = {"r_fastsky","0"};
-cvar_t	r_skyquality = {"r_skyquality","12"};
-cvar_t	r_skyalpha = {"r_skyalpha","1", true};
-cvar_t	r_skyfog = {"r_skyfog","0.5", true};
-cvar_t	r_oldsky = {"r_oldsky", "0"};
+cvar_t	r_fastsky = {"r_fastsky","0", CVAR_NONE};
+cvar_t	r_skyquality = {"r_skyquality","12", CVAR_NONE};
+cvar_t	r_skyalpha = {"r_skyalpha","1", CVAR_ARCHIVE};
+cvar_t	r_skyfog = {"r_skyfog","0.5", CVAR_ARCHIVE};
+cvar_t	r_oldsky = {"r_oldsky", "0", CVAR_NONE};
 
-cvar_t	r_waterquality = {"r_waterquality", "12"};
+cvar_t	r_waterquality = {"r_waterquality", "12", CVAR_NONE};
 
 // Nehahra
-cvar_t	gl_fogenable = {"gl_fogenable", "0"};
-cvar_t	gl_fogdensity = {"gl_fogdensity", "0"};
-cvar_t	gl_fogred = {"gl_fogred","0.5"};
-cvar_t	gl_foggreen = {"gl_foggreen","0.5"};
-cvar_t	gl_fogblue = {"gl_fogblue","0.5"};
+cvar_t	gl_fogenable = {"gl_fogenable", "0", CVAR_NONE};
+cvar_t	gl_fogdensity = {"gl_fogdensity", "0", CVAR_NONE};
+cvar_t	gl_fogred = {"gl_fogred","0.5", CVAR_NONE};
+cvar_t	gl_foggreen = {"gl_foggreen","0.5", CVAR_NONE};
+cvar_t	gl_fogblue = {"gl_fogblue","0.5", CVAR_NONE};
 
 //==================================================================================================================
 
@@ -1816,13 +1816,13 @@ old link: http://www.quakesrc.org/forums/viewtopic.php?t=4340&start=0
 
 static int bloom_size;
 
-cvar_t r_bloom					= {"r_bloom", "0", true};
-cvar_t r_bloom_darken			= {"r_bloom_darken", "1", true};
-cvar_t r_bloom_alpha			= {"r_bloom_alpha", "0.2", true};
-cvar_t r_bloom_intensity		= {"r_bloom_intensity", "0.8", true};
-cvar_t r_bloom_diamond_size		= {"r_bloom_diamond_size", "8", true};
-cvar_t r_bloom_sample_size		= {"r_bloom_sample_size", "64", true}; // was 512
-cvar_t r_bloom_fast_sample		= {"r_bloom_fast_sample", "0", true};
+cvar_t r_bloom					= {"r_bloom", "0", CVAR_ARCHIVE};
+cvar_t r_bloom_darken			= {"r_bloom_darken", "1", CVAR_ARCHIVE};
+cvar_t r_bloom_alpha			= {"r_bloom_alpha", "0.2", CVAR_ARCHIVE};
+cvar_t r_bloom_intensity		= {"r_bloom_intensity", "0.8", CVAR_ARCHIVE};
+cvar_t r_bloom_diamond_size		= {"r_bloom_diamond_size", "8", CVAR_ARCHIVE};
+cvar_t r_bloom_sample_size		= {"r_bloom_sample_size", "64", CVAR_ARCHIVE}; // was 512
+cvar_t r_bloom_fast_sample		= {"r_bloom_fast_sample", "0", CVAR_ARCHIVE};
 
 gltexture_t *bloomscreentexture;
 gltexture_t *bloomeffecttexture;

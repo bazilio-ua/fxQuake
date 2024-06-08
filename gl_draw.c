@@ -21,12 +21,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "quakedef.h"
 
-cvar_t		scr_conalpha = {"scr_conalpha", "1", true};
-cvar_t		gl_max_size = {"gl_max_size", "0"};
-cvar_t		gl_picmip = {"gl_picmip", "0"};
-cvar_t		gl_texquality = {"gl_texquality", "1"};
-cvar_t		gl_swapinterval = {"gl_swapinterval", "0", true};
-cvar_t		gl_warp_image_size = {"gl_warp_image_size", "256", true}; // was 512, for water warp
+cvar_t		scr_conalpha = {"scr_conalpha", "1", CVAR_ARCHIVE};
+cvar_t		gl_max_size = {"gl_max_size", "0", CVAR_NONE};
+cvar_t		gl_picmip = {"gl_picmip", "0", CVAR_NONE};
+cvar_t		gl_texquality = {"gl_texquality", "1", CVAR_NONE};
+cvar_t		gl_swapinterval = {"gl_swapinterval", "0", CVAR_ARCHIVE};
+cvar_t		gl_warp_image_size = {"gl_warp_image_size", "256", CVAR_ARCHIVE}; // was 512, for water warp
 
 byte		*draw_chars;				// 8*8 graphic characters
 qpic_t		*draw_disc;

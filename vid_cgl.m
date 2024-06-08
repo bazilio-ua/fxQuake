@@ -32,8 +32,8 @@ CGDisplayModeRef    gameMode;
 
 viddef_t vid; // global video state
 
-cvar_t		vid_gamma = {"gamma", "1", true};
-cvar_t		vid_contrast = {"contrast", "1", true}; // QuakeSpasm, MarkV
+cvar_t		vid_gamma = {"gamma", "1", CVAR_ARCHIVE};
+cvar_t		vid_contrast = {"contrast", "1", CVAR_ARCHIVE}; // QuakeSpasm, MarkV
 
 //==========================================================================
 //

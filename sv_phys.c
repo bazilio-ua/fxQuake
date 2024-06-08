@@ -39,15 +39,15 @@ solid_edge items only clip against bsp models.
 
 */
 
-cvar_t	sv_friction = {"sv_friction","4",false,true};
-cvar_t	sv_waterfriction = {"sv_waterfriction","4",false,true};
-cvar_t	sv_stopspeed = {"sv_stopspeed","100"};
-cvar_t	sv_gravity = {"sv_gravity","800",false,true};
-cvar_t	sv_maxvelocity = {"sv_maxvelocity","2000"};
-cvar_t	sv_nostep = {"sv_nostep","0"};
+cvar_t	sv_friction = {"sv_friction","4", CVAR_SERVER};
+cvar_t	sv_waterfriction = {"sv_waterfriction","4", CVAR_SERVER};
+cvar_t	sv_stopspeed = {"sv_stopspeed","100", CVAR_NONE};
+cvar_t	sv_gravity = {"sv_gravity","800", CVAR_SERVER};
+cvar_t	sv_maxvelocity = {"sv_maxvelocity","2000", CVAR_NONE};
+cvar_t	sv_nostep = {"sv_nostep","0", CVAR_NONE};
 
-cvar_t	sv_novis = {"sv_novis","0", false, true};
-cvar_t	sv_bouncedownslopes = {"sv_bouncedownslopes","0", false, true};
+cvar_t	sv_novis = {"sv_novis","0", CVAR_SERVER};
+cvar_t	sv_bouncedownslopes = {"sv_bouncedownslopes","0", CVAR_SERVER};
 
 #define	MOVE_EPSILON	0.01
 

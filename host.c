@@ -55,33 +55,33 @@ jmp_buf 	host_abortserver;
 byte		*host_basepal = NULL; // set to null
 byte        *host_colormap = NULL;  // set to null
 
-cvar_t	host_framerate = {"host_framerate","0"};	// set for slow motion
-cvar_t	host_timescale = {"host_timescale","0"};	// more sensitivity slow motion
-cvar_t	host_speeds = {"host_speeds","0"};			// set for running times
-cvar_t	host_maxfps = {"host_maxfps", "72"};
+cvar_t	host_framerate = {"host_framerate","0", CVAR_NONE};	// set for slow motion
+cvar_t	host_timescale = {"host_timescale","0", CVAR_NONE};	// more sensitivity slow motion
+cvar_t	host_speeds = {"host_speeds","0", CVAR_NONE};			// set for running times
+cvar_t	host_maxfps = {"host_maxfps", "72", CVAR_NONE};
 
-cvar_t	sys_ticrate = {"sys_ticrate","0.05"};
-cvar_t	sys_throttle = {"sys_throttle","0.02",true};
-cvar_t	serverprofile = {"serverprofile","0"};
+cvar_t	sys_ticrate = {"sys_ticrate","0.05", CVAR_NONE};
+cvar_t	sys_throttle = {"sys_throttle","0.02", CVAR_ARCHIVE};
+cvar_t	serverprofile = {"serverprofile","0", CVAR_NONE};
 
-cvar_t	fraglimit = {"fraglimit","0",false,true};
-cvar_t	timelimit = {"timelimit","0",false,true};
-cvar_t	teamplay = {"teamplay","0",false,true};
+cvar_t	fraglimit = {"fraglimit","0", CVAR_SERVER};
+cvar_t	timelimit = {"timelimit","0", CVAR_SERVER};
+cvar_t	teamplay = {"teamplay","0", CVAR_SERVER};
 
-cvar_t	samelevel = {"samelevel","0"};
-cvar_t	noexit = {"noexit","0",false,true};
+cvar_t	samelevel = {"samelevel","0", CVAR_NONE};
+cvar_t	noexit = {"noexit","0", CVAR_SERVER};
 
-cvar_t	developer = {"developer","0"};	// should be 0 for release!
+cvar_t	developer = {"developer","0", CVAR_NONE};	// should be 0 for release!
 
-cvar_t	skill = {"skill","1"};						// 0 - 3
-cvar_t	deathmatch = {"deathmatch","0"};			// 0, 1, or 2
-cvar_t	coop = {"coop","0"};			// 0 or 1
+cvar_t	skill = {"skill","1", CVAR_NONE};						// 0 - 3
+cvar_t	deathmatch = {"deathmatch","0", CVAR_NONE};			// 0, 1, or 2
+cvar_t	coop = {"coop","0", CVAR_NONE};			// 0 or 1
 
-cvar_t	pausable = {"pausable","1"};
+cvar_t	pausable = {"pausable","1", CVAR_NONE};
 
-cvar_t	temp1 = {"temp1","0"};
+cvar_t	temp1 = {"temp1","0", CVAR_NONE};
 
-cvar_t	cutscene = {"cutscene", "1"}; // Nehahra
+cvar_t	cutscene = {"cutscene", "1", CVAR_NONE}; // Nehahra
 
 /*
 ================

@@ -62,39 +62,39 @@ void GL_DrawAliasFrame (aliashdr_t *paliashdr, lerpdata_t lerpdata);
 void GL_DrawEntityTransform (lerpdata_t lerpdata);
 
 
-cvar_t	r_norefresh = {"r_norefresh","0"};
-cvar_t	r_drawentities = {"r_drawentities","1"};
-cvar_t	r_drawworld = {"r_drawworld","1"};
-cvar_t	r_drawviewmodel = {"r_drawviewmodel","1"};
-cvar_t	r_speeds = {"r_speeds","0"};
-cvar_t	r_fullbright = {"r_fullbright","0"};
-cvar_t	r_wateralpha = {"r_wateralpha","1", true};
-cvar_t	r_lockalpha = {"r_lockalpha","0", true};
-cvar_t	r_lavafog = {"r_lavafog","0.5", true};
-cvar_t	r_slimefog = {"r_slimefog","0.8", true};
-cvar_t	r_lavaalpha = {"r_lavaalpha","1", true};
-cvar_t	r_slimealpha = {"r_slimealpha","1", true};
-cvar_t	r_teleportalpha = {"r_teleportalpha","1", true};
-cvar_t	r_dynamic = {"r_dynamic","1", true};
-cvar_t	r_dynamicscale = {"r_dynamicscale","1", true};
-cvar_t	r_novis = {"r_novis","0"};
-cvar_t	r_lockfrustum =	{"r_lockfrustum","0"};
-cvar_t	r_lockpvs = {"r_lockpvs","0"};
-cvar_t	r_waterwarp = {"r_waterwarp", "1", true};
-cvar_t	r_clearcolor = {"r_clearcolor", "2", true}; // Closest to the original
+cvar_t	r_norefresh = {"r_norefresh","0", CVAR_NONE};
+cvar_t	r_drawentities = {"r_drawentities","1", CVAR_NONE};
+cvar_t	r_drawworld = {"r_drawworld","1", CVAR_NONE};
+cvar_t	r_drawviewmodel = {"r_drawviewmodel","1", CVAR_NONE};
+cvar_t	r_speeds = {"r_speeds","0", CVAR_NONE};
+cvar_t	r_fullbright = {"r_fullbright","0", CVAR_NONE};
+cvar_t	r_wateralpha = {"r_wateralpha","1", CVAR_ARCHIVE};
+cvar_t	r_lockalpha = {"r_lockalpha","0", CVAR_ARCHIVE};
+cvar_t	r_lavafog = {"r_lavafog","0.5", CVAR_ARCHIVE};
+cvar_t	r_slimefog = {"r_slimefog","0.8", CVAR_ARCHIVE};
+cvar_t	r_lavaalpha = {"r_lavaalpha","1", CVAR_ARCHIVE};
+cvar_t	r_slimealpha = {"r_slimealpha","1", CVAR_ARCHIVE};
+cvar_t	r_teleportalpha = {"r_teleportalpha","1", CVAR_ARCHIVE};
+cvar_t	r_dynamic = {"r_dynamic","1", CVAR_ARCHIVE};
+cvar_t	r_dynamicscale = {"r_dynamicscale","1", CVAR_ARCHIVE};
+cvar_t	r_novis = {"r_novis","0", CVAR_NONE};
+cvar_t	r_lockfrustum =	{"r_lockfrustum","0", CVAR_NONE};
+cvar_t	r_lockpvs = {"r_lockpvs","0", CVAR_NONE};
+cvar_t	r_waterwarp = {"r_waterwarp", "1", CVAR_ARCHIVE};
+cvar_t	r_clearcolor = {"r_clearcolor", "2", CVAR_ARCHIVE}; // Closest to the original
 
-cvar_t	gl_finish = {"gl_finish","0"};
-cvar_t	gl_clear = {"gl_clear","0"};
-cvar_t	gl_cull = {"gl_cull","1"};
-cvar_t	gl_farclip = {"gl_farclip","16384", true};
-cvar_t	gl_smoothmodels = {"gl_smoothmodels","1"};
-cvar_t	gl_affinemodels = {"gl_affinemodels","0"};
-cvar_t	gl_polyblend = {"gl_polyblend","1", true};
-cvar_t	gl_flashblend = {"gl_flashblend","1", true};
-cvar_t	gl_flashblendview = {"gl_flashblendview","1", true};
-cvar_t	gl_overbright = {"gl_overbright", "1", true};
-cvar_t	gl_oldspr = {"gl_oldspr", "0"}; // Old opaque sprite
-cvar_t	gl_nocolors = {"gl_nocolors","0"};
+cvar_t	gl_finish = {"gl_finish","0", CVAR_NONE};
+cvar_t	gl_clear = {"gl_clear","0", CVAR_NONE};
+cvar_t	gl_cull = {"gl_cull","1", CVAR_NONE};
+cvar_t	gl_farclip = {"gl_farclip","16384", CVAR_ARCHIVE};
+cvar_t	gl_smoothmodels = {"gl_smoothmodels","1", CVAR_NONE};
+cvar_t	gl_affinemodels = {"gl_affinemodels","0", CVAR_NONE};
+cvar_t	gl_polyblend = {"gl_polyblend","1", CVAR_ARCHIVE};
+cvar_t	gl_flashblend = {"gl_flashblend","1", CVAR_ARCHIVE};
+cvar_t	gl_flashblendview = {"gl_flashblendview","1", CVAR_ARCHIVE};
+cvar_t	gl_overbright = {"gl_overbright", "1", CVAR_ARCHIVE};
+cvar_t	gl_oldspr = {"gl_oldspr", "0", CVAR_NONE}; // Old opaque sprite
+cvar_t	gl_nocolors = {"gl_nocolors","0", CVAR_NONE};
 
 
 /*

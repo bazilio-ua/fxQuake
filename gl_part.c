@@ -33,7 +33,7 @@ int				r_numparticles;
 
 float			texturescalefactor; // compensate for apparent size of different particle textures
 
-cvar_t	r_particles = {"r_particles","1",true};
+cvar_t	r_particles = {"r_particles","1", CVAR_ARCHIVE};
 
 /*
 ===============

@@ -30,8 +30,8 @@ AudioUnit audioUnit;
 AudioFileID audioFileId;
 SInt64 filePosition = 0;
 
-cvar_t bgmvolume = {"bgmvolume", "1", true};
-cvar_t bgmtype = {"bgmtype", "cd", true};   // cd or none
+cvar_t bgmvolume = {"bgmvolume", "1", CVAR_ARCHIVE};
+cvar_t bgmtype = {"bgmtype", "cd", CVAR_ARCHIVE};   // cd or none
 
 static qboolean cdValid = false;
 static qboolean	playing = false;

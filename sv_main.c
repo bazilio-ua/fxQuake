@@ -26,7 +26,7 @@ server_static_t	svs;
 
 char	localmodels[MAX_MODELS][6]; // "*1023" //5 "*255"		// inline model names for precache
 
-cvar_t sv_cullentities = {"sv_cullentities", "0", false, true}; // OFF
+cvar_t sv_cullentities = {"sv_cullentities", "0", CVAR_SERVER}; // OFF
 
 
 //============================================================================

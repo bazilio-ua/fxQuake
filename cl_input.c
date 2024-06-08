@@ -240,20 +240,20 @@ float CL_KeyState (kbutton_t *key)
 
 //==========================================================================
 
-cvar_t	cl_upspeed = {"cl_upspeed","200"};
-cvar_t	cl_forwardspeed = {"cl_forwardspeed","200", true};
-cvar_t	cl_backspeed = {"cl_backspeed","200", true};
-cvar_t	cl_sidespeed = {"cl_sidespeed","350"};
+cvar_t	cl_upspeed = {"cl_upspeed","200", CVAR_NONE};
+cvar_t	cl_forwardspeed = {"cl_forwardspeed","200", CVAR_ARCHIVE};
+cvar_t	cl_backspeed = {"cl_backspeed","200", CVAR_ARCHIVE};
+cvar_t	cl_sidespeed = {"cl_sidespeed","350", CVAR_NONE};
 
-cvar_t	cl_movespeedkey = {"cl_movespeedkey","2.0"};
+cvar_t	cl_movespeedkey = {"cl_movespeedkey","2.0", CVAR_NONE};
 
-cvar_t	cl_yawspeed = {"cl_yawspeed","140"};
-cvar_t	cl_pitchspeed = {"cl_pitchspeed","150"};
+cvar_t	cl_yawspeed = {"cl_yawspeed","140", CVAR_NONE};
+cvar_t	cl_pitchspeed = {"cl_pitchspeed","150", CVAR_NONE};
 
-cvar_t	cl_maxpitch = {"cl_maxpitch", "90", true}; // variable pitch clamping
-cvar_t	cl_minpitch = {"cl_minpitch", "-90", true}; // variable pitch clamping
+cvar_t	cl_maxpitch = {"cl_maxpitch", "90", CVAR_ARCHIVE}; // variable pitch clamping
+cvar_t	cl_minpitch = {"cl_minpitch", "-90", CVAR_ARCHIVE}; // variable pitch clamping
 
-cvar_t	cl_anglespeedkey = {"cl_anglespeedkey","1.5"};
+cvar_t	cl_anglespeedkey = {"cl_anglespeedkey","1.5", CVAR_NONE};
 
 
 /*

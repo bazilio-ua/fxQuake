@@ -42,9 +42,9 @@ static int	mod_decompressed_capacity;
 model_t	mod_known[MAX_MOD_KNOWN];
 int		mod_numknown;
 
-cvar_t	external_lit = {"external_lit","1"};
-cvar_t	external_vis = {"external_vis","1"};
-cvar_t	external_ent = {"external_ent","1"};
+cvar_t	external_lit = {"external_lit","1", CVAR_NONE};
+cvar_t	external_vis = {"external_vis","1", CVAR_NONE};
+cvar_t	external_ent = {"external_ent","1", CVAR_NONE};
 
 /*
 ===============

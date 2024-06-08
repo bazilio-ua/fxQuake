@@ -59,9 +59,10 @@ void Cvar_List_f (void)
 		{
 			continue;
 		}
-		Con_SafePrintf ("%s%s %s \"%s\"\n",
-			cvar->archive ? "*" : " ",
-			cvar->server ? "s" : " ",
+		Con_SafePrintf ("%c%c%c %s \"%s\"\n",
+			cvar->flags & CVAR_ARCHIVE ? '*' : ' ',
+			cvar->flags & CVAR_SERVER ? 's' : ' ',
+			cvar->flags & CVAR_ROM ? 'r' : ' ',
 			cvar->name,
 			cvar->string);
 		count++;
@@ -227,7 +228,7 @@ void Cvar_ResetCfg_f (void)
 	cvar_t	*var;
 
 	for (var = cvar_vars ; var ; var = var->next)
-		if (var->archive)
+		if (var->flags & CVAR_ARCHIVE)
 			Cvar_Reset (var->name);
 }
 
@@ -276,6 +277,40 @@ cvar_t *Cvar_FindVar (char *var_name)
 
 	return NULL;
 }
+
+/*
+============
+Cvar_NextServerVar
+
+moved from net_dgrm.c to here, command == CCREQ_RULE_INFO case
+============
+*/
+cvar_t *Cvar_NextServerVar (char *var_name)
+{
+	cvar_t	*var;
+	
+	// find the search start location
+	if (*var_name)
+	{
+		var = Cvar_FindVar (var_name);
+		if (!var)
+			return NULL;
+		var = var->next;
+	}
+	else
+		var = cvar_vars;
+	
+	// search for the next server cvar
+	while (var)
+	{
+		if (var->flags & CVAR_SERVER)
+			break;
+		var = var->next;
+	}
+	
+	return var;
+}
+
 
 /*
 ============
@@ -364,6 +399,11 @@ void Cvar_Set (char *var_name, char *value)
 		return;
 	}
 
+	if (var->flags & CVAR_ROM) {
+		Con_Printf ("Cvar_Set: variable \"%s\" is read-only, cannot modify\n", var_name);
+		return;
+	}
+	
 	if (!strcmp(var->string, value))
 		return;	// no change
 	
@@ -381,7 +421,7 @@ void Cvar_Set (char *var_name, char *value)
 	}
 	//johnfitz
 
-	if (var->server)
+	if (var->flags & CVAR_SERVER)
 	{
 		if (sv.active)
 			SV_BroadcastPrintf ("\"%s\" changed to \"%s\"\n", var->name, var->string);
@@ -523,7 +563,7 @@ void Cvar_WriteVariables (FILE *f)
 	cvar_t	*var;
 	
 	for (var = cvar_vars ; var ; var = var->next)
-		if (var->archive)
+		if (var->flags & CVAR_ARCHIVE)
 			fprintf (f, "%s \"%s\"\n", var->name, var->string);
 }
 

@@ -38,9 +38,9 @@ int			con_current;		// where next message will be printed
 int			con_x;				// offset in current line for next print
 char		*con_text = NULL;
 
-cvar_t		con_notifytime = {"con_notifytime","3"};		//seconds
-cvar_t		con_logcenterprint = {"con_logcenterprint", "1"};	// log centerprints to console
-cvar_t		con_removecr = {"con_removecr", "1"}; // remove \r from console output
+cvar_t		con_notifytime = {"con_notifytime","3", CVAR_NONE};			// in seconds
+cvar_t		con_logcenterprint = {"con_logcenterprint","1", CVAR_NONE};	// log centerprints to console
+cvar_t		con_removecr = {"con_removecr","1", CVAR_NONE}; 			// remove \r from console output
 
 char		con_lastcenterstring[MAX_PRINTMSG];
 

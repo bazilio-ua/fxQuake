@@ -65,10 +65,10 @@ void Sbar_IntermissionNumber (int x, int y, int num, int digits, int color);
 void Sbar_DeathmatchOverlay (void);
 
 int	sbar_xofs;
-cvar_t	scr_sbar = {"scr_sbar", "0", true};
-cvar_t	scr_centersbar = {"scr_centersbar", "1", true};
-cvar_t	scr_overdrawsbar = {"scr_overdrawsbar", "1", true};
-cvar_t	scr_sbaralpha = {"scr_sbaralpha", "1", true};
+cvar_t	scr_sbar = {"scr_sbar", "0", CVAR_ARCHIVE};
+cvar_t	scr_centersbar = {"scr_centersbar", "1", CVAR_ARCHIVE};
+cvar_t	scr_overdrawsbar = {"scr_overdrawsbar", "1", CVAR_ARCHIVE};
+cvar_t	scr_sbaralpha = {"scr_sbaralpha", "1", CVAR_ARCHIVE};
 
 /*
 ===============

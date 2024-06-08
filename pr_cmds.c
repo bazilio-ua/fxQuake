@@ -426,7 +426,7 @@ vector vectoangles(vector)
 =================
 */
 qboolean stupidquakebugfix = false; 
-cvar_t	sv_stupidquakebugfix = {"sv_stupidquakebugfix", "0", true};
+cvar_t	sv_stupidquakebugfix = {"sv_stupidquakebugfix", "0", CVAR_ARCHIVE};
 
 void PF_vectoangles (void)
 {
@@ -1333,7 +1333,7 @@ Pick a vector for the player to shoot along
 vector aim(entity, missilespeed)
 =============
 */
-cvar_t	sv_aim = {"sv_aim", "0.93"};
+cvar_t	sv_aim = {"sv_aim", "0.93", CVAR_NONE};
 void PF_aim (void)
 {
 	edict_t	*ent, *check, *bestent;
