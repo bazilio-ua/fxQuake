@@ -107,7 +107,6 @@ Returns 1, 2, or 1 + 2
 int BoxOnPlaneSide (vec3_t emins, vec3_t emaxs, mplane_t *p)
 {
 	float	dist1, dist2;
-	int		xneg, yneg, zneg;
 	int		sides;
     
 	// this is done by the BOX_ON_PLANE_SIDE macro before calling this function
@@ -123,19 +122,45 @@ int BoxOnPlaneSide (vec3_t emins, vec3_t emaxs, mplane_t *p)
 	}
 */    
     // general case
-	xneg = p->signbits & 1;
-	yneg = (p->signbits >> 1) & 1;
-	zneg = (p->signbits >> 2) & 1;
-
-	dist1 = p->normal[0] * (xneg ? emins : emaxs)[0] +
-			p->normal[1] * (yneg ? emins : emaxs)[1] +
-			p->normal[2] * (zneg ? emins : emaxs)[2];
-	dist2 = p->normal[0] * (xneg ? emaxs : emins)[0] +
-			p->normal[1] * (yneg ? emaxs : emins)[1] +
-			p->normal[2] * (zneg ? emaxs : emins)[2];
-
-	if (p->signbits & ~7)
-		Host_Error ("BoxOnPlaneSide: Bad signbits");
+	switch (p->signbits)
+	{
+        case 0:
+            dist1 = p->normal[0]*emaxs[0] + p->normal[1]*emaxs[1] + p->normal[2]*emaxs[2];
+            dist2 = p->normal[0]*emins[0] + p->normal[1]*emins[1] + p->normal[2]*emins[2];
+            break;
+        case 1:
+            dist1 = p->normal[0]*emins[0] + p->normal[1]*emaxs[1] + p->normal[2]*emaxs[2];
+            dist2 = p->normal[0]*emaxs[0] + p->normal[1]*emins[1] + p->normal[2]*emins[2];
+            break;
+        case 2:
+            dist1 = p->normal[0]*emaxs[0] + p->normal[1]*emins[1] + p->normal[2]*emaxs[2];
+            dist2 = p->normal[0]*emins[0] + p->normal[1]*emaxs[1] + p->normal[2]*emins[2];
+            break;
+        case 3:
+            dist1 = p->normal[0]*emins[0] + p->normal[1]*emins[1] + p->normal[2]*emaxs[2];
+            dist2 = p->normal[0]*emaxs[0] + p->normal[1]*emaxs[1] + p->normal[2]*emins[2];
+            break;
+        case 4:
+            dist1 = p->normal[0]*emaxs[0] + p->normal[1]*emaxs[1] + p->normal[2]*emins[2];
+            dist2 = p->normal[0]*emins[0] + p->normal[1]*emins[1] + p->normal[2]*emaxs[2];
+            break;
+        case 5:
+            dist1 = p->normal[0]*emins[0] + p->normal[1]*emaxs[1] + p->normal[2]*emins[2];
+            dist2 = p->normal[0]*emaxs[0] + p->normal[1]*emins[1] + p->normal[2]*emaxs[2];
+            break;
+        case 6:
+            dist1 = p->normal[0]*emaxs[0] + p->normal[1]*emins[1] + p->normal[2]*emins[2];
+            dist2 = p->normal[0]*emins[0] + p->normal[1]*emaxs[1] + p->normal[2]*emaxs[2];
+            break;
+        case 7:
+            dist1 = p->normal[0]*emins[0] + p->normal[1]*emins[1] + p->normal[2]*emins[2];
+            dist2 = p->normal[0]*emaxs[0] + p->normal[1]*emaxs[1] + p->normal[2]*emaxs[2];
+            break;
+        default:
+            dist1 = dist2 = 0;		// make compiler happy
+            Host_Error ("BoxOnPlaneSide: Bad signbits");
+            break;
+	}
     
 	sides = 0;
 	if (dist1 >= p->dist)
@@ -159,19 +184,47 @@ qboolean R_CullBox (vec3_t emins, vec3_t emaxs)
 {
 	int		i;
 	mplane_t *p;
-	byte signbits;
-	float vec[3];
-	
+    
 	for (i=0 ; i<4 ; i++)
-	{
+    {
 		p = frustum + i;
-		signbits = p->signbits;
-		vec[0] = ((signbits & 1) ? emins : emaxs)[0];
-		vec[1] = ((signbits & 2) ? emins : emaxs)[1];
-		vec[2] = ((signbits & 4) ? emins : emaxs)[2];
-		if (p->normal[0]*vec[0] + p->normal[1]*vec[1] + p->normal[2]*vec[2] < p->dist)
-			return true;
-	}
+		switch(p->signbits)
+		{
+        default:
+        case 0:
+            if (p->normal[0]*emaxs[0] + p->normal[1]*emaxs[1] + p->normal[2]*emaxs[2] < p->dist)
+                return true;
+            break;
+        case 1:
+            if (p->normal[0]*emins[0] + p->normal[1]*emaxs[1] + p->normal[2]*emaxs[2] < p->dist)
+                return true;
+            break;
+        case 2:
+            if (p->normal[0]*emaxs[0] + p->normal[1]*emins[1] + p->normal[2]*emaxs[2] < p->dist)
+                return true;
+            break;
+        case 3:
+            if (p->normal[0]*emins[0] + p->normal[1]*emins[1] + p->normal[2]*emaxs[2] < p->dist)
+                return true;
+            break;
+        case 4:
+            if (p->normal[0]*emaxs[0] + p->normal[1]*emaxs[1] + p->normal[2]*emins[2] < p->dist)
+                return true;
+            break;
+        case 5:
+            if (p->normal[0]*emins[0] + p->normal[1]*emaxs[1] + p->normal[2]*emins[2] < p->dist)
+                return true;
+            break;
+        case 6:
+            if (p->normal[0]*emaxs[0] + p->normal[1]*emins[1] + p->normal[2]*emins[2] < p->dist)
+                return true;
+            break;
+        case 7:
+            if (p->normal[0]*emins[0] + p->normal[1]*emins[1] + p->normal[2]*emins[2] < p->dist)
+                return true;
+            break;
+		}
+    }
 	return false;
 }
 
