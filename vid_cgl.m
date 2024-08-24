@@ -362,7 +362,10 @@ void VID_Init (void)
         }
         
         if (bestModeIndex == 0xFFFFFFFF || modeIndex == modeCount) {
-            Sys_Error("No suitable display mode available");
+			Con_Warning ("No suitable display mode available for fullscreen\n");
+			Con_Warning ("Switch to window\n");
+			fullscreen = false;
+			goto skipfullscreen;
         }
         
         gameMode = mode;
@@ -380,6 +383,7 @@ void VID_Init (void)
         vidmode_fullscreen = true;
         
     } else {
+skipfullscreen:
         gameMode = desktopMode;
     }
     
