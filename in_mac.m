@@ -375,15 +375,15 @@ void IN_ProcessEvents (void)
         case NSScrollWheel: // scroll wheel
             //if (mouse_active) 
             {
-                if ([event deltaY] < 0.0)
+                if ([event deltaY] > 0)
                 {
-                    Key_Event (K_MWHEELDOWN, true);
-                    Key_Event (K_MWHEELDOWN, false);
+					Key_Event (K_MWHEELUP, true);
+					Key_Event (K_MWHEELUP, false);
                 }
-                else
+                else if ([event deltaY] < 0)
                 {
-                    Key_Event (K_MWHEELUP, true);
-                    Key_Event (K_MWHEELUP, false);
+					Key_Event (K_MWHEELDOWN, true);
+					Key_Event (K_MWHEELDOWN, false);
                 }
             }
             break;
