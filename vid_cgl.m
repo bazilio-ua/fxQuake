@@ -349,19 +349,18 @@ void VID_Init (void)
             }
             
             // Make sure we get the right mode
-            if ((int)CGDisplayModeGetWidth(mode) == vid.width && 
-                (int)CGDisplayModeGetHeight(mode) == vid.height && 
+            if ((int)CGDisplayModeGetWidth(mode) == vid.width &&
+                (int)CGDisplayModeGetHeight(mode) == vid.height &&
                 (int)[[(NSDictionary *)*((long *)mode + 2) objectForKey:(id)kCGDisplayBitsPerPixel] intValue] == colorDepth &&
                 (int)CGDisplayModeGetRefreshRate(mode) == refreshRate &&
-                ((CGDisplayModeGetIOFlags(mode) & kDisplayModeStretchedFlag) == kDisplayModeStretchedFlag) == isStretched) {
-                
+                ((CGDisplayModeGetIOFlags(mode) & kDisplayModeStretchedFlag) == kDisplayModeStretchedFlag) == isStretched)
+            {
+                bestModeIndex = modeIndex;
                 break; // we got it
             }
-            
-            bestModeIndex = modeIndex;
         }
         
-        if (bestModeIndex == 0xFFFFFFFF || modeIndex == modeCount) {
+        if (bestModeIndex == 0xFFFFFFFF) {
 			Con_Warning ("No suitable display mode available for fullscreen\n");
 			Con_Warning ("Switch to window\n");
 			fullscreen = false;
