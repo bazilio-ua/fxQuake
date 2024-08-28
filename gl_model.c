@@ -2723,7 +2723,7 @@ void Mod_LoadAliasModel (model_t *mod, void *buffer)
 	mdl_t				*pinmodel;
 	stvert_t			*pinstverts;
 	dtriangle_t			*pintriangles;
-	int					version, numframes;
+	int					version;
 	int					size;
 	daliasframetype_t	*pframetype;
 	daliasskintype_t	*pskintype;
@@ -2795,9 +2795,8 @@ void Mod_LoadAliasModel (model_t *mod, void *buffer)
 		pheader->numframes = MAXALIASFRAMES; // Cap
 	}
 
-	numframes = pheader->numframes;
-	if (numframes < 1)
-		Host_Error ("Mod_LoadAliasModel: invalid # of frames %d in %s", numframes, mod->name);
+	if (pheader->numframes < 1)
+		Host_Error ("Mod_LoadAliasModel: invalid # of frames %d in %s", pheader->numframes, mod->name);
 
 	pheader->size = LittleFloat (pinmodel->size) * ALIAS_BASE_SIZE_RATIO;
 	mod->synctype = LittleLong (pinmodel->synctype);
@@ -2853,7 +2852,7 @@ void Mod_LoadAliasModel (model_t *mod, void *buffer)
 	posenum = 0;
 	pframetype = (daliasframetype_t *)&pintriangles[pheader->numtris];
 
-	for (i=0 ; i<numframes ; i++)
+	for (i=0 ; i<pheader->numframes ; i++)
 	{
 		aliasframetype_t	frametype;
 		frametype = LittleLong (pframetype->type);
