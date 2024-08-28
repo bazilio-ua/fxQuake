@@ -275,12 +275,18 @@ void BuildTris (void)
 			vertexorder[numorder++] = k;
 
 			// emit s/t coords into the commands stream
+			// fudge the coordinates by a fraction of a pixel to reduce artefacts on the model seams
 			s = stverts[k].s;
 			t = stverts[k].t;
 			if (!triangles[besttris[0]].facesfront && stverts[k].onseam)
-				s += pheader->skinwidth / 2;	// on back side
-			s = (s + 0.5) / pheader->skinwidth;
-			t = (t + 0.5) / pheader->skinheight;
+			{
+				// rear skin is on the RHS of the texture
+				// fudge +1 to match appearance in SW renderer as closely as possible
+				s += (pheader->skinwidth / 2) + 1;	// on back side
+			}
+			// fudge the width/height +2 here to slightly stretch the texture to push the background fill slightly further from the seams
+			s = (s + 0.5f) / (pheader->skinwidth + 2);
+			t = (t + 0.5f) / (pheader->skinheight + 2);
 
 			if (numcommands >= MAX_CMDS)
 				Host_Error ("BuildTris: too many commands (max = %d) in %s", MAX_CMDS, aliasmodel->name);
