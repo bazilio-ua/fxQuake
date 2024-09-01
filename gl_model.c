@@ -425,7 +425,7 @@ void Mod_LoadTextures (lump_t *l)
 	char		texturename[64];
 	char		texname[16 + 1];
 	int			nummiptex;
-	unsigned	offset;
+	uintptr_t	offset; //johnfitz
 	int			mark;
 
 	//johnfitz -- don't return early if no textures; still need to create dummy texture
@@ -500,7 +500,7 @@ void Mod_LoadTextures (lump_t *l)
 				mark = Hunk_LowMark ();
 
 				sprintf (texturename, "%s:%s", loadmodel->name, tx->name);
-				offset = (unsigned)(mt+1) - (unsigned)mod_base;
+				offset = (uintptr_t)(mt+1) - (uintptr_t)mod_base;
 				tx->gltexture = GL_LoadTexture (loadmodel, texturename, tx->width, tx->height, SRC_INDEXED, (byte *)(tx+1), loadmodel->name, offset, TEXPREF_WARP);
 
 				//now create the warpimage, using dummy data from the hunk to create the initial image
@@ -509,7 +509,7 @@ void Mod_LoadTextures (lump_t *l)
 				Hunk_FreeToLowMark (mark);
 				
 				sprintf (texturename, "%s_warp", texturename);
-				tx->warpimage = GL_LoadTexture (loadmodel, texturename, gl_warpimage_size, gl_warpimage_size, SRC_RGBA, hunk_base, "", (unsigned)hunk_base, TEXPREF_NOPICMIP | TEXPREF_WARPIMAGE);
+				tx->warpimage = GL_LoadTexture (loadmodel, texturename, gl_warpimage_size, gl_warpimage_size, SRC_RGBA, hunk_base, "", (uintptr_t)hunk_base, TEXPREF_NOPICMIP | TEXPREF_WARPIMAGE);
 				tx->update_warp = true;
 			}
 			else // regular texture
@@ -521,7 +521,7 @@ void Mod_LoadTextures (lump_t *l)
 				if (tx->name[0] == '{') // fence texture
 					extraflags |= TEXPREF_ALPHA;
 
-				offset = (unsigned)(mt+1) - (unsigned)mod_base;
+				offset = (uintptr_t)(mt+1) - (uintptr_t)mod_base;
 				if (IsFullbright ((byte *)(tx+1), pixels))
 				{
 					sprintf (texturename, "%s:%s", loadmodel->name, tx->name);
@@ -2550,7 +2550,7 @@ void *Mod_LoadAllSkins (int numskins, daliasskintype_t *pskintype)
 	daliasskingroup_t		*pinskingroup;
 	int		groupskins;
 	daliasskininterval_t	*pinskinintervals;
-	unsigned				offset; //johnfitz
+	uintptr_t				offset; //johnfitz
 	unsigned int			texflags = TEXPREF_PAD;
 
 	skin = (byte *)(pskintype + 1);
@@ -2576,7 +2576,7 @@ void *Mod_LoadAllSkins (int numskins, daliasskintype_t *pskintype)
 				memcpy (texels, (byte *)(pskintype + 1), size);
 			}
 
-			offset = (unsigned)(pskintype+1) - (unsigned)mod_base;
+			offset = (uintptr_t)(pskintype+1) - (uintptr_t)mod_base;
 			if (IsFullbright ((byte *)(pskintype+1), size))
 			{
 				sprintf (skinname, "%s:frame%i", loadmodel->name, i);
@@ -2627,7 +2627,7 @@ void *Mod_LoadAllSkins (int numskins, daliasskintype_t *pskintype)
 					memcpy (texels, (byte *)(pskintype), size);
 				}
 
-				offset = (unsigned)(pskintype) - (unsigned)mod_base; //johnfitz
+				offset = (uintptr_t)(pskintype) - (uintptr_t)mod_base; //johnfitz
 				if (IsFullbright ((byte *)(pskintype), size))
 				{
 					sprintf (skinname, "%s:frame%i_%i", loadmodel->name, i,j);
@@ -2906,7 +2906,7 @@ void *Mod_LoadSpriteFrame (void *pin, mspriteframe_t **ppframe, int framenum, in
 	int					width, height, size, origin[2];
 	char				name[64];
 	enum srcformat		format;
-	unsigned			offset; //johnfitz
+	uintptr_t			offset; //johnfitz
 
 	pinframe = (dspriteframe_t *)pin;
 
@@ -2941,7 +2941,7 @@ void *Mod_LoadSpriteFrame (void *pin, mspriteframe_t **ppframe, int framenum, in
 		format = SRC_RGBA;
 
 	sprintf (name, "%s:frame%i", loadmodel->name, framenum);
-	offset = (unsigned)(pinframe+1) - (unsigned)mod_base; //johnfitz
+	offset = (uintptr_t)(pinframe+1) - (uintptr_t)mod_base; //johnfitz
 	pspriteframe->gltexture = GL_LoadTexture (loadmodel, name, width, height, format, (byte *)(pinframe+1), loadmodel->name, offset, TEXPREF_PAD | TEXPREF_ALPHA | TEXPREF_NOPICMIP);
 
 	return (void *)((byte *)pinframe + sizeof (dspriteframe_t) + size);

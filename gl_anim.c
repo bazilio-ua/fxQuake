@@ -1635,7 +1635,7 @@ void R_InitSky (texture_t *mt)
 	}
 
 	sprintf (texturename, "%s:%s_back", loadmodel->name, mt->name);
-	solidskytexture = GL_LoadTexture (loadmodel, texturename, 128, 128, SRC_INDEXED, back_data, "", (unsigned)back_data, TEXPREF_SKY);
+	solidskytexture = GL_LoadTexture (loadmodel, texturename, 128, 128, SRC_INDEXED, back_data, "", (uintptr_t)back_data, TEXPREF_SKY);
 
 // extract front layer and upload
 	for (i=0 ; i<128 ; i++)
@@ -1649,7 +1649,7 @@ void R_InitSky (texture_t *mt)
 	}
 
 	sprintf (texturename, "%s:%s_front", loadmodel->name, mt->name);
-	alphaskytexture = GL_LoadTexture (loadmodel, texturename, 128, 128, SRC_INDEXED, front_data, "", (unsigned)front_data, TEXPREF_SKY | TEXPREF_ALPHA);
+	alphaskytexture = GL_LoadTexture (loadmodel, texturename, 128, 128, SRC_INDEXED, front_data, "", (uintptr_t)front_data, TEXPREF_SKY | TEXPREF_ALPHA);
 
 // calculate r_fastsky color based on average of all opaque foreground colors
 	r = g = b = count = 0;
@@ -1878,7 +1878,7 @@ void R_Bloom_InitTextures (void)
 
 	// init the screen texture
 	bloomscreendata = Hunk_Alloc (screen_texture_width * screen_texture_height * 4); //sizeof(int)
-	bloomscreentexture = GL_LoadTexture (NULL, "bloomscreentexture", screen_texture_width, screen_texture_height, SRC_BLOOM, bloomscreendata, "", (unsigned)bloomscreendata, TEXPREF_BLOOM /* | TEXPREF_OVERWRITE */ );
+	bloomscreentexture = GL_LoadTexture (NULL, "bloomscreentexture", screen_texture_width, screen_texture_height, SRC_BLOOM, bloomscreendata, "", (uintptr_t)bloomscreendata, TEXPREF_BLOOM /* | TEXPREF_OVERWRITE */ );
 
 	// validate bloom size
 	if (r_bloom_sample_size.value < 32)
@@ -1896,7 +1896,7 @@ void R_Bloom_InitTextures (void)
 
 	// init the bloom effect texture
 	bloomeffectdata = Hunk_Alloc (bloom_size * bloom_size * 4); //sizeof(int)
-	bloomeffecttexture = GL_LoadTexture (NULL, "bloomeffecttexture", bloom_size, bloom_size, SRC_BLOOM, bloomeffectdata, "", (unsigned)bloomeffectdata, TEXPREF_BLOOM /* | TEXPREF_OVERWRITE */ );
+	bloomeffecttexture = GL_LoadTexture (NULL, "bloomeffecttexture", bloom_size, bloom_size, SRC_BLOOM, bloomeffectdata, "", (uintptr_t)bloomeffectdata, TEXPREF_BLOOM /* | TEXPREF_OVERWRITE */ );
 
 	// if screen size is more than 2x the bloom effect texture, set up for stepped downsampling
 	bloomdownsamplingtexture = NULL;
@@ -1906,7 +1906,7 @@ void R_Bloom_InitTextures (void)
 	{
 		screen_downsampling_texture_size = (int)(bloom_size * 2);
 		bloomdownsamplingdata = Hunk_Alloc (screen_downsampling_texture_size * screen_downsampling_texture_size * 4); //sizeof(int)
-		bloomdownsamplingtexture = GL_LoadTexture (NULL, "bloomdownsamplingtexture", screen_downsampling_texture_size, screen_downsampling_texture_size, SRC_BLOOM, bloomdownsamplingdata, "", (unsigned)bloomdownsamplingdata, TEXPREF_BLOOM /* | TEXPREF_OVERWRITE */ );
+		bloomdownsamplingtexture = GL_LoadTexture (NULL, "bloomdownsamplingtexture", screen_downsampling_texture_size, screen_downsampling_texture_size, SRC_BLOOM, bloomdownsamplingdata, "", (uintptr_t)bloomdownsamplingdata, TEXPREF_BLOOM /* | TEXPREF_OVERWRITE */ );
 	}
 
 	// init the screen backup texture
@@ -1922,7 +1922,7 @@ void R_Bloom_InitTextures (void)
 	}
 
 	bloombackupdata = Hunk_Alloc (screen_backup_texture_width * screen_backup_texture_height * 4); //sizeof(int)
-	bloombackuptexture = GL_LoadTexture (NULL, "bloombackuptexture", screen_backup_texture_width, screen_backup_texture_height, SRC_BLOOM, bloombackupdata, "", (unsigned)bloombackupdata, TEXPREF_BLOOM /* | TEXPREF_OVERWRITE */ );
+	bloombackuptexture = GL_LoadTexture (NULL, "bloombackuptexture", screen_backup_texture_width, screen_backup_texture_height, SRC_BLOOM, bloombackupdata, "", (uintptr_t)bloombackupdata, TEXPREF_BLOOM /* | TEXPREF_OVERWRITE */ );
 
 	Hunk_FreeToLowMark (mark);
 }

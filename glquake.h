@@ -198,7 +198,7 @@ typedef struct gltexture_s {
 	unsigned int		height;						// size of image as it exists in opengl
 	unsigned int		flags;						// texture preference flags
 	char				source_file[MAX_QPATH];		// relative filepath to data source, or "" if source is in memory
-	unsigned int		source_offset;				// byte offset into file, or memory address
+	uintptr_t			source_offset;				// byte offset into file, or memory address
 	enum srcformat		source_format;				// format of pixel data (indexed, lightmap, or rgba)
 	unsigned int		source_width;				// size of image in source data
 	unsigned int		source_height;				// size of image in source data
@@ -254,7 +254,7 @@ void GL_FreeTexture (gltexture_t *purge);
 void GL_FreeTextures (model_t *owner);
 void GL_ReloadTexture (gltexture_t *glt);
 void GL_ReloadTextures_f (void);
-gltexture_t *GL_LoadTexture (model_t *owner, char *name, int width, int height, enum srcformat format, byte *data, char *source_file, unsigned source_offset, unsigned flags);
+gltexture_t *GL_LoadTexture (model_t *owner, char *name, int width, int height, enum srcformat format, byte *data, char *source_file, uintptr_t source_offset, unsigned flags);
 gltexture_t *GL_FindTexture (model_t *owner, char *name);
 void GL_SetFilterModes (gltexture_t *glt);
 void GL_Set2D (void);

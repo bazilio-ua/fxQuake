@@ -727,7 +727,7 @@ void Scrap_Upload (void)
 	for (i = 0; i < MAX_SCRAPS; i++) 
 	{
 		sprintf (name, "scrap%i", i);
-		scrap_textures[i] = GL_LoadTexture (NULL, name, BLOCK_WIDTH, BLOCK_HEIGHT, SRC_INDEXED, scrap_texels[i], "", (unsigned)scrap_texels[i], TEXPREF_ALPHA | TEXPREF_OVERWRITE | TEXPREF_NOPICMIP);
+		scrap_textures[i] = GL_LoadTexture (NULL, name, BLOCK_WIDTH, BLOCK_HEIGHT, SRC_INDEXED, scrap_texels[i], "", (uintptr_t)scrap_texels[i], TEXPREF_ALPHA | TEXPREF_OVERWRITE | TEXPREF_NOPICMIP);
 	}
 	scrap_dirty = false;
 }
@@ -753,7 +753,7 @@ qpic_t *Draw_PicFromWad (char *name)
 {
 	qpic_t	*p;
 	glpic_t	gl;
-	unsigned offset; //johnfitz
+	uintptr_t offset; //johnfitz
 	char texturename[64]; //johnfitz
 
 	p = W_GetLumpName (name);
@@ -789,7 +789,7 @@ qpic_t *Draw_PicFromWad (char *name)
 	else
 	{
 		sprintf (texturename, "%s:%s", WADFILE, name); //johnfitz
-		offset = (unsigned)p - (unsigned)wad_base + sizeof(int)*2; //johnfitz
+		offset = (uintptr_t)p - (uintptr_t)wad_base + sizeof(int)*2; //johnfitz
 		gl.gltexture = GL_LoadTexture (NULL, texturename, p->width, p->height, SRC_INDEXED, p->data, WADFILE, offset, TEXPREF_ALPHA | TEXPREF_PAD | TEXPREF_NOPICMIP);
 		gl.sl = 0;
         gl.sh = (float)p->width/(float)TexMgr_PadConditional(p->width); //johnfitz
@@ -969,7 +969,7 @@ Pics_Upload
 */
 void Pics_Upload (void)
 {
-	unsigned	offset; // johnfitz
+	uintptr_t	offset; // johnfitz
 	char		texturename[64]; //johnfitz
 
 	// load the console background and the charset
@@ -983,7 +983,7 @@ void Pics_Upload (void)
 
 	// now turn them into textures
 	sprintf (texturename, "%s:%s", WADFILE, "conchars"); // johnfitz
-	offset = (unsigned)draw_chars - (unsigned)wad_base;
+	offset = (uintptr_t)draw_chars - (uintptr_t)wad_base;
 	char_texture = GL_LoadTexture (NULL, texturename, 128, 128, SRC_INDEXED, draw_chars, WADFILE, offset, TEXPREF_ALPHA | TEXPREF_NEAREST | TEXPREF_NOPICMIP | TEXPREF_CONCHARS);
 
 	//
@@ -1025,8 +1025,8 @@ void Draw_Init (void)
 	Cmd_AddCommand ("gl_texture_anisotropy", &GL_Texture_Anisotropy_f);
 
 	// load notexture images
-	notexture = GL_LoadTexture (NULL, "notexture", 2, 2, SRC_RGBA, notexture_data, "", (unsigned)notexture_data, TEXPREF_NEAREST | TEXPREF_PERSIST | TEXPREF_NOPICMIP);
-	nulltexture = GL_LoadTexture (NULL, "nulltexture", 2, 2, SRC_RGBA, nulltexture_data, "", (unsigned)nulltexture_data, TEXPREF_NEAREST | TEXPREF_PERSIST | TEXPREF_NOPICMIP);
+	notexture = GL_LoadTexture (NULL, "notexture", 2, 2, SRC_RGBA, notexture_data, "", (uintptr_t)notexture_data, TEXPREF_NEAREST | TEXPREF_PERSIST | TEXPREF_NOPICMIP);
+	nulltexture = GL_LoadTexture (NULL, "nulltexture", 2, 2, SRC_RGBA, nulltexture_data, "", (uintptr_t)nulltexture_data, TEXPREF_NEAREST | TEXPREF_PERSIST | TEXPREF_NOPICMIP);
 
 	// have to assign these here because R_InitTextures is called before Draw_Init
 	notexture_mip->gltexture = notexture_mip2->gltexture = notexture;
@@ -1301,7 +1301,7 @@ void Draw_TransPicTranslate (int x, int y, qpic_t *pic, byte *translation)
 
 	data = trans;
 
-	gl.gltexture = GL_LoadTexture (NULL, name, pic->width, pic->height, SRC_INDEXED, data, "", (unsigned)data, TEXPREF_ALPHA | TEXPREF_PAD | TEXPREF_NOPICMIP);
+	gl.gltexture = GL_LoadTexture (NULL, name, pic->width, pic->height, SRC_INDEXED, data, "", (uintptr_t)data, TEXPREF_ALPHA | TEXPREF_PAD | TEXPREF_NOPICMIP);
 	gl.sl = 0;
     gl.sh = (float)pic->width/(float)TexMgr_PadConditional(pic->width); //johnfitz
 	gl.tl = 0;
@@ -2450,7 +2450,7 @@ GL_LoadTexture
 the one entry point for loading all textures
 ================
 */
-gltexture_t *GL_LoadTexture (model_t *owner, char *name, int width, int height, enum srcformat format, byte *data, char *source_file, unsigned source_offset, unsigned flags)
+gltexture_t *GL_LoadTexture (model_t *owner, char *name, int width, int height, enum srcformat format, byte *data, char *source_file, uintptr_t source_offset, unsigned flags)
 {
 	int size = 0; // keep compiler happy
 	gltexture_t	*glt;
