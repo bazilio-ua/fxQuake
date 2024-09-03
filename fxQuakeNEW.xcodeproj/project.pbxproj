@@ -366,6 +366,7 @@
 				42A7FC661EA2BA88002A1C29 /* Sources */,
 				42A7FC671EA2BA88002A1C29 /* Frameworks */,
 				42A7FC681EA2BA88002A1C29 /* Resources */,
+				9F1C72522C70AD2600E10DC1 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -414,6 +415,26 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		9F1C72522C70AD2600E10DC1 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nxattr -cr /Users/vnikitiuk/Projects/fxQuake/build || echo Clear\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		42A7FC661EA2BA88002A1C29 /* Sources */ = {
@@ -531,6 +552,7 @@
 				GCC_PREFIX_HEADER = Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
+					"GL_SILENCE_DEPRECATION=1",
 					"QBASEDIR=\".\"",
 				);
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
@@ -551,7 +573,10 @@
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Prefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = "QBASEDIR=\".\"";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"GL_SILENCE_DEPRECATION=1",
+					"QBASEDIR=\".\"",
+				);
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
