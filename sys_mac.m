@@ -188,6 +188,7 @@ void Sys_Error (char *error, ...)
     else
     {
         qboolean NoMsgBox = COM_CheckParm ("-nomsgbox") != 0;
+		NSString *msg = [NSString stringWithCString:string encoding:NSASCIIStringEncoding];
         
         // Prevent screen updates, otherwise secondary faults might
         // occur and mask the real error
@@ -210,12 +211,12 @@ void Sys_Error (char *error, ...)
             in_sys_error1 = 1;
 
             if (!NoMsgBox)
-                NSRunCriticalAlertPanel(@"Quake Error", [NSString stringWithCString:string encoding:NSASCIIStringEncoding], @"OK", nil, nil);
+				NSRunCriticalAlertPanel(@"Quake Error", @"%@", @"OK", nil, nil, msg);
         }
         else
         {
             if (!NoMsgBox)
-                NSRunCriticalAlertPanel(@"Double Quake Error", [NSString stringWithCString:string encoding:NSASCIIStringEncoding], @"OK", nil, nil);
+				NSRunCriticalAlertPanel(@"Double Quake Error", @"%@", @"OK", nil, nil, msg);
         }
 
         block_drawing = false; // Make sure to restore

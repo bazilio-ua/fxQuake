@@ -393,10 +393,10 @@ void GL_CheckExtensions (void)
 
 /*
 ===============
-GL_MakeExtensionsList
+GL_MakeNiceExtensionsList -- johnfitz
 ===============
 */
-char *GL_MakeExtensionsList (char *in)
+char *GL_MakeNiceExtensionsList (const char *in)
 {
 	char *copy, *token, *out;
 	int i, count;
@@ -437,10 +437,10 @@ void GL_Info_f (void)
 #endif
 
 	if (!gl_extensions_nice)
-		gl_extensions_nice = GL_MakeExtensionsList (gl_extensions);
+		gl_extensions_nice = GL_MakeNiceExtensionsList (gl_extensions);
 #ifdef GLX_GLXEXT_PROTOTYPES
 	if (!glx_extensions_nice)
-		glx_extensions_nice = GL_MakeExtensionsList (glx_extensions);
+		glx_extensions_nice = GL_MakeNiceExtensionsList (glx_extensions);
 #endif
 
 	Con_SafePrintf ("GL_VENDOR: %s\n", gl_vendor);

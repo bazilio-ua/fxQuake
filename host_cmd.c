@@ -72,7 +72,7 @@ void Host_QC_List_f (void)
 	{
 		int			i;
 		dfunction_t	*f;
-		char		*name;
+		const char		*name;
 		
 		Con_Printf ("QuakeC Functions:\n");
 		for (i=0 ; i<progs->numfunctions ; i++)
