@@ -229,7 +229,7 @@ ddef_t *ED_FindGlobal (char *name)
 ED_FindFunction
 ============
 */
-dfunction_t *ED_FindFunction (char *name)
+dfunction_t *ED_FindFunction (const char *name)
 {
 	dfunction_t	*func;
 	int		i;
@@ -453,7 +453,7 @@ void ED_Print (edict_t *ed)
 	ddef_t	    *d;
 	int	    *v;
 	int	    i, j;
-	char	    *name;
+	const char	*name;
 	int	    type;
 
 	if (ed->free)
@@ -502,7 +502,7 @@ void ED_Write (FILE *f, edict_t *ed)
 	ddef_t	*d;
 	int	*v;
 	int	i, j;
-	char	*name;
+	const char	*name;
 	int	type;
 
 	fprintf (f, "{\n");
@@ -643,7 +643,7 @@ void ED_WriteGlobals (FILE *f)
 {
 	ddef_t		*def;
 	int			i;
-	char		*name;
+	const char	*name;
 	int			type;
 
 	fprintf (f,"{\n");

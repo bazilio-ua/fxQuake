@@ -138,7 +138,7 @@ void ED_PrintEdicts (void);
 void ED_PrintNum (int ent);
 
 eval_t *GetEdictFieldValue(edict_t *ed, char *field);
-dfunction_t *ED_FindFunction (char *name);
+dfunction_t *ED_FindFunction (const char *name);
 
 //
 // PR Strings stuff
