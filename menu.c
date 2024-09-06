@@ -901,20 +901,20 @@ void M_AdjustSliders (int dir)
 		Cvar_SetValue("viewsize", scr_viewsize.value);
 		break;
 	case OPT_GAMMA: //case 4 // gamma
-		vid_gamma.value -= dir * 0.05;
-		if (vid_gamma.value < 0.5)
-			vid_gamma.value = 0.5;
-		else if (vid_gamma.value > 1)
-			vid_gamma.value = 1;
-		Cvar_SetValue("gamma", vid_gamma.value);
+		v_gamma.value -= dir * 0.05;
+		if (v_gamma.value < 0.5)
+			v_gamma.value = 0.5;
+		else if (v_gamma.value > 1)
+			v_gamma.value = 1;
+		Cvar_SetValue("gamma", v_gamma.value);
 		break;
     case OPT_CONTRAST: // case 5 // contrast
-        vid_contrast.value += dir * 0.1;
-        if (vid_contrast.value < 1)	
-            vid_contrast.value = 1;
-        else if (vid_contrast.value > 2) 
-            vid_contrast.value = 2;
-        Cvar_SetValue ("contrast", vid_contrast.value);
+        v_contrast.value += dir * 0.1;
+        if (v_contrast.value < 1)
+            v_contrast.value = 1;
+        else if (v_contrast.value > 2)
+            v_contrast.value = 2;
+        Cvar_SetValue ("contrast", v_contrast.value);
         break;
 	case OPT_MOUSESPEED: //case 6 // mouse speed
 		sensitivity.value += dir * 0.5;
@@ -1035,11 +1035,11 @@ void M_Options_Draw (void)
 	M_DrawSlider (220, 32+(OPT_SCRSIZE*8), r);
 
 	M_Print (16, 32+(OPT_GAMMA*8), "            Brightness");
-	r = (1.0 - vid_gamma.value) / 0.5;
+	r = (1.0 - v_gamma.value) / 0.5;
 	M_DrawSlider (220, 32+(OPT_GAMMA*8), r);
 
 	M_Print (16, 32+(OPT_CONTRAST*8), "              Contrast");
-	r = vid_contrast.value - 1.0;
+	r = v_contrast.value - 1.0;
 	M_DrawSlider (220, 32+(OPT_CONTRAST*8), r);
 
 	M_Print (16, 32+(OPT_MOUSESPEED*8), "           Mouse Speed");

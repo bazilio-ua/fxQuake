@@ -32,8 +32,8 @@ CGDisplayModeRef    gameMode;
 
 viddef_t vid; // global video state
 
-cvar_t		vid_gamma = {"gamma", "1", CVAR_ARCHIVE};
-cvar_t		vid_contrast = {"contrast", "1", CVAR_ARCHIVE}; // QuakeSpasm, MarkV
+//cvar_t		vid_gamma = {"gamma", "1", CVAR_ARCHIVE};
+//cvar_t		vid_contrast = {"contrast", "1", CVAR_ARCHIVE}; // QuakeSpasm, MarkV
 
 //==========================================================================
 //
@@ -54,15 +54,15 @@ apply gamma correction
 */
 void VID_Gamma_Set (void)
 {
-	if (!vid_gammaworks)
-		return;
-    
-    CGError err = CGSetDisplayTransferByTable(display, 256, 
-                                              vid_gammaramp[0], 
-                                              vid_gammaramp[1], 
-                                              vid_gammaramp[2]);
-    if (err != kCGErrorSuccess)
-        Con_Printf ("VID_Gamma_Set: Failed to set gamma table ramp\n");
+//	if (!vid_gammaworks)
+//		return;
+//    
+//    CGError err = CGSetDisplayTransferByTable(display, 256, 
+//                                              vid_gammaramp[0], 
+//                                              vid_gammaramp[1], 
+//                                              vid_gammaramp[2]);
+//    if (err != kCGErrorSuccess)
+//        Con_Printf ("VID_Gamma_Set: Failed to set gamma table ramp\n");
 }
 
 /*
@@ -74,15 +74,15 @@ restore system gamma
 */
 void VID_Gamma_Restore (void)
 {
-	if (!vid_gammaworks)
-		return;
-
-	CGError err = CGSetDisplayTransferByTable(display, 256, 
-                                              vid_systemgammaramp[0], 
-                                              vid_systemgammaramp[1], 
-                                              vid_systemgammaramp[2]);
-    if (err != kCGErrorSuccess)
-        Con_Printf ("VID_Gamma_Restore: Failed to set gamma table ramp\n");
+//	if (!vid_gammaworks)
+//		return;
+//
+//	CGError err = CGSetDisplayTransferByTable(display, 256, 
+//                                              vid_systemgammaramp[0], 
+//                                              vid_systemgammaramp[1], 
+//                                              vid_systemgammaramp[2]);
+//    if (err != kCGErrorSuccess)
+//        Con_Printf ("VID_Gamma_Restore: Failed to set gamma table ramp\n");
 }
 
 /*
@@ -94,7 +94,7 @@ called on exit
 */
 void VID_Gamma_Shutdown (void)
 {
-	VID_Gamma_Restore ();
+//	VID_Gamma_Restore ();
 }
 
 /*
@@ -106,22 +106,23 @@ callback when the cvar changes
 */
 void VID_Gamma (void)
 {
-    int i;
-	static float oldgamma;
-	static float oldcontrast;
-    
-	if (vid_gamma.value == oldgamma && vid_contrast.value == oldcontrast)
-		return;
-    
-	oldgamma = vid_gamma.value;
-    oldcontrast = vid_contrast.value;
-    
-	// Refresh gamma
-    for (i=0; i<256; i++)
-        vid_gammaramp[0][i] = vid_gammaramp[1][i] = vid_gammaramp[2][i] =
-            CLAMP(0, (int)((255 * pow ((i+0.5)/255.5, vid_gamma.value) + 0.5) * vid_contrast.value), 255) / 255.0;
-    
-	VID_Gamma_Set ();
+	// TODO: V_CheckGamma
+//    int i;
+//	static float oldgamma;
+//	static float oldcontrast;
+//    
+//	if (vid_gamma.value == oldgamma && vid_contrast.value == oldcontrast)
+//		return;
+//    
+//	oldgamma = vid_gamma.value;
+//    oldcontrast = vid_contrast.value;
+//    
+//	// Refresh gamma
+//    for (i=0; i<256; i++)
+//        vid_gammaramp[0][i] = vid_gammaramp[1][i] = vid_gammaramp[2][i] =
+//            CLAMP(0, (int)((255 * pow ((i+0.5)/255.5, vid_gamma.value) + 0.5) * vid_contrast.value), 255) / 255.0;
+//    
+//	VID_Gamma_Set ();
 }
 
 /*
@@ -133,21 +134,21 @@ call on init
 */
 void VID_Gamma_Init (void)
 {
-    uint32_t capacity = CGDisplayGammaTableCapacity(display);
-    uint32_t sampleCount;
-    
-    if (capacity >= 256) {
-        CGError err = CGGetDisplayTransferByTable(display, 256,
-                                                  vid_systemgammaramp[0], 
-                                                  vid_systemgammaramp[1], 
-                                                  vid_systemgammaramp[2], &sampleCount);
-        if (err == kCGErrorSuccess)
-            vid_gammaworks = true;
-        else
-            Con_Printf ("VID_Gamma_Init: Failed to get gamma table ramp\n");
-    } else {
-		Con_Printf ("Hardware gamma unavailable\n");
-    }
+//    uint32_t capacity = CGDisplayGammaTableCapacity(display);
+//    uint32_t sampleCount;
+//    
+//    if (capacity >= 256) {
+//        CGError err = CGGetDisplayTransferByTable(display, 256,
+//                                                  vid_systemgammaramp[0], 
+//                                                  vid_systemgammaramp[1], 
+//                                                  vid_systemgammaramp[2], &sampleCount);
+//        if (err == kCGErrorSuccess)
+//            vid_gammaworks = true;
+//        else
+//            Con_Printf ("VID_Gamma_Init: Failed to get gamma table ramp\n");
+//    } else {
+//		Con_Printf ("Hardware gamma unavailable\n");
+//    }
 }
 
 //====================================
@@ -462,9 +463,9 @@ skipfullscreen:
             Sys_Error("Cannot set fullscreen");
         }
         
-        do {
-            [NSThread sleepForTimeInterval:2.0]; // wait for fade transition can reset gamma
-        } while (CGDisplayFadeOperationInProgress());
+//        do {
+//            [NSThread sleepForTimeInterval:2.0]; // wait for fade transition can reset gamma
+//        } while (CGDisplayFadeOperationInProgress());
     }
     
     [glcontext makeCurrentContext];
@@ -487,8 +488,8 @@ skipfullscreen:
     
 	VID_Gamma_Init ();
     
-	Cvar_RegisterVariableCallback (&vid_gamma, VID_Gamma);
-	Cvar_RegisterVariableCallback (&vid_contrast, VID_Gamma);
+//	Cvar_RegisterVariableCallback (&vid_gamma, VID_Gamma);
+//	Cvar_RegisterVariableCallback (&vid_contrast, VID_Gamma);
     
     vid.recalc_refdef = true; // force a surface cache flush
     

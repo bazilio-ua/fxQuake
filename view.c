@@ -251,7 +251,56 @@ cshift_t	cshift_water = { {130,80,50}, 128 };
 cshift_t	cshift_slime = { {0,25,5}, 150 };
 cshift_t	cshift_lava = { {255,80,0}, 150 };
 
+cvar_t		v_gamma = {"gamma", "1", CVAR_ARCHIVE};
+cvar_t		v_contrast = {"contrast", "1", CVAR_ARCHIVE}; // QuakeSpasm, MarkV
+
+byte		gammatable[256];	// palette is sent through this
+
+byte		ramps[3][256];
 float		v_blend[4];		// rgba 0.0 - 1.0
+
+//johnfitz -- deleted BuildGammaTable(), V_CheckGamma(), gammatable[], and ramps[][]
+
+void BuildGammaTable (float g)
+{
+	int		i, inf;
+	
+	if (g == 1.0)
+	{
+		for (i=0 ; i<256 ; i++)
+			gammatable[i] = i;
+		return;
+	}
+	
+	for (i=0 ; i<256 ; i++)
+	{
+		inf = 255 * pow ( (i+0.5)/255.5 , g ) + 0.5;
+		if (inf < 0)
+			inf = 0;
+		if (inf > 255)
+			inf = 255;
+		gammatable[i] = inf;
+	}
+}
+
+/*
+=================
+V_CheckGamma
+=================
+*/
+qboolean V_CheckGamma (void)
+{
+	static float oldgammavalue;
+	
+	if (v_gamma.value == oldgammavalue)
+		return false;
+	oldgammavalue = v_gamma.value;
+	
+	BuildGammaTable (v_gamma.value);
+	vid.recalc_refdef = 1;				// force a surface cache flush
+	
+	return true;
+}
 
 
 /*
@@ -471,7 +520,12 @@ V_UpdateBlend
 cleaned up and renamed V_UpdatePalette
 =============
 */
-void V_UpdateBlend (void)
+/*
+=============
+V_UpdatePalette - (V_UpdateBlend)
+=============
+*/
+void V_UpdatePalette (void)
 {
 	int		i, j;
 	qboolean	changed;
@@ -507,6 +561,156 @@ void V_UpdateBlend (void)
 
 	if (changed)
 		V_CalcBlend ();
+}
+
+
+void V_UpdatePaletteGamma (void)
+{
+	int		i;//, j;
+	byte	*basepal, *newpal;
+	byte	pal[768];
+	float	r,g,b,a;
+	int		ir, ig, ib;
+	qboolean force;
+
+	force = V_CheckGamma ();
+	
+	if (force)
+	{
+		a = v_blend[3];
+		r = 255*v_blend[0]*a;
+		g = 255*v_blend[1]*a;
+		b = 255*v_blend[2]*a;
+
+		a = 1-a;
+		for (i=0 ; i<256 ; i++)
+		{
+			ir = i*a + r;
+			ig = i*a + g;
+			ib = i*a + b;
+			if (ir > 255)
+				ir = 255;
+			if (ig > 255)
+				ig = 255;
+			if (ib > 255)
+				ib = 255;
+
+			ramps[0][i] = gammatable[ir];
+			ramps[1][i] = gammatable[ig];
+			ramps[2][i] = gammatable[ib];
+		}
+
+		basepal = host_basepal;
+		newpal = pal;
+		
+		for (i=0 ; i<256 ; i++)
+		{
+			ir = basepal[0];
+			ig = basepal[1];
+			ib = basepal[2];
+			basepal += 3;
+			
+			newpal[0] = ramps[0][ir];
+			newpal[1] = ramps[1][ig];
+			newpal[2] = ramps[2][ib];
+			newpal += 3;
+		}
+
+		V_ShiftPalette (pal);
+	}
+
+}
+
+void V_ShiftPalette(unsigned char *p)
+{
+	V_SetPalette(p);
+	// do reload textures
+	GL_ReloadTextures_f();
+}
+
+void V_SetPalette (unsigned char *palette)
+{
+	byte *pal, *src, *dst;
+	int i;
+	
+	pal = palette;
+
+	//
+	//standard palette, 255 is transparent
+	//
+	dst = (byte *)d_8to24table;
+	src = pal;
+	for (i=0; i<256; i++)
+	{
+		dst[0] = *src++;
+		dst[1] = *src++;
+		dst[2] = *src++;
+		dst[3] = 255;
+		dst += 4;
+	}
+	((byte *)&d_8to24table[255])[3] = 0;
+
+	//
+	//fullbright palette, 0-223 are black (for additive blending)
+	//
+	src = pal + 224*3;
+	dst = (byte *)&d_8to24table_fbright[224];
+	for (i=224; i<256; i++)
+	{
+		dst[0] = *src++;
+		dst[1] = *src++;
+		dst[2] = *src++;
+		dst[3] = 255;
+		dst += 4;
+	}
+	for (i=0; i<224; i++)
+	{
+		dst = (byte *)&d_8to24table_fbright[i];
+		dst[0] = 0;
+		dst[1] = 0;
+		dst[2] = 0;
+		dst[3] = 255;
+	}
+
+	//
+	//nobright palette, 224-255 are black (for additive blending)
+	//
+	dst = (byte *)d_8to24table_nobright;
+	src = pal;
+	for (i=0; i<256; i++)
+	{
+		dst[0] = *src++;
+		dst[1] = *src++;
+		dst[2] = *src++;
+		dst[3] = 255;
+		dst += 4;
+	}
+	for (i=224; i<256; i++)
+	{
+		dst = (byte *)&d_8to24table_nobright[i];
+		dst[0] = 0;
+		dst[1] = 0;
+		dst[2] = 0;
+		dst[3] = 255;
+	}
+
+	//
+	//fullbright palette, for fence textures
+	//
+	memcpy(d_8to24table_fbright_fence, d_8to24table_fbright, 256*4);
+	d_8to24table_fbright_fence[255] = 0; // alpha of zero
+
+	//
+	//nobright palette, for fence textures
+	//
+	memcpy(d_8to24table_nobright_fence, d_8to24table_nobright, 256*4);
+	d_8to24table_nobright_fence[255] = 0; // alpha of zero
+	
+	//
+	//conchars palette, 0 and 255 are transparent
+	//
+	memcpy(d_8to24table_conchars, d_8to24table, 256*4);
+	((byte *)&d_8to24table_conchars[0])[3] = 0;
 }
 
 
@@ -903,6 +1107,9 @@ void V_Init (void)
 	Cvar_RegisterVariable (&v_kickroll);
 	Cvar_RegisterVariable (&v_kickpitch);
 	Cvar_RegisterVariable (&v_gunkick);	
+	
+	Cvar_RegisterVariableCallback (&v_gamma, V_UpdatePaletteGamma);
+	Cvar_RegisterVariableCallback (&v_contrast, V_UpdatePaletteGamma);
 }
 
 

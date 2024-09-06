@@ -27,5 +27,13 @@ void V_Init (void);
 void V_RenderView (void);
 float V_CalcRoll (vec3_t angles, vec3_t velocity);
 void V_CalcBlend (void);
-void V_UpdateBlend (void);
+void V_UpdatePalette (void);
 
+void	V_SetPalette (unsigned char *palette);
+// called at startup and after any gamma correction
+
+void	V_ShiftPalette (unsigned char *palette);
+// called for bonus and pain flashes, and for underwater color changes
+
+extern	cvar_t		v_gamma;
+extern	cvar_t		v_contrast;
