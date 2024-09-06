@@ -232,7 +232,7 @@ void SV_SendClientMessages (void);
 void SV_ClearDatagram (void);
 byte *SV_FatPVS (vec3_t org, struct model_s *worldmodel);
 
-int SV_ModelIndex (char *name);
+int SV_ModelIndex (const char *name);
 
 void SV_SetIdealPitch (void);
 
