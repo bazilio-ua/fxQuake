@@ -2508,6 +2508,8 @@ gltexture_t *GL_LoadTexture (model_t *owner, char *name, int width, int height, 
 	glt->source_width = width;
 	glt->source_height = height;
 	glt->source_crc = crc;
+	glt->top_color = -1;
+	glt->bottom_color = -1;
 
 	//upload it
 	mark = Hunk_LowMark ();
@@ -2538,22 +2540,23 @@ gltexture_t *GL_LoadTexture (model_t *owner, char *name, int width, int height, 
 ================
 GL_ReloadTexture
 
-reloads a texture
+reloads a texture, and colormaps it if needed
 ================
 */
 void GL_ReloadTexture (gltexture_t *glt)
 {
-	byte *data = NULL;
-	int mark;
+	GL_ReloadTextureTranslation (glt, -1, -1);
+}
+
+void GL_ReloadTextureTranslation (gltexture_t *glt, int top, int bottom)
+{
+	byte	translation[256];
+	byte	*src, *dst, *data = NULL, *translated;
+	int	mark, size, i;
+	
 //
 // get source data
 //
-	int r;
-	r = strcmp(glt->name, "progs/player.mdl_0_0");
-	if (r == 0) {
-		
-	}
-	
 	mark = Hunk_LowMark ();
 
 	if (glt->source_file[0] && glt->source_offset)
@@ -2604,6 +2607,62 @@ void GL_ReloadTexture (gltexture_t *glt)
 
 	glt->width = glt->source_width;
 	glt->height = glt->source_height;
+	
+//
+// apply top and bottom colors
+//
+// if top and bottom are -1,-1, use existing top and bottom colors
+// if existing top and bottom colors are -1,-1, don't bother colormapping
+	if (top > -1 && bottom > -1)
+	{
+		if (glt->source_format == SRC_INDEXED)
+		{
+			glt->top_color = top;
+			glt->bottom_color = bottom;
+		}
+		else
+			Con_Printf ("GL_ReloadTexture: can't colormap a non SRC_INDEXED texture: %s\n", glt->name);
+	}
+	if (glt->top_color > -1 && glt->bottom_color > -1)
+	{
+		//create new translation table
+		for (i = 0; i < 256; i++)
+			translation[i] = i;
+		
+		top = glt->top_color;// * 16;
+		if (top < 128)
+		{
+			for (i = 0; i < 16; i++)
+				translation[TOP_RANGE+i] = top + i;
+		}
+		else
+		{
+			for (i = 0; i < 16; i++)
+				translation[TOP_RANGE+i] = top+15-i;
+		}
+		
+		bottom = glt->bottom_color;// * 16;
+		if (bottom < 128)
+		{
+			for (i = 0; i < 16; i++)
+				translation[BOTTOM_RANGE+i] = bottom + i;
+		}
+		else
+		{
+			for (i = 0; i < 16; i++)
+				translation[BOTTOM_RANGE+i] = bottom+15-i;
+		}
+		
+		//translate texture
+		size = glt->width * glt->height;
+		dst = translated = (byte *) Hunk_Alloc (size);
+		src = data;
+		
+		for (i = 0; i < size; i++)
+			*dst++ = translation[*src++];
+		
+		data = translated;
+	}
 //
 // upload it
 //

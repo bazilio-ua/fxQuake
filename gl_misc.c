@@ -389,6 +389,9 @@ skip:
 												paliashdr->gltexture[e->skinnum][0]->source_file,
 												paliashdr->gltexture[e->skinnum][0]->source_offset, TEXPREF_PAD | TEXPREF_OVERWRITE);
 
+	playertextures[playernum]->top_color = top;
+	playertextures[playernum]->bottom_color = bottom;
+	
 	// free allocated memory
 	Hunk_FreeToLowMark (mark);
 }
