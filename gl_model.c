@@ -2609,7 +2609,7 @@ void *Mod_LoadAllSkins (int numskins, daliasskintype_t *pskintype)
 		} 
 		else 
 		{
-			// animating skin group. yuck.
+			// animating skin group.  yuck.
 			pskintype++;
 			pinskingroup = (daliasskingroup_t *)pskintype;
 			groupskins = LittleLong (pinskingroup->numskins);

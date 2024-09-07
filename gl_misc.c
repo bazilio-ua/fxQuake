@@ -385,8 +385,6 @@ skip:
 	//upload new image
 //	playertextures[playernum] = GL_LoadTexture (e->model, name, paliashdr->skinwidth, paliashdr->skinheight, SRC_INDEXED, original, "", (uintptr_t)original, TEXPREF_PAD | TEXPREF_OVERWRITE);
 
-//	playertextures[playernum] = GL_LoadTexture (e->model, name, paliashdr->skinwidth, paliashdr->skinheight, SRC_INDEXED, original, paliashdr->gltexture[e->skinnum][0]->source_file, (uintptr_t)original, TEXPREF_PAD | TEXPREF_OVERWRITE);
-
 	playertextures[playernum] = GL_LoadTexture (e->model, name, paliashdr->skinwidth, paliashdr->skinheight, SRC_INDEXED, original,
 												paliashdr->gltexture[e->skinnum][0]->source_file,
 												paliashdr->gltexture[e->skinnum][0]->source_offset, TEXPREF_PAD | TEXPREF_OVERWRITE);
