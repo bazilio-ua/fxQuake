@@ -514,7 +514,6 @@ void CL_ParseUpdate (int bits)
 		skin = MSG_ReadByte(net_message);
 	else
 		skin = ent->baseline.skin;
-
 	if (skin != ent->skinnum) 
 	{
 		// skin has changed

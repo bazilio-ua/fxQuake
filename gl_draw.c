@@ -1301,7 +1301,7 @@ void Draw_TransPicTranslate (int x, int y, qpic_t *pic, byte *translation)
 
 	data = trans;
 
-	gl.gltexture = GL_LoadTexture (NULL, name, pic->width, pic->height, SRC_INDEXED, data, "", (uintptr_t)data, TEXPREF_ALPHA | TEXPREF_PAD | TEXPREF_NOPICMIP);
+	gl.gltexture = GL_LoadTexture (NULL, name, pic->width, pic->height, SRC_INDEXED, data, "", (uintptr_t)data, TEXPREF_ALPHA | TEXPREF_PAD | TEXPREF_OVERWRITE | TEXPREF_NOPICMIP);
 	gl.sl = 0;
     gl.sh = (float)pic->width/(float)TexMgr_PadConditional(pic->width); //johnfitz
 	gl.tl = 0;
@@ -2548,6 +2548,12 @@ void GL_ReloadTexture (gltexture_t *glt)
 //
 // get source data
 //
+	int r;
+	r = strcmp(glt->name, "progs/player.mdl_0_0");
+	if (r == 0) {
+		
+	}
+	
 	mark = Hunk_LowMark ();
 
 	if (glt->source_file[0] && glt->source_offset)
