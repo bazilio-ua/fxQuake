@@ -52,10 +52,10 @@ extern qboolean vid_notifywindow;
 // gamma stuff
 //extern	cvar_t		vid_gamma;
 //extern	cvar_t		vid_contrast;
-void VID_Gamma_Set (void);
-void VID_Gamma_Restore (void);
-void VID_Gamma_Init (void);
-void VID_Gamma_Shutdown (void);
+//void VID_Gamma_Set (void);
+//void VID_Gamma_Restore (void);
+//void VID_Gamma_Init (void);
+//void VID_Gamma_Shutdown (void);
 
 void	VID_Init (void);
 // Called at startup to set up translation tables, takes 256 8 bit RGB values

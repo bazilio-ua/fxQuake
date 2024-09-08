@@ -312,7 +312,7 @@ R_TranslateNewPlayerSkin
  
 -- johnfitz -- split off of TranslatePlayerSkin --
 this is called when the skin or model actually changes, instead of just new colors
-added bug fix from bengt jardup
+added bug fix from Bengt Jardrup
 ===============
 */
 void R_TranslateNewPlayerSkin (int playernum)

@@ -41,9 +41,9 @@ viddef_t vid; // global video state
 //
 //==========================================================================
 
-CGGammaValue	 vid_gammaramp[3][256];
-CGGammaValue	 vid_systemgammaramp[3][256]; // to restore gamma
-qboolean vid_gammaworks = false;
+//CGGammaValue	 vid_gammaramp[3][256];
+//CGGammaValue	 vid_systemgammaramp[3][256]; // to restore gamma
+//qboolean vid_gammaworks = false;
 
 /*
 ================
@@ -52,8 +52,8 @@ VID_Gamma_Set
 apply gamma correction
 ================
 */
-void VID_Gamma_Set (void)
-{
+//void VID_Gamma_Set (void)
+//{
 //	if (!vid_gammaworks)
 //		return;
 //    
@@ -63,7 +63,7 @@ void VID_Gamma_Set (void)
 //                                              vid_gammaramp[2]);
 //    if (err != kCGErrorSuccess)
 //        Con_Printf ("VID_Gamma_Set: Failed to set gamma table ramp\n");
-}
+//}
 
 /*
 ================
@@ -72,8 +72,8 @@ VID_Gamma_Restore
 restore system gamma
 ================
 */
-void VID_Gamma_Restore (void)
-{
+//void VID_Gamma_Restore (void)
+//{
 //	if (!vid_gammaworks)
 //		return;
 //
@@ -83,7 +83,7 @@ void VID_Gamma_Restore (void)
 //                                              vid_systemgammaramp[2]);
 //    if (err != kCGErrorSuccess)
 //        Con_Printf ("VID_Gamma_Restore: Failed to set gamma table ramp\n");
-}
+//}
 
 /*
 ================
@@ -92,10 +92,10 @@ VID_Gamma_Shutdown
 called on exit
 ================
 */
-void VID_Gamma_Shutdown (void)
-{
+//void VID_Gamma_Shutdown (void)
+//{
 //	VID_Gamma_Restore ();
-}
+//}
 
 /*
 ================
@@ -104,8 +104,8 @@ VID_Gamma
 callback when the cvar changes
 ================
 */
-void VID_Gamma (void)
-{
+//void VID_Gamma (void)
+//{
 	// TODO: V_CheckGamma
 //    int i;
 //	static float oldgamma;
@@ -123,7 +123,7 @@ void VID_Gamma (void)
 //            CLAMP(0, (int)((255 * pow ((i+0.5)/255.5, vid_gamma.value) + 0.5) * vid_contrast.value), 255) / 255.0;
 //    
 //	VID_Gamma_Set ();
-}
+//}
 
 /*
 ================
@@ -132,8 +132,8 @@ VID_Gamma_Init
 call on init
 ================
 */
-void VID_Gamma_Init (void)
-{
+//void VID_Gamma_Init (void)
+//{
 //    uint32_t capacity = CGDisplayGammaTableCapacity(display);
 //    uint32_t sampleCount;
 //    
@@ -149,7 +149,7 @@ void VID_Gamma_Init (void)
 //    } else {
 //		Con_Printf ("Hardware gamma unavailable\n");
 //    }
-}
+//}
 
 //====================================
 
@@ -486,7 +486,7 @@ skipfullscreen:
         }
     }
     
-	VID_Gamma_Init ();
+//	VID_Gamma_Init ();
     
 //	Cvar_RegisterVariableCallback (&vid_gamma, VID_Gamma);
 //	Cvar_RegisterVariableCallback (&vid_contrast, VID_Gamma);
@@ -510,7 +510,7 @@ void VID_Shutdown (void)
 {
     if (display) {
         
-        VID_Gamma_Shutdown ();
+//        VID_Gamma_Shutdown ();
         
         if (glcontext) {
             [NSOpenGLContext clearCurrentContext];

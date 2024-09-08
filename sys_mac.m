@@ -518,7 +518,7 @@ int main (int argc, char *argv[])
             CDAudio_Resume ();
             S_UnblockSound ();
             S_ClearBuffer ();
-            VID_Gamma_Set ();
+//            VID_Gamma_Set ();
 //            NSLog(@"*** Active ***");
             active = true;
             }
@@ -529,7 +529,7 @@ int main (int argc, char *argv[])
             CDAudio_Pause ();
             S_BlockSound ();
             S_ClearBuffer ();
-            VID_Gamma_Restore ();
+//            VID_Gamma_Restore ();
             Key_ClearStates ();
 //            NSLog(@"*** Inactive ***");
             active = false;
@@ -588,15 +588,15 @@ int main (int argc, char *argv[])
 }
 
 - (void)windowDidChangeScreen:(NSNotification *)notification {
-    VID_Gamma_Shutdown();
+//    VID_Gamma_Shutdown();
     
     NSScreen *currentScreen = [[notification object] screen];
     CGDirectDisplayID currentDisplay = [[[currentScreen deviceDescription] objectForKey:@"NSScreenNumber"] unsignedIntValue];
     
     display = currentDisplay;
     
-    VID_Gamma_Init();
-    VID_Gamma_Set();
+//    VID_Gamma_Init();
+//    VID_Gamma_Set();
 }
 
 - (BOOL)windowShouldClose:(id)sender {

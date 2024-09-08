@@ -260,27 +260,32 @@ byte		ramps[3][256];
 float		v_blend[4];		// rgba 0.0 - 1.0
 
 //johnfitz -- deleted BuildGammaTable(), V_CheckGamma(), gammatable[], and ramps[][]
+//EER1 -- restored gammatable
 
-void BuildGammaTable (float g)
+void BuildGammaTable (float gamma, float contrast)
 {
-	int		i, inf;
+	int		i;//, inf;
 	
-	if (g == 1.0)
-	{
-		for (i=0 ; i<256 ; i++)
-			gammatable[i] = i;
-		return;
-	}
+//	if (g == 1.0)
+//	{
+//		for (i=0 ; i<256 ; i++)
+//			gammatable[i] = i;
+//		return;
+//	}
 	
+//	for (i=0 ; i<256 ; i++)
+//	{
+//		inf = 255 * pow ( (i+0.5)/255.5 , g ) + 0.5;
+//		if (inf < 0)
+//			inf = 0;
+//		if (inf > 255)
+//			inf = 255;
+//		gammatable[i] = inf;
+//	}
+
+	// Refresh gamma table
 	for (i=0 ; i<256 ; i++)
-	{
-		inf = 255 * pow ( (i+0.5)/255.5 , g ) + 0.5;
-		if (inf < 0)
-			inf = 0;
-		if (inf > 255)
-			inf = 255;
-		gammatable[i] = inf;
-	}
+		gammatable[i] = CLAMP(0, (int)((255 * pow ((i+0.5)/255.5, gamma) + 0.5) * contrast), 255);
 }
 
 /*
@@ -290,13 +295,22 @@ V_CheckGamma
 */
 qboolean V_CheckGamma (void)
 {
-	static float oldgammavalue;
+	static float oldgamma;
+	static float oldcontrast;
+
+//	static float oldgammavalue;
 	
-	if (v_gamma.value == oldgammavalue)
+	if (v_gamma.value == oldgamma && v_contrast.value == oldcontrast)
 		return false;
-	oldgammavalue = v_gamma.value;
 	
-	BuildGammaTable (v_gamma.value);
+	oldgamma = v_gamma.value;
+	oldcontrast = v_contrast.value;
+
+//	if (v_gamma.value == oldgammavalue)
+//		return false;
+//	oldgammavalue = v_gamma.value;
+	
+	BuildGammaTable (v_gamma.value, v_contrast.value);
 	vid.recalc_refdef = 1;				// force a surface cache flush
 	
 	return true;
@@ -520,12 +534,7 @@ V_UpdateBlend
 cleaned up and renamed V_UpdatePalette
 =============
 */
-/*
-=============
-V_UpdatePalette - (V_UpdateBlend)
-=============
-*/
-void V_UpdatePalette (void)
+void V_UpdateBlend (void)
 {
 	int		i, j;
 	qboolean	changed;
@@ -563,8 +572,14 @@ void V_UpdatePalette (void)
 		V_CalcBlend ();
 }
 
+/*
+================
+V_UpdateGamma
 
-void V_UpdatePaletteGamma (void)
+callback when the gamma/contrast cvar changes
+================
+*/
+void V_UpdateGamma (void)
 {
 	int		i;//, j;
 	byte	*basepal, *newpal;
@@ -621,11 +636,11 @@ void V_UpdatePaletteGamma (void)
 
 }
 
-void V_ShiftPalette(unsigned char *p)
+void V_ShiftPalette (unsigned char *palette)
 {
-	V_SetPalette(p);
+	V_SetPalette (palette);
 	// do reload textures
-	GL_ReloadTextures_f();
+	GL_ReloadTextures_f ();
 }
 
 void V_SetPalette (unsigned char *palette)
@@ -1108,8 +1123,8 @@ void V_Init (void)
 	Cvar_RegisterVariable (&v_kickpitch);
 	Cvar_RegisterVariable (&v_gunkick);	
 	
-	Cvar_RegisterVariableCallback (&v_gamma, V_UpdatePaletteGamma);
-	Cvar_RegisterVariableCallback (&v_contrast, V_UpdatePaletteGamma);
+	Cvar_RegisterVariableCallback (&v_gamma, V_UpdateGamma);
+	Cvar_RegisterVariableCallback (&v_contrast, V_UpdateGamma);
 }
 
 

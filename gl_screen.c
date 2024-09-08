@@ -1114,7 +1114,7 @@ void SCR_UpdateScreen (void)
 		M_Draw ();
 	}
 
-	V_UpdatePalette ();
+	V_UpdateBlend ();
 
 	GL_EndRendering ();
 }
