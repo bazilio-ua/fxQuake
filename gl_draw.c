@@ -747,7 +747,7 @@ typedef struct cachepic_s
 cachepic_t	menu_cachepics[MAX_CACHED_PICS];
 int			menu_numcachepics;
 
-byte		menuplyr_pixels[4096];
+//byte		menuplyr_pixels[4096];
 
 qpic_t *Draw_PicFromWad (char *name)
 {
@@ -835,8 +835,8 @@ qpic_t *Draw_CachePic (char *path)
 	// HACK HACK HACK --- we need to keep the bytes for
 	// the translatable player picture just for the menu
 	// configuration dialog
-	if (!strcmp (path, "gfx/menuplyr.lmp"))
-		memcpy (menuplyr_pixels, dat->data, dat->width*dat->height);
+//	if (!strcmp (path, "gfx/menuplyr.lmp"))
+//		memcpy (menuplyr_pixels, dat->data, dat->width*dat->height);
 
 	pic->pic.width = dat->width;
 	pic->pic.height = dat->height;
@@ -1270,51 +1270,67 @@ void Draw_TransPic (int x, int y, qpic_t *pic)
 =============
 Draw_TransPicTranslate
 
+-- johnfitz -- rewritten to use texmgr to do translation
 Only used for the player color selection menu
 =============
 */
-void Draw_TransPicTranslate (int x, int y, qpic_t *pic, byte *translation)
+void Draw_TransPicTranslate (int x, int y, qpic_t *pic, int top, int bottom)
 {
-	int		size, mark;
-	int		i;
-	byte	*dst;
-	byte	*src;
-	byte	*data;
-	byte	*trans = NULL;
-	char	name[64];
-	glpic_t	gl;
-
-	mark = Hunk_LowMark ();
-
-	data = menuplyr_pixels;
-	sprintf (name, "gfx/menuplyr.lmp");
-	size = pic->width * pic->height;
-
-	// allocate dynamic memory
-	trans = Hunk_Alloc (size);
-
-	dst = trans;
-	src = data;
-
-	for (i=0; i<size; i++)
-		*dst++ = translation[*src++];
-
-	data = trans;
-
-	gl.gltexture = GL_LoadTexture (NULL, name, pic->width, pic->height, SRC_INDEXED, data, "", (uintptr_t)data, TEXPREF_ALPHA | TEXPREF_PAD | TEXPREF_OVERWRITE | TEXPREF_NOPICMIP);
-	gl.sl = 0;
-    gl.sh = (float)pic->width/(float)TexMgr_PadConditional(pic->width); //johnfitz
-	gl.tl = 0;
-    gl.th = (float)pic->height/(float)TexMgr_PadConditional(pic->height); //johnfitz 
-
-    memcpy (pic->data, &gl, sizeof(glpic_t));
-    
+	static int oldtop = -2;
+	static int oldbottom = -2;
+	
+	if (top != oldtop || bottom != oldbottom)
+	{
+		glpic_t *p = (glpic_t *)pic->data;
+		gltexture_t *glt = p->gltexture;
+		oldtop = top;
+		oldbottom = bottom;
+		GL_ReloadTextureTranslation (glt, top, bottom);
+	}
 	Draw_Pic (x, y, pic);
-
-	// free allocated memory
-	Hunk_FreeToLowMark (mark);
 }
 
+//void Draw_TransPicTranslate (int x, int y, qpic_t *pic, byte *translation)
+//{
+//	int		size, mark;
+//	int		i;
+//	byte	*dst;
+//	byte	*src;
+//	byte	*data;
+//	byte	*trans = NULL;
+//	char	name[64];
+//	glpic_t	gl;
+//
+//	mark = Hunk_LowMark ();
+//
+//	data = menuplyr_pixels;
+//	sprintf (name, "gfx/menuplyr.lmp");
+//	size = pic->width * pic->height;
+//
+//	// allocate dynamic memory
+//	trans = Hunk_Alloc (size);
+//
+//	dst = trans;
+//	src = data;
+//
+//	for (i=0; i<size; i++)
+//		*dst++ = translation[*src++];
+//
+//	data = trans;
+//
+//	gl.gltexture = GL_LoadTexture (NULL, name, pic->width, pic->height, SRC_INDEXED, data, "", (uintptr_t)data, TEXPREF_ALPHA | TEXPREF_PAD | TEXPREF_OVERWRITE | TEXPREF_NOPICMIP);
+//	gl.sl = 0;
+//    gl.sh = (float)pic->width/(float)TexMgr_PadConditional(pic->width); //johnfitz
+//	gl.tl = 0;
+//    gl.th = (float)pic->height/(float)TexMgr_PadConditional(pic->height); //johnfitz 
+//
+//    memcpy (pic->data, &gl, sizeof(glpic_t));
+//    
+//	Draw_Pic (x, y, pic);
+//
+//	// free allocated memory
+//	Hunk_FreeToLowMark (mark);
+//}
 
 /*
 ================
