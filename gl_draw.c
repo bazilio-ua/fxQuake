@@ -2629,8 +2629,8 @@ void GL_ReloadTextureTranslation (gltexture_t *glt, int top, int bottom)
 		for (i = 0; i < 256; i++)
 			translation[i] = i;
 		
-		top = glt->top_color;// * 16;
-		if (top < 128)
+		top = glt->top_color * 16;
+		if (top < 128)	// the artists made some backwards ranges.  sigh.
 		{
 			for (i = 0; i < 16; i++)
 				translation[TOP_RANGE+i] = top + i;
@@ -2641,7 +2641,7 @@ void GL_ReloadTextureTranslation (gltexture_t *glt, int top, int bottom)
 				translation[TOP_RANGE+i] = top+15-i;
 		}
 		
-		bottom = glt->bottom_color;// * 16;
+		bottom = glt->bottom_color * 16;
 		if (bottom < 128)
 		{
 			for (i = 0; i < 16; i++)

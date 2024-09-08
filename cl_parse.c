@@ -519,7 +519,7 @@ void CL_ParseUpdate (int bits)
 		// skin has changed
 		ent->skinnum = skin;
 		if (num > 0 && num <= cl.maxclients)
-			R_TranslatePlayerSkin (num - 1);
+			R_TranslateNewPlayerSkin (num - 1); //johnfitz -- was R_TranslatePlayerSkin
 	}
 
 	if (bits & U_EFFECTS)
@@ -647,7 +647,7 @@ void CL_ParseUpdate (int bits)
 			forcelink = true;	// hack to make null model players work
 
 		if (num > 0 && num <= cl.maxclients)
-			R_TranslatePlayerSkin (num - 1);
+			R_TranslateNewPlayerSkin (num - 1); //johnfitz -- was R_TranslatePlayerSkin
 
 		ent->lerpflags |= LERP_RESETANIM; //johnfitz -- don't lerp animation across model changes
 	}

@@ -548,9 +548,9 @@ void R_DrawAliasModel (entity_t *e)
 	{
 		if (IsTimeout (&lastmsg, 2))
 		{
-			Con_DWarning ("R_DrawAliasModel: no such skin %d (%d skins) in %s\n", skinnum, paliashdr->numskins, clmodel->name);
+			Con_DWarning ("R_DrawAliasModel: no such skin # %d (%d skins) in '%s'\n", skinnum, paliashdr->numskins, clmodel->name);
 		}
-		skinnum = 0;
+		skinnum = 0; // ericw -- display skin 0 for winquake compatibility
 	}
 
 	//

@@ -270,18 +270,18 @@ void R_Init (void)
 R_InitTranslatePlayerTextures
 ===============
 */
-static int oldtop[MAX_SCOREBOARD]; 
-static int oldbottom[MAX_SCOREBOARD];
-static int oldskinnum[MAX_SCOREBOARD];
+//static int oldtop[MAX_SCOREBOARD]; 
+//static int oldbottom[MAX_SCOREBOARD];
+//static int oldskinnum[MAX_SCOREBOARD];
 void R_InitTranslatePlayerTextures (void)
 {
 	int i;
 
 	for (i = 0; i < MAX_SCOREBOARD; i++)
 	{
-		oldtop[i] = -1;
-		oldbottom[i] = -1;
-		oldskinnum[i] = -1;
+//		oldtop[i] = -1;
+//		oldbottom[i] = -1;
+//		oldskinnum[i] = -1;
 
 		playertextures[i] = NULL; //clear playertexture pointers
 	}
@@ -292,21 +292,44 @@ void R_InitTranslatePlayerTextures (void)
 R_TranslatePlayerSkin
 
 Translates a skin texture by the per-player color lookup
+-- johnfitz -- rewritten.  also, only handles new colors, not new skins
 ===============
 */
 void R_TranslatePlayerSkin (int playernum)
 {
 	int		top, bottom;
-	byte	translate[256];
-	int		i, size;
+	
+	top = (cl.scores[playernum].colors & 0xf0)>>4;
+	bottom = cl.scores[playernum].colors &15;
+	
+	if (playertextures[playernum])
+		GL_ReloadTextureTranslation (playertextures[playernum], top, bottom);
+}
+
+/*
+===============
+R_TranslateNewPlayerSkin
+ 
+-- johnfitz -- split off of TranslatePlayerSkin --
+this is called when the skin or model actually changes, instead of just new colors
+added bug fix from bengt jardup
+===============
+*/
+void R_TranslateNewPlayerSkin (int playernum)
+{
+//	int		top, bottom;
+//	byte	translate[256];
+//	int		i, size;
 	entity_t	*e;
 	model_t	*model;
-	aliashdr_t *paliashdr;
-	byte	*original;
-	byte	*src, *dst; 
-	byte	*pixels = NULL;
-	char		name[64];
-	int 	mark;
+	aliashdr_t	*paliashdr;
+	int		skinnum;
+//	byte	*original;
+//	byte	*src, *dst; 
+//	byte	*pixels = NULL;
+	byte	*pixels;
+	char	name[64];
+//	int 	mark;
 
 	//
 	// locate the original skin pixels
@@ -321,79 +344,94 @@ void R_TranslatePlayerSkin (int playernum)
 
 	paliashdr = (aliashdr_t *)Mod_Extradata (model);
 
-	top = cl.scores[playernum].colors & 0xf0;
-	bottom = (cl.scores[playernum].colors &15)<<4;
+//	top = cl.scores[playernum].colors & 0xf0;
+//	bottom = (cl.scores[playernum].colors &15)<<4;
 
-	if (!strcmp (e->model->name, "progs/player.mdl"))
+//	if (!strcmp (e->model->name, "progs/player.mdl"))
+//	{
+//		if (top == oldtop[playernum] && bottom == oldbottom[playernum] && e->skinnum == oldskinnum[playernum])
+//			return; // translate if only player change his color
+//	}
+//	else
+//	{
+//		oldtop[playernum] = -1;
+//		oldbottom[playernum] = -1;
+//		oldskinnum[playernum] = -1;
+//		goto skip;
+//	}
+//
+//	oldtop[playernum] = top;
+//	oldbottom[playernum] = bottom;
+//	oldskinnum[playernum] = e->skinnum;
+//
+//skip:
+//	for (i=0 ; i<256 ; i++)
+//		translate[i] = i;
+//
+//	for (i=0 ; i<16 ; i++)
+//	{
+//		if (top < 128)	// the artists made some backwards ranges.  sigh.
+//			translate[TOP_RANGE+i] = top+i;
+//		else
+//			translate[TOP_RANGE+i] = top+15-i;
+//
+//		if (bottom < 128)
+//			translate[BOTTOM_RANGE+i] = bottom+i;
+//		else
+//			translate[BOTTOM_RANGE+i] = bottom+15-i;
+//	}
+
+	skinnum = e->skinnum;
+	if (skinnum >= paliashdr->numskins || skinnum < 0)
+//	if (skinnum < 0 || skinnum >= paliashdr->numskins)
 	{
-		if (top == oldtop[playernum] && bottom == oldbottom[playernum] && e->skinnum == oldskinnum[playernum])
-			return; // translate if only player change his color
-	}
-	else
-	{
-		oldtop[playernum] = -1;
-		oldbottom[playernum] = -1;
-		oldskinnum[playernum] = -1;
-		goto skip;
+		Con_DWarning ("R_TranslateNewPlayerSkin: (%d): Invalid player skin # %d (%d skins) in '%s'\n", playernum, skinnum, paliashdr->numskins, model->name);
+		skinnum = 0;
 	}
 
-	oldtop[playernum] = top;
-	oldbottom[playernum] = bottom;
-	oldskinnum[playernum] = e->skinnum;
+// get correct texture pixels
+	pixels = (byte *)paliashdr + paliashdr->texels[skinnum]; // This is not a persistent place!
 
-skip:
-	for (i=0 ; i<256 ; i++)
-		translate[i] = i;
-
-	for (i=0 ; i<16 ; i++)
-	{
-		if (top < 128)	// the artists made some backwards ranges.  sigh.
-			translate[TOP_RANGE+i] = top+i;
-		else
-			translate[TOP_RANGE+i] = top+15-i;
-
-		if (bottom < 128)
-			translate[BOTTOM_RANGE+i] = bottom+i;
-		else
-			translate[BOTTOM_RANGE+i] = bottom+15-i;
-	}
-
-	if (e->skinnum < 0 || e->skinnum >= paliashdr->numskins)
-		original = (byte *)paliashdr + paliashdr->texels[0];
-	else
-		original = (byte *)paliashdr + paliashdr->texels[e->skinnum];
-
-	mark = Hunk_LowMark ();
+//	if (e->skinnum < 0 || e->skinnum >= paliashdr->numskins)
+//		original = (byte *)paliashdr + paliashdr->texels[0];
+//	else
+//		original = (byte *)paliashdr + paliashdr->texels[e->skinnum];
+//
+//	mark = Hunk_LowMark ();
 
 	//
 	// translate texture
 	//
-	sprintf (name, "%s_%i_%i", e->model->name, e->skinnum, playernum);
-	size = paliashdr->skinwidth * paliashdr->skinheight;
+//	sprintf (name, "%s_%i_%i", e->model->name, e->skinnum, playernum);
+//	size = paliashdr->skinwidth * paliashdr->skinheight;
 
 	// allocate dynamic memory
-	pixels = Hunk_Alloc (size);
+//	pixels = Hunk_Alloc (size);
+//
+//	dst = pixels;
+//	src = original;
+//
+//	for (i=0; i<size; i++)
+//		*dst++ = translate[*src++];
+//
+//	original = pixels;
 
-	dst = pixels;
-	src = original;
-
-	for (i=0; i<size; i++)
-		*dst++ = translate[*src++];
-
-	original = pixels;
-
-	//upload new image
+// upload new image
 //	playertextures[playernum] = GL_LoadTexture (e->model, name, paliashdr->skinwidth, paliashdr->skinheight, SRC_INDEXED, original, "", (uintptr_t)original, TEXPREF_PAD | TEXPREF_OVERWRITE);
 
-	playertextures[playernum] = GL_LoadTexture (e->model, name, paliashdr->skinwidth, paliashdr->skinheight, SRC_INDEXED, original,
-												paliashdr->gltexture[e->skinnum][0]->source_file,
-												paliashdr->gltexture[e->skinnum][0]->source_offset, TEXPREF_PAD | TEXPREF_OVERWRITE);
+	sprintf (name, "%s_%i_%i", e->model->name, skinnum, playernum);
+	playertextures[playernum] = GL_LoadTexture (e->model, name, paliashdr->skinwidth, paliashdr->skinheight, SRC_INDEXED, pixels,
+												paliashdr->gltexture[skinnum][0]->source_file,
+												paliashdr->gltexture[skinnum][0]->source_offset, TEXPREF_PAD | TEXPREF_OVERWRITE);
 
-	playertextures[playernum]->top_color = top;
-	playertextures[playernum]->bottom_color = bottom;
-	
+//	playertextures[playernum]->top_color = top;
+//	playertextures[playernum]->bottom_color = bottom;
+
 	// free allocated memory
-	Hunk_FreeToLowMark (mark);
+//	Hunk_FreeToLowMark (mark);
+
+// now recolor it
+	R_TranslatePlayerSkin (playernum);
 }
 
 
