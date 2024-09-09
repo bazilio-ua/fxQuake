@@ -1175,7 +1175,7 @@ void Host_Name_f (void)
 	{
 		if (strcmp(cl_name.string, newName) == 0)
 			return;
-		Cvar_Set ("cl_name", newName);
+		Cvar_Set ("_cl_name", newName);
 		if (cls.state == ca_connected)
 			Cmd_ForwardToServer ();
 		return;
@@ -1366,7 +1366,7 @@ void Host_Color_f(void)
 
 	if (cmd_source == src_command)
 	{
-		Cvar_SetValue ("cl_color", playercolor);
+		Cvar_SetValue ("_cl_color", playercolor);
 		if (cls.state == ca_connected)
 			Cmd_ForwardToServer ();
 		return;
