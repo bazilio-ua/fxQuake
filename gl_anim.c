@@ -1878,7 +1878,10 @@ void R_Bloom_InitTextures (void)
 
 	// init the screen texture
 	bloomscreendata = Hunk_Alloc (screen_texture_width * screen_texture_height * 4); //sizeof(int)
-	bloomscreentexture = GL_LoadTexture (NULL, "bloomscreentexture", screen_texture_width, screen_texture_height, SRC_BLOOM, bloomscreendata, "", (uintptr_t)bloomscreendata, TEXPREF_BLOOM /* | TEXPREF_OVERWRITE */ );
+	bloomscreentexture = GL_LoadTexture (NULL, "bloomscreentexture", screen_texture_width, screen_texture_height, SRC_BLOOM, 
+										 bloomscreendata,
+										 "",
+										 (uintptr_t)bloomscreendata, TEXPREF_BLOOM | TEXPREF_LINEAR /* | TEXPREF_OVERWRITE */ );
 
 	// validate bloom size
 	if (r_bloom_sample_size.value < 32)
@@ -1896,7 +1899,10 @@ void R_Bloom_InitTextures (void)
 
 	// init the bloom effect texture
 	bloomeffectdata = Hunk_Alloc (bloom_size * bloom_size * 4); //sizeof(int)
-	bloomeffecttexture = GL_LoadTexture (NULL, "bloomeffecttexture", bloom_size, bloom_size, SRC_BLOOM, bloomeffectdata, "", (uintptr_t)bloomeffectdata, TEXPREF_BLOOM /* | TEXPREF_OVERWRITE */ );
+	bloomeffecttexture = GL_LoadTexture (NULL, "bloomeffecttexture", bloom_size, bloom_size, SRC_BLOOM, 
+										 bloomeffectdata,
+										 "",
+										 (uintptr_t)bloomeffectdata, TEXPREF_BLOOM | TEXPREF_LINEAR /* | TEXPREF_OVERWRITE */ );
 
 	// if screen size is more than 2x the bloom effect texture, set up for stepped downsampling
 	bloomdownsamplingtexture = NULL;
@@ -1906,7 +1912,10 @@ void R_Bloom_InitTextures (void)
 	{
 		screen_downsampling_texture_size = (int)(bloom_size * 2);
 		bloomdownsamplingdata = Hunk_Alloc (screen_downsampling_texture_size * screen_downsampling_texture_size * 4); //sizeof(int)
-		bloomdownsamplingtexture = GL_LoadTexture (NULL, "bloomdownsamplingtexture", screen_downsampling_texture_size, screen_downsampling_texture_size, SRC_BLOOM, bloomdownsamplingdata, "", (uintptr_t)bloomdownsamplingdata, TEXPREF_BLOOM /* | TEXPREF_OVERWRITE */ );
+		bloomdownsamplingtexture = GL_LoadTexture (NULL, "bloomdownsamplingtexture", screen_downsampling_texture_size, screen_downsampling_texture_size, SRC_BLOOM, 
+												   bloomdownsamplingdata,
+												   "",
+												   (uintptr_t)bloomdownsamplingdata, TEXPREF_BLOOM | TEXPREF_LINEAR /* | TEXPREF_OVERWRITE */ );
 	}
 
 	// init the screen backup texture
@@ -1922,7 +1931,10 @@ void R_Bloom_InitTextures (void)
 	}
 
 	bloombackupdata = Hunk_Alloc (screen_backup_texture_width * screen_backup_texture_height * 4); //sizeof(int)
-	bloombackuptexture = GL_LoadTexture (NULL, "bloombackuptexture", screen_backup_texture_width, screen_backup_texture_height, SRC_BLOOM, bloombackupdata, "", (uintptr_t)bloombackupdata, TEXPREF_BLOOM /* | TEXPREF_OVERWRITE */ );
+	bloombackuptexture = GL_LoadTexture (NULL, "bloombackuptexture", screen_backup_texture_width, screen_backup_texture_height, SRC_BLOOM, 
+										 bloombackupdata,
+										 "",
+										 (uintptr_t)bloombackupdata, TEXPREF_BLOOM | TEXPREF_LINEAR /* | TEXPREF_OVERWRITE */ );
 
 	Hunk_FreeToLowMark (mark);
 }
