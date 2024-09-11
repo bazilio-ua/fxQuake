@@ -50,97 +50,97 @@ void R_InitTextures (void)
 R_LoadPalette
 ===============
 */
-void R_LoadPalette (void)
-{
-	byte *pal, *src, *dst;
-	int i;
-
-	host_basepal = COM_LoadHunkFile ("gfx/palette.lmp", NULL);
-	if (!host_basepal)
-		Sys_Error ("R_LoadPalette: couldn't load gfx/palette.lmp");
-    host_colormap = COM_LoadHunkFile ("gfx/colormap.lmp", NULL);
-    if (!host_colormap)
-        Sys_Error ("R_LoadPalette: couldn't load gfx/colormap.lmp");
-
-	pal = host_basepal;
-
-	//
-	//standard palette, 255 is transparent
-	//
-	dst = (byte *)d_8to24table;
-	src = pal;
-	for (i=0; i<256; i++)
-	{
-		dst[0] = *src++;
-		dst[1] = *src++;
-		dst[2] = *src++;
-		dst[3] = 255;
-		dst += 4;
-	}
-	((byte *)&d_8to24table[255])[3] = 0;
-
-	//
-	//fullbright palette, 0-223 are black (for additive blending)
-	//
-	src = pal + 224*3;
-	dst = (byte *)&d_8to24table_fbright[224];
-	for (i=224; i<256; i++)
-	{
-		dst[0] = *src++;
-		dst[1] = *src++;
-		dst[2] = *src++;
-		dst[3] = 255;
-		dst += 4;
-	}
-	for (i=0; i<224; i++)
-	{
-		dst = (byte *)&d_8to24table_fbright[i];
-		dst[0] = 0;
-		dst[1] = 0;
-		dst[2] = 0;
-		dst[3] = 255;
-	}
-
-	//
-	//nobright palette, 224-255 are black (for additive blending)
-	//
-	dst = (byte *)d_8to24table_nobright;
-	src = pal;
-	for (i=0; i<256; i++)
-	{
-		dst[0] = *src++;
-		dst[1] = *src++;
-		dst[2] = *src++;
-		dst[3] = 255;
-		dst += 4;
-	}
-	for (i=224; i<256; i++)
-	{
-		dst = (byte *)&d_8to24table_nobright[i];
-		dst[0] = 0;
-		dst[1] = 0;
-		dst[2] = 0;
-		dst[3] = 255;
-	}
-
-	//
-	//fullbright palette, for fence textures
-	//
-	memcpy(d_8to24table_fbright_fence, d_8to24table_fbright, 256*4);
-	d_8to24table_fbright_fence[255] = 0; // alpha of zero
-
-	//
-	//nobright palette, for fence textures
-	//
-	memcpy(d_8to24table_nobright_fence, d_8to24table_nobright, 256*4);
-	d_8to24table_nobright_fence[255] = 0; // alpha of zero	
-	
-	//
-	//conchars palette, 0 and 255 are transparent
-	//
-	memcpy(d_8to24table_conchars, d_8to24table, 256*4);
-	((byte *)&d_8to24table_conchars[0])[3] = 0;
-}
+//void R_LoadPalette (void)
+//{
+//	byte *pal, *src, *dst;
+//	int i;
+//
+//	host_basepal = COM_LoadHunkFile ("gfx/palette.lmp", NULL);
+//	if (!host_basepal)
+//		Sys_Error ("R_LoadPalette: couldn't load gfx/palette.lmp");
+//    host_colormap = COM_LoadHunkFile ("gfx/colormap.lmp", NULL);
+//    if (!host_colormap)
+//        Sys_Error ("R_LoadPalette: couldn't load gfx/colormap.lmp");
+//
+//	pal = host_basepal;
+//
+//	//
+//	//standard palette, 255 is transparent
+//	//
+//	dst = (byte *)d_8to24table;
+//	src = pal;
+//	for (i=0; i<256; i++)
+//	{
+//		dst[0] = *src++;
+//		dst[1] = *src++;
+//		dst[2] = *src++;
+//		dst[3] = 255;
+//		dst += 4;
+//	}
+//	((byte *)&d_8to24table[255])[3] = 0;
+//
+//	//
+//	//fullbright palette, 0-223 are black (for additive blending)
+//	//
+//	src = pal + 224*3;
+//	dst = (byte *)&d_8to24table_fbright[224];
+//	for (i=224; i<256; i++)
+//	{
+//		dst[0] = *src++;
+//		dst[1] = *src++;
+//		dst[2] = *src++;
+//		dst[3] = 255;
+//		dst += 4;
+//	}
+//	for (i=0; i<224; i++)
+//	{
+//		dst = (byte *)&d_8to24table_fbright[i];
+//		dst[0] = 0;
+//		dst[1] = 0;
+//		dst[2] = 0;
+//		dst[3] = 255;
+//	}
+//
+//	//
+//	//nobright palette, 224-255 are black (for additive blending)
+//	//
+//	dst = (byte *)d_8to24table_nobright;
+//	src = pal;
+//	for (i=0; i<256; i++)
+//	{
+//		dst[0] = *src++;
+//		dst[1] = *src++;
+//		dst[2] = *src++;
+//		dst[3] = 255;
+//		dst += 4;
+//	}
+//	for (i=224; i<256; i++)
+//	{
+//		dst = (byte *)&d_8to24table_nobright[i];
+//		dst[0] = 0;
+//		dst[1] = 0;
+//		dst[2] = 0;
+//		dst[3] = 255;
+//	}
+//
+//	//
+//	//fullbright palette, for fence textures
+//	//
+//	memcpy(d_8to24table_fbright_fence, d_8to24table_fbright, 256*4);
+//	d_8to24table_fbright_fence[255] = 0; // alpha of zero
+//
+//	//
+//	//nobright palette, for fence textures
+//	//
+//	memcpy(d_8to24table_nobright_fence, d_8to24table_nobright, 256*4);
+//	d_8to24table_nobright_fence[255] = 0; // alpha of zero	
+//	
+//	//
+//	//conchars palette, 0 and 255 are transparent
+//	//
+//	memcpy(d_8to24table_conchars, d_8to24table, 256*4);
+//	((byte *)&d_8to24table_conchars[0])[3] = 0;
+//}
 
 /*
 ====================

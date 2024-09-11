@@ -1632,21 +1632,19 @@ pack_t *COM_LoadPackFile (char *packfilename)
 
 /*
 ================
-COM_AddGameDirectory
+COM_AddDirectory
 
-Sets com_gamedir, adds the directory to the head of the path,
-then loads and adds pak1.pak pak2.pak ... 
+adds the directory to the head of the path,
+then loads and adds pak1.pak pak2.pak ...
 ================
 */
-void COM_AddGameDirectory (char *dir)
+void COM_AddDirectory (char *dir)
 {
 	int                             i;
 	unsigned int    path_id;
 	searchpath_t    *search;
 	pack_t                  *pak;
 	char                    pakfile[MAX_OSPATH];
-
-	strcpy (com_gamedir, dir);
 
 //
 // assign a path_id to this game directory
@@ -1684,34 +1682,65 @@ void COM_AddGameDirectory (char *dir)
 
 /*
 ================
+COM_AddGameDirectory
+
+Sets com_gamedir, adds the directory to the head of the path,
+then loads and adds pak1.pak pak2.pak ...
+================
+*/
+void COM_AddGameDirectory (char *base, char *dir)
+{
+	strcpy (com_gamedir, va("%s/%s", base, dir));
+	
+	COM_AddDirectory(com_gamedir);
+}
+
+/*
+================
 COM_AddHomeDirectory
 
 Sets com_homedir, adds the home directory to the head of the path,
 ================
 */
-void COM_AddHomeDirectory (char *dir)
+void COM_AddHomeDirectory (char *home, char *dir)
 {
-	unsigned int    path_id;
-	searchpath_t    *search;
+//	unsigned int    path_id;
+//	searchpath_t    *search;
 
-	strcpy (com_homedir, dir);
+	if (!home)
+		return;
 
+	strcpy (com_homedir, va("%s/.fxQuake/%s", home, dir));
+	
+//	strcpy (com_homedir, dir);
+	
+	COM_AddDirectory(com_homedir);
+	
 //
 // assign a path_id to this game directory
 //
-	if (com_searchpaths)
-		path_id = com_searchpaths->path_id << 1;
-	else
-		path_id = 1U;
+//	if (com_searchpaths)
+//		path_id = com_searchpaths->path_id << 1;
+//	else
+//		path_id = 1U;
 
 //
 // add the directory to the search path
 //
-	search = Hunk_AllocName (sizeof(searchpath_t), "searchpath");
-	search->path_id = path_id;
-	strcpy (search->filename, dir);
-	search->next = com_searchpaths;
-	com_searchpaths = search;
+//	search = Hunk_AllocName (sizeof(searchpath_t), "searchpath");
+//	search->path_id = path_id;
+//	strcpy (search->filename, dir);
+//	search->next = com_searchpaths;
+//	com_searchpaths = search;
+	
+	
+	// If home is available, create the game directory
+//	if (home)
+//	{
+		COM_CreatePath (com_homedir);
+		Sys_mkdir (com_homedir);
+//	}
+
 }
 
 /*
@@ -1764,36 +1793,51 @@ void COM_InitFilesystem (void)
 //
 // start up with GAMENAME by default (id1)
 //
-	COM_AddGameDirectory (va("%s/"GAMENAME, com_basedir) );
-	if (home)
-		COM_AddHomeDirectory (va("%s/.fxQuake/"GAMENAME, home));
+//	COM_AddGameDirectory (va("%s/"GAMENAME, com_basedir) );
+//	if (home)
+//		COM_AddHomeDirectory (va("%s/.fxQuake/"GAMENAME, home));
+	
+	COM_AddGameDirectory (com_basedir, GAMENAME);
+	COM_AddHomeDirectory (home, GAMENAME);
 
 	if (COM_CheckParm ("-rogue"))
 	{
-		COM_AddGameDirectory (va("%s/rogue", com_basedir) );
-		if (home)
-			COM_AddHomeDirectory (va("%s/.fxQuake/rogue", home));
+//		COM_AddGameDirectory (va("%s/rogue", com_basedir) );
+//		if (home)
+//			COM_AddHomeDirectory (va("%s/.fxQuake/rogue", home));
+		
+		COM_AddGameDirectory (com_basedir, "rogue");
+		COM_AddHomeDirectory (home, "rogue");
 	}
 
 	if (COM_CheckParm ("-hipnotic"))
 	{
-		COM_AddGameDirectory (va("%s/hipnotic", com_basedir) );
-		if (home)
-			COM_AddHomeDirectory (va("%s/.fxQuake/hipnotic", home));
+//		COM_AddGameDirectory (va("%s/hipnotic", com_basedir) );
+//		if (home)
+//			COM_AddHomeDirectory (va("%s/.fxQuake/hipnotic", home));
+		
+		COM_AddGameDirectory (com_basedir, "hipnotic");
+		COM_AddHomeDirectory (home, "hipnotic");
 	}
 
 	if (COM_CheckParm ("-quoth"))
 	{
-		COM_AddGameDirectory (va("%s/quoth", com_basedir) );
-		if (home)
-			COM_AddHomeDirectory (va("%s/.fxQuake/quoth", home));
+//		COM_AddGameDirectory (va("%s/quoth", com_basedir) );
+//		if (home)
+//			COM_AddHomeDirectory (va("%s/.fxQuake/quoth", home));
+		
+		COM_AddGameDirectory (com_basedir, "quoth");
+		COM_AddHomeDirectory (home, "quoth");
 	}
 
 	if (COM_CheckParm ("-nehahra"))
 	{
-		COM_AddGameDirectory (va("%s/nehahra", com_basedir) );
-		if (home)
-			COM_AddHomeDirectory (va("%s/.fxQuake/nehahra", home));
+//		COM_AddGameDirectory (va("%s/nehahra", com_basedir) );
+//		if (home)
+//			COM_AddHomeDirectory (va("%s/.fxQuake/nehahra", home));
+		
+		COM_AddGameDirectory (com_basedir, "nehahra");
+		COM_AddHomeDirectory (home, "nehahra");
 	}
 
 //
@@ -1806,9 +1850,12 @@ void COM_InitFilesystem (void)
 	if (i && i < com_argc-1)
 	{
 		com_modified = true;
-		COM_AddGameDirectory (va("%s/%s", com_basedir, com_argv[i+1]));
-		if (home)
-			COM_AddHomeDirectory (va("%s/.fxQuake/%s", home, com_argv[i+1]));
+//		COM_AddGameDirectory (va("%s/%s", com_basedir, com_argv[i+1]));
+//		if (home)
+//			COM_AddHomeDirectory (va("%s/.fxQuake/%s", home, com_argv[i+1]));
+		
+		COM_AddGameDirectory (com_basedir, com_argv[i+1]);
+		COM_AddHomeDirectory (home, com_argv[i+1]);
 	}
 
 //
@@ -1819,17 +1866,20 @@ void COM_InitFilesystem (void)
 	if (i && i < com_argc-1)
 	{
 		com_modified = true;
-		COM_AddGameDirectory (va("%s/%s", com_basedir, com_argv[i+1]));
-		if (home)
-			COM_AddHomeDirectory (va("%s/.fxQuake/%s", home, com_argv[i+1]));
+//		COM_AddGameDirectory (va("%s/%s", com_basedir, com_argv[i+1]));
+//		if (home)
+//			COM_AddHomeDirectory (va("%s/.fxQuake/%s", home, com_argv[i+1]));
+		
+		COM_AddGameDirectory (com_basedir, com_argv[i+1]);
+		COM_AddHomeDirectory (home, com_argv[i+1]);
 	}
 
 	// If home is available, create the game directory
-	if (home)
-	{
-		COM_CreatePath (com_homedir);
-		Sys_mkdir (com_homedir);
-	}
+//	if (home)
+//	{
+//		COM_CreatePath (com_homedir);
+//		Sys_mkdir (com_homedir);
+//	}
 
 //
 // -path <dir or packfile> [<dir or packfile>] ...
