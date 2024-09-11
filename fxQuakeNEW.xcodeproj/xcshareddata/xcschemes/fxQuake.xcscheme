@@ -89,6 +89,10 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "+sv_protocol 999"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-protocol 999"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument

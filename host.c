@@ -866,7 +866,8 @@ void Host_Init (void)
 	SV_Init ();
 
 	R_InitTextures ();		// needed even for dedicated servers
-	R_LoadPalette ();
+//	R_LoadPalette ();
+	Host_LoadPalettes ();
  
 	if (cls.state != ca_dedicated)
 	{
@@ -941,3 +942,18 @@ void Host_Shutdown(void)
     host_initialized = false;
 }
 
+
+/*
+===============
+Host_LoadPalettes
+===============
+*/
+void Host_LoadPalettes (void)
+{
+	host_basepal = COM_LoadHunkFile ("gfx/palette.lmp", NULL);
+	if (!host_basepal)
+		Sys_Error ("Host_LoadPalettes: couldn't load gfx/palette.lmp");
+	host_colormap = COM_LoadHunkFile ("gfx/colormap.lmp", NULL);
+	if (!host_colormap)
+		Sys_Error ("Host_LoadPalettes: couldn't load gfx/colormap.lmp");
+}

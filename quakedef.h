@@ -299,6 +299,7 @@ void Host_Frame (double time);
 void Host_Quit_f (void);
 void Host_ClientCommands (char *fmt, ...);
 void Host_ShutdownServer (qboolean crash);
+void Host_LoadPalettes (void);
 
 extern int			current_skill;		// skill level for currently loaded level (in case
 										//  the user changes the cvar while the level is

@@ -1015,6 +1015,9 @@ void Draw_Init (void)
 	free_gltextures[i].next = NULL;
 	numgltextures = 0;
 
+	// palette
+	V_SetPalette (host_basepal);
+
 	Cvar_RegisterVariable (&scr_conalpha);
 	Cvar_RegisterVariable (&gl_max_size);
 	Cvar_RegisterVariable (&gl_picmip);
