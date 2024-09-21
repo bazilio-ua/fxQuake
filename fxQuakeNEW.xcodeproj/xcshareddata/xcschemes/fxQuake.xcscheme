@@ -57,7 +57,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-developer 3"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-hipnotic"
@@ -68,7 +68,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "+gl_picmip 8 +gl_picmip 8"
+            argument = "+gl_picmip 10"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
