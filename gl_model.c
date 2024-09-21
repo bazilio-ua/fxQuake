@@ -2467,7 +2467,7 @@ typedef struct
 #define FLOODFILL_FIFO_MASK (FLOODFILL_FIFO_SIZE - 1)
 
 #define FLOODFILL_STEP( off, dx, dy ) \
-do { \
+{ \
 	if (pos[off] == fillcolor) \
 	{ \
 		pos[off] = 255; \
@@ -2475,7 +2475,7 @@ do { \
 		inpt = (inpt + 1) & FLOODFILL_FIFO_MASK; \
 	} \
 	else if (pos[off] != 255) fdc = pos[off]; \
-} while (0)
+}
 
 void Mod_FloodFillSkin( byte *skin, int skinwidth, int skinheight )
 {
@@ -2483,14 +2483,15 @@ void Mod_FloodFillSkin( byte *skin, int skinwidth, int skinheight )
 	floodfill_t			fifo[FLOODFILL_FIFO_SIZE];
 	int					inpt = 0, outpt = 0;
 	int					filledcolor = -1;
-	int					i, size = skinwidth * skinheight, notfill;
+	int					i;//, size = skinwidth * skinheight, notfill;
 
 	if (filledcolor == -1)
 	{
 		filledcolor = 0;
 		// attempt to find opaque black
 		for (i = 0; i < 256; ++i)
-			if (d_8to24table[i] == (255 << 0)) // alpha 1.0
+			if (d_8to24table_original[i] == (unsigned int)LittleLong(255ul << 24)) // alpha 1.0
+//			if (d_8to24table_original[i] == (255 << 0)) // alpha 1.0
 			{
 				filledcolor = i;
 				break;
@@ -2500,22 +2501,22 @@ void Mod_FloodFillSkin( byte *skin, int skinwidth, int skinheight )
 	// can't fill to filled color or to transparent color (used as visited marker)
 	if ((fillcolor == filledcolor) || (fillcolor == 255))
 	{
-//		Con_Warning ("Mod_FloodFillSkin: not filling skin from %d to %d\n", fillcolor, filledcolor);
+//		Con_DWarning ("Mod_FloodFillSkin: not filling skin from %d to %d\n", fillcolor, filledcolor);
 		return;
 	}
 
-	for (i = notfill = 0; i < size && notfill < 2; ++i)
-	{
-		if (skin[i] != fillcolor)
-			++notfill;
-	}
-
-	// don't fill almost mono-coloured texes
-	if (notfill < 2)
-	{
-//		Con_Warning ("Mod_FloodFillSkin: not filling skin in %s\n", loadmodel->name);
-		return;
-	}
+//	for (i = notfill = 0; i < size && notfill < 2; ++i)
+//	{
+//		if (skin[i] != fillcolor)
+//			++notfill;
+//	}
+//
+//	// don't fill almost mono-coloured texes
+//	if (notfill < 2)
+//	{
+////		Con_Warning ("Mod_FloodFillSkin: not filling skin in %s\n", loadmodel->name);
+//		return;
+//	}
 
 	fifo[inpt].x = 0, fifo[inpt].y = 0;
 	inpt = (inpt + 1) & FLOODFILL_FIFO_MASK;
@@ -2545,7 +2546,7 @@ void *Mod_LoadAllSkins (int numskins, daliasskintype_t *pskintype)
 {
 	int		i, j, k, size;
 	char	skinname[64];
-	byte	*skin;
+//	byte	*skin;
 	byte	*texels;
 	daliasskingroup_t		*pinskingroup;
 	int		groupskins;
@@ -2553,7 +2554,7 @@ void *Mod_LoadAllSkins (int numskins, daliasskintype_t *pskintype)
 	uintptr_t				offset; //johnfitz
 	unsigned int			texflags = TEXPREF_PAD;
 
-	skin = (byte *)(pskintype + 1);
+//	skin = (byte *)(pskintype + 1);
 
 	if (numskins < 1 || numskins > MAX_SKINS)
 		Host_Error ("Mod_LoadAllSkins: invalid # of skins (%d, max = %d) in %s", numskins, MAX_SKINS, loadmodel->name);
@@ -2567,7 +2568,8 @@ void *Mod_LoadAllSkins (int numskins, daliasskintype_t *pskintype)
 	{
 		if (pskintype->type == ALIAS_SKIN_SINGLE) 
 		{
-			Mod_FloodFillSkin( skin, pheader->skinwidth, pheader->skinheight );
+			Mod_FloodFillSkin( (byte *)(pskintype + 1), pheader->skinwidth, pheader->skinheight );
+//			Mod_FloodFillSkin( skin, pheader->skinwidth, pheader->skinheight );
 			// save 8 bit texels for the player model to remap
 			//if (!strcmp(loadmodel->name,"progs/player.mdl"))
 			{
@@ -2576,20 +2578,20 @@ void *Mod_LoadAllSkins (int numskins, daliasskintype_t *pskintype)
 				memcpy (texels, (byte *)(pskintype + 1), size);
 			}
 
-			offset = (uintptr_t)(pskintype+1) - (uintptr_t)mod_base;
-			if (IsFullbright ((byte *)(pskintype+1), size))
+			offset = (uintptr_t)(pskintype + 1) - (uintptr_t)mod_base;
+			if (IsFullbright ((byte *)(pskintype + 1), size))
 			{
 				sprintf (skinname, "%s:frame%i", loadmodel->name, i);
 				pheader->gltexture[i][0] =
 				pheader->gltexture[i][1] =
 				pheader->gltexture[i][2] =
-				pheader->gltexture[i][3] = GL_LoadTexture (loadmodel, skinname, pheader->skinwidth, pheader->skinheight, SRC_INDEXED, (byte *)(pskintype+1), loadmodel->name, offset, texflags | TEXPREF_NOBRIGHT);
+				pheader->gltexture[i][3] = GL_LoadTexture (loadmodel, skinname, pheader->skinwidth, pheader->skinheight, SRC_INDEXED, (byte *)(pskintype + 1), loadmodel->name, offset, texflags | TEXPREF_NOBRIGHT);
 
 				sprintf (skinname, "%s:frame%i_glow", loadmodel->name, i);
 				pheader->fullbright[i][0] =
 				pheader->fullbright[i][1] =
 				pheader->fullbright[i][2] =
-				pheader->fullbright[i][3] = GL_LoadTexture (loadmodel, skinname, pheader->skinwidth, pheader->skinheight, SRC_INDEXED, (byte *)(pskintype+1), loadmodel->name, offset, texflags | TEXPREF_FULLBRIGHT);
+				pheader->fullbright[i][3] = GL_LoadTexture (loadmodel, skinname, pheader->skinwidth, pheader->skinheight, SRC_INDEXED, (byte *)(pskintype + 1), loadmodel->name, offset, texflags | TEXPREF_FULLBRIGHT);
 			}
 			else
 			{
@@ -2597,7 +2599,7 @@ void *Mod_LoadAllSkins (int numskins, daliasskintype_t *pskintype)
 				pheader->gltexture[i][0] =
 				pheader->gltexture[i][1] =
 				pheader->gltexture[i][2] =
-				pheader->gltexture[i][3] = GL_LoadTexture (loadmodel, skinname, pheader->skinwidth, pheader->skinheight, SRC_INDEXED, (byte *)(pskintype+1), loadmodel->name, offset, texflags);
+				pheader->gltexture[i][3] = GL_LoadTexture (loadmodel, skinname, pheader->skinwidth, pheader->skinheight, SRC_INDEXED, (byte *)(pskintype + 1), loadmodel->name, offset, texflags);
 
 				pheader->fullbright[i][0] =
 				pheader->fullbright[i][1] =
@@ -2605,8 +2607,8 @@ void *Mod_LoadAllSkins (int numskins, daliasskintype_t *pskintype)
 				pheader->fullbright[i][3] = NULL;
 			}
 
-			pskintype = (daliasskintype_t *)((byte *)(pskintype+1) + size);
-		} 
+			pskintype = (daliasskintype_t *)((byte *)(pskintype + 1) + size);
+		}
 		else 
 		{
 			// animating skin group.  yuck.
@@ -2619,7 +2621,8 @@ void *Mod_LoadAllSkins (int numskins, daliasskintype_t *pskintype)
 
 			for (j=0 ; j<groupskins ; j++)
 			{
-				Mod_FloodFillSkin( skin, pheader->skinwidth, pheader->skinheight ); // Is 'skin' really correct here?
+				Mod_FloodFillSkin( (byte *)(pskintype), pheader->skinwidth, pheader->skinheight );
+//				Mod_FloodFillSkin( skin, pheader->skinwidth, pheader->skinheight ); // Is 'skin' really correct here?
 				if (j == 0) 
 				{
 					texels = Hunk_AllocName(size, loadname);

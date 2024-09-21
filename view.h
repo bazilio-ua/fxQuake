@@ -29,6 +29,7 @@ float V_CalcRoll (vec3_t angles, vec3_t velocity);
 void V_CalcBlend (void);
 void V_UpdateBlend (void);
 
+void V_SetOriginalPalette (unsigned char *palette);
 void V_SetPalette (unsigned char *palette);
 // called at startup and after any gamma correction
 

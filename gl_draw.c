@@ -80,6 +80,7 @@ static GLuint currenttexture[3] = {GL_UNUSED_TEXTURE, GL_UNUSED_TEXTURE, GL_UNUS
 static GLenum currenttarget = GL_TEXTURE0_ARB;
 qboolean mtexenabled = false;
 
+unsigned int d_8to24table_original[256];
 unsigned int d_8to24table[256];
 unsigned int d_8to24table_fbright[256];
 unsigned int d_8to24table_fbright_fence[256];
@@ -1016,6 +1017,7 @@ void Draw_Init (void)
 	numgltextures = 0;
 
 	// palette
+	V_SetOriginalPalette (host_basepal);
 	V_SetPalette (host_basepal);
 
 	Cvar_RegisterVariable (&scr_conalpha);
@@ -2627,6 +2629,10 @@ void GL_ReloadTextureTranslation (gltexture_t *glt, int top, int bottom)
 	glt->width = glt->source_width;
 	glt->height = glt->source_height;
 	
+	if (glt->source_format == SRC_INDEXED)
+		if (glt->owner && glt->owner->type == mod_alias)
+			Mod_FloodFillSkin(data, glt->width, glt->height);
+
 //
 // apply top and bottom colors
 //

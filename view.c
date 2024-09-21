@@ -647,7 +647,7 @@ void V_SetPalette (unsigned char *palette)
 {
 	byte *pal, *src, *dst;
 	int i;
-	
+
 	pal = palette;
 
 	//
@@ -668,8 +668,8 @@ void V_SetPalette (unsigned char *palette)
 	//
 	//fullbright palette, 0-223 are black (for additive blending)
 	//
-	src = pal + 224*3;
 	dst = (byte *)&d_8to24table_fbright[224];
+	src = pal + 224*3;
 	for (i=224; i<256; i++)
 	{
 		dst[0] = *src++;
@@ -728,6 +728,30 @@ void V_SetPalette (unsigned char *palette)
 	((byte *)&d_8to24table_conchars[0])[3] = 0;
 }
 
+void V_SetOriginalPalette (unsigned char *palette)
+{
+	byte *pal, *src, *dst;
+	int i;
+
+	pal = palette;
+
+	//
+	//standard palette - no transparency
+	//
+	dst = (byte *)d_8to24table_original;
+	src = pal;
+	for (i=0; i<256; i++)
+	{
+		dst[0] = *src++;
+		dst[1] = *src++;
+		dst[2] = *src++;
+		dst[3] = 255;
+		dst += 4;
+	}
+	
+	// keep original table untouched from palette shifting by gamma changes
+	// used in flood fill skin routine to detect black pixels
+}
 
 /* 
 ============================================================================== 
