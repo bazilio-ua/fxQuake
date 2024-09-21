@@ -2631,7 +2631,7 @@ void GL_ReloadTextureTranslation (gltexture_t *glt, int top, int bottom)
 	
 	if (glt->source_format == SRC_INDEXED)
 		if (glt->owner && glt->owner->type == mod_alias)
-			Mod_FloodFillSkin(data, glt->width, glt->height);
+			Mod_FloodFillSkin(data, glt->width, glt->height, glt->owner->name);
 
 //
 // apply top and bottom colors

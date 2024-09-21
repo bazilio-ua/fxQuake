@@ -2477,7 +2477,7 @@ typedef struct
 	else if (pos[off] != 255) fdc = pos[off]; \
 }
 
-void Mod_FloodFillSkin( byte *skin, int skinwidth, int skinheight )
+void Mod_FloodFillSkin( byte *skin, int skinwidth, int skinheight, char *name )
 {
 	byte				fillcolor = *skin; // assume this is the pixel to fill
 	floodfill_t			fifo[FLOODFILL_FIFO_SIZE];
@@ -2501,7 +2501,8 @@ void Mod_FloodFillSkin( byte *skin, int skinwidth, int skinheight )
 	// can't fill to filled color or to transparent color (used as visited marker)
 	if ((fillcolor == filledcolor) || (fillcolor == 255))
 	{
-//		Con_DWarning ("Mod_FloodFillSkin: not filling skin from %d to %d\n", fillcolor, filledcolor);
+		if (developer.value > 2)
+			Con_DPrintf ("Mod_FloodFillSkin: not filling skin in '%s' from %d to %d\n", name, fillcolor, filledcolor);
 		return;
 	}
 
@@ -2514,7 +2515,8 @@ void Mod_FloodFillSkin( byte *skin, int skinwidth, int skinheight )
 //	// don't fill almost mono-coloured texes
 //	if (notfill < 2)
 //	{
-////		Con_Warning ("Mod_FloodFillSkin: not filling skin in %s\n", loadmodel->name);
+//		if (developer.value > 2)
+//			Con_DPrintf ("Mod_FloodFillSkin: not filling skin in '%s'\n", name);
 //		return;
 //	}
 
@@ -2568,7 +2570,7 @@ void *Mod_LoadAllSkins (int numskins, daliasskintype_t *pskintype)
 	{
 		if (pskintype->type == ALIAS_SKIN_SINGLE) 
 		{
-			Mod_FloodFillSkin( (byte *)(pskintype + 1), pheader->skinwidth, pheader->skinheight );
+			Mod_FloodFillSkin( (byte *)(pskintype + 1), pheader->skinwidth, pheader->skinheight, loadmodel->name );
 //			Mod_FloodFillSkin( skin, pheader->skinwidth, pheader->skinheight );
 			// save 8 bit texels for the player model to remap
 			//if (!strcmp(loadmodel->name,"progs/player.mdl"))
@@ -2621,7 +2623,7 @@ void *Mod_LoadAllSkins (int numskins, daliasskintype_t *pskintype)
 
 			for (j=0 ; j<groupskins ; j++)
 			{
-				Mod_FloodFillSkin( (byte *)(pskintype), pheader->skinwidth, pheader->skinheight );
+				Mod_FloodFillSkin( (byte *)(pskintype), pheader->skinwidth, pheader->skinheight, loadmodel->name );
 //				Mod_FloodFillSkin( skin, pheader->skinwidth, pheader->skinheight ); // Is 'skin' really correct here?
 				if (j == 0) 
 				{

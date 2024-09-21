@@ -56,11 +56,19 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-hipnotic"
+            argument = "-developer 3"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
+            argument = "-hipnotic"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
             argument = "-width 800 -height 600"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "+gl_picmip 8 +gl_picmip 8"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
