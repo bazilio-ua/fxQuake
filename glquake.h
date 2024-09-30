@@ -261,6 +261,7 @@ void TexMgr_ReloadTextures (void);
 void GL_ReloadTextures_f (void);
 gltexture_t *TexMgr_LoadTexture (model_t *owner, char *name, int width, int height, enum srcformat format, byte *data, char *source_file, uintptr_t source_offset, unsigned flags);
 gltexture_t *TexMgr_FindTexture (model_t *owner, char *name);
+gltexture_t *TexMgr_NewTexture (void);
 void TexMgr_SetFilterModes (gltexture_t *glt);
 void GL_Set2D (void);
 void GL_SelectTexture (GLenum target);

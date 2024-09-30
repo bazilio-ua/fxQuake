@@ -1023,7 +1023,7 @@ void Draw_Init (void)
 	V_SetPalette (host_basepal);
 
 	Cvar_RegisterVariable (&scr_conalpha);
-	Cvar_RegisterVariable (&gl_max_size);
+	Cvar_RegisterVariableCallback (&gl_max_size, TexMgr_ReloadTextures);
 	Cvar_RegisterVariableCallback (&gl_picmip, TexMgr_ReloadTextures);
 	Cvar_RegisterVariable (&gl_texquality); // TODO: unused?
 	Cvar_RegisterVariableCallback (&gl_warp_image_size, TexMgr_UploadWarpImage);
@@ -1560,12 +1560,24 @@ int TexMgr_SafeTextureSize (int s)
 //    
 //	return s;
 	
-	int p = (int)gl_max_size.value;
+//	int p = (int)gl_max_size.value;
+
+	int m;
+	
 	if (!gl_texture_NPOT)
 		s = TexMgr_Pad(s);
-	if (p > 0) {
-		p = TexMgr_Pad(p);
-		if (p < s) s = p;
+	
+	m = (int)gl_max_size.value;
+	if (m > 0)
+	{
+		if (m < 512)
+		{
+			m = 512;
+			Cvar_SetValue ("gl_max_size", m);
+		}
+		m = TexMgr_Pad(m);
+		if (m < s)
+			s = m;
 	}
 	s = CLAMP(1, s, gl_hardware_max_size);
 	
@@ -2396,15 +2408,15 @@ gltexture_t *TexMgr_FindTexture (model_t *owner, char *name)
 
 /*
 ================
-GL_NewTexture
+TexMgr_NewTexture
 ================
 */
-gltexture_t *GL_NewTexture (void)
+gltexture_t *TexMgr_NewTexture (void)
 {
 	gltexture_t *glt;
 
 	if (numgltextures >= MAX_GLTEXTURES)
-		Sys_Error ("GL_NewTexture: cache full, max is %i textures", MAX_GLTEXTURES);
+		Sys_Error ("TexMgr_NewTexture: cache full, max is %i textures", MAX_GLTEXTURES);
 
 	glt = free_gltextures;
 	free_gltextures = glt->next;
@@ -2528,7 +2540,7 @@ gltexture_t *TexMgr_LoadTexture (model_t *owner, char *name, int width, int heig
 			return glt;
 	}
 	else
-		glt = GL_NewTexture ();
+		glt = TexMgr_NewTexture ();
 
 	// copy data
 	glt->owner = owner;
