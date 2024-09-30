@@ -638,9 +638,10 @@ void V_UpdateGamma (void)
 
 void V_ShiftPalette (unsigned char *palette)
 {
+	// set shifted palette
 	V_SetPalette (palette);
 	// do reload textures
-	GL_ReloadTextures_f ();
+	TexMgr_ReloadTextures ();
 }
 
 void V_SetPalette (unsigned char *palette)

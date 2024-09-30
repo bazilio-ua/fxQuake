@@ -116,25 +116,25 @@ GL_CheckSize
 return smallest power of two greater than or equal to size
 ================
 */
-int GL_CheckSize (int size)
-{
-	int checksize;
-
-	for (checksize = 1; checksize < size; checksize <<= 1)
-		;
-
-	return checksize;
-}
+//int GL_CheckSize (int size)
+//{
+//	int checksize;
+//
+//	for (checksize = 1; checksize < size; checksize <<= 1)
+//		;
+//
+//	return checksize;
+//}
 
 /*
 ===============
-GL_UploadWarpImage
+TexMgr_UploadWarpImage
 
 called during init,
 choose correct warpimage size and reload existing warpimage textures if needed
 ===============
 */
-void GL_UploadWarpImage (void)
+void TexMgr_UploadWarpImage (void)
 {
 //	int	oldsize;
 	int mark;
@@ -180,12 +180,12 @@ void GL_UploadWarpImage (void)
 	{
 		if (glt->flags & TEXPREF_WARPIMAGE)
 		{
-			GL_Bind (glt);
+			TexMgr_BindTexture (glt);
 			glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, gl_warpimage_size, gl_warpimage_size, 0, GL_RGBA, GL_UNSIGNED_BYTE, dummy);
 			glt->width = glt->height = gl_warpimage_size;
             
             // set filter modes
-            GL_SetFilterModes (glt);
+            TexMgr_SetFilterModes (glt);
 		}
 	}
 
@@ -557,10 +557,10 @@ void GL_Init (void)
 
 /*
 ================
-GL_Bind
+TexMgr_BindTexture
 ================
 */
-void GL_Bind (gltexture_t *texture)
+void TexMgr_BindTexture (gltexture_t *texture)
 {
 	if (!texture)
 		texture = nulltexture;
@@ -574,13 +574,13 @@ void GL_Bind (gltexture_t *texture)
 
 /*
 ================
-GL_DeleteTexture -- ericw
+TexMgr_DeleteTexture -- ericw
 
 Wrapper around glDeleteTextures that also clears the given texture number
 from our per-TMU cached texture binding table.
 ================
 */
-void GL_DeleteTexture (gltexture_t *texture)
+void TexMgr_DeleteTexture (gltexture_t *texture)
 {
 	glDeleteTextures (1, &texture->texnum);
     
@@ -595,11 +595,12 @@ void GL_DeleteTexture (gltexture_t *texture)
 ================
 GL_ClearBindings -- ericw
 
-Invalidates cached bindings, so the next GL_Bind calls for each TMU will
+Invalidates cached bindings, so the next TexMgr_BindTexture calls for each TMU will
 make real glBindTexture calls.
-Call this after changing the binding outside of GL_Bind.
+Call this after changing the binding outside of TexMgr_BindTexture.
 ================
 */
+#if 0
 void GL_ClearBindings(void)
 {
 	int i;
@@ -609,6 +610,7 @@ void GL_ClearBindings(void)
 		currenttexture[i] = GL_UNUSED_TEXTURE;
 	}
 }
+#endif
 
 /*
 ================
@@ -728,7 +730,7 @@ void Scrap_Upload (void)
 	for (i = 0; i < MAX_SCRAPS; i++) 
 	{
 		sprintf (name, "scrap%i", i);
-		scrap_textures[i] = GL_LoadTexture (NULL, name, BLOCK_WIDTH, BLOCK_HEIGHT, SRC_INDEXED, scrap_texels[i], "", (uintptr_t)scrap_texels[i], TEXPREF_ALPHA | TEXPREF_OVERWRITE | TEXPREF_NOPICMIP);
+		scrap_textures[i] = TexMgr_LoadTexture (NULL, name, BLOCK_WIDTH, BLOCK_HEIGHT, SRC_INDEXED, scrap_texels[i], "", (uintptr_t)scrap_texels[i], TEXPREF_ALPHA | TEXPREF_OVERWRITE | TEXPREF_NOPICMIP);
 	}
 	scrap_dirty = false;
 }
@@ -791,7 +793,7 @@ qpic_t *Draw_PicFromWad (char *name)
 	{
 		sprintf (texturename, "%s:%s", WADFILE, name); //johnfitz
 		offset = (uintptr_t)p - (uintptr_t)wad_base + sizeof(int)*2; //johnfitz
-		gl.gltexture = GL_LoadTexture (NULL, texturename, p->width, p->height, SRC_INDEXED, p->data, WADFILE, offset, TEXPREF_ALPHA | TEXPREF_PAD | TEXPREF_NOPICMIP);
+		gl.gltexture = TexMgr_LoadTexture (NULL, texturename, p->width, p->height, SRC_INDEXED, p->data, WADFILE, offset, TEXPREF_ALPHA | TEXPREF_PAD | TEXPREF_NOPICMIP);
 		gl.sl = 0;
         gl.sh = (float)p->width/(float)TexMgr_PadConditional(p->width); //johnfitz
 		gl.tl = 0;
@@ -843,7 +845,7 @@ qpic_t *Draw_CachePic (char *path)
 	pic->pic.height = dat->height;
 
 	// fix gcc warnings
-	gl.gltexture = GL_LoadTexture (NULL, path, dat->width, dat->height, SRC_INDEXED, dat->data, path, sizeof(int)*2, TEXPREF_ALPHA | TEXPREF_PAD | TEXPREF_NOPICMIP);
+	gl.gltexture = TexMgr_LoadTexture (NULL, path, dat->width, dat->height, SRC_INDEXED, dat->data, path, sizeof(int)*2, TEXPREF_ALPHA | TEXPREF_PAD | TEXPREF_NOPICMIP);
 	gl.sl = 0;
 	gl.sh = (float)dat->width/(float)TexMgr_PadConditional(dat->width); //johnfitz
 	gl.tl = 0;
@@ -857,12 +859,12 @@ qpic_t *Draw_CachePic (char *path)
 
 /*
 ===============
-GL_SetFilterModes
+TexMgr_SetFilterModes
 ===============
 */
-void GL_SetFilterModes (gltexture_t *glt)
+void TexMgr_SetFilterModes (gltexture_t *glt)
 {
-//	GL_Bind (glt);
+//	TexMgr_BindTexture (glt);
 
 	if (glt->flags & TEXPREF_NEAREST)
 	{
@@ -931,8 +933,8 @@ void GL_TextureMode_f (void)
 	// change all the existing texture objects
 	for (glt=active_gltextures; glt; glt=glt->next) 
     {
-        GL_Bind (glt);
-		GL_SetFilterModes (glt);
+        TexMgr_BindTexture (glt);
+		TexMgr_SetFilterModes (glt);
     }
 
 	Sbar_Changed (); // sbar graphics need to be redrawn with new filter mode
@@ -957,8 +959,8 @@ void GL_Texture_Anisotropy_f (void)
 
 	for (glt=active_gltextures; glt; glt=glt->next) 
     {
-        GL_Bind (glt);
-		GL_SetFilterModes (glt);
+        TexMgr_BindTexture (glt);
+		TexMgr_SetFilterModes (glt);
     }
 }
 
@@ -985,7 +987,7 @@ void Pics_Upload (void)
 	// now turn them into textures
 	sprintf (texturename, "%s:%s", WADFILE, "conchars"); // johnfitz
 	offset = (uintptr_t)draw_chars - (uintptr_t)wad_base;
-	char_texture = GL_LoadTexture (NULL, texturename, 128, 128, SRC_INDEXED, draw_chars, WADFILE, offset, TEXPREF_ALPHA | TEXPREF_NEAREST | TEXPREF_NOPICMIP | TEXPREF_CONCHARS);
+	char_texture = TexMgr_LoadTexture (NULL, texturename, 128, 128, SRC_INDEXED, draw_chars, WADFILE, offset, TEXPREF_ALPHA | TEXPREF_NEAREST | TEXPREF_NOPICMIP | TEXPREF_CONCHARS);
 
 	//
 	// get the other pics we need
@@ -1022,22 +1024,22 @@ void Draw_Init (void)
 
 	Cvar_RegisterVariable (&scr_conalpha);
 	Cvar_RegisterVariable (&gl_max_size);
-	Cvar_RegisterVariable (&gl_picmip);
-	Cvar_RegisterVariable (&gl_texquality);
-	Cvar_RegisterVariableCallback (&gl_warp_image_size, GL_UploadWarpImage);
+	Cvar_RegisterVariableCallback (&gl_picmip, TexMgr_ReloadTextures);
+	Cvar_RegisterVariable (&gl_texquality); // TODO: unused?
+	Cvar_RegisterVariableCallback (&gl_warp_image_size, TexMgr_UploadWarpImage);
 
 	Cmd_AddCommand ("gl_texturemode", &GL_TextureMode_f);
 	Cmd_AddCommand ("gl_texture_anisotropy", &GL_Texture_Anisotropy_f);
 
 	// load notexture images
-	notexture = GL_LoadTexture (NULL, "notexture", 2, 2, SRC_RGBA, notexture_data, "", (uintptr_t)notexture_data, TEXPREF_NEAREST | TEXPREF_PERSIST | TEXPREF_NOPICMIP);
-	nulltexture = GL_LoadTexture (NULL, "nulltexture", 2, 2, SRC_RGBA, nulltexture_data, "", (uintptr_t)nulltexture_data, TEXPREF_NEAREST | TEXPREF_PERSIST | TEXPREF_NOPICMIP);
+	notexture = TexMgr_LoadTexture (NULL, "notexture", 2, 2, SRC_RGBA, notexture_data, "", (uintptr_t)notexture_data, TEXPREF_NEAREST | TEXPREF_PERSIST | TEXPREF_NOPICMIP);
+	nulltexture = TexMgr_LoadTexture (NULL, "nulltexture", 2, 2, SRC_RGBA, nulltexture_data, "", (uintptr_t)nulltexture_data, TEXPREF_NEAREST | TEXPREF_PERSIST | TEXPREF_NOPICMIP);
 
 	// have to assign these here because R_InitTextures is called before Draw_Init
 	notexture_mip->gltexture = notexture_mip2->gltexture = notexture;
 
 	// upload warpimage
-	GL_UploadWarpImage ();
+	TexMgr_UploadWarpImage ();
 
 	// clear scrap and allocate gltextures
 	memset(&scrap_allocated, 0, sizeof(scrap_allocated));
@@ -1111,7 +1113,7 @@ void Draw_Character (int x, int y, int num)
 	if (num == 32)
 		return; // don't waste verts on spaces
 
-	GL_Bind (char_texture);
+	TexMgr_BindTexture (char_texture);
 	glBegin (GL_QUADS);
 
 	Draw_CharacterQuad (x, y, (char) num);
@@ -1131,7 +1133,7 @@ void Draw_String (int x, int y, char *str)
 	if (y <= -8)
 		return;			// totally off screen
 
-	GL_Bind (char_texture);
+	TexMgr_BindTexture (char_texture);
 	glBegin (GL_QUADS);
 
 	while (*str)
@@ -1163,7 +1165,7 @@ void Draw_AlphaPic (int x, int y, qpic_t *pic, float alpha)
 	glDisable (GL_ALPHA_TEST);
 	glEnable (GL_BLEND);
 	glColor4f (1,1,1,alpha);
-	GL_Bind (gl->gltexture);
+	TexMgr_BindTexture (gl->gltexture);
 	glBegin (GL_QUADS);
 	glTexCoord2f (gl->sl, gl->tl);
 	glVertex2f (x, y);
@@ -1197,7 +1199,7 @@ void Draw_Pic (int x, int y, qpic_t *pic)
 	glDisable (GL_ALPHA_TEST); //FX new
 	glEnable (GL_BLEND); //FX
 	glColor4f (1,1,1,1);
-	GL_Bind (gl->gltexture);
+	TexMgr_BindTexture (gl->gltexture);
 	glBegin (GL_QUADS);
 	glTexCoord2f (gl->sl, gl->tl);
 	glVertex2f (x, y);
@@ -1240,7 +1242,7 @@ void Draw_SubPic (int x, int y, qpic_t *pic, int srcx, int srcy, int width, int 
 	glDisable (GL_ALPHA_TEST); //FX new
 	glEnable (GL_BLEND); //FX
 	glColor4f (1,1,1,1);
-	GL_Bind (gl->gltexture);
+	TexMgr_BindTexture (gl->gltexture);
 	glBegin (GL_QUADS);
 	glTexCoord2f (newsl, newtl);
 	glVertex2f (x, y);
@@ -1290,7 +1292,7 @@ void Draw_TransPicTranslate (int x, int y, qpic_t *pic, int top, int bottom)
 		gltexture_t *glt = p->gltexture;
 		oldtop = top;
 		oldbottom = bottom;
-		GL_ReloadTextureTranslation (glt, top, bottom);
+		TexMgr_ReloadTextureTranslation (glt, top, bottom);
 	}
 	Draw_Pic (x, y, pic);
 }
@@ -1323,7 +1325,7 @@ void Draw_TransPicTranslate (int x, int y, qpic_t *pic, int top, int bottom)
 //
 //	data = trans;
 //
-//	gl.gltexture = GL_LoadTexture (NULL, name, pic->width, pic->height, SRC_INDEXED, data, "", (uintptr_t)data, TEXPREF_ALPHA | TEXPREF_PAD | TEXPREF_OVERWRITE | TEXPREF_NOPICMIP);
+//	gl.gltexture = TexMgr_LoadTexture (NULL, name, pic->width, pic->height, SRC_INDEXED, data, "", (uintptr_t)data, TEXPREF_ALPHA | TEXPREF_PAD | TEXPREF_OVERWRITE | TEXPREF_NOPICMIP);
 //	gl.sl = 0;
 //    gl.sh = (float)pic->width/(float)TexMgr_PadConditional(pic->width); //johnfitz
 //	gl.tl = 0;
@@ -1383,7 +1385,7 @@ void Draw_TileClear (int x, int y, int w, int h)
 	glEnable (GL_BLEND); //FX
 //	glColor3f (1,1,1);
 	glColor4f (1,1,1,1); //FX new
-	GL_Bind (gl->gltexture);
+	TexMgr_BindTexture (gl->gltexture);
 	glBegin (GL_QUADS);
 	glTexCoord2f (x/64.0, y/64.0);
 	glVertex2f (x, y);
@@ -2064,12 +2066,12 @@ int GL_ScaleSize (int oldsize, qboolean force)
 
 /*
 ===============
-GL_Upload32
+TexMgr_Upload32
 
 handles 32bit source data
 ===============
 */
-void GL_Upload32 (gltexture_t *glt, unsigned *data)
+void TexMgr_Upload32 (gltexture_t *glt, unsigned *data)
 {
 //	int			internalformat;
 //	int			scaled_width, scaled_height;
@@ -2091,7 +2093,7 @@ void GL_Upload32 (gltexture_t *glt, unsigned *data)
 //
 //	// Note: Can't use Con_Printf here!
 //	if (developer.value > 1 && (scaled_width != GL_ScaleSize (glt->width, true) || scaled_height != GL_ScaleSize (glt->height, true)))
-//		Con_DPrintf ("GL_Upload32: in:%dx%d, out:%dx%d, '%s'\n", glt->width, glt->height, scaled_width, scaled_height, glt->name);
+//		Con_DPrintf ("TexMgr_Upload32: in:%dx%d, out:%dx%d, '%s'\n", glt->width, glt->height, scaled_width, scaled_height, glt->name);
 //
 //	// Prevent too large or too small images (might otherwise crash resampling)
 //	scaled_width = CLAMP(2, scaled_width, gl_texture_max_size);
@@ -2127,7 +2129,7 @@ void GL_Upload32 (gltexture_t *glt, unsigned *data)
 //	}
 //
 //	// upload
-//	GL_Bind (glt);
+//	TexMgr_BindTexture (glt);
 //	internalformat = (glt->flags & TEXPREF_ALPHA) ? GL_RGBA : GL_RGB;
 //	glTexImage2D (GL_TEXTURE_2D, 0, internalformat, scaled_width, scaled_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, scaled);
 //
@@ -2150,7 +2152,7 @@ void GL_Upload32 (gltexture_t *glt, unsigned *data)
 //	}
 //
 //	// set filter modes
-//	GL_SetFilterModes (glt);
+//	TexMgr_SetFilterModes (glt);
 //
 //	// free allocated memory
     
@@ -2186,7 +2188,7 @@ void GL_Upload32 (gltexture_t *glt, unsigned *data)
 	}
     
 	// upload
-	GL_Bind (glt);
+	TexMgr_BindTexture (glt);
 	internalformat = (glt->flags & TEXPREF_ALPHA) ? GL_RGBA : GL_RGB;
 	glTexImage2D (GL_TEXTURE_2D, 0, internalformat, glt->width, glt->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, scaled);
     
@@ -2213,51 +2215,51 @@ void GL_Upload32 (gltexture_t *glt, unsigned *data)
 	}
     
 	// set filter modes
-	GL_SetFilterModes (glt);
+	TexMgr_SetFilterModes (glt);
 }
 
 /*
 ================
-GL_UploadBloom
+TexMgr_UploadBloom
 
 handles bloom data
 ================
 */
-void GL_UploadBloom (gltexture_t *glt, unsigned *data)
+void TexMgr_UploadBloom (gltexture_t *glt, unsigned *data)
 {
 	// upload it
-	GL_Bind (glt);
+	TexMgr_BindTexture (glt);
 	glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, glt->width, glt->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 
 	// set filter modes
-	GL_SetFilterModes (glt);
+	TexMgr_SetFilterModes (glt);
 }
 
 /*
 ================
-GL_UploadLightmap
+TexMgr_UploadLightmap
 
 handles lightmap data
 ================
 */
-void GL_UploadLightmap (gltexture_t *glt, byte *data)
+void TexMgr_UploadLightmap (gltexture_t *glt, byte *data)
 {
 	// upload it
-	GL_Bind (glt);
+	TexMgr_BindTexture (glt);
 	glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, glt->width, glt->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 
 	// set filter modes
-	GL_SetFilterModes (glt);
+	TexMgr_SetFilterModes (glt);
 }
 
 /*
 ===============
-GL_Upload8
+TexMgr_Upload8
 
-handles 8bit source data, then passes it to GL_Upload32
+handles 8bit source data, then passes it to TexMgr_Upload32
 ===============
 */
-void GL_Upload8 (gltexture_t *glt, byte *data)
+void TexMgr_Upload8 (gltexture_t *glt, byte *data)
 {
 	int			i, size;
 	int			p;
@@ -2277,7 +2279,7 @@ void GL_Upload8 (gltexture_t *glt, byte *data)
 
 	size = glt->width * glt->height;
 	if (size & 3)
-		Con_DWarning ("GL_Upload8: size %d is not a multiple of 4 in '%s'\n", size, glt->name); // should be an error but ... (EER1)
+		Con_DWarning ("TexMgr_Upload8: size %d is not a multiple of 4 in '%s'\n", size, glt->name); // should be an error but ... (EER1)
 
 	// allocate dynamic memory
 //	trans = Hunk_Alloc (size * sizeof(unsigned)); // 4
@@ -2366,7 +2368,7 @@ void GL_Upload8 (gltexture_t *glt, byte *data)
 	}
     
 	// upload it
-	GL_Upload32 (glt, trans);
+	TexMgr_Upload32 (glt, trans);
     
 	// free allocated memory
 }
@@ -2374,10 +2376,10 @@ void GL_Upload8 (gltexture_t *glt, byte *data)
 
 /*
 ================
-GL_FindTexture
+TexMgr_FindTexture
 ================
 */
-gltexture_t *GL_FindTexture (model_t *owner, char *name)
+gltexture_t *TexMgr_FindTexture (model_t *owner, char *name)
 {
 	gltexture_t	*glt;
 
@@ -2417,53 +2419,53 @@ gltexture_t *GL_NewTexture (void)
 
 /*
 ================
-GL_FreeTexture
+TexMgr_FreeTexture
 ================
 */
-void GL_FreeTexture (gltexture_t *purge)
+void TexMgr_FreeTexture (gltexture_t *texture)
 {
 	gltexture_t *glt;
 
-	if (purge == NULL)
+	if (texture == NULL)
 	{
-		Con_SafePrintf ("GL_FreeTexture: NULL texture\n");
+		Con_SafePrintf ("TexMgr_FreeTexture: NULL texture\n");
 		return;
 	}
 
-	if (active_gltextures == purge)
+	if (active_gltextures == texture)
 	{
-		active_gltextures = purge->next;
-		purge->next = free_gltextures;
-		free_gltextures = purge;
+		active_gltextures = texture->next;
+		texture->next = free_gltextures;
+		free_gltextures = texture;
 
-		GL_DeleteTexture(purge);
+		TexMgr_DeleteTexture(texture);
 		numgltextures--;
 		return;
 	}
 
 	for (glt = active_gltextures; glt; glt = glt->next)
 	{
-		if (glt->next == purge)
+		if (glt->next == texture)
 		{
-			glt->next = purge->next;
-			purge->next = free_gltextures;
-			free_gltextures = purge;
+			glt->next = texture->next;
+			texture->next = free_gltextures;
+			free_gltextures = texture;
 
-            GL_DeleteTexture(purge);
+            TexMgr_DeleteTexture(texture);
 			numgltextures--;
 			return;
 		}
 	}
 
-	Con_SafePrintf ("GL_FreeTexture: not found\n");
+	Con_SafePrintf ("TexMgr_FreeTexture: not found\n");
 }
 
 /*
 ================
-GL_FreeTextures
+TexMgr_FreeTextures
 ================
 */
-void GL_FreeTextures (model_t *owner)
+void TexMgr_FreeTextures (model_t *owner)
 {
 	gltexture_t *glt, *next;
 
@@ -2471,18 +2473,18 @@ void GL_FreeTextures (model_t *owner)
 	{
 		next = glt->next;
 		if (glt && glt->owner == owner)
-			GL_FreeTexture (glt);
+			TexMgr_FreeTexture (glt);
 	}
 }
 
 /*
 ================
-GL_LoadTexture
+TexMgr_LoadTexture
 
 the one entry point for loading all textures
 ================
 */
-gltexture_t *GL_LoadTexture (model_t *owner, char *name, int width, int height, enum srcformat format, byte *data, char *source_file, uintptr_t source_offset, unsigned flags)
+gltexture_t *TexMgr_LoadTexture (model_t *owner, char *name, int width, int height, enum srcformat format, byte *data, char *source_file, uintptr_t source_offset, unsigned flags)
 {
 	int size = 0; // keep compiler happy
 	gltexture_t	*glt;
@@ -2511,16 +2513,16 @@ gltexture_t *GL_LoadTexture (model_t *owner, char *name, int width, int height, 
 	}
 
 	if (size == 0)
-		Con_DWarning ("GL_LoadTexture: texture '%s' has zero size\n", name);
+		Con_DWarning ("TexMgr_LoadTexture: texture '%s' has zero size\n", name);
 
 	// Sanity check, max = 32kx32k
 	if (width < 0 || height < 0 || size > 0x40000000)
-		Sys_Error ("GL_LoadTexture: texture '%s' has invalid size (%dM, max = %dM)", name, size / (1024 * 1024), 0x40000000 / (1024 * 1024));
+		Sys_Error ("TexMgr_LoadTexture: texture '%s' has invalid size (%dM, max = %dM)", name, size / (1024 * 1024), 0x40000000 / (1024 * 1024));
 
 	// cache check
 	crc = CRC_Block(data, size);
 
-	if ((flags & TEXPREF_OVERWRITE) && (glt = GL_FindTexture (owner, name))) 
+	if ((flags & TEXPREF_OVERWRITE) && (glt = TexMgr_FindTexture (owner, name))) 
 	{
 		if (glt->source_crc == crc)
 			return glt;
@@ -2549,16 +2551,16 @@ gltexture_t *GL_LoadTexture (model_t *owner, char *name, int width, int height, 
 	switch (glt->source_format)
 	{
 	case SRC_INDEXED:
-		GL_Upload8 (glt, data);
+		TexMgr_Upload8 (glt, data);
 		break;
 	case SRC_LIGHTMAP:
-		GL_UploadLightmap (glt, data);
+		TexMgr_UploadLightmap (glt, data);
 		break;
 	case SRC_RGBA:
-		GL_Upload32 (glt, (unsigned *)data);
+		TexMgr_Upload32 (glt, (unsigned *)data);
 		break;
 	case SRC_BLOOM:
-		GL_UploadBloom (glt, (unsigned *)data);
+		TexMgr_UploadBloom (glt, (unsigned *)data);
 		break;
 	}
 
@@ -2570,17 +2572,17 @@ gltexture_t *GL_LoadTexture (model_t *owner, char *name, int width, int height, 
 
 /*
 ================
-GL_ReloadTexture
+TexMgr_ReloadTexture
 
 reloads a texture, and colormaps it if needed
 ================
 */
-void GL_ReloadTexture (gltexture_t *glt)
+void TexMgr_ReloadTexture (gltexture_t *glt)
 {
-	GL_ReloadTextureTranslation (glt, -1, -1);
+	TexMgr_ReloadTextureTranslation (glt, -1, -1);
 }
 
-void GL_ReloadTextureTranslation (gltexture_t *glt, int top, int bottom)
+void TexMgr_ReloadTextureTranslation (gltexture_t *glt, int top, int bottom)
 {
 	byte	translation[256];
 	byte	*src, *dst, *data = NULL, *translated;
@@ -2632,7 +2634,7 @@ void GL_ReloadTextureTranslation (gltexture_t *glt, int top, int bottom)
 
 	if (!data)
 	{
-		Con_Printf ("GL_ReloadTexture: invalid source for %s\n", glt->name);
+		Con_Printf ("TexMgr_ReloadTexture: invalid source for %s\n", glt->name);
 		Hunk_FreeToLowMark (mark);
 		return;
 	}
@@ -2657,7 +2659,7 @@ void GL_ReloadTextureTranslation (gltexture_t *glt, int top, int bottom)
 			glt->bottom_color = bottom;
 		}
 		else
-			Con_Printf ("GL_ReloadTexture: can't colormap a non SRC_INDEXED texture: %s\n", glt->name);
+			Con_Printf ("TexMgr_ReloadTexture: can't colormap a non SRC_INDEXED texture: %s\n", glt->name);
 	}
 	if (glt->top_color > -1 && glt->bottom_color > -1)
 	{
@@ -2705,16 +2707,16 @@ void GL_ReloadTextureTranslation (gltexture_t *glt, int top, int bottom)
 	switch (glt->source_format)
 	{
 	case SRC_INDEXED:
-		GL_Upload8 (glt, data);
+		TexMgr_Upload8 (glt, data);
 		break;
 	case SRC_LIGHTMAP:
-		GL_UploadLightmap (glt, data);
+		TexMgr_UploadLightmap (glt, data);
 		break;
 	case SRC_RGBA:
-		GL_Upload32 (glt, (unsigned *)data);
+		TexMgr_Upload32 (glt, (unsigned *)data);
 		break;
 	case SRC_BLOOM:
-		GL_UploadBloom (glt, (unsigned *)data);
+		TexMgr_UploadBloom (glt, (unsigned *)data);
 		break;
 	}
 
@@ -2724,11 +2726,22 @@ void GL_ReloadTextureTranslation (gltexture_t *glt, int top, int bottom)
 /*
 ================
 GL_ReloadTextures_f
+================
+*/
+void GL_ReloadTextures_f (void)
+{
+	TexMgr_ReloadTextures ();
+	Con_SafePrintf ("reloaded\n");
+}
+
+/*
+================
+TexMgr_ReloadTextures
 
 reloads all texture images.
 ================
 */
-void GL_ReloadTextures_f (void)
+void TexMgr_ReloadTextures (void)
 {
 	gltexture_t *glt;
     
@@ -2741,7 +2754,7 @@ void GL_ReloadTextures_f (void)
         {
 //            glDeleteTextures(1, &glt->texnum);
 //            glGenTextures(1, &glt->texnum);
-            GL_ReloadTexture (glt);
+            TexMgr_ReloadTexture (glt);
         }
 	}
     
@@ -2753,12 +2766,12 @@ void GL_ReloadTextures_f (void)
 	{
 		if (glt->flags & TEXPREF_WARPIMAGE)
 		{
-			GL_Bind (glt);
+			TexMgr_BindTexture (glt);
 			glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, gl_warpimage_size, gl_warpimage_size, 0, GL_RGBA, GL_UNSIGNED_BYTE, dummy);
 			glt->width = glt->height = gl_warpimage_size;
             
             // set filter modes
-            GL_SetFilterModes (glt);
+            TexMgr_SetFilterModes (glt);
 		}
 	}
     

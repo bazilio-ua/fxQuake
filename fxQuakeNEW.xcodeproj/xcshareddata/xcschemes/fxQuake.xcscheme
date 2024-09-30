@@ -56,6 +56,10 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
+            argument = "+gl_texquality 0"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
             argument = "-developer 3"
             isEnabled = "NO">
          </CommandLineArgument>
@@ -69,7 +73,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "+gl_picmip 10"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-bpp 32"
@@ -133,7 +137,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-mem 512"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-game ad"

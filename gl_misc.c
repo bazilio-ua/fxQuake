@@ -303,7 +303,7 @@ void R_TranslatePlayerSkin (int playernum)
 	bottom = cl.scores[playernum].colors &15;
 	
 	if (playertextures[playernum])
-		GL_ReloadTextureTranslation (playertextures[playernum], top, bottom);
+		TexMgr_ReloadTextureTranslation (playertextures[playernum], top, bottom);
 }
 
 /*
@@ -417,10 +417,10 @@ void R_TranslateNewPlayerSkin (int playernum)
 //	original = pixels;
 
 // upload new image
-//	playertextures[playernum] = GL_LoadTexture (e->model, name, paliashdr->skinwidth, paliashdr->skinheight, SRC_INDEXED, original, "", (uintptr_t)original, TEXPREF_PAD | TEXPREF_OVERWRITE);
+//	playertextures[playernum] = TexMgr_LoadTexture (e->model, name, paliashdr->skinwidth, paliashdr->skinheight, SRC_INDEXED, original, "", (uintptr_t)original, TEXPREF_PAD | TEXPREF_OVERWRITE);
 
 	sprintf (name, "%s_%i_%i", e->model->name, skinnum, playernum);
-	playertextures[playernum] = GL_LoadTexture (e->model, name, paliashdr->skinwidth, paliashdr->skinheight, SRC_INDEXED, pixels,
+	playertextures[playernum] = TexMgr_LoadTexture (e->model, name, paliashdr->skinwidth, paliashdr->skinheight, SRC_INDEXED, pixels,
 												paliashdr->gltexture[skinnum][0]->source_file,
 												paliashdr->gltexture[skinnum][0]->source_offset, TEXPREF_PAD | TEXPREF_OVERWRITE);
 

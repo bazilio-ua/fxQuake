@@ -82,7 +82,7 @@ void R_InitParticleTextures (void)
 			*dst++ = R_ParticleTextureLookup(x, y, 8);
 		}
 	}
-	particletexture1 = GL_LoadTexture (NULL, "particle1", 64, 64, SRC_RGBA, particle1_data, "", (uintptr_t)particle1_data, TEXPREF_PERSIST | TEXPREF_ALPHA | TEXPREF_LINEAR);
+	particletexture1 = TexMgr_LoadTexture (NULL, "particle1", 64, 64, SRC_RGBA, particle1_data, "", (uintptr_t)particle1_data, TEXPREF_PERSIST | TEXPREF_ALPHA | TEXPREF_LINEAR);
 
 	//
 	// particle texture 2 - square
@@ -98,7 +98,7 @@ void R_InitParticleTextures (void)
 			*dst++ = x || y ? 0 : 255;
 		}
 	}
-	particletexture2 = GL_LoadTexture (NULL, "particle2", 2, 2, SRC_RGBA, particle2_data, "", (uintptr_t)particle2_data, TEXPREF_PERSIST | TEXPREF_ALPHA | TEXPREF_NEAREST);
+	particletexture2 = TexMgr_LoadTexture (NULL, "particle2", 2, 2, SRC_RGBA, particle2_data, "", (uintptr_t)particle2_data, TEXPREF_PERSIST | TEXPREF_ALPHA | TEXPREF_NEAREST);
 
 	// set default
 	particletexture = particletexture1;
@@ -770,7 +770,7 @@ void R_DrawParticle (particle_t *p)
 	VectorScale (vup, 1.5, up);
 	VectorScale (vright, 1.5, right);
 
-	GL_Bind (particletexture);
+	TexMgr_BindTexture (particletexture);
 
 	glEnable (GL_BLEND);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
