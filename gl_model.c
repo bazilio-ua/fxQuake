@@ -231,7 +231,7 @@ void Mod_ClearAll (void)
 		if (mod->type != mod_alias)
 		{
 			mod->needload = true;
-			TexMgr_FreeTextures (mod);
+			TexMgr_FreeTexturesForOwner (mod);
 		}
 	}
 }

@@ -2475,9 +2475,28 @@ void TexMgr_FreeTexture (gltexture_t *texture)
 /*
 ================
 TexMgr_FreeTextures
+
+compares each bit in "flags" to the one in glt->flags only if that bit is active in "mask"
 ================
 */
-void TexMgr_FreeTextures (model_t *owner)
+void TexMgr_FreeTextures (int flags, int mask)
+{
+	gltexture_t *glt, *next;
+
+	for (glt = active_gltextures; glt; glt = next)
+	{
+		next = glt->next;
+		if ((glt->flags & mask) == (flags & mask))
+			TexMgr_FreeTexture (glt);
+	}
+}
+
+/*
+================
+TexMgr_FreeTexturesForOwner
+================
+*/
+void TexMgr_FreeTexturesForOwner (model_t *owner)
 {
 	gltexture_t *glt, *next;
 
