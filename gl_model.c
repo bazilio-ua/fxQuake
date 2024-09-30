@@ -395,15 +395,18 @@ byte	*mod_base = NULL; // set to null
 
 /*
 ==================
-IsFullbright
+Mod_HasFullbrights
+
+detect 8-bit textures containing fullbrights
 ==================
 */
-qboolean IsFullbright (byte *pixels, int size)
+qboolean Mod_HasFullbrights (byte *pixels, int size)
 {
 	int	i;
 
 	for (i=0 ; i<size ; i++)
-		if (pixels[i] > 223)
+		if (*pixels++ > 223)
+//		if (pixels[i] > 223)
 			return true;
 
 	return false;
@@ -522,7 +525,7 @@ void Mod_LoadTextures (lump_t *l)
 					extraflags |= TEXPREF_ALPHA;
 
 				offset = (uintptr_t)(mt+1) - (uintptr_t)mod_base;
-				if (IsFullbright ((byte *)(tx+1), pixels))
+				if (Mod_HasFullbrights ((byte *)(tx+1), pixels))
 				{
 					sprintf (texturename, "%s:%s", loadmodel->name, tx->name);
 					tx->gltexture = TexMgr_LoadTexture (loadmodel, texturename, tx->width, tx->height, SRC_INDEXED, (byte *)(tx+1), loadmodel->name, offset, TEXPREF_MIPMAP | TEXPREF_NOBRIGHT | extraflags);
@@ -2581,7 +2584,7 @@ void *Mod_LoadAllSkins (int numskins, daliasskintype_t *pskintype)
 			}
 
 			offset = (uintptr_t)(pskintype + 1) - (uintptr_t)mod_base;
-			if (IsFullbright ((byte *)(pskintype + 1), size))
+			if (Mod_HasFullbrights ((byte *)(pskintype + 1), size))
 			{
 				sprintf (skinname, "%s:frame%i", loadmodel->name, i);
 				pheader->gltexture[i][0] =
@@ -2633,7 +2636,7 @@ void *Mod_LoadAllSkins (int numskins, daliasskintype_t *pskintype)
 				}
 
 				offset = (uintptr_t)(pskintype) - (uintptr_t)mod_base; //johnfitz
-				if (IsFullbright ((byte *)(pskintype), size))
+				if (Mod_HasFullbrights ((byte *)(pskintype), size))
 				{
 					sprintf (skinname, "%s:frame%i_%i", loadmodel->name, i,j);
 					pheader->gltexture[i][j&3] = TexMgr_LoadTexture (loadmodel, skinname, pheader->skinwidth, pheader->skinheight, SRC_INDEXED, (byte *)(pskintype), loadmodel->name, offset, texflags | TEXPREF_NOBRIGHT);

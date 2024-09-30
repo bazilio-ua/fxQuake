@@ -68,6 +68,10 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
+            argument = "-rogue"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
             argument = "-hipnotic"
             isEnabled = "NO">
          </CommandLineArgument>
