@@ -537,20 +537,24 @@ void GL_Init (void)
 	gl_version = (const char *)glGetString (GL_VERSION);
 	gl_extensions = (const char *)glGetString (GL_EXTENSIONS);
 
-	Cmd_AddCommand ("gl_info", GL_Info_f);
-	Cmd_AddCommand ("gl_reloadtextures", GL_ReloadTextures_f);
+	Con_SafePrintf ("GL_VENDOR: %s\n", gl_vendor);
+	Con_SafePrintf ("GL_RENDERER: %s\n", gl_renderer);
+	Con_SafePrintf ("GL_VERSION: %s\n", gl_version);
+
+	GL_CheckExtensions ();
 
 	Cvar_RegisterVariableCallback (&gl_swapinterval, GL_SwapInterval);
 
-	Con_Printf ("OpenGL initialized\n");
-
-	GL_CheckExtensions ();
+	Cmd_AddCommand ("gl_info", GL_Info_f);
+	Cmd_AddCommand ("gl_reloadtextures", GL_ReloadTextures_f);
 
 	if (!strcmp(gl_vendor, "Intel")) // intel video workaround
 	{
 		Con_Printf ("Intel Display Adapter detected\n");
 		isIntel = true;
 	}
+
+	Con_Printf ("OpenGL initialized\n");
 
 	GL_SetupState ();
 }

@@ -191,7 +191,7 @@ void CGL_SwapInterval (qboolean enable)
     
     CGLError glerr = CGLSetParameter([glcontext CGLContextObj], kCGLCPSwapInterval, &state);
     if (glerr == kCGLNoError) {
-        Con_Printf ("%s CGL swap interval\n", (state == 1) ? "Enable" : "Disable");
+        Con_Printf ("%s CGL swap interval\n", (state == 1) ? "Enabled" : "Disabled");
     } else {
         Con_Warning ("Unable to set CGL swap interval\n");
     }
@@ -477,15 +477,6 @@ skipfullscreen:
     vid.conwidth = vid.width;
 	vid.conheight = vid.height;
     
-    GL_Init();
-    
-    if (has_smp) {
-        CGLError glerr = CGLEnable([glcontext CGLContextObj], kCGLCEMPEngine);
-        if (glerr == kCGLNoError) {
-            Con_Printf("Enable multi-threaded OpenGL\n");
-        }
-    }
-    
 //	VID_Gamma_Init ();
     
 //	Cvar_RegisterVariableCallback (&vid_gamma, VID_Gamma);
@@ -497,6 +488,15 @@ skipfullscreen:
 		fullsbardraw = true;
     
 	Con_SafePrintf ("Video mode %dx%dx%d %dHz %s%s initialized\n", vid.width, vid.height, colorDepth, refreshRate, isStretched ? "(stretched) " : "", vidmode_fullscreen ? "fullscreen" : "windowed");
+	
+	GL_Init();
+	
+	if (has_smp) {
+		CGLError glerr = CGLEnable([glcontext CGLContextObj], kCGLCEMPEngine);
+		if (glerr == kCGLNoError) {
+			Con_Printf("Enabled multi-threaded GL engine\n");
+		}
+	}
 }
 
 /*
