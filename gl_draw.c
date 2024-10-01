@@ -192,37 +192,22 @@ void TexMgr_UploadWarpImage (void)
 	Hunk_FreeToLowMark (mark);
 }
 
+
 /*
 ===============
-GL_CheckExtensions
+GL_CheckExtension
 ===============
 */
-void GL_CheckExtensions (void) 
+void GL_CheckExtension_Multitexture (void)
 {
 	qboolean ARB = false;
-	qboolean EXTcombine, ARBcombine;
-	qboolean EXTadd, ARBadd;
-#if !defined __APPLE__ && !defined __MACH__
-	qboolean SWAPcontrol;
-#endif
-	qboolean anisotropy;
-    qboolean npot;
 	int units;
-
-	//
-	// poll max size from hardware
-	//
-	glGetIntegerv (GL_MAX_TEXTURE_SIZE, &gl_hardware_max_size);
-	Con_Printf ("Maximum texture size %i\n", gl_hardware_max_size);
-
-	// by default we sets maxsize as hardware maxsize
-//	gl_texture_max_size = gl_hardware_max_size; 
-
+	
 	//
 	// Multitexture
 	//
 	ARB = strstr (gl_extensions, "GL_ARB_multitexture") != NULL;
-
+	
 	if (COM_CheckParm("-nomtex"))
 	{
 		Con_Warning ("Multitexture disabled at command line\n");
@@ -231,11 +216,11 @@ void GL_CheckExtensions (void)
 	{
 		// Check how many texture units there actually are
 		glGetIntegerv (GL_MAX_TEXTURE_UNITS_ARB, &units);
-
+		
 		qglMultiTexCoord2f = (void *) qglGetProcAddress ("glMultiTexCoord2fARB");
 		qglActiveTexture = (void *) qglGetProcAddress ("glActiveTextureARB");
-        qglClientActiveTexture = (void *) qglGetProcAddress ("glClientActiveTextureARB");
-
+		qglClientActiveTexture = (void *) qglGetProcAddress ("glClientActiveTextureARB");
+		
 		if (units < 2)
 		{
 			Con_Warning ("Only %i TMU available, multitexture not supported\n", units);
@@ -248,21 +233,26 @@ void GL_CheckExtensions (void)
 		{
 			Con_Printf ("GL_ARB_multitexture extension found\n");
 			Con_Printf ("   %i TMUs on hardware\n", units);
-
+			
 			gl_mtexable = true;
-		} 
+		}
 	}
 	else
 	{
 		Con_Warning ("Multitexture not supported (extension not found)\n");
 	}
+}
 
+void GL_CheckExtension_EnvCombine (void)
+{
+	qboolean EXTcombine, ARBcombine;
+	
 	//
 	// Texture combine environment mode
 	//
 	ARBcombine = strstr (gl_extensions, "GL_ARB_texture_env_combine") != NULL;
 	EXTcombine = strstr (gl_extensions, "GL_EXT_texture_env_combine") != NULL;
-
+	
 	if (COM_CheckParm("-nocombine"))
 	{
 		Con_Warning ("Texture combine environment disabled at command line\n");
@@ -276,13 +266,18 @@ void GL_CheckExtensions (void)
 	{
 		Con_Warning ("Texture combine environment not supported (extension not found)\n");
 	}
+}
 
+void GL_CheckExtension_EnvAdd (void)
+{
+	qboolean EXTadd, ARBadd;
+	
 	//
 	// Texture add environment mode
 	//
 	ARBadd = strstr (gl_extensions, "GL_ARB_texture_env_add") != NULL;
 	EXTadd = strstr (gl_extensions, "GL_EXT_texture_env_add") != NULL;
-
+	
 	if (COM_CheckParm("-noadd"))
 	{
 		Con_Warning ("Texture add environment disabled at command line\n");
@@ -296,7 +291,14 @@ void GL_CheckExtensions (void)
 	{
 		Con_Warning ("Texture add environment not supported (extension not found)\n");
 	}
+}
 
+void GL_CheckExtension_VSync (void)
+{
+#if !defined __APPLE__ && !defined __MACH__
+	qboolean SWAPcontrol;
+#endif
+	
 	//
 	// Swap control
 	//
@@ -314,7 +316,7 @@ void GL_CheckExtensions (void)
 	else if (SWAPcontrol)
 	{
 		qglSwapInterval = (void *) qglGetProcAddress (SWAPINTERVALFUNC);
-
+		
 		if (qglSwapInterval)
 		{
 			if (!qglSwapInterval(0))
@@ -331,12 +333,17 @@ void GL_CheckExtensions (void)
 	else
 		Con_Warning ("Vertical sync not supported (extension not found)\n");
 #endif
+}
 
+void GL_CheckExtension_Anisotropy (void)
+{
+	qboolean anisotropy;
+	
 	//
 	// Anisotropic filtering
 	//
 	anisotropy = strstr (gl_extensions, "GL_EXT_texture_filter_anisotropic") != NULL;
-
+	
 	if (COM_CheckParm("-noanisotropy"))
 	{
 		Con_Warning ("Anisotropic filtering disabled at command line\n");
@@ -345,7 +352,7 @@ void GL_CheckExtensions (void)
 	{
 		float test1, test2;
 		GLuint tex;
-
+		
 		// test to make sure we really have control over it
 		// 1.0 and 2.0 should always be legal values
 		glGenTextures (1, &tex);
@@ -355,12 +362,12 @@ void GL_CheckExtensions (void)
 		glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 2.0f);
 		glGetTexParameterfv (GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, &test2);
 		glDeleteTextures (1, &tex);
-
+		
 		if (test1 == 1 && test2 == 2)
 			Con_Printf ("GL_EXT_texture_filter_anisotropic extension found\n");
 		else
 			Con_Warning ("Anisotropic filtering locked by driver. Current driver setting is %f\n", test1);
-
+		
 		// get max value either way, so the menu and stuff know it
 		glGetFloatv (GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &gl_hardware_max_anisotropy);
 	}
@@ -368,25 +375,54 @@ void GL_CheckExtensions (void)
 	{
 		Con_Warning ("Anisotropic filtering not supported (extension not found)\n");
 	}
-    
-    //
-    // Texture non power of two
+}
+
+void GL_CheckExtension_NPoT (void)
+{
+	qboolean npot;
+	
 	//
-    npot = strstr (gl_extensions, "GL_ARB_texture_non_power_of_two") != NULL;
-    
+	// Texture non power of two
+	//
+	npot = strstr (gl_extensions, "GL_ARB_texture_non_power_of_two") != NULL;
+	
 	if (COM_CheckParm("-notexturenpot"))
 	{
 		Con_Warning ("Texture non power of two disabled at command line\n");
 	}
 	else if (npot)
-    {
+	{
 		Con_Printf ("GL_ARB_texture_non_power_of_two extension found\n");
 		gl_texture_NPOT = true;
-    }
+	}
 	else
 	{
 		Con_Warning ("Texture non power of two not supported (extension not found)\n");
 	}
+}
+
+/*
+===============
+GL_CheckExtensions
+===============
+*/
+void GL_CheckExtensions (void)
+{
+	//
+	// poll max size from hardware
+	//
+	glGetIntegerv (GL_MAX_TEXTURE_SIZE, &gl_hardware_max_size);
+	Con_Printf ("Maximum texture size %i\n", gl_hardware_max_size);
+
+	// by default we sets maxsize as hardware maxsize
+//	gl_texture_max_size = gl_hardware_max_size; 
+	
+	GL_CheckExtension_Multitexture ();
+	GL_CheckExtension_EnvCombine ();
+	GL_CheckExtension_EnvAdd ();
+	GL_CheckExtension_VSync ();
+	GL_CheckExtension_Anisotropy ();
+	GL_CheckExtension_NPoT ();
     
     // read stencil bits
     glGetIntegerv (GL_STENCIL_BITS, &gl_stencilbits);
@@ -604,17 +640,17 @@ make real glBindTexture calls.
 Call this after changing the binding outside of TexMgr_BindTexture.
 ================
 */
-#if 0
-void GL_ClearBindings(void)
-{
-	int i;
-    
-	for (i = 0; i < 3; i++)
-	{
-		currenttexture[i] = GL_UNUSED_TEXTURE;
-	}
-}
-#endif
+//#if 0
+//void GL_ClearBindings(void)
+//{
+//	int i;
+//    
+//	for (i = 0; i < 3; i++)
+//	{
+//		currenttexture[i] = GL_UNUSED_TEXTURE;
+//	}
+//}
+//#endif
 
 /*
 ================
