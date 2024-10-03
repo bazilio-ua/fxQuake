@@ -293,11 +293,14 @@ void GL_CheckExtension_EnvAdd (void)
 	}
 }
 
+//#if defined __APPLE__ && defined __MACH__
+////qboolean CGL_GetSwapInterval (void);
+////void CGL_SetSwapInterval (const GLint state);
+//#endif
+
 void GL_CheckExtension_VSync (void)
 {
-#if !defined __APPLE__ && !defined __MACH__
 	qboolean SWAPcontrol;
-#endif
 	
 	//
 	// Swap control
@@ -306,15 +309,27 @@ void GL_CheckExtension_VSync (void)
 	SWAPcontrol = strstr (gl_extensions, SWAPCONTROLSTRING) != NULL;
 #elif defined GLX_GLXEXT_PROTOTYPES
 	SWAPcontrol = strstr (glx_extensions, SWAPCONTROLSTRING) != NULL;
+#elif defined __APPLE__ && defined __MACH__
+	SWAPcontrol = true;
 #endif
 
-#if !defined __APPLE__ && !defined __MACH__
 	if (COM_CheckParm("-novsync"))
 	{
 		Con_Warning ("Vertical sync disabled at command line\n");
 	}
 	else if (SWAPcontrol)
 	{
+#if defined __APPLE__ && defined __MACH__
+		GLint state;
+		
+		CGLError glerr = CGLGetParameter(CGLGetCurrentContext(), kCGLCPSwapInterval, &state);
+		if (glerr == kCGLNoError) {
+			Con_Printf ("%s sync to vertical retrace\n", (state == 1) ? "Enabled" : "Disabled");
+			gl_swap_control = true;
+		} else {
+			Con_Warning ("Unable to get CGL swap interval\n");
+		}
+#else
 		qglSwapInterval = (void *) qglGetProcAddress (SWAPINTERVALFUNC);
 		
 		if (qglSwapInterval)
@@ -329,10 +344,10 @@ void GL_CheckExtension_VSync (void)
 		}
 		else
 			Con_Warning ("Vertical sync not supported (qglGetProcAddress failed)\n");
+#endif
 	}
 	else
 		Con_Warning ("Vertical sync not supported (extension not found)\n");
-#endif
 }
 
 void GL_CheckExtension_Anisotropy (void)
@@ -494,33 +509,58 @@ void GL_Info_f (void)
 GL_SwapInterval
 ===============
 */
-#if defined __APPLE__ && defined __MACH__
-void CGL_SwapInterval (qboolean enable);
-#endif
+//#if defined __APPLE__ && defined __MACH__
+//qboolean CGL_GetSwapInterval (void);
+//void CGL_SetSwapInterval (const GLint state);
+//#endif
+
+//void CGL_SetSwapInterval (const GLint state)
+//{
+////    [glcontext makeCurrentContext];
+//	
+//	CGLError glerr = CGLSetParameter([glcontext CGLContextObj], kCGLCPSwapInterval, &state);
+//	if (glerr == kCGLNoError) {
+//		Con_Printf ("%s CGL swap interval\n", (state == 1) ? "Enabled" : "Disabled");
+//	} else {
+//		Con_Warning ("Unable to set CGL swap interval\n");
+//	}
+//}
 
 void GL_SwapInterval (void)
 {
-#if !defined __APPLE__ && !defined __MACH__    
 	if (gl_swap_control)
 	{
-		if (gl_swapinterval.value)
-		{
-			if (!qglSwapInterval(1))
-				Con_Printf ("GL_SwapInterval: failed on %s\n", SWAPINTERVALFUNC);
+#if defined __APPLE__ && defined __MACH__
+		const GLint state = (gl_swapinterval.value) ? 1 : 0;
+		
+		CGLError glerr = CGLSetParameter(CGLGetCurrentContext(), kCGLCPSwapInterval, &state);
+		if (glerr == kCGLNoError) {
+			Con_Printf ("%s CGL swap interval\n", (state == 1) ? "Enabled" : "Disabled");
+		} else {
+			Con_Warning ("Unable to set CGL swap interval\n");
 		}
-		else
-		{
-			if (!qglSwapInterval(0))
-				Con_Printf ("GL_SwapInterval: failed on %s\n", SWAPINTERVALFUNC);
-		}
-	}
+		
+//		if (gl_swapinterval.value) {
+//			CGL_SetSwapInterval (true);
+//		} else {
+//			CGL_SetSwapInterval (false);
+//		}
 #else
-    if (gl_swapinterval.value) {
-        CGL_SwapInterval(true);
-    } else {
-        CGL_SwapInterval(false);
-    }
+		if (!qglSwapInterval((gl_swapinterval.value) ? 1 : 0))
+			Con_Printf ("GL_SwapInterval: failed on %s\n", SWAPINTERVALFUNC);
+		
+//		if (gl_swapinterval.value)
+//		{
+//			if (!qglSwapInterval(1))
+//				Con_Printf ("GL_SwapInterval: failed on %s\n", SWAPINTERVALFUNC);
+//		}
+//		else
+//		{
+//			if (!qglSwapInterval(0))
+//				Con_Printf ("GL_SwapInterval: failed on %s\n", SWAPINTERVALFUNC);
+//		}
 #endif
+	}
 }
 
 /*

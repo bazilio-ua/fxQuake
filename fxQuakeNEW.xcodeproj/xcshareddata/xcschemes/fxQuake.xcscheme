@@ -76,6 +76,10 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
+            argument = "-width 960 -height 600"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
             argument = "-width 800 -height 600"
             isEnabled = "YES">
          </CommandLineArgument>

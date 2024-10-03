@@ -183,19 +183,30 @@ void GL_EndRendering (void)
 
 //====================================
 
-void CGL_SwapInterval (qboolean enable)
-{
-    const GLint state = (enable) ? 1 : 0;
-    
-    [glcontext makeCurrentContext];
-    
-    CGLError glerr = CGLSetParameter([glcontext CGLContextObj], kCGLCPSwapInterval, &state);
-    if (glerr == kCGLNoError) {
-        Con_Printf ("%s CGL swap interval\n", (state == 1) ? "Enabled" : "Disabled");
-    } else {
-        Con_Warning ("Unable to set CGL swap interval\n");
-    }
-}
+//qboolean CGL_GetSwapInterval (void)
+//{
+//	GLint state;
+//	
+//	// CGLGetCurrentContext()
+//	CGLError glerr = CGLGetParameter([glcontext CGLContextObj], kCGLCPSwapInterval, &state);
+//	if (glerr == kCGLNoError) {
+//		return true;
+//	}
+//	
+//	return false;
+//}
+
+//void CGL_SetSwapInterval (const GLint state)
+//{
+////    [glcontext makeCurrentContext];
+//    
+//    CGLError glerr = CGLSetParameter([glcontext CGLContextObj], kCGLCPSwapInterval, &state);
+//    if (glerr == kCGLNoError) {
+//        Con_Printf ("%s CGL swap interval\n", (state == 1) ? "Enabled" : "Disabled");
+//    } else {
+//        Con_Warning ("Unable to set CGL swap interval\n");
+//    }
+//}
 
 #define MAX_DISPLAYS 128
 
@@ -426,6 +437,7 @@ skipfullscreen:
     if (!glcontext) {
         Sys_Error("Cannot create OpenGL context");
     }
+    [glcontext makeCurrentContext];
     
     if (!vidmode_fullscreen) {
         NSRect windowRect;
@@ -468,8 +480,6 @@ skipfullscreen:
 //        } while (CGDisplayFadeOperationInProgress());
     }
     
-    [glcontext makeCurrentContext];
-    
     vid_activewindow = true;
 	vid_hiddenwindow = false;
 	vid_notifywindow = true;
@@ -490,6 +500,8 @@ skipfullscreen:
 	Con_SafePrintf ("Video mode %dx%dx%d %dHz %s%s initialized\n", vid.width, vid.height, colorDepth, refreshRate, isStretched ? "(stretched) " : "", vidmode_fullscreen ? "fullscreen" : "windowed");
 	
 	GL_Init();
+	
+	GL_SwapInterval(); // TODO: sync cvars
 	
 	if (has_smp) {
 		CGLError glerr = CGLEnable([glcontext CGLContextObj], kCGLCEMPEngine);
