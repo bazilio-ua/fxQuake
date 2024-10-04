@@ -25,7 +25,7 @@ cvar_t		scr_conalpha = {"scr_conalpha", "1", CVAR_ARCHIVE};
 cvar_t		gl_max_size = {"gl_max_size", "0", CVAR_NONE};
 cvar_t		gl_picmip = {"gl_picmip", "0", CVAR_NONE};
 cvar_t		gl_texquality = {"gl_texquality", "1", CVAR_NONE};
-cvar_t		gl_swapinterval = {"gl_swapinterval", "0", CVAR_ARCHIVE};
+cvar_t		gl_swapinterval = {"gl_swapinterval", "1", CVAR_ARCHIVE};
 cvar_t		gl_warp_image_size = {"gl_warp_image_size", "256", CVAR_ARCHIVE}; // was 512, for water warp
 
 byte		*draw_chars;				// 8*8 graphic characters
@@ -200,19 +200,19 @@ GL_CheckExtension
 */
 void GL_CheckExtension_Multitexture (void)
 {
-	qboolean ARB = false;
+	qboolean ARBmultitexture = false;
 	int units;
 	
 	//
 	// Multitexture
 	//
-	ARB = strstr (gl_extensions, "GL_ARB_multitexture") != NULL;
+	ARBmultitexture = strstr (gl_extensions, "GL_ARB_multitexture") != NULL;
 	
 	if (COM_CheckParm("-nomtex"))
 	{
 		Con_Warning ("Multitexture disabled at command line\n");
 	}
-	else if (ARB)
+	else if (ARBmultitexture)
 	{
 		// Check how many texture units there actually are
 		glGetIntegerv (GL_MAX_TEXTURE_UNITS_ARB, &units);
@@ -231,7 +231,7 @@ void GL_CheckExtension_Multitexture (void)
 		}
 		else
 		{
-			Con_Printf ("GL_ARB_multitexture extension found\n");
+			Con_Printf ("found GL_ARB_multitexture\n");
 			Con_Printf ("   %i TMUs on hardware\n", units);
 			
 			gl_mtexable = true;
@@ -259,7 +259,7 @@ void GL_CheckExtension_EnvCombine (void)
 	}
 	else if (ARBcombine || EXTcombine)
 	{
-		Con_Printf ("GL_%s_texture_env_combine extension found\n", ARBcombine ? "ARB" : "EXT");
+		Con_Printf ("found GL_%s_texture_env_combine\n", ARBcombine ? "ARB" : "EXT");
 		gl_texture_env_combine = true;
 	}
 	else
@@ -284,7 +284,7 @@ void GL_CheckExtension_EnvAdd (void)
 	}
 	else if (ARBadd || EXTadd)
 	{
-		Con_Printf ("GL_%s_texture_env_add extension found\n", ARBadd ? "ARB" : "EXT");
+		Con_Printf ("found GL_%s_texture_env_add\n", ARBadd ? "ARB" : "EXT");
 		gl_texture_env_add = true;
 	}
 	else
@@ -293,61 +293,28 @@ void GL_CheckExtension_EnvAdd (void)
 	}
 }
 
-//#if defined __APPLE__ && defined __MACH__
-////qboolean CGL_GetSwapInterval (void);
-////void CGL_SetSwapInterval (const GLint state);
-//#endif
-
-void GL_CheckExtension_VSync (void)
+void GL_CheckExtension_NPoT (void)
 {
-	qboolean SWAPcontrol;
+	qboolean npot;
 	
 	//
-	// Swap control
+	// Texture non power of two
 	//
-#ifdef _WIN32
-	SWAPcontrol = strstr (gl_extensions, SWAPCONTROLSTRING) != NULL;
-#elif defined GLX_GLXEXT_PROTOTYPES
-	SWAPcontrol = strstr (glx_extensions, SWAPCONTROLSTRING) != NULL;
-#elif defined __APPLE__ && defined __MACH__
-	SWAPcontrol = true;
-#endif
-
-	if (COM_CheckParm("-novsync"))
+	npot = strstr (gl_extensions, "GL_ARB_texture_non_power_of_two") != NULL;
+	
+	if (COM_CheckParm("-notexturenpot"))
 	{
-		Con_Warning ("Vertical sync disabled at command line\n");
+		Con_Warning ("Texture non power of two disabled at command line\n");
 	}
-	else if (SWAPcontrol)
+	else if (npot)
 	{
-#if defined __APPLE__ && defined __MACH__
-		GLint state;
-		
-		CGLError glerr = CGLGetParameter(CGLGetCurrentContext(), kCGLCPSwapInterval, &state);
-		if (glerr == kCGLNoError) {
-			Con_Printf ("%s sync to vertical retrace\n", (state == 1) ? "Enabled" : "Disabled");
-			gl_swap_control = true;
-		} else {
-			Con_Warning ("Unable to get CGL swap interval\n");
-		}
-#else
-		qglSwapInterval = (void *) qglGetProcAddress (SWAPINTERVALFUNC);
-		
-		if (qglSwapInterval)
-		{
-			if (!qglSwapInterval(0))
-				Con_Warning ("Vertical sync not supported (%s failed)\n", SWAPINTERVALFUNC);
-			else
-			{
-				Con_Printf ("%s extension found\n", SWAPCONTROLSTRING);
-				gl_swap_control = true;
-			}
-		}
-		else
-			Con_Warning ("Vertical sync not supported (qglGetProcAddress failed)\n");
-#endif
+		Con_Printf ("found GL_ARB_texture_non_power_of_two\n");
+		gl_texture_NPOT = true;
 	}
 	else
-		Con_Warning ("Vertical sync not supported (extension not found)\n");
+	{
+		Con_Warning ("Texture non power of two not supported (extension not found)\n");
+	}
 }
 
 void GL_CheckExtension_Anisotropy (void)
@@ -379,7 +346,7 @@ void GL_CheckExtension_Anisotropy (void)
 		glDeleteTextures (1, &tex);
 		
 		if (test1 == 1 && test2 == 2)
-			Con_Printf ("GL_EXT_texture_filter_anisotropic extension found\n");
+			Con_Printf ("found GL_EXT_texture_filter_anisotropic\n");
 		else
 			Con_Warning ("Anisotropic filtering locked by driver. Current driver setting is %f\n", test1);
 		
@@ -392,27 +359,75 @@ void GL_CheckExtension_Anisotropy (void)
 	}
 }
 
-void GL_CheckExtension_NPoT (void)
+#if defined __APPLE__ && defined __MACH__
+//qboolean CGL_GetSwapInterval (void);
+//void CGL_SetSwapInterval (const GLint state);
+GLint gl_swapintervalstate = 0;
+#endif
+
+void GL_CheckExtension_VSync (void)
 {
-	qboolean npot;
+	qboolean SWAPcontrol;
 	
 	//
-	// Texture non power of two
+	// Swap control
 	//
-	npot = strstr (gl_extensions, "GL_ARB_texture_non_power_of_two") != NULL;
-	
-	if (COM_CheckParm("-notexturenpot"))
+#ifdef _WIN32
+	SWAPcontrol = strstr (gl_extensions, SWAPCONTROLSTRING) != NULL;
+#elif defined GLX_GLXEXT_PROTOTYPES
+	SWAPcontrol = strstr (glx_extensions, SWAPCONTROLSTRING) != NULL;
+#elif defined __APPLE__ && defined __MACH__
+	SWAPcontrol = true;
+#endif
+
+	if (COM_CheckParm("-novsync"))
 	{
-		Con_Warning ("Texture non power of two disabled at command line\n");
+		Con_Warning ("Vertical sync disabled at command line\n");
 	}
-	else if (npot)
+	else if (SWAPcontrol)
 	{
-		Con_Printf ("GL_ARB_texture_non_power_of_two extension found\n");
-		gl_texture_NPOT = true;
+#if defined __APPLE__ && defined __MACH__
+		GLint state;
+		
+		CGLError glerr = CGLGetParameter(CGLGetCurrentContext(), kCGLCPSwapInterval, &state);
+		if (glerr == kCGLNoError) {
+			Con_Printf ("%s sync to vertical retrace\n", (state == 1) ? "Enabled" : "Disabled");
+			gl_swapintervalstate = state;
+			gl_swap_control = true;
+		} else {
+			Con_Warning ("Unable to get CGL swap interval\n");
+		}
+#else
+		qglSwapInterval = (void *) qglGetProcAddress (SWAPINTERVALFUNC);
+		
+		if (qglSwapInterval)
+		{
+			if (!qglSwapInterval(0))
+				Con_Warning ("Vertical sync not supported (%s failed)\n", SWAPINTERVALFUNC);
+			else
+			{
+				Con_Printf ("found %s\n", SWAPCONTROLSTRING);
+				gl_swap_control = true;
+			}
+		}
+		else
+			Con_Warning ("Vertical sync not supported (qglGetProcAddress failed)\n");
+#endif
 	}
 	else
+		Con_Warning ("Vertical sync not supported (extension not found)\n");
+}
+
+void GL_Check_MultithreadedGL (void)
+{
+	if (has_smp)
 	{
-		Con_Warning ("Texture non power of two not supported (extension not found)\n");
+#if defined __APPLE__ && defined __MACH__
+		CGLError glerr = CGLEnable(CGLGetCurrentContext(), kCGLCEMPEngine);
+		if (glerr == kCGLNoError) {
+			Con_Printf("Enabled multi-threaded GL engine\n");
+		}
+#endif
 	}
 }
 
@@ -435,10 +450,16 @@ void GL_CheckExtensions (void)
 	GL_CheckExtension_Multitexture ();
 	GL_CheckExtension_EnvCombine ();
 	GL_CheckExtension_EnvAdd ();
-	GL_CheckExtension_VSync ();
-	GL_CheckExtension_Anisotropy ();
+	
+//	GL_CheckExtension_VSync ();
+//	GL_CheckExtension_Anisotropy ();
+	
 	GL_CheckExtension_NPoT ();
-    
+	GL_CheckExtension_Anisotropy ();
+	GL_CheckExtension_VSync ();
+	
+	GL_Check_MultithreadedGL ();
+	
     // read stencil bits
     glGetIntegerv (GL_STENCIL_BITS, &gl_stencilbits);
 }
@@ -532,10 +553,13 @@ void GL_SwapInterval (void)
 	{
 #if defined __APPLE__ && defined __MACH__
 		const GLint state = (gl_swapinterval.value) ? 1 : 0;
+		if (state == gl_swapintervalstate)
+			return;
 		
 		CGLError glerr = CGLSetParameter(CGLGetCurrentContext(), kCGLCPSwapInterval, &state);
 		if (glerr == kCGLNoError) {
 			Con_Printf ("%s CGL swap interval\n", (state == 1) ? "Enabled" : "Disabled");
+			gl_swapintervalstate = state;
 		} else {
 			Con_Warning ("Unable to set CGL swap interval\n");
 		}

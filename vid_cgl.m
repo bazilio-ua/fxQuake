@@ -503,12 +503,12 @@ skipfullscreen:
 	
 	GL_SwapInterval(); // TODO: sync cvars
 	
-	if (has_smp) {
-		CGLError glerr = CGLEnable([glcontext CGLContextObj], kCGLCEMPEngine);
-		if (glerr == kCGLNoError) {
-			Con_Printf("Enabled multi-threaded GL engine\n");
-		}
-	}
+//	if (has_smp) {
+//		CGLError glerr = CGLEnable([glcontext CGLContextObj], kCGLCEMPEngine);
+//		if (glerr == kCGLNoError) {
+//			Con_Printf("Enabled multi-threaded GL engine\n");
+//		}
+//	}
 }
 
 /*

@@ -40,5 +40,4 @@ extern NSWindow *window;
 extern NSScreen *screen;
 
 extern qboolean vidmode_fullscreen; // was vidmode_active
-extern qboolean has_smp;
 
