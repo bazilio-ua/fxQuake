@@ -231,7 +231,7 @@ void GL_CheckExtension_Multitexture (void)
 		}
 		else
 		{
-			Con_Printf ("found GL_ARB_multitexture\n");
+			Con_Printf ("Found GL_ARB_multitexture\n");
 			Con_Printf ("   %i TMUs on hardware\n", units);
 			
 			gl_mtexable = true;
@@ -259,7 +259,7 @@ void GL_CheckExtension_EnvCombine (void)
 	}
 	else if (ARBcombine || EXTcombine)
 	{
-		Con_Printf ("found GL_%s_texture_env_combine\n", ARBcombine ? "ARB" : "EXT");
+		Con_Printf ("Found GL_%s_texture_env_combine\n", ARBcombine ? "ARB" : "EXT");
 		gl_texture_env_combine = true;
 	}
 	else
@@ -284,7 +284,7 @@ void GL_CheckExtension_EnvAdd (void)
 	}
 	else if (ARBadd || EXTadd)
 	{
-		Con_Printf ("found GL_%s_texture_env_add\n", ARBadd ? "ARB" : "EXT");
+		Con_Printf ("Found GL_%s_texture_env_add\n", ARBadd ? "ARB" : "EXT");
 		gl_texture_env_add = true;
 	}
 	else
@@ -308,7 +308,7 @@ void GL_CheckExtension_NPoT (void)
 	}
 	else if (npot)
 	{
-		Con_Printf ("found GL_ARB_texture_non_power_of_two\n");
+		Con_Printf ("Found GL_ARB_texture_non_power_of_two\n");
 		gl_texture_NPOT = true;
 	}
 	else
@@ -346,7 +346,7 @@ void GL_CheckExtension_Anisotropy (void)
 		glDeleteTextures (1, &tex);
 		
 		if (test1 == 1 && test2 == 2)
-			Con_Printf ("found GL_EXT_texture_filter_anisotropic\n");
+			Con_Printf ("Found GL_EXT_texture_filter_anisotropic\n");
 		else
 			Con_Warning ("Anisotropic filtering locked by driver. Current driver setting is %f\n", test1);
 		
@@ -406,7 +406,7 @@ void GL_CheckExtension_VSync (void)
 				Con_Warning ("Vertical sync not supported (%s failed)\n", SWAPINTERVALFUNC);
 			else
 			{
-				Con_Printf ("found %s\n", SWAPCONTROLSTRING);
+				Con_Printf ("Found %s\n", SWAPCONTROLSTRING);
 				gl_swap_control = true;
 			}
 		}
