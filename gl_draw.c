@@ -777,11 +777,11 @@ void GL_EnableMultitexture (void)
 */
 
 #define	MAX_SCRAPS		2
-#define	BLOCK_WIDTH		256
-#define	BLOCK_HEIGHT	256
+#define	SCRAP_WIDTH		256
+#define	SCRAP_HEIGHT	256
 
-int			scrap_allocated[MAX_SCRAPS][BLOCK_WIDTH];
-byte		scrap_texels[MAX_SCRAPS][BLOCK_WIDTH*BLOCK_HEIGHT];
+int			scrap_allocated[MAX_SCRAPS][SCRAP_WIDTH];
+byte		scrap_texels[MAX_SCRAPS][SCRAP_WIDTH*SCRAP_HEIGHT];
 qboolean	scrap_dirty;
 gltexture_t	*scrap_textures[MAX_SCRAPS]; // changed to array
 
@@ -794,9 +794,9 @@ int Scrap_AllocBlock (int w, int h, int *x, int *y)
 
 	for (texnum=0 ; texnum<MAX_SCRAPS ; texnum++)
 	{
-		best = BLOCK_HEIGHT;
+		best = SCRAP_HEIGHT;
 
-		for (i=0 ; i<BLOCK_WIDTH-w ; i++)
+		for (i=0 ; i<SCRAP_WIDTH-w ; i++)
 		{
 			best2 = 0;
 
@@ -814,7 +814,7 @@ int Scrap_AllocBlock (int w, int h, int *x, int *y)
 			}
 		}
 
-		if (best + h > BLOCK_HEIGHT)
+		if (best + h > SCRAP_HEIGHT)
 			continue;
 
 		for (i=0 ; i<w ; i++)
@@ -834,7 +834,7 @@ void Scrap_Upload (void)
 	for (i = 0; i < MAX_SCRAPS; i++) 
 	{
 		sprintf (name, "scrap%i", i);
-		scrap_textures[i] = TexMgr_LoadTexture (NULL, name, BLOCK_WIDTH, BLOCK_HEIGHT, SRC_INDEXED, scrap_texels[i], "", (uintptr_t)scrap_texels[i], TEXPREF_ALPHA | TEXPREF_OVERWRITE | TEXPREF_NOPICMIP);
+		scrap_textures[i] = TexMgr_LoadTexture (NULL, name, SCRAP_WIDTH, SCRAP_HEIGHT, SRC_INDEXED, scrap_texels[i], "", (uintptr_t)scrap_texels[i], TEXPREF_ALPHA | TEXPREF_OVERWRITE | TEXPREF_NOPICMIP);
 	}
 	scrap_dirty = false;
 }
@@ -884,14 +884,14 @@ qpic_t *Draw_PicFromWad (char *name)
 		k = 0;
 		for (i=0 ; i<p->height ; i++)
 			for (j=0 ; j<p->width ; j++, k++)
-				scrap_texels[texnum][(y+i)*BLOCK_WIDTH + x + j] = p->data[k];
+				scrap_texels[texnum][(y+i)*SCRAP_WIDTH + x + j] = p->data[k];
 
 		gl.gltexture = scrap_textures[texnum]; // changed to an array
 		// no longer go from 0.01 to 0.99
-		gl.sl = x/(float)BLOCK_WIDTH;
-		gl.sh = (x+p->width)/(float)BLOCK_WIDTH;
-		gl.tl = y/(float)BLOCK_WIDTH;
-		gl.th = (y+p->height)/(float)BLOCK_WIDTH;
+		gl.sl = x/(float)SCRAP_WIDTH;
+		gl.sh = (x+p->width)/(float)SCRAP_WIDTH;
+		gl.tl = y/(float)SCRAP_HEIGHT;
+		gl.th = (y+p->height)/(float)SCRAP_HEIGHT;
 	}
 	else
 	{
