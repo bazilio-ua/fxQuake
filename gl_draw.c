@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 cvar_t		scr_conalpha = {"scr_conalpha", "1", CVAR_ARCHIVE};
 cvar_t		gl_max_size = {"gl_max_size", "0", CVAR_NONE};
 cvar_t		gl_picmip = {"gl_picmip", "0", CVAR_NONE};
-cvar_t		gl_texquality = {"gl_texquality", "1", CVAR_NONE};
+//cvar_t		gl_texquality = {"gl_texquality", "1", CVAR_NONE};
 cvar_t		gl_swapinterval = {"gl_swapinterval", "1", CVAR_ARCHIVE};
 cvar_t		gl_warp_image_size = {"gl_warp_image_size", "256", CVAR_ARCHIVE}; // was 512, for water warp
 
@@ -1129,7 +1129,7 @@ void Draw_Init (void)
 	Cvar_RegisterVariable (&scr_conalpha);
 	Cvar_RegisterVariableCallback (&gl_max_size, TexMgr_ReloadTextures);
 	Cvar_RegisterVariableCallback (&gl_picmip, TexMgr_ReloadTextures);
-	Cvar_RegisterVariable (&gl_texquality); // TODO: unused?
+//	Cvar_RegisterVariable (&gl_texquality); // TODO: unused?
 	Cvar_RegisterVariableCallback (&gl_warp_image_size, TexMgr_UploadWarpImage);
 
 	Cmd_AddCommand ("gl_texturemode", &GL_TextureMode_f);
@@ -2020,67 +2020,67 @@ GL_ResampleTextureQuality
 bilinear resample
 ================
 */
-void GL_ResampleTextureQuality (unsigned *in, int inwidth, int inheight, unsigned *out,  int outwidth, int outheight, qboolean alpha)
-{
-	byte	 *nwpx, *nepx, *swpx, *sepx, *dest, *inlimit;
-	unsigned xfrac, yfrac, x, y, modx, mody, imodx, imody, injump, outjump;
-	int	 i, j;
-
-	// Sanity ...
-	if (inwidth <= 0 || inheight <= 0 || outwidth <= 0 || outheight <= 0 ||
-		inwidth * 0x10000 & 0xC0000000 || inheight * outheight & 0xC0000000 ||
-		inwidth * inheight & 0xC0000000)
-		Sys_Error ("GL_ResampleTextureQuality: invalid parameters (in:%dx%d, out:%dx%d)", inwidth, inheight, outwidth, outheight);
-
-	inlimit = (byte *)(in + inwidth * inheight);
-
-	// Make sure "out" size is at least 2x2!
-	xfrac = ((inwidth-1) << 16) / (outwidth-1);
-	yfrac = ((inheight-1) << 16) / (outheight-1);
-	y = outjump = 0;
-
-	// Better resampling, less blurring of all texes, requires a lot of memory
-	for (i=0; i<outheight; i++)
-	{
-		mody = (y>>8) & 0xFF;
-		imody = 256 - mody;
-		injump = (y>>16) * inwidth;
-		x = 0;
-
-		for (j=0; j<outwidth; j++)
-		{
-			modx = (x>>8) & 0xFF;
-			imodx = 256 - modx;
-
-			nwpx = (byte *)(in + (x>>16) + injump);
-			nepx = nwpx + sizeof(int);
-			swpx = nwpx + inwidth * sizeof(int); // Next line
-
-			// Don't exceed "in" size
-			if (swpx + sizeof(int) >= inlimit)
-			{
-//				Con_Error ("GL_ResampleTextureQuality: %4d\n", swpx + sizeof(int) - inlimit);
-				swpx = nwpx; // There's no next line
-			}
-
-			sepx = swpx + sizeof(int);
-
-			dest = (byte *)(out + outjump + j);
-
-			dest[0] = (nwpx[0]*imodx*imody + nepx[0]*modx*imody + swpx[0]*imodx*mody + sepx[0]*modx*mody)>>16;
-			dest[1] = (nwpx[1]*imodx*imody + nepx[1]*modx*imody + swpx[1]*imodx*mody + sepx[1]*modx*mody)>>16;
-			dest[2] = (nwpx[2]*imodx*imody + nepx[2]*modx*imody + swpx[2]*imodx*mody + sepx[2]*modx*mody)>>16;
-			if (alpha)
-				dest[3] = (nwpx[3]*imodx*imody + nepx[3]*modx*imody + swpx[3]*imodx*mody + sepx[3]*modx*mody)>>16;
-			else
-				dest[3] = 255;
-
-			x += xfrac;
-		}
-		outjump += outwidth;
-		y += yfrac;
-	}
-}
+//void GL_ResampleTextureQuality (unsigned *in, int inwidth, int inheight, unsigned *out,  int outwidth, int outheight, qboolean alpha)
+//{
+//	byte	 *nwpx, *nepx, *swpx, *sepx, *dest, *inlimit;
+//	unsigned xfrac, yfrac, x, y, modx, mody, imodx, imody, injump, outjump;
+//	int	 i, j;
+//
+//	// Sanity ...
+//	if (inwidth <= 0 || inheight <= 0 || outwidth <= 0 || outheight <= 0 ||
+//		inwidth * 0x10000 & 0xC0000000 || inheight * outheight & 0xC0000000 ||
+//		inwidth * inheight & 0xC0000000)
+//		Sys_Error ("GL_ResampleTextureQuality: invalid parameters (in:%dx%d, out:%dx%d)", inwidth, inheight, outwidth, outheight);
+//
+//	inlimit = (byte *)(in + inwidth * inheight);
+//
+//	// Make sure "out" size is at least 2x2!
+//	xfrac = ((inwidth-1) << 16) / (outwidth-1);
+//	yfrac = ((inheight-1) << 16) / (outheight-1);
+//	y = outjump = 0;
+//
+//	// Better resampling, less blurring of all texes, requires a lot of memory
+//	for (i=0; i<outheight; i++)
+//	{
+//		mody = (y>>8) & 0xFF;
+//		imody = 256 - mody;
+//		injump = (y>>16) * inwidth;
+//		x = 0;
+//
+//		for (j=0; j<outwidth; j++)
+//		{
+//			modx = (x>>8) & 0xFF;
+//			imodx = 256 - modx;
+//
+//			nwpx = (byte *)(in + (x>>16) + injump);
+//			nepx = nwpx + sizeof(int);
+//			swpx = nwpx + inwidth * sizeof(int); // Next line
+//
+//			// Don't exceed "in" size
+//			if (swpx + sizeof(int) >= inlimit)
+//			{
+////				Con_Error ("GL_ResampleTextureQuality: %4d\n", swpx + sizeof(int) - inlimit);
+//				swpx = nwpx; // There's no next line
+//			}
+//
+//			sepx = swpx + sizeof(int);
+//
+//			dest = (byte *)(out + outjump + j);
+//
+//			dest[0] = (nwpx[0]*imodx*imody + nepx[0]*modx*imody + swpx[0]*imodx*mody + sepx[0]*modx*mody)>>16;
+//			dest[1] = (nwpx[1]*imodx*imody + nepx[1]*modx*imody + swpx[1]*imodx*mody + sepx[1]*modx*mody)>>16;
+//			dest[2] = (nwpx[2]*imodx*imody + nepx[2]*modx*imody + swpx[2]*imodx*mody + sepx[2]*modx*mody)>>16;
+//			if (alpha)
+//				dest[3] = (nwpx[3]*imodx*imody + nepx[3]*modx*imody + swpx[3]*imodx*mody + sepx[3]*modx*mody)>>16;
+//			else
+//				dest[3] = 255;
+//
+//			x += xfrac;
+//		}
+//		outjump += outwidth;
+//		y += yfrac;
+//	}
+//}
 
 /*
 ================
@@ -2089,26 +2089,26 @@ GL_MipMap
 Operates in place, quartering the size of the texture
 ================
 */
-void GL_MipMap (byte *in, int width, int height)
-{
-	int		i, j;
-	byte	*out;
-
-	width <<=2;
-	height >>= 1;
-	out = in;
-
-	for (i=0 ; i<height ; i++, in+=width)
-	{
-		for (j=0 ; j<width ; j+=8, out+=4, in+=8)
-		{
-			out[0] = (in[0] + in[4] + in[width+0] + in[width+4])>>2;
-			out[1] = (in[1] + in[5] + in[width+1] + in[width+5])>>2;
-			out[2] = (in[2] + in[6] + in[width+2] + in[width+6])>>2;
-			out[3] = (in[3] + in[7] + in[width+3] + in[width+7])>>2;
-		}
-	}
-}
+//void GL_MipMap (byte *in, int width, int height)
+//{
+//	int		i, j;
+//	byte	*out;
+//
+//	width <<=2;
+//	height >>= 1;
+//	out = in;
+//
+//	for (i=0 ; i<height ; i++, in+=width)
+//	{
+//		for (j=0 ; j<width ; j+=8, out+=4, in+=8)
+//		{
+//			out[0] = (in[0] + in[4] + in[width+0] + in[width+4])>>2;
+//			out[1] = (in[1] + in[5] + in[width+1] + in[width+5])>>2;
+//			out[2] = (in[2] + in[6] + in[width+2] + in[width+6])>>2;
+//			out[3] = (in[3] + in[7] + in[width+3] + in[width+7])>>2;
+//		}
+//	}
+//}
 
 /*
 ===============
@@ -2118,67 +2118,67 @@ eliminate pink edges on sprites, etc.
 operates in place on 32bit data
 ===============
 */
-void GL_AlphaEdgeFix (byte *data, int width, int height)
-{
-	int i,j,n=0,b,c[3]={0,0,0},lastrow,thisrow,nextrow,lastpix,thispix,nextpix;
-	byte *dest = data;
-
-	for (i=0; i<height; i++)
-	{
-		lastrow = width * 4 * ((i == 0) ? height-1 : i-1);
-		thisrow = width * 4 * i;
-		nextrow = width * 4 * ((i == height-1) ? 0 : i+1);
-
-		for (j=0; j<width; j++, dest+=4)
-		{
-			if (dest[3]) // not transparent
-				continue;
-
-			lastpix = 4 * ((j == 0) ? width-1 : j-1);
-			thispix = 4 * j;
-			nextpix = 4 * ((j == width-1) ? 0 : j+1);
-
-			b = lastrow + lastpix; if (data[b+3]) {c[0] += data[b]; c[1] += data[b+1]; c[2] += data[b+2]; n++;}
-			b = thisrow + lastpix; if (data[b+3]) {c[0] += data[b]; c[1] += data[b+1]; c[2] += data[b+2]; n++;}
-			b = nextrow + lastpix; if (data[b+3]) {c[0] += data[b]; c[1] += data[b+1]; c[2] += data[b+2]; n++;}
-			b = lastrow + thispix; if (data[b+3]) {c[0] += data[b]; c[1] += data[b+1]; c[2] += data[b+2]; n++;}
-			b = nextrow + thispix; if (data[b+3]) {c[0] += data[b]; c[1] += data[b+1]; c[2] += data[b+2]; n++;}
-			b = lastrow + nextpix; if (data[b+3]) {c[0] += data[b]; c[1] += data[b+1]; c[2] += data[b+2]; n++;}
-			b = thisrow + nextpix; if (data[b+3]) {c[0] += data[b]; c[1] += data[b+1]; c[2] += data[b+2]; n++;}
-			b = nextrow + nextpix; if (data[b+3]) {c[0] += data[b]; c[1] += data[b+1]; c[2] += data[b+2]; n++;}
-
-			// average all non-transparent neighbors
-			if (n)
-			{
-				dest[0] = (byte)(c[0]/n);
-				dest[1] = (byte)(c[1]/n);
-				dest[2] = (byte)(c[2]/n);
-
-				n = c[0] = c[1] = c[2] = 0;
-			}
-		}
-	}
-}
+//void GL_AlphaEdgeFix (byte *data, int width, int height)
+//{
+//	int i,j,n=0,b,c[3]={0,0,0},lastrow,thisrow,nextrow,lastpix,thispix,nextpix;
+//	byte *dest = data;
+//
+//	for (i=0; i<height; i++)
+//	{
+//		lastrow = width * 4 * ((i == 0) ? height-1 : i-1);
+//		thisrow = width * 4 * i;
+//		nextrow = width * 4 * ((i == height-1) ? 0 : i+1);
+//
+//		for (j=0; j<width; j++, dest+=4)
+//		{
+//			if (dest[3]) // not transparent
+//				continue;
+//
+//			lastpix = 4 * ((j == 0) ? width-1 : j-1);
+//			thispix = 4 * j;
+//			nextpix = 4 * ((j == width-1) ? 0 : j+1);
+//
+//			b = lastrow + lastpix; if (data[b+3]) {c[0] += data[b]; c[1] += data[b+1]; c[2] += data[b+2]; n++;}
+//			b = thisrow + lastpix; if (data[b+3]) {c[0] += data[b]; c[1] += data[b+1]; c[2] += data[b+2]; n++;}
+//			b = nextrow + lastpix; if (data[b+3]) {c[0] += data[b]; c[1] += data[b+1]; c[2] += data[b+2]; n++;}
+//			b = lastrow + thispix; if (data[b+3]) {c[0] += data[b]; c[1] += data[b+1]; c[2] += data[b+2]; n++;}
+//			b = nextrow + thispix; if (data[b+3]) {c[0] += data[b]; c[1] += data[b+1]; c[2] += data[b+2]; n++;}
+//			b = lastrow + nextpix; if (data[b+3]) {c[0] += data[b]; c[1] += data[b+1]; c[2] += data[b+2]; n++;}
+//			b = thisrow + nextpix; if (data[b+3]) {c[0] += data[b]; c[1] += data[b+1]; c[2] += data[b+2]; n++;}
+//			b = nextrow + nextpix; if (data[b+3]) {c[0] += data[b]; c[1] += data[b+1]; c[2] += data[b+2]; n++;}
+//
+//			// average all non-transparent neighbors
+//			if (n)
+//			{
+//				dest[0] = (byte)(c[0]/n);
+//				dest[1] = (byte)(c[1]/n);
+//				dest[2] = (byte)(c[2]/n);
+//
+//				n = c[0] = c[1] = c[2] = 0;
+//			}
+//		}
+//	}
+//}
 
 /*
 ================
 GL_ScaleSize
 ================
 */
-int GL_ScaleSize (int oldsize, qboolean force)
-{
-	int newsize, nextsize;
-
-	if (force)
-		nextsize = oldsize;
-	else
-		nextsize = 3 * oldsize / 2; // Avoid unfortunate resampling
-
-	for (newsize = 1; newsize < nextsize && newsize != oldsize; newsize <<= 1)
-		;
-
-	return newsize;
-}
+//int GL_ScaleSize (int oldsize, qboolean force)
+//{
+//	int newsize, nextsize;
+//
+//	if (force)
+//		nextsize = oldsize;
+//	else
+//		nextsize = 3 * oldsize / 2; // Avoid unfortunate resampling
+//
+//	for (newsize = 1; newsize < nextsize && newsize != oldsize; newsize <<= 1)
+//		;
+//
+//	return newsize;
+//}
 
 /*
 ===============
