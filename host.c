@@ -58,7 +58,7 @@ byte        *host_colormap = NULL;  // set to null
 cvar_t	host_framerate = {"host_framerate","0", CVAR_NONE};	// set for slow motion
 cvar_t	host_timescale = {"host_timescale","0", CVAR_NONE};	// more sensitivity slow motion
 cvar_t	host_speeds = {"host_speeds","0", CVAR_NONE};			// set for running times
-cvar_t	host_maxfps = {"host_maxfps", "72", CVAR_NONE};
+cvar_t	host_maxfps = {"host_maxfps", "72", CVAR_NONE};		// max fps cvar
 
 cvar_t	sys_ticrate = {"sys_ticrate","0.05", CVAR_NONE};
 cvar_t	sys_throttle = {"sys_throttle","0.02", CVAR_ARCHIVE};
@@ -82,6 +82,17 @@ cvar_t	pausable = {"pausable","1", CVAR_NONE};
 cvar_t	temp1 = {"temp1","0", CVAR_NONE};
 
 cvar_t	cutscene = {"cutscene", "1", CVAR_NONE}; // Nehahra
+
+/*
+================
+Host_MaxFPS -- ericw
+================
+*/
+void Host_MaxFPS (void)
+{
+	if (host_maxfps.value > 72)
+		Con_Warning ("host_maxfps above 72 breaks physics.\n");
+}
 
 /*
 ================
@@ -247,7 +258,7 @@ void Host_InitLocal (void)
 	Cvar_RegisterVariable (&host_framerate);
 	Cvar_RegisterVariable (&host_timescale);
 	Cvar_RegisterVariable (&host_speeds);
-	Cvar_RegisterVariable (&host_maxfps);
+	Cvar_RegisterVariableCallback (&host_maxfps, Host_MaxFPS);
 
 	Cvar_RegisterVariable (&sys_ticrate);
 	Cvar_RegisterVariable (&sys_throttle);
@@ -561,6 +572,7 @@ qboolean Host_FilterTime (double time)
 
 	realtime += time;
 
+	//johnfitz -- max fps cvar
 	maxfps = CLAMP (1.0, host_maxfps.value, 1000.0);
 
 	if (!cls.timedemo && realtime - oldrealtime < 1.0 / maxfps)
