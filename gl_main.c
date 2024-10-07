@@ -688,6 +688,8 @@ void R_DrawAliasModel (entity_t *e)
 		GL_DrawAliasFrame (paliashdr, lerpdata); // FX
 		glDisable (GL_BLEND);
 		GL_DisableMultitexture (); // selects TEXTURE0
+		
+		glTexEnvf (GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, 1.0f);
 		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 	}
 	else if (gl_texture_env_combine) // case 2: overbright in one pass, then fullbright pass
@@ -699,7 +701,9 @@ void R_DrawAliasModel (entity_t *e)
 		glTexEnvf (GL_TEXTURE_ENV, GL_SOURCE0_RGB_EXT, GL_TEXTURE);
 		glTexEnvf (GL_TEXTURE_ENV, GL_SOURCE1_RGB_EXT, GL_PRIMARY_COLOR_EXT);
 		glTexEnvf (GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, d_overbrightscale);
+		
 		GL_DrawAliasFrame (paliashdr, lerpdata); // FX
+		
 		glTexEnvf (GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, 1.0f);
 		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 

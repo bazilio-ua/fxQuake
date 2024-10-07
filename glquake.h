@@ -119,6 +119,9 @@ void (GLAPIENTRY *qglClientActiveTexture) (GLenum);
 #define GL_PREVIOUS_EXT					0x8578
 #define GL_SOURCE0_RGB_EXT				0x8580
 #define GL_SOURCE1_RGB_EXT				0x8581
+
+#define GL_SOURCE2_RGB_EXT				0x8582
+
 #define GL_SOURCE0_ALPHA_EXT			0x8588
 #define GL_SOURCE1_ALPHA_EXT			0x8589
 
