@@ -65,8 +65,6 @@ int		gl_filter_mag = GL_LINEAR;
 float	gl_hardware_max_anisotropy = 1; // just in case
 float 	gl_texture_anisotropy = 1;
 
-qboolean gl_texture_NPOT = false; //ericw
-
 GLint		gl_hardware_max_size = 1024; // just in case
 //int		gl_texture_max_size = 1024;
 
@@ -95,9 +93,13 @@ const char *gl_extensions;
 
 qboolean fullsbardraw = false;
 qboolean isIntel = false; // intel video workaround
+
 qboolean gl_mtexable = false;
 qboolean gl_texture_env_combine = false;
 qboolean gl_texture_env_add = false;
+qboolean gl_texture_NPOT = false; //ericw
+qboolean gl_texture_compression = false; // EER1
+
 qboolean gl_swap_control = false;
 int gl_stencilbits;
 
@@ -317,6 +319,70 @@ void GL_CheckExtension_NPoT (void)
 	}
 }
 
+void GL_CheckExtension_TextureCompression (void)
+{
+	qboolean ARBcompression, EXTcompression;
+	
+	//
+	// Texture add environment mode
+	//
+	ARBcompression = strstr (gl_extensions, "GL_ARB_texture_compression") != NULL;
+	EXTcompression = strstr (gl_extensions, "GL_EXT_texture_compression_s3tc") != NULL;
+	
+	if (COM_CheckParm("-nocompression"))
+	{
+		Con_Warning ("Texture compression disabled at command line\n");
+	}
+	else if (ARBcompression || EXTcompression)
+	{
+		qglCompressedTexImage2D = (void *) qglGetProcAddress ("glCompressedTexImage2D");
+		
+		if (!qglCompressedTexImage2D)
+		{
+			Con_Warning ("Texture compression not supported (qglGetProcAddress failed)\n");
+		}
+		else
+		{
+			if (ARBcompression)
+			{
+				// query for the available compression formats
+				GLint num = 0;
+				glGetIntegerv(GL_NUM_COMPRESSED_TEXTURE_FORMATS, &num);
+				if (num)
+				{
+					GLint formats[num];
+					glGetIntegerv(GL_COMPRESSED_TEXTURE_FORMATS, formats);
+					
+					qboolean DXT1ext = false;
+					qboolean DXT5ext = false;
+					for (int i = 0; i < num; i++)
+					{
+						if (formats[i] == GL_COMPRESSED_RGB_S3TC_DXT1_EXT)
+							DXT1ext = true;
+						if (formats[i] == GL_COMPRESSED_RGBA_S3TC_DXT5_EXT)
+							DXT5ext = true;
+					}
+					
+					if (DXT1ext && DXT5ext)
+						gl_texture_compression = true;
+				}
+			}
+			
+			if (EXTcompression)
+				gl_texture_compression = true;
+			
+			if (gl_texture_compression)
+				Con_Printf ("Found GL_%s_texture_compression%s\n", ARBcompression ? "ARB" : "EXT", ARBcompression ? "" : "_s3tc");
+			else
+				Con_Warning ("Texture compression not supported (compression formats unavailable)\n");
+		}
+	}
+	else
+	{
+		Con_Warning ("Texture compression not supported (extension not found)\n");
+	}
+}
+
 void GL_CheckExtension_Anisotropy (void)
 {
 	qboolean anisotropy;
@@ -455,6 +521,7 @@ void GL_CheckExtensions (void)
 //	GL_CheckExtension_Anisotropy ();
 	
 	GL_CheckExtension_NPoT ();
+	GL_CheckExtension_TextureCompression ();
 	GL_CheckExtension_Anisotropy ();
 	GL_CheckExtension_VSync ();
 	

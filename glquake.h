@@ -138,6 +138,7 @@ extern qboolean isIntel; // intel video workaround
 extern qboolean gl_mtexable;
 extern qboolean gl_texture_env_combine;
 extern qboolean gl_texture_env_add;
+extern qboolean gl_texture_compression;
 extern int		gl_stencilbits;
 
 extern GLint gl_hardware_max_size;
@@ -162,6 +163,10 @@ GLint (GLAPIENTRY *qglSwapInterval)(GLint interval);
 
 extern float gl_hardware_max_anisotropy;
 extern float gl_texture_anisotropy;
+
+// Texture compression
+qboolean gl_texture_compression_enabled;
+void (GLAPIENTRY *qglCompressedTexImage2D) (GLenum target, GLint level, GLenum internalformat, GLsizei width, GLsizei height, GLint border, GLsizei imageSize, const void *data);
 
 //====================================================
 

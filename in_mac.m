@@ -93,7 +93,7 @@ void IN_ActivateMouse (void)
             center.y = -windowFrame.origin.y + screenFrame.size.height - contentFrame.size.height / 2 + screenFrame.origin.y;
         }
         // move the mouse to the window center again                  
-        CGWarpMouseCursorPosition(center);
+//        CGWarpMouseCursorPosition(center); // TODO: 
         
 		mouse_active = true;
 	}
