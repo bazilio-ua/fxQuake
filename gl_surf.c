@@ -1321,9 +1321,9 @@ void R_DrawTextureChains_Multitexture (model_t *model, entity_t *ent, texchain_t
                 if (t->texturechains[chain]->flags & SURF_DRAWFENCE)
                     glEnable (GL_ALPHA_TEST); // Flip alpha test back on
                 
-                GL_EnableMultitexture(); // selects TEXTURE1
                 bound = true;
             }
+			GL_EnableMultitexture(); // selects TEXTURE1
             TexMgr_BindTexture (lightmap_textures[s->lightmaptexture]);
 			
 			if ((glt = R_TextureAnimation(t, ent != NULL ? ent->frame : 0)->fullbright))
