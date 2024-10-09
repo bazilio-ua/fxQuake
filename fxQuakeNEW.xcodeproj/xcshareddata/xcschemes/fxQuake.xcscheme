@@ -100,6 +100,10 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
+            argument = "-nocompression"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
             argument = "-width 1920 -height 1200"
             isEnabled = "NO">
          </CommandLineArgument>
