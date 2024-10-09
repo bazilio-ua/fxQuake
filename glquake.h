@@ -499,6 +499,7 @@ extern	cvar_t	gl_cull;
 extern	cvar_t	gl_farclip;
 extern	cvar_t	gl_smoothmodels;
 extern	cvar_t	gl_affinemodels;
+extern	cvar_t	gl_gammablend;
 extern	cvar_t	gl_polyblend;
 extern	cvar_t	gl_flashblend;
 extern	cvar_t	gl_flashblendview;

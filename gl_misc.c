@@ -234,6 +234,7 @@ void R_Init (void)
 	Cvar_RegisterVariable (&gl_farclip);
 	Cvar_RegisterVariable (&gl_smoothmodels);
 	Cvar_RegisterVariable (&gl_affinemodels);
+	Cvar_RegisterVariable (&gl_gammablend);
 	Cvar_RegisterVariable (&gl_polyblend);
 	Cvar_RegisterVariable (&gl_flashblend);
 	Cvar_RegisterVariable (&gl_flashblendview);
