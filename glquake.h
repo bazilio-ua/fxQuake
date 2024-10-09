@@ -165,7 +165,7 @@ extern float gl_hardware_max_anisotropy;
 extern float gl_texture_anisotropy;
 
 // Texture compression
-qboolean gl_texture_compression_enabled;
+qboolean gl_texture_compression;
 void (GLAPIENTRY *qglCompressedTexImage2D) (GLenum target, GLint level, GLenum internalformat, GLsizei width, GLsizei height, GLint border, GLsizei imageSize, const void *data);
 
 //====================================================

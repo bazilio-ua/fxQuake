@@ -180,6 +180,7 @@
 		42F16D181E01DC28001659BD /* vid_cgl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = vid_cgl.m; sourceTree = SOURCE_ROOT; };
 		42F16D1F1E01E299001659BD /* unixquake.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = unixquake.h; sourceTree = SOURCE_ROOT; };
 		42F47EA81EB72ECA00713636 /* qinterfaces.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = qinterfaces.h; sourceTree = SOURCE_ROOT; };
+		9FD9D8E42CB69469005BC403 /* stb_dxt.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = stb_dxt.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -245,6 +246,7 @@
 		42A8359D1DFF2DA800DAF7F7 /* QuakeSrc */ = {
 			isa = PBXGroup;
 			children = (
+				9FD9D8E42CB69469005BC403 /* stb_dxt.h */,
 				4273FAB01DFF2EDA005DC9A7 /* anorm_dots.h */,
 				4273FAB11DFF2EDA005DC9A7 /* anorms.h */,
 				4273FAB21DFF2EDA005DC9A7 /* bspfile.h */,

@@ -100,23 +100,7 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-width 1920"
-            isEnabled = "NO">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "-width 3456"
-            isEnabled = "NO">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "-height 2234"
-            isEnabled = "NO">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "-height 2160"
-            isEnabled = "NO">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "-height 1200"
+            argument = "-width 1920 -height 1200"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
@@ -165,14 +149,6 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-dedicated"
-            isEnabled = "NO">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "-width 840"
-            isEnabled = "NO">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "-height 524"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
