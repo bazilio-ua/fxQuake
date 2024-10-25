@@ -53,6 +53,10 @@
       <CommandLineArguments>
          <CommandLineArgument
             argument = "-basedir /Users/vnikitiuk/Quake"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-basedir /Users/bazilio/Quake"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
@@ -121,7 +125,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "+sv_protocol 999"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-protocol 999"
