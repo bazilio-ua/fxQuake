@@ -89,6 +89,7 @@ cvar_t	gl_cull = {"gl_cull","1", CVAR_NONE};
 cvar_t	gl_farclip = {"gl_farclip","16384", CVAR_ARCHIVE};
 cvar_t	gl_smoothmodels = {"gl_smoothmodels","1", CVAR_NONE};
 cvar_t	gl_affinemodels = {"gl_affinemodels","0", CVAR_NONE};
+cvar_t	gl_gammablend = {"gl_gammablend","1", CVAR_ARCHIVE};
 cvar_t	gl_polyblend = {"gl_polyblend","1", CVAR_ARCHIVE};
 cvar_t	gl_flashblend = {"gl_flashblend","1", CVAR_ARCHIVE};
 cvar_t	gl_flashblendview = {"gl_flashblendview","1", CVAR_ARCHIVE};
@@ -874,40 +875,70 @@ R_PolyBlend
 */
 void R_PolyBlend (void)
 {
-	if (!gl_polyblend.value)
-		return;
-
-	if (!v_blend[3])
-		return;
-
-	GL_DisableMultitexture (); // selects TEXTURE0
-
-//	glDisable (GL_ALPHA_TEST); //FX don't disable perform alpha test here, because bloom later
-	glDisable (GL_TEXTURE_2D);
-	glDisable (GL_DEPTH_TEST);
-	glEnable (GL_BLEND);
-
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity ();
-
-	glOrtho (0, 1, 1, 0, -99999, 99999);
-
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity ();
-
-	glColor4fv (v_blend);
-
-	glBegin (GL_QUADS);
-	glVertex2f (0, 0);
-	glVertex2f (1, 0);
-	glVertex2f (1, 1);
-	glVertex2f (0, 1);
-	glEnd ();
-
-	glDisable (GL_BLEND);
-	glEnable (GL_DEPTH_TEST);
-	glEnable (GL_TEXTURE_2D);
-//	glEnable (GL_ALPHA_TEST); //FX
+	float gamma = CLAMP(0.0, gl_gammablend.value, 1.0);
+	
+//	if (!gl_polyblend.value)
+//		return;
+//
+//	if (!v_blend[3])
+//		return;
+	
+	if ((gl_polyblend.value && v_blend[3]) || gamma < 1.0)
+	{
+		GL_DisableMultitexture (); // selects TEXTURE0
+		
+//		glDisable (GL_ALPHA_TEST); //FX don't disable perform alpha test here, because bloom later
+		glDisable (GL_TEXTURE_2D);
+		glDisable (GL_DEPTH_TEST);
+		glEnable (GL_BLEND);
+		
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity ();
+		
+		glOrtho (0, 1, 1, 0, -99999, 99999);
+		
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity ();
+		
+		if (gl_polyblend.value && v_blend[3]) {
+			glColor4fv (v_blend);
+			
+			glBegin (GL_QUADS);
+			glVertex2f (0, 0);
+			glVertex2f (1, 0);
+			glVertex2f (1, 1);
+			glVertex2f (0, 1);
+			glEnd ();
+		}
+		
+		if (gamma < 1.0) {
+			glBlendFunc(GL_DST_COLOR, GL_ONE_MINUS_SRC_ALPHA);
+			glColor4f(1, 1, 1, gamma);
+			
+			glBegin (GL_QUADS);
+			glVertex2f (0, 0);
+			glVertex2f (1, 0);
+			glVertex2f (1, 1);
+			glVertex2f (0, 1);
+			glEnd ();
+			
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		}
+		
+//		glColor4fv (v_blend);
+//		
+//		glBegin (GL_QUADS);
+//		glVertex2f (0, 0);
+//		glVertex2f (1, 0);
+//		glVertex2f (1, 1);
+//		glVertex2f (0, 1);
+//		glEnd ();
+		
+		glDisable (GL_BLEND);
+		glEnable (GL_DEPTH_TEST);
+		glEnable (GL_TEXTURE_2D);
+//		glEnable (GL_ALPHA_TEST); //FX
+	}
 }
 
 
