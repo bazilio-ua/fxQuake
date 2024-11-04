@@ -2360,6 +2360,28 @@ GL_CompressMip(unsigned *in, int inwidth, int inheight, GLint format, byte *dst)
 	}
 }
 
+static int
+GL_GetMaxMipLevel(int width, int height, GLint format)
+{
+	int blocksize = 1;
+	switch (format) {
+		case GL_COMPRESSED_RGB_S3TC_DXT1_EXT:
+		case GL_COMPRESSED_RGBA_S3TC_DXT1_EXT:
+		case GL_COMPRESSED_RGBA_S3TC_DXT3_EXT:
+		case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT:
+			blocksize = 4;
+	}
+
+	int max_level = 0;
+	while (width > blocksize || height > blocksize) {
+		max_level++;
+	width  = width  > 1 ? width  >> 1 : 1;
+	height = height > 1 ? height >> 1 : 1;
+	}
+
+	return max_level;
+}
+
 
 /*
 ===============
@@ -2458,6 +2480,7 @@ void TexMgr_Upload32 (gltexture_t *glt, unsigned *data)
     unsigned	*scaled = NULL;
 	byte *compressed = NULL;
 	int mip_memory_size;
+	int max_miplevel;
 	
     if (!gl_texture_NPOT) {
         // resample up
@@ -2489,10 +2512,8 @@ void TexMgr_Upload32 (gltexture_t *glt, unsigned *data)
 	// upload
 	TexMgr_BindTexture (glt);
 	
-	
-	if (!gl_texture_compression) {
-		internalformat = (glt->flags & TEXPREF_ALPHA) ? GL_RGBA : GL_RGB;
-	} else {
+	internalformat = (glt->flags & TEXPREF_ALPHA) ? GL_RGBA : GL_RGB;
+	if (gl_texture_compression && !(glt->flags & TEXPREF_NOPICMIP)) {
 		internalformat = (glt->flags & TEXPREF_ALPHA) ? GL_COMPRESSED_RGBA_S3TC_DXT5_EXT : GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
 		mip_memory_size = GL_GetMipMemorySize(glt->width, glt->height, internalformat);
 		switch (internalformat) {
@@ -2502,7 +2523,6 @@ void TexMgr_Upload32 (gltexture_t *glt, unsigned *data)
 				break;
 		}
 	}
-	
 	
 	if (compressed) {
 		GL_CompressMip(scaled, glt->width, glt->height, internalformat, compressed);
@@ -2516,31 +2536,36 @@ void TexMgr_Upload32 (gltexture_t *glt, unsigned *data)
 	{
 		mipwidth = glt->width;
 		mipheight = glt->height;
-        
-		for (miplevel=1; mipwidth > 1 || mipheight > 1; miplevel++)
+		
+		max_miplevel = GL_GetMaxMipLevel(mipwidth, mipheight, internalformat);
+		miplevel = 1;
+		
+		while (miplevel <= max_miplevel)
 		{
 			if (mipwidth > 1)
 			{
 				TexMgr_MipMapW (scaled, mipwidth, mipheight);
 				mipwidth >>= 1;
+				if (glt->flags & TEXPREF_ALPHA)
+					TexMgr_AlphaEdgeFix ((byte *)scaled, mipwidth, mipheight);
 			}
 			if (mipheight > 1)
 			{
 				TexMgr_MipMapH (scaled, mipwidth, mipheight);
 				mipheight >>= 1;
+				if (glt->flags & TEXPREF_ALPHA)
+					TexMgr_AlphaEdgeFix ((byte *)scaled, mipwidth, mipheight);
 			}
 			
-			
 			if (compressed) {
-				int mip_memory_size = GL_GetMipMemorySize(mipwidth, mipheight, internalformat);
+				mip_memory_size = GL_GetMipMemorySize(mipwidth, mipheight, internalformat);
 				GL_CompressMip(scaled, mipwidth, mipheight, internalformat, compressed);
 				qglCompressedTexImage2D(GL_TEXTURE_2D, miplevel, internalformat, mipwidth, mipheight, 0, mip_memory_size, compressed);
-
 			} else {
 				glTexImage2D (GL_TEXTURE_2D, miplevel, internalformat, mipwidth, mipheight, 0, GL_RGBA, GL_UNSIGNED_BYTE, scaled);
 			}
 			
-			
+			miplevel++;
 		}
 	}
     

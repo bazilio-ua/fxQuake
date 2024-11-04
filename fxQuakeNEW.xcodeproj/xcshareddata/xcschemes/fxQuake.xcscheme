@@ -53,6 +53,10 @@
       <CommandLineArguments>
          <CommandLineArgument
             argument = "-basedir /Users/vnikitiuk/Quake"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-basedir /Users/bazilio/Quake"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
@@ -101,7 +105,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-nocompression"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-width 1920 -height 1200"
