@@ -211,6 +211,8 @@ typedef struct gltexture_s {
 	
 	signed char			top_color;					// 0-13 top color, or -1 if never colormapped
 	signed char			bottom_color;				// 0-13 bottom color, or -1 if never colormapped
+	
+	float				flatcolor[3];
 } gltexture_t;
 
 typedef struct
@@ -492,6 +494,7 @@ extern	cvar_t	r_skyquality;
 extern	cvar_t	r_skyalpha;
 extern	cvar_t	r_skyfog;
 extern	cvar_t	r_oldsky;
+extern	cvar_t	r_flatcolor;
 
 extern	cvar_t	gl_finish;
 extern	cvar_t	gl_clear;

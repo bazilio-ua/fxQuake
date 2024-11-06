@@ -1209,7 +1209,11 @@ void R_DrawTextureChains_Water (model_t *model, entity_t *ent, texchain_t chain)
 	msurface_t	*s;
 	texture_t	*t;
 	qboolean	bound;
+	qboolean	flatcolor = r_flatcolor.value;
     
+	if (flatcolor)
+		glDisable (GL_TEXTURE_2D);
+
     for (i=0 ; i<model->numtextures ; i++)
     {
         t = model->textures[i];
@@ -1222,6 +1226,9 @@ void R_DrawTextureChains_Water (model_t *model, entity_t *ent, texchain_t chain)
         {
             if (!bound) //only bind once we are sure we need this texture
             {
+				if (flatcolor)
+					glColor3fv (t->gltexture->flatcolor);
+				else
                 TexMgr_BindTexture (t->warpimage);
                 bound = true;
             }
@@ -1229,6 +1236,12 @@ void R_DrawTextureChains_Water (model_t *model, entity_t *ent, texchain_t chain)
             rs_c_brush_passes++;
         }
     }
+	
+	if (flatcolor) {
+		glColor3f (1, 1, 1);
+		glEnable (GL_TEXTURE_2D);
+	}
+	
 }
 
 /*
@@ -1278,7 +1291,11 @@ void R_DrawTextureChains_Multitexture (model_t *model, entity_t *ent, texchain_t
 	texture_t	*t;
 	float		*v;
 	qboolean	bound;
+	qboolean	flatcolor = r_flatcolor.value;
     
+	if (flatcolor)
+		glDisable (GL_TEXTURE_2D);
+	
 	for (i=0 ; i<model->numtextures ; i++)
 	{
 		t = model->textures[i];
@@ -1292,6 +1309,9 @@ void R_DrawTextureChains_Multitexture (model_t *model, entity_t *ent, texchain_t
         {
             if (!bound) //only bind once we are sure we need this texture
             {
+				if (flatcolor)
+					glColor3fv (t->gltexture->flatcolor);
+				else
                 TexMgr_BindTexture ((R_TextureAnimation(t, ent != NULL ? ent->frame : 0))->gltexture);
                 
                 if (t->texturechains[chain]->flags & SURF_DRAWFENCE)
@@ -1317,6 +1337,12 @@ void R_DrawTextureChains_Multitexture (model_t *model, entity_t *ent, texchain_t
 		if (bound && t->texturechains[chain]->flags & SURF_DRAWFENCE)
 			glDisable (GL_ALPHA_TEST); // Flip alpha test back off
 	}
+	
+	if (flatcolor) {
+		glColor3f (1, 1, 1);
+		glEnable (GL_TEXTURE_2D);
+	}
+
 }
 
 /*

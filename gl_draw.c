@@ -27,6 +27,7 @@ cvar_t		gl_picmip = {"gl_picmip", "0", CVAR_NONE};
 //cvar_t		gl_texquality = {"gl_texquality", "1", CVAR_NONE};
 cvar_t		gl_swapinterval = {"gl_swapinterval", "1", CVAR_ARCHIVE};
 cvar_t		gl_warp_image_size = {"gl_warp_image_size", "256", CVAR_ARCHIVE}; // was 512, for water warp
+cvar_t		r_flatcolor = {"r_flatcolor", "0", CVAR_NONE};
 
 byte		*draw_chars;				// 8*8 graphic characters
 qpic_t		*draw_disc;
@@ -2496,14 +2497,14 @@ void TexMgr_Upload32 (gltexture_t *glt, unsigned *data)
 	mipheight = TexMgr_SafeTextureSize (glt->height >> picmip);
 	while (glt->width > mipwidth)
 	{
-		TexMgr_MipMapW (scaled, glt->width, glt->height);
+		scaled = TexMgr_MipMapW (scaled, glt->width, glt->height);
 		glt->width >>= 1;
 		if (glt->flags & TEXPREF_ALPHA)
 			TexMgr_AlphaEdgeFix ((byte *)scaled, glt->width, glt->height);
 	}
 	while (glt->height > mipheight)
 	{
-		TexMgr_MipMapH (scaled, glt->width, glt->height);
+		scaled = TexMgr_MipMapH (scaled, glt->width, glt->height);
 		glt->height >>= 1;
 		if (glt->flags & TEXPREF_ALPHA)
 			TexMgr_AlphaEdgeFix ((byte *)scaled, glt->width, glt->height);
@@ -2544,14 +2545,14 @@ void TexMgr_Upload32 (gltexture_t *glt, unsigned *data)
 		{
 			if (mipwidth > 1)
 			{
-				TexMgr_MipMapW (scaled, mipwidth, mipheight);
+				scaled = TexMgr_MipMapW (scaled, mipwidth, mipheight);
 				mipwidth >>= 1;
 				if (glt->flags & TEXPREF_ALPHA)
 					TexMgr_AlphaEdgeFix ((byte *)scaled, mipwidth, mipheight);
 			}
 			if (mipheight > 1)
 			{
-				TexMgr_MipMapH (scaled, mipwidth, mipheight);
+				scaled = TexMgr_MipMapH (scaled, mipwidth, mipheight);
 				mipheight >>= 1;
 				if (glt->flags & TEXPREF_ALPHA)
 					TexMgr_AlphaEdgeFix ((byte *)scaled, mipwidth, mipheight);
@@ -2622,7 +2623,9 @@ void TexMgr_Upload8 (gltexture_t *glt, byte *data)
 	unsigned int	*pal;
 	qboolean padw = false, padh = false;
 	byte padbyte;
-    
+	int			r, g, b, count;
+	unsigned	*rgba;
+	
 	// HACK HACK HACK -- taken from tomazquake
 	if (strstr(glt->name, "shot1sid") && glt->width==32 && glt->height==32 && CRC_Block(data, 1024) == 65393)
 	{
@@ -2638,6 +2641,24 @@ void TexMgr_Upload8 (gltexture_t *glt, byte *data)
 
 	// allocate dynamic memory
 //	trans = Hunk_Alloc (size * sizeof(unsigned)); // 4
+
+	// calculate flat color based on average of all opaque colors
+	r = g = b = count = 0;
+	for (i=0 ; i<size ; i++)
+	{
+		p = data[i];
+		if (p != 0)
+		{
+			rgba = &d_8to24table[p];
+			r += ((byte *)rgba)[0];
+			g += ((byte *)rgba)[1];
+			b += ((byte *)rgba)[2];
+			count++;
+		}
+	}
+	glt->flatcolor[0] = (float)r/(count*255);
+	glt->flatcolor[1] = (float)g/(count*255);
+	glt->flatcolor[2] = (float)b/(count*255);
 
 	// detect false alpha cases
 	if (glt->flags & TEXPREF_ALPHA && !(glt->flags & TEXPREF_CONCHARS))
@@ -2918,6 +2939,7 @@ gltexture_t *TexMgr_LoadTexture (model_t *owner, char *name, int width, int heig
 	glt->source_crc = crc;
 	glt->top_color = -1;
 	glt->bottom_color = -1;
+	memset (glt->flatcolor, 0, sizeof(glt->flatcolor));
 
 	//upload it
 	mark = Hunk_LowMark ();
