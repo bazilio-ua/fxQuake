@@ -1209,7 +1209,7 @@ void R_DrawTextureChains_Water (model_t *model, entity_t *ent, texchain_t chain)
 	msurface_t	*s;
 	texture_t	*t;
 	qboolean	bound;
-	qboolean	flatcolor = r_flatcolor.value;
+	qboolean	flatcolor = r_fastwarp.value;
     
 	if (flatcolor)
 		glDisable (GL_TEXTURE_2D);
@@ -1291,7 +1291,7 @@ void R_DrawTextureChains_Multitexture (model_t *model, entity_t *ent, texchain_t
 	texture_t	*t;
 	float		*v;
 	qboolean	bound;
-	qboolean	flatcolor = r_flatcolor.value;
+	qboolean	flatcolor = r_fastworld.value;
     
 	if (flatcolor)
 		glDisable (GL_TEXTURE_2D);

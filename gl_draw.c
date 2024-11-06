@@ -27,7 +27,6 @@ cvar_t		gl_picmip = {"gl_picmip", "0", CVAR_NONE};
 //cvar_t		gl_texquality = {"gl_texquality", "1", CVAR_NONE};
 cvar_t		gl_swapinterval = {"gl_swapinterval", "1", CVAR_ARCHIVE};
 cvar_t		gl_warp_image_size = {"gl_warp_image_size", "256", CVAR_ARCHIVE}; // was 512, for water warp
-cvar_t		r_flatcolor = {"r_flatcolor", "0", CVAR_NONE};
 
 byte		*draw_chars;				// 8*8 graphic characters
 qpic_t		*draw_disc;

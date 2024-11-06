@@ -227,7 +227,8 @@ void R_Init (void)
 	Cvar_RegisterVariable (&r_skyalpha);
 	Cvar_RegisterVariable (&r_skyfog);
 	Cvar_RegisterVariable (&r_oldsky);
-	Cvar_RegisterVariable (&r_flatcolor);
+	Cvar_RegisterVariable (&r_fastworld);
+	Cvar_RegisterVariable (&r_fastwarp);
 
 	Cvar_RegisterVariable (&gl_finish);
 	Cvar_RegisterVariable (&gl_clear);

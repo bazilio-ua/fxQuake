@@ -494,7 +494,8 @@ extern	cvar_t	r_skyquality;
 extern	cvar_t	r_skyalpha;
 extern	cvar_t	r_skyfog;
 extern	cvar_t	r_oldsky;
-extern	cvar_t	r_flatcolor;
+extern	cvar_t	r_fastworld;
+extern	cvar_t	r_fastwarp;
 
 extern	cvar_t	gl_finish;
 extern	cvar_t	gl_clear;
