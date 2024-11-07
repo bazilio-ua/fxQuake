@@ -634,6 +634,11 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, int frame)
 	//
 	if (s->flags & SURF_DRAWTURB)
 	{
+		qboolean	flatcolor = r_fastwarp.value;
+
+		if (flatcolor)
+			glDisable (GL_TEXTURE_2D);
+
 		if (alpha < 1.0)
 		{
 			glDepthMask(GL_FALSE);
@@ -642,6 +647,12 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, int frame)
 			glColor4f(1, 1, 1, alpha);
 		}
 
+		if (flatcolor) {
+			glColor4f (s->texinfo->texture->gltexture->flatcolor[0],
+					   s->texinfo->texture->gltexture->flatcolor[1],
+					   s->texinfo->texture->gltexture->flatcolor[2], alpha);
+		}
+		else
 		TexMgr_BindTexture (s->texinfo->texture->warpimage);
 
 		if ( !(s->flags & (SURF_DRAWLAVA | SURF_DRAWSLIME)) )
@@ -682,6 +693,11 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, int frame)
 			glColor3f(1, 1, 1);
 		}
 		
+		if (flatcolor) {
+			glColor3f (1, 1, 1);
+			glEnable (GL_TEXTURE_2D);
+		}
+
 		return;
 	}
 
@@ -720,6 +736,11 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, int frame)
 	//
 	if ( !(s->flags & SURF_DRAWTILED) )
 	{
+		qboolean	flatcolor = r_fastworld.value;
+
+		if (flatcolor)
+			glDisable (GL_TEXTURE_2D);
+
 		if (alpha < 1.0)
 		{
 			glDepthMask (GL_FALSE);
@@ -737,7 +758,15 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, int frame)
 		{
 			// Binds world to texture env 0
 			GL_DisableMultitexture (); // selects TEXTURE0
+			
+			if (flatcolor) {
+				glColor4f (t->gltexture->flatcolor[0],
+						   t->gltexture->flatcolor[1],
+						   t->gltexture->flatcolor[2], alpha);
+			}
+			else
 			TexMgr_BindTexture (t->gltexture);
+			
 			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
 			// Binds lightmap to texture env 1
@@ -821,6 +850,11 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, int frame)
 
 		if (s->flags & SURF_DRAWFENCE)
 			glDisable (GL_ALPHA_TEST); // Flip alpha test back off
+
+		if (flatcolor) {
+			glColor3f (1, 1, 1);
+			glEnable (GL_TEXTURE_2D);
+		}
 
 		if (t->fullbright)
 		{
