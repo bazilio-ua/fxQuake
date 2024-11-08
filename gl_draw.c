@@ -2624,6 +2624,7 @@ void TexMgr_Upload8 (gltexture_t *glt, byte *data)
 	byte padbyte;
 	int			r, g, b, count;
 	unsigned	*rgba;
+	int			fr, fg, fb, fcount;
 	
 	// HACK HACK HACK -- taken from tomazquake
 	if (strstr(glt->name, "shot1sid") && glt->width==32 && glt->height==32 && CRC_Block(data, 1024) == 65393)
@@ -2643,22 +2644,41 @@ void TexMgr_Upload8 (gltexture_t *glt, byte *data)
 
 	// calculate flat color based on average of all opaque colors
 	r = g = b = count = 0;
+	fr = fg = fb = fcount = 0;
 	for (i=0 ; i<size ; i++)
 	{
 		p = data[i];
-		if (p != 0)
+		if (p != 0 && p != 255)
 		{
 			rgba = &d_8to24table[p];
-			r += ((byte *)rgba)[0];
-			g += ((byte *)rgba)[1];
-			b += ((byte *)rgba)[2];
-			count++;
+			
+			if (p > 223) // fullbrights
+			{
+				fr += ((byte *)rgba)[0];
+				fg += ((byte *)rgba)[1];
+				fb += ((byte *)rgba)[2];
+				fcount++;
+			}
+			else
+			{
+				r += ((byte *)rgba)[0];
+				g += ((byte *)rgba)[1];
+				b += ((byte *)rgba)[2];
+				count++;
+			}
 		}
 	}
-	glt->flatcolor[0] = (float)r/(count*255);
-	glt->flatcolor[1] = (float)g/(count*255);
-	glt->flatcolor[2] = (float)b/(count*255);
-
+	if (count) {
+		glt->flatcolor[0] = (float)r/(count*255);
+		glt->flatcolor[1] = (float)g/(count*255);
+		glt->flatcolor[2] = (float)b/(count*255);
+	}
+	if (fcount) {
+		glt->fbcolor[0] = (float)fr/(fcount*255);
+		glt->fbcolor[1] = (float)fg/(fcount*255);
+		glt->fbcolor[2] = (float)fb/(fcount*255);
+	}
+	
 	// detect false alpha cases
 	if (glt->flags & TEXPREF_ALPHA && !(glt->flags & TEXPREF_CONCHARS))
 	{
@@ -2939,7 +2959,8 @@ gltexture_t *TexMgr_LoadTexture (model_t *owner, char *name, int width, int heig
 	glt->top_color = -1;
 	glt->bottom_color = -1;
 	memset (glt->flatcolor, 0, sizeof(glt->flatcolor));
-
+	memset (glt->fbcolor, 0, sizeof(glt->fbcolor));
+	
 	//upload it
 	mark = Hunk_LowMark ();
 

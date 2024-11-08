@@ -213,6 +213,7 @@ typedef struct gltexture_s {
 	signed char			bottom_color;				// 0-13 bottom color, or -1 if never colormapped
 	
 	float				flatcolor[3];
+	float				fbcolor[3];
 } gltexture_t;
 
 typedef struct
