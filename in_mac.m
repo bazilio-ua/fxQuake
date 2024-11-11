@@ -26,6 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 qboolean mouse_available;		// Mouse available for use
 
 qboolean mouse_active;
+qboolean do_warp;
 
 float mouse_x=0, mouse_y=0;
 static float old_mouse_x, old_mouse_y;
@@ -93,8 +94,9 @@ void IN_ActivateMouse (void)
             center.y = -windowFrame.origin.y + screenFrame.size.height - contentFrame.size.height / 2 + screenFrame.origin.y;
         }
         // move the mouse to the window center again                  
-//        CGWarpMouseCursorPosition(center); // TODO: 
-        
+        CGWarpMouseCursorPosition(center);
+		do_warp = true;
+		
 		mouse_active = true;
 	}
 }
@@ -284,7 +286,9 @@ void IN_ProcessEvents (void)
         case NSLeftMouseDragged:
         case NSRightMouseDragged:
         case NSOtherMouseDragged: // other mouse dragged
-            if (mouse_active) 
+			if (do_warp)
+				do_warp = false;
+            else if (mouse_active)
             {
                 mouse_x = [event deltaX];
                 mouse_y = [event deltaY];
