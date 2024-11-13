@@ -27,6 +27,7 @@ cvar_t		gl_picmip = {"gl_picmip", "0", CVAR_NONE};
 //cvar_t		gl_texquality = {"gl_texquality", "1", CVAR_NONE};
 cvar_t		gl_swapinterval = {"gl_swapinterval", "1", CVAR_ARCHIVE};
 cvar_t		gl_warp_image_size = {"gl_warp_image_size", "256", CVAR_ARCHIVE}; // was 512, for water warp
+cvar_t		gl_compression = {"gl_compression", "1", CVAR_ARCHIVE};
 
 byte		*draw_chars;				// 8*8 graphic characters
 qpic_t		*draw_disc;
@@ -1198,6 +1199,7 @@ void Draw_Init (void)
 	Cvar_RegisterVariableCallback (&gl_picmip, TexMgr_ReloadTextures);
 //	Cvar_RegisterVariable (&gl_texquality); // TODO: unused?
 	Cvar_RegisterVariableCallback (&gl_warp_image_size, TexMgr_UploadWarpImage);
+	Cvar_RegisterVariableCallback (&gl_compression, TexMgr_ReloadTextures);
 
 	Cmd_AddCommand ("gl_texturemode", &GL_TextureMode_f);
 	Cmd_AddCommand ("gl_texture_anisotropy", &GL_Texture_Anisotropy_f);
@@ -1823,7 +1825,7 @@ unsigned *TexMgr_MipMapH (unsigned *data, int width, int height)
 TexMgr_ResampleTexture -- bilinear resample
 ================
 */
-unsigned *TexMgr_ResampleTexture (unsigned *in, int inwidth, int inheight, qboolean alpha)
+unsigned *TexMgr_ResampleTexture (char *name, unsigned *in, int inwidth, int inheight, qboolean alpha)
 {
 	byte *nwpx, *nepx, *swpx, *sepx, *dest;
 	unsigned xfrac, yfrac, x, y, modx, mody, imodx, imody, injump, outjump;
@@ -1837,6 +1839,9 @@ unsigned *TexMgr_ResampleTexture (unsigned *in, int inwidth, int inheight, qbool
 	outheight = TexMgr_Pad(inheight);
 	out = Hunk_Alloc(outwidth*outheight*4);
     
+	if (developer.value > 1)
+		Con_DPrintf ("TexMgr_ResampleTexture: in:%dx%d, out:%dx%d, '%s'\n", inwidth, inheight, outwidth, outheight, name);
+	
 	xfrac = ((inwidth-1) << 16) / (outwidth-1);
 	yfrac = ((inheight-1) << 16) / (outheight-1);
 	y = outjump = 0;
@@ -2484,7 +2489,7 @@ void TexMgr_Upload32 (gltexture_t *glt, unsigned *data)
 	
     if (!gl_texture_NPOT) {
         // resample up
-        scaled = TexMgr_ResampleTexture (data, glt->width, glt->height, glt->flags & TEXPREF_ALPHA);
+        scaled = TexMgr_ResampleTexture (glt->name, data, glt->width, glt->height, glt->flags & TEXPREF_ALPHA);
         glt->width = TexMgr_Pad(glt->width);
         glt->height = TexMgr_Pad(glt->height);
     } else
@@ -2513,7 +2518,7 @@ void TexMgr_Upload32 (gltexture_t *glt, unsigned *data)
 	TexMgr_BindTexture (glt);
 	
 	internalformat = (glt->flags & TEXPREF_ALPHA) ? GL_RGBA : GL_RGB;
-	if (gl_texture_compression && !(glt->flags & TEXPREF_NOPICMIP)) {
+	if (gl_texture_compression && gl_compression.value && !(glt->flags & TEXPREF_NOPICMIP)) {
 		internalformat = (glt->flags & TEXPREF_ALPHA) ? GL_COMPRESSED_RGBA_S3TC_DXT5_EXT : GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
 		mip_memory_size = GL_GetMipMemorySize(glt->width, glt->height, internalformat);
 		switch (internalformat) {
