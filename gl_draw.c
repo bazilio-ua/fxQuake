@@ -2033,7 +2033,7 @@ unsigned *TexMgr_8to32 (byte *in, int pixels, unsigned int *usepal)
 TexMgr_PadImageW -- return image with width padded up to power-of-two dimentions
 ================
 */
-byte *TexMgr_PadImageW (byte *in, int width, int height, byte padbyte)
+byte *TexMgr_PadImageW (char *name, byte *in, int width, int height, byte padbyte)
 {
 	int i, j, outwidth;
 	byte *out, *data;
@@ -2045,6 +2045,9 @@ byte *TexMgr_PadImageW (byte *in, int width, int height, byte padbyte)
     
 	out = data = Hunk_Alloc(outwidth*height);
     
+	if (developer.value > 1)
+		Con_DPrintf ("TexMgr_PadImageW: in:%d, out:%d, '%s'\n", width, outwidth, name);
+	
 	for (i=0; i<height; i++)
 	{
 		for (j=0; j<width; j++)
@@ -2061,7 +2064,7 @@ byte *TexMgr_PadImageW (byte *in, int width, int height, byte padbyte)
 TexMgr_PadImageH -- return image with height padded up to power-of-two dimentions
 ================
 */
-byte *TexMgr_PadImageH (byte *in, int width, int height, byte padbyte)
+byte *TexMgr_PadImageH (char *name, byte *in, int width, int height, byte padbyte)
 {
 	int i, srcpix, dstpix;
 	byte *data, *out;
@@ -2074,6 +2077,9 @@ byte *TexMgr_PadImageH (byte *in, int width, int height, byte padbyte)
     
 	out = data = Hunk_Alloc(dstpix);
     
+	if (developer.value > 1)
+		Con_DPrintf ("TexMgr_PadImageH: in:%d, out:%d, '%s'\n", height, dstpix/width, name);
+	
 	for (i=0; i<srcpix; i++)
 		*out++ = *in++;
 	for (   ; i<dstpix; i++)
@@ -2690,13 +2696,13 @@ void TexMgr_Upload8 (gltexture_t *glt, byte *data)
 	{
 		if ((int) glt->width < TexMgr_SafeTextureSize(glt->width))
 		{
-			data = TexMgr_PadImageW (data, glt->width, glt->height, padbyte);
+			data = TexMgr_PadImageW (glt->name, data, glt->width, glt->height, padbyte);
 			glt->width = TexMgr_Pad(glt->width);
 			padw = true;
 		}
 		if ((int) glt->height < TexMgr_SafeTextureSize(glt->height))
 		{
-			data = TexMgr_PadImageH (data, glt->width, glt->height, padbyte);
+			data = TexMgr_PadImageH (glt->name, data, glt->width, glt->height, padbyte);
 			glt->height = TexMgr_Pad(glt->height);
 			padh = true;
 		}
