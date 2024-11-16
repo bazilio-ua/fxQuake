@@ -2501,14 +2501,14 @@ void TexMgr_Upload32 (gltexture_t *glt, unsigned *data)
 	mipheight = TexMgr_SafeTextureSize (glt->height >> picmip);
 	while (glt->width > mipwidth)
 	{
-		TexMgr_MipMapW (scaled, glt->width, glt->height);
+		scaled = TexMgr_MipMapW (scaled, glt->width, glt->height);
 		glt->width >>= 1;
 		if (glt->flags & TEXPREF_ALPHA)
 			TexMgr_AlphaEdgeFix ((byte *)scaled, glt->width, glt->height);
 	}
 	while (glt->height > mipheight)
 	{
-		TexMgr_MipMapH (scaled, glt->width, glt->height);
+		scaled = TexMgr_MipMapH (scaled, glt->width, glt->height);
 		glt->height >>= 1;
 		if (glt->flags & TEXPREF_ALPHA)
 			TexMgr_AlphaEdgeFix ((byte *)scaled, glt->width, glt->height);
@@ -2549,14 +2549,14 @@ void TexMgr_Upload32 (gltexture_t *glt, unsigned *data)
 		{
 			if (mipwidth > 1)
 			{
-				TexMgr_MipMapW (scaled, mipwidth, mipheight);
+				scaled = TexMgr_MipMapW (scaled, mipwidth, mipheight);
 				mipwidth >>= 1;
 				if (glt->flags & TEXPREF_ALPHA)
 					TexMgr_AlphaEdgeFix ((byte *)scaled, mipwidth, mipheight);
 			}
 			if (mipheight > 1)
 			{
-				TexMgr_MipMapH (scaled, mipwidth, mipheight);
+				scaled = TexMgr_MipMapH (scaled, mipwidth, mipheight);
 				mipheight >>= 1;
 				if (glt->flags & TEXPREF_ALPHA)
 					TexMgr_AlphaEdgeFix ((byte *)scaled, mipwidth, mipheight);
