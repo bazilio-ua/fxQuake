@@ -98,6 +98,9 @@ typedef struct
 #define DL_COLOR_YELLOW		0.933333, 0.866667, 0.509804 // lightgoldenrod rgb 0.933333 0.866667 0.509804
 #define DL_COLOR_WHITE		1.000000, 1.000000, 1.000000 // full white
 
+#define DL_COLOR_SHOT		236, 4
+#define DL_COLOR_LASER		231, 5	// id laser
+#define DL_COLOR_LASER2		247, 5	// hipnotic red laser
 
 #define	MAX_BEAMS	256 //was 32 //johnfitz -- was 24
 typedef struct
@@ -315,6 +318,8 @@ extern	beam_t			cl_beams[MAX_BEAMS];
 //
 dlight_t *CL_AllocDlight (int key);
 void	CL_ColorDlight (dlight_t *dl, float r, float g, float b);
+void	CL_ColorDlightPalette (dlight_t *dl, int i);
+void	CL_ColorDlightPaletteLength (dlight_t *dl, int start, int length);
 void	CL_DecayLights (void);
 
 void CL_Init (void);

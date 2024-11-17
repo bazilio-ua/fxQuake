@@ -326,6 +326,36 @@ void CL_ColorDlight (dlight_t *dl, float r, float g, float b)
 	dl->colored = true;
 }
 
+void CL_ColorDlightPalette (dlight_t *dl, int i)
+{
+	byte	*rgb;
+	
+	// leave dlight with white value it had at allocation
+	if (!cl_coloredlight.value)
+		return;
+	
+	rgb = (byte *)&d_8to24table[i];
+	dl->color[0] = rgb[0] * (1.0 / 255.0);
+	dl->color[1] = rgb[1] * (1.0 / 255.0);
+	dl->color[2] = rgb[2] * (1.0 / 255.0);
+	dl->colored = true;
+}
+
+void CL_ColorDlightPaletteLength (dlight_t *dl, int start, int length)
+{
+	int 	i = (start + (rand() % length));
+	byte	*rgb;
+	
+	// leave dlight with white value it had at allocation
+	if (!cl_coloredlight.value)
+		return;
+	
+	rgb = (byte *)&d_8to24table[i];
+	dl->color[0] = rgb[0] * (1.0 / 255.0);
+	dl->color[1] = rgb[1] * (1.0 / 255.0);
+	dl->color[2] = rgb[2] * (1.0 / 255.0);
+	dl->colored = true;
+}
 
 /*
 ===============
@@ -553,9 +583,12 @@ void CL_RelinkEntities (void)
 				else if (quoth && cl.stats[STAT_ACTIVEWEAPON] == HIT_LASER_CANNON) // quoth plasma gun uses the same bit as hipnotic laser cannon, so check it first
 					CL_ColorDlight (dl, DL_COLOR_LIGHTBLUE);
 				else if (hipnotic && cl.stats[STAT_ACTIVEWEAPON] == HIT_LASER_CANNON)
-					CL_ColorDlight (dl, DL_COLOR_RED);
+//					CL_ColorDlight (dl, DL_COLOR_RED);
+					CL_ColorDlightPaletteLength(dl, DL_COLOR_LASER2);
 				else
-					CL_ColorDlight (dl, DL_COLOR_ORANGE);
+//					CL_ColorDlight (dl, DL_COLOR_ORANGE);
+//					CL_ColorDlightPaletteLength(dl, 236, 4);
+					CL_ColorDlightPaletteLength(dl, DL_COLOR_SHOT);
 			}
 			else
 			{
@@ -590,7 +623,8 @@ void CL_RelinkEntities (void)
 			else if (!strcmp (ent->model->name, "progs/eel2.mdl")) // rogue eel
 				CL_ColorDlight (dl, DL_COLOR_LIGHTBLUE);
 			else if (!strcmp (ent->model->name, "progs/lasrspik.mdl")) // EER1 (laser for extended hipnotic prog)
-				CL_ColorDlight (dl, DL_COLOR_RED);
+//				CL_ColorDlight (dl, DL_COLOR_RED);
+				CL_ColorDlightPaletteLength(dl, DL_COLOR_LASER2);
 			else
 				CL_ColorDlight (dl, DL_COLOR_WHITE); // uncoloured
 		}
@@ -634,7 +668,8 @@ void CL_RelinkEntities (void)
 				else if (!strcmp (ent->model->name, "progs/sword.mdl")) // rogue invisible swordsman
 					CL_ColorDlight (dl, DL_COLOR_YELLOW);
 				else if (!strcmp (ent->model->name, "progs/lasrspik.mdl")) // hipnotic laser
-					CL_ColorDlight (dl, DL_COLOR_RED);
+//					CL_ColorDlight (dl, DL_COLOR_RED);
+					CL_ColorDlightPaletteLength(dl, DL_COLOR_LASER2);
 				else
 					CL_ColorDlight (dl, DL_COLOR_WHITE); // uncoloured
 			}

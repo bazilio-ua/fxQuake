@@ -241,7 +241,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define	TE_LIGHTNING3		9
 #define	TE_LAVASPLASH		10
 #define	TE_TELEPORT			11
-#define TE_EXPLOSION2		12
+#define TE_EXPLOSION2		12	// rogue
 
 // PGM 01/21/97 
 #define TE_BEAM				13
