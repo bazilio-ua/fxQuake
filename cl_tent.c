@@ -100,7 +100,7 @@ void CL_ParseTEnt (void)
 	dlight_t	*dl;
 	int		rnd;
 	int		colorStart, colorLength;
-	byte		*colorByte;
+	byte		*cb;
 	int		ent;
 	vec3_t	start, end;
 	char	*name;
@@ -457,10 +457,10 @@ void CL_ParseTEnt (void)
 		dl->die = cl.time + 0.5;
 		dl->decay = 300;
 		
-		colorByte = (byte *)&d_8to24table[colorStart];
-		color[0] = colorByte[0] * (2.0 / 255.0);
-		color[1] = colorByte[1] * (2.0 / 255.0);
-		color[2] = colorByte[2] * (2.0 / 255.0);
+		cb = (byte *)&d_8to24table[colorStart];
+		color[0] = cb[0] * (1.0 / 255.0);
+		color[1] = cb[1] * (1.0 / 255.0);
+		color[2] = cb[2] * (1.0 / 255.0);
 		CL_ColorDlight (dl, color[0], color[1], color[2]);
 		
 		R_ParticleExplosion2 (pos, colorStart, colorLength);
