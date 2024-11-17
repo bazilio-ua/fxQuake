@@ -68,7 +68,7 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-developer 3"
+            argument = "-developer 4"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
