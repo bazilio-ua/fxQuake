@@ -418,7 +418,7 @@ void CL_ParseTEnt (void)
 			dl->die = cl.time + 3.5;
 			dl->decay = 300;
 			
-			CL_ColorDlight (dl, DL_COLOR_RED);
+			CL_ColorDlightPaletteLength (dl, DL_COLOR_LAVA);
 		}
 		
 		R_LavaSplash (pos);
