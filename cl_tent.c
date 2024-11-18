@@ -208,7 +208,7 @@ void CL_ParseTEnt (void)
 		dl->die = cl.time + 0.5;
 		dl->decay = 300;
 		
-		CL_ColorDlight (dl, DL_COLOR_ORANGE);
+		CL_ColorDlightPaletteLength (dl, DL_COLOR_ROCKET);
 		
 		R_ParticleExplosion (pos);
 		S_StartSound (-1, 0, cl_sfx_r_exp3, pos, 1, 1);

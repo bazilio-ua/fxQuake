@@ -583,11 +583,8 @@ void CL_RelinkEntities (void)
 				else if (quoth && cl.stats[STAT_ACTIVEWEAPON] == HIT_LASER_CANNON) // quoth plasma gun uses the same bit as hipnotic laser cannon, so check it first
 					CL_ColorDlightPaletteLength (dl, DL_COLOR_LIGHTNING);
 				else if (hipnotic && cl.stats[STAT_ACTIVEWEAPON] == HIT_LASER_CANNON)
-//					CL_ColorDlight (dl, DL_COLOR_RED);
 					CL_ColorDlightPaletteLength (dl, DL_COLOR_LASER2);
 				else
-//					CL_ColorDlight (dl, DL_COLOR_ORANGE);
-//					CL_ColorDlightPaletteLength (dl, 236, 4);
 					CL_ColorDlightPaletteLength (dl, DL_COLOR_SHOT);
 			}
 			else
@@ -600,14 +597,14 @@ void CL_RelinkEntities (void)
 				else if (!strcmp (ent->model->name, "progs/shambler.mdl"))
 					CL_ColorDlightPaletteLength (dl, DL_COLOR_LIGHTNING);
 				else if (!strcmp (ent->model->name, "progs/enforcer.mdl"))
-					CL_ColorDlight (dl, DL_COLOR_ORANGE);
+					CL_ColorDlightPaletteLength (dl, DL_COLOR_LASER);
 				else if (!strcmp (ent->model->name, "progs/wrath.mdl") ||
 						 !strcmp (ent->model->name, "progs/s_wrath.mdl")) // rogue wrath
 					CL_ColorDlight (dl, DL_COLOR_RED);
 				else if (!strcmp (ent->model->name, "progs/dragon.mdl"))
 					CL_ColorDlight (dl, DL_COLOR_GOLD);
 				else
-					CL_ColorDlight (dl, DL_COLOR_ORANGE);
+					CL_ColorDlightPaletteLength (dl, DL_COLOR_SHOT);
 			}
 		}
 		if (ent->effects & EF_BRIGHTLIGHT) // rogue plasma and eel
@@ -623,8 +620,7 @@ void CL_RelinkEntities (void)
 			else if (!strcmp (ent->model->name, "progs/eel2.mdl")) // rogue eel
 				CL_ColorDlightPaletteLength (dl, DL_COLOR_LIGHTNING);
 			else if (!strcmp (ent->model->name, "progs/lasrspik.mdl")) // EER1 (laser for extended hipnotic prog)
-//				CL_ColorDlight (dl, DL_COLOR_RED);
-				CL_ColorDlightPaletteLength(dl, DL_COLOR_LASER2);
+				CL_ColorDlightPaletteLength (dl, DL_COLOR_LASER2);
 			else
 				CL_ColorDlight (dl, DL_COLOR_WHITE); // uncoloured
 		}
@@ -657,7 +653,6 @@ void CL_RelinkEntities (void)
 					if (rogue)
 						CL_ColorDlightPaletteLength (dl, ent->skinnum == 1 ? DL_COLOR_LASER3 : DL_COLOR_LASER); // skin1 morph yellow laser
 					else
-//						CL_ColorDlight (dl, DL_COLOR_ORANGE);
 						CL_ColorDlightPaletteLength (dl, DL_COLOR_LASER);
 				}
 				else if (!strcmp (ent->model->name, "progs/morph_az.mdl") ||
@@ -669,7 +664,6 @@ void CL_RelinkEntities (void)
 				else if (!strcmp (ent->model->name, "progs/sword.mdl")) // rogue invisible swordsman
 					CL_ColorDlightPalette (dl, DL_COLOR_8);
 				else if (!strcmp (ent->model->name, "progs/lasrspik.mdl")) // hipnotic laser
-//					CL_ColorDlight (dl, DL_COLOR_RED);
 					CL_ColorDlightPaletteLength (dl, DL_COLOR_LASER2);
 				else
 					CL_ColorDlight (dl, DL_COLOR_WHITE); // uncoloured
@@ -751,7 +745,10 @@ void CL_RelinkEntities (void)
 			dl->radius = 200;
 			dl->die = cl.time + 0.01;
 			
-			CL_ColorDlight (dl, DL_COLOR_ORANGE);
+			if (!strcmp (ent->model->name, "progs/lavaball.mdl"))
+				CL_ColorDlightPaletteLength (dl, DL_COLOR_LAVA);
+			else
+				CL_ColorDlightPaletteLength (dl, DL_COLOR_ROCKET);
 		}
 		else if (ent->model->flags & EF_GRENADE)
 			R_RocketTrail (oldorg, ent->origin, RT_GRENADE);

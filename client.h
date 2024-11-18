@@ -103,7 +103,10 @@ typedef struct
 #define DL_COLOR_LASER2		247, 5	// hipnotic red laser
 #define DL_COLOR_LASER3		252, 3	// rogue yellow laser
 #define DL_COLOR_LIGHTNING	244, 3
-//#define DL_COLOR_BEAM		244, 3
+//#define DL_COLOR_BEAM		240, 4
+//#define DL_COLOR_LAVA		224, 12
+#define DL_COLOR_LAVA		226, 10
+#define DL_COLOR_ROCKET		232, 8
 
 #define DL_COLOR_8			8		// gray 123
 #define DL_COLOR_235		235		// fullbright index (fire)
