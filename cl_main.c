@@ -637,7 +637,7 @@ void CL_RelinkEntities (void)
 			{
 				// set the appropriate colour depending on the current powerup(s)
 				if ((cl.items & IT_QUAD) && (cl.items & IT_INVULNERABILITY))
-					CL_ColorDlight (dl, DL_COLOR_PURPLE);
+					CL_ColorDlightPaletteLength (dl, DL_COLOR_POWER);
 				else if (cl.items & IT_QUAD)
 					CL_ColorDlightPaletteLength (dl, DL_COLOR_QUAD);
 				else if (cl.items & IT_INVULNERABILITY)
