@@ -94,7 +94,7 @@ typedef struct
 //#define DL_COLOR_LIGHTBLUE	0.529412, 0.807843, 0.921569 // skyblue	rgb 0.529412 0.807843 0.921569
 //#define DL_COLOR_ORANGE		1.000000, 0.647059, 0.000000 // orange rgb 1 0.647059 0
 #define DL_COLOR_RED		1.000000, 0.270588, 0.000000 // orangered rgb 1 0.270588 0
-#define DL_COLOR_GOLD		1.000000, 0.843137, 0.000000 // gold rgb 1 0.843137 0
+//#define DL_COLOR_GOLD		1.000000, 0.843137, 0.000000 // gold rgb 1 0.843137 0
 //#define DL_COLOR_YELLOW		0.933333, 0.866667, 0.509804 // lightgoldenrod rgb 0.933333 0.866667 0.509804
 //#define DL_COLOR_WHITE		1.000000, 1.000000, 1.000000 // full white
 
@@ -117,7 +117,7 @@ typedef struct
 #define DL_COLOR_235		235		// fullbright index (fire)
 #define DL_COLOR_252		252		// fullbright index (beam)
 #define DL_COLOR_254		254		// full white
-//#define DL_COLOR_167		167
+#define DL_COLOR_167		167
 //#define DL_COLOR_168		168
 
 #define	MAX_BEAMS	256 //was 32 //johnfitz -- was 24

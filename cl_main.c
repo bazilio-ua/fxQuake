@@ -642,7 +642,7 @@ void CL_RelinkEntities (void)
 				else if (cl.items & IT_INVULNERABILITY)
 					CL_ColorDlight (dl, DL_COLOR_RED);
 				else if (hipnotic && (cl.items & HIT_EMPATHY_SHIELDS)) // hipnotic empathy shield
-					CL_ColorDlight (dl, DL_COLOR_GOLD);
+					CL_ColorDlightPalette (dl, DL_COLOR_167);
 				else
 					CL_ColorDlightPalette (dl, DL_COLOR_254); // uncoloured
 			}
