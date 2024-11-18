@@ -107,6 +107,10 @@ typedef struct
 #define DL_COLOR_LAVA		226, 10
 #define DL_COLOR_ROCKET		232, 8
 #define DL_COLOR_FIRE		228, 12
+//#define DL_COLOR_QUAD		39, 4
+#define DL_COLOR_QUAD		37, 6
+//#define DL_COLOR_PENT		75, 4
+#define DL_COLOR_PENT		73, 6
 
 #define DL_COLOR_T_EXPLOSION	37, 8
 #define DL_COLOR_K_SPIKE	104, 4

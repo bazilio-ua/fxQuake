@@ -343,13 +343,14 @@ void CL_ColorDlightPalette (dlight_t *dl, int i)
 
 void CL_ColorDlightPaletteLength (dlight_t *dl, int start, int length)
 {
-	int 	i = (start + (rand() % length));
+	int 	i;
 	byte	*rgb;
 	
 	// leave dlight with white value it had at allocation
 	if (!cl_coloredlight.value)
 		return;
 	
+	i = (start + (rand() % length));
 	rgb = (byte *)&d_8to24table[i];
 	dl->color[0] = rgb[0] * (1.0 / 255.0);
 	dl->color[1] = rgb[1] * (1.0 / 255.0);
@@ -638,9 +639,9 @@ void CL_RelinkEntities (void)
 				if ((cl.items & IT_QUAD) && (cl.items & IT_INVULNERABILITY))
 					CL_ColorDlight (dl, DL_COLOR_PURPLE);
 				else if (cl.items & IT_QUAD)
-					CL_ColorDlight (dl, DL_COLOR_BLUE);
+					CL_ColorDlightPaletteLength (dl, DL_COLOR_QUAD);
 				else if (cl.items & IT_INVULNERABILITY)
-					CL_ColorDlight (dl, DL_COLOR_RED);
+					CL_ColorDlightPaletteLength (dl, DL_COLOR_PENT);
 				else if (hipnotic && (cl.items & HIT_EMPATHY_SHIELDS)) // hipnotic empathy shield
 					CL_ColorDlightPalette (dl, DL_COLOR_167);
 				else
