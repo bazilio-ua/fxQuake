@@ -591,9 +591,9 @@ void CL_RelinkEntities (void)
 			{
 				// some entities have different attacks resulting in a different flash colour
 				if (!strcmp (ent->model->name, "progs/wizard.mdl"))
-					CL_ColorDlight (dl, DL_COLOR_GREEN);
+					CL_ColorDlightPaletteLength (dl, DL_COLOR_W_SPIKE);
 				else if (!strcmp (ent->model->name, "progs/shalrath.mdl"))
-					CL_ColorDlight (dl, DL_COLOR_PURPLE);
+					CL_ColorDlightPaletteLength (dl, DL_COLOR_V_SPIKE);
 				else if (!strcmp (ent->model->name, "progs/shambler.mdl"))
 					CL_ColorDlightPaletteLength (dl, DL_COLOR_LIGHTNING);
 				else if (!strcmp (ent->model->name, "progs/enforcer.mdl"))
@@ -703,7 +703,7 @@ void CL_RelinkEntities (void)
 				dl->radius = 200;
 				dl->die = cl.time + 0.01;
 				
-				CL_ColorDlight (dl, DL_COLOR_GREEN);
+				CL_ColorDlightPaletteLength (dl, DL_COLOR_W_SPIKE);
 			}
 		}
 		else if (ent->model->flags & EF_TRACER2)
@@ -718,7 +718,7 @@ void CL_RelinkEntities (void)
 				dl->radius = 200;
 				dl->die = cl.time + 0.01;
 				
-				CL_ColorDlight (dl, DL_COLOR_ORANGE);
+				CL_ColorDlightPaletteLength (dl, DL_COLOR_K_SPIKE);
 			}
 		}
 		else if (ent->model->flags & EF_TRACER3)
@@ -733,7 +733,7 @@ void CL_RelinkEntities (void)
 				dl->radius = 200;
 				dl->die = cl.time + 0.01;
 				
-				CL_ColorDlight (dl, DL_COLOR_PURPLE);
+				CL_ColorDlightPaletteLength (dl, DL_COLOR_V_SPIKE);
 			}
 		}
 		else if (ent->model->flags & EF_ROCKET)

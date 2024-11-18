@@ -122,7 +122,7 @@ void CL_ParseTEnt (void)
 			dl->die = cl.time + 0.5;
 			dl->decay = 300;
 			
-			CL_ColorDlight (dl, DL_COLOR_GREEN);
+			CL_ColorDlightPaletteLength (dl, DL_COLOR_W_SPIKE);
 		}
 		
 		R_RunParticleEffect (pos, vec3_origin, 20, 30);
@@ -142,7 +142,7 @@ void CL_ParseTEnt (void)
 			dl->die = cl.time + 0.5;
 			dl->decay = 300;
 			
-			CL_ColorDlight (dl, DL_COLOR_ORANGE);
+			CL_ColorDlightPaletteLength (dl, DL_COLOR_K_SPIKE);
 		}
 		
 		R_RunParticleEffect (pos, vec3_origin, 226, 20);
