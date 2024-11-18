@@ -600,7 +600,7 @@ void CL_RelinkEntities (void)
 					CL_ColorDlightPaletteLength (dl, DL_COLOR_LASER);
 				else if (!strcmp (ent->model->name, "progs/wrath.mdl") ||
 						 !strcmp (ent->model->name, "progs/s_wrath.mdl")) // rogue wrath
-					CL_ColorDlight (dl, DL_COLOR_RED);
+					CL_ColorDlightPaletteLength (dl, DL_COLOR_W_BALL);
 				else if (!strcmp (ent->model->name, "progs/dragon.mdl"))
 					CL_ColorDlightPaletteLength (dl, DL_COLOR_FIRE);
 				else

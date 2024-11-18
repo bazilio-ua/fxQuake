@@ -112,6 +112,7 @@ typedef struct
 #define DL_COLOR_K_SPIKE	104, 4
 #define DL_COLOR_V_SPIKE	146, 3
 #define DL_COLOR_W_SPIKE	192, 5
+#define DL_COLOR_W_BALL		247, 3	// rogue wrath spike
 
 #define DL_COLOR_8			8		// gray 123
 #define DL_COLOR_235		235		// fullbright index (fire)
