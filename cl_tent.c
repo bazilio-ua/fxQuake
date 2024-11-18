@@ -227,7 +227,7 @@ void CL_ParseTEnt (void)
 			dl->die = cl.time + 0.5;
 			dl->decay = 300;
 			
-			CL_ColorDlight (dl, DL_COLOR_PURPLE);
+			CL_ColorDlightPaletteLength (dl, DL_COLOR_T_EXPLOSION);
 		}
 		
 		R_BlobExplosion (pos);
