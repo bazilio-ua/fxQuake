@@ -437,7 +437,7 @@ void CL_ParseTEnt (void)
 			dl->die = cl.time + 0.2;
 			dl->decay = 300;
 			
-			CL_ColorDlight (dl, DL_COLOR_WHITE);
+			CL_ColorDlightPalette (dl, DL_COLOR_254); // white
 		}
 		
 		R_TeleportSplash (pos);
@@ -457,11 +457,6 @@ void CL_ParseTEnt (void)
 		dl->die = cl.time + 0.5;
 		dl->decay = 300;
 		
-//		rgb = (byte *)&d_8to24table[colorStart];
-//		color[0] = rgb[0] * (1.0 / 255.0);
-//		color[1] = rgb[1] * (1.0 / 255.0);
-//		color[2] = rgb[2] * (1.0 / 255.0);
-//		CL_ColorDlight (dl, color[0], color[1], color[2]);
 		CL_ColorDlightPaletteLength (dl, colorStart, colorLength);
 		
 		R_ParticleExplosion2 (pos, colorStart, colorLength);
