@@ -100,7 +100,6 @@ void CL_ParseTEnt (void)
 	dlight_t	*dl;
 	int		rnd;
 	int		colorStart, colorLength;
-//	byte		*rgb;
 	int		ent;
 	vec3_t	start, end;
 	char	*name;
@@ -390,7 +389,7 @@ void CL_ParseTEnt (void)
 			dl->die = cl.time + 0.1;
 			dl->decay = 300;
 			
-			CL_ColorDlightPalette (dl, DL_COLOR_252);
+			CL_ColorDlightPaletteLength (dl, DL_COLOR_BEAM);
 			
 			dl = CL_AllocDlight (0);
 			VectorCopy (end, dl->origin);
@@ -398,7 +397,7 @@ void CL_ParseTEnt (void)
 			dl->die = cl.time + 0.1;
 			dl->decay = 300;
 			
-			CL_ColorDlightPalette (dl, DL_COLOR_252);
+			CL_ColorDlightPaletteLength (dl, DL_COLOR_BEAM);
 		}
 		
 		CL_ParseBeam (Mod_ForName("progs/beam.mdl", true), ent, start, end);
