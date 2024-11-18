@@ -253,7 +253,7 @@ void CL_ParseTEnt (void)
 			dl->die = cl.time + 0.1;
 			dl->decay = 300;
 			
-			CL_ColorDlight (dl, DL_COLOR_LIGHTBLUE);
+			CL_ColorDlightPaletteLength (dl, DL_COLOR_LIGHTNING);
 			
 			dl = CL_AllocDlight (0);
 			VectorCopy (end, dl->origin);
@@ -261,7 +261,7 @@ void CL_ParseTEnt (void)
 			dl->die = cl.time + 0.1;
 			dl->decay = 300;
 			
-			CL_ColorDlight (dl, DL_COLOR_LIGHTBLUE);
+			CL_ColorDlightPaletteLength (dl, DL_COLOR_LIGHTNING);
 		}
 		
 		CL_ParseBeam (Mod_ForName("progs/bolt.mdl", true), ent, start, end);
@@ -286,7 +286,7 @@ void CL_ParseTEnt (void)
 			dl->die = cl.time + 0.1;
 			dl->decay = 300;
 			
-			CL_ColorDlight (dl, DL_COLOR_LIGHTBLUE);
+			CL_ColorDlightPaletteLength (dl, DL_COLOR_LIGHTNING);
 			
 			dl = CL_AllocDlight (0);
 			VectorCopy (end, dl->origin);
@@ -294,7 +294,7 @@ void CL_ParseTEnt (void)
 			dl->die = cl.time + 0.1;
 			dl->decay = 300;
 			
-			CL_ColorDlight (dl, DL_COLOR_LIGHTBLUE);
+			CL_ColorDlightPaletteLength (dl, DL_COLOR_LIGHTNING);
 		}
 		
 		CL_ParseBeam (Mod_ForName("progs/bolt2.mdl", true), ent, start, end);
@@ -319,7 +319,7 @@ void CL_ParseTEnt (void)
 			dl->die = cl.time + 0.1;
 			dl->decay = 300;
 			
-			CL_ColorDlight (dl, DL_COLOR_LIGHTBLUE);
+			CL_ColorDlightPaletteLength (dl, DL_COLOR_LIGHTNING);
 			
 			dl = CL_AllocDlight (0);
 			VectorCopy (end, dl->origin);
@@ -327,7 +327,7 @@ void CL_ParseTEnt (void)
 			dl->die = cl.time + 0.1;
 			dl->decay = 300;
 			
-			CL_ColorDlight (dl, DL_COLOR_LIGHTBLUE);
+			CL_ColorDlightPaletteLength (dl, DL_COLOR_LIGHTNING);
 		}
 		
 		CL_ParseBeam (Mod_ForName("progs/bolt3.mdl", true), ent, start, end);
@@ -356,7 +356,7 @@ void CL_ParseTEnt (void)
 			dl->die = cl.time + 0.1;
 			dl->decay = 300;
 			
-			CL_ColorDlight (dl, DL_COLOR_LIGHTBLUE);
+			CL_ColorDlightPaletteLength (dl, DL_COLOR_LIGHTNING);
 			
 			dl = CL_AllocDlight (0);
 			VectorCopy (end, dl->origin);
@@ -364,7 +364,7 @@ void CL_ParseTEnt (void)
 			dl->die = cl.time + 0.1;
 			dl->decay = 300;
 			
-			CL_ColorDlight (dl, DL_COLOR_LIGHTBLUE);
+			CL_ColorDlightPaletteLength (dl, DL_COLOR_LIGHTNING);
 		}
 		
 		CL_ParseBeam (Mod_ForName(name, true), ent, start, end);
@@ -390,7 +390,7 @@ void CL_ParseTEnt (void)
 			dl->die = cl.time + 0.1;
 			dl->decay = 300;
 			
-			CL_ColorDlight (dl, DL_COLOR_YELLOW);
+			CL_ColorDlightPalette (dl, DL_COLOR_252);
 			
 			dl = CL_AllocDlight (0);
 			VectorCopy (end, dl->origin);
@@ -398,7 +398,7 @@ void CL_ParseTEnt (void)
 			dl->die = cl.time + 0.1;
 			dl->decay = 300;
 			
-			CL_ColorDlight (dl, DL_COLOR_YELLOW);
+			CL_ColorDlightPalette (dl, DL_COLOR_252);
 		}
 		
 		CL_ParseBeam (Mod_ForName("progs/beam.mdl", true), ent, start, end);
