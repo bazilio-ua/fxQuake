@@ -681,11 +681,11 @@ void CL_RelinkEntities (void)
 			
 			// set the appropriate colour
 			if ((ent->effects & EF_RED) && (ent->effects & EF_BLUE))
-				CL_ColorDlight (dl, DL_COLOR_PURPLE);
+				CL_ColorDlightPalette (dl, DL_COLOR_144);
 			else if (ent->effects & EF_RED)
-				CL_ColorDlight (dl, DL_COLOR_RED);
+				CL_ColorDlightPalette (dl, DL_COLOR_79);
 			else if (ent->effects & EF_BLUE)
-				CL_ColorDlight (dl, DL_COLOR_BLUE);
+				CL_ColorDlightPalette (dl, DL_COLOR_47);
 		}
 		
 		if (ent->model->flags & EF_GIB)
