@@ -88,15 +88,6 @@ typedef struct
 } dlight_t;
 
 // keep dlight colours in the one place so that if i need to change them i only need to do it once
-//#define DL_COLOR_GREEN		0.419608, 0.556863, 0.137255 // olivedrab	rgb 0.419608 0.556863 0.137255
-//#define DL_COLOR_PURPLE		0.854902, 0.439216, 0.839216 // orchid	rgb 0.854902 0.439216 0.839216
-//#define DL_COLOR_BLUE		0.254902, 0.411765, 0.882353 // royalblue	rgb 0.254902 0.411765 0.882353
-//#define DL_COLOR_LIGHTBLUE	0.529412, 0.807843, 0.921569 // skyblue	rgb 0.529412 0.807843 0.921569
-//#define DL_COLOR_ORANGE		1.000000, 0.647059, 0.000000 // orange rgb 1 0.647059 0
-//#define DL_COLOR_RED		1.000000, 0.270588, 0.000000 // orangered rgb 1 0.270588 0
-//#define DL_COLOR_GOLD		1.000000, 0.843137, 0.000000 // gold rgb 1 0.843137 0
-//#define DL_COLOR_YELLOW		0.933333, 0.866667, 0.509804 // lightgoldenrod rgb 0.933333 0.866667 0.509804
-//#define DL_COLOR_WHITE		1.000000, 1.000000, 1.000000 // full white
 
 #define DL_COLOR_SHOT		236, 4
 #define DL_COLOR_LASER		231, 5	// id laser
@@ -107,11 +98,8 @@ typedef struct
 #define DL_COLOR_LAVA		226, 10
 #define DL_COLOR_ROCKET		232, 8
 #define DL_COLOR_FIRE		228, 12
-//#define DL_COLOR_QUAD		39, 4
 #define DL_COLOR_QUAD		37, 6
-//#define DL_COLOR_PENT		75, 4
 #define DL_COLOR_PENT		73, 6
-//#define DL_COLOR_POWER		129, 4
 #define DL_COLOR_POWER		129, 6
 
 #define DL_COLOR_T_EXPLOSION	37, 8
@@ -129,6 +117,7 @@ typedef struct
 #define DL_COLOR_47			47		// blue
 #define DL_COLOR_79			79		// red
 #define DL_COLOR_144		144		// red&blue
+
 
 #define	MAX_BEAMS	256 //was 32 //johnfitz -- was 24
 typedef struct
