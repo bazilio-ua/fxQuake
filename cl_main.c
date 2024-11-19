@@ -636,7 +636,7 @@ void CL_RelinkEntities (void)
 			if (i == cl.viewentity)
 			{
 				// set the appropriate colour depending on the current powerup(s)
-				if ((cl.items & IT_QUAD) && (cl.items & IT_INVULNERABILITY))
+				if ((cl.items & (IT_QUAD | IT_INVULNERABILITY)) == (IT_QUAD | IT_INVULNERABILITY))
 					CL_ColorDlightPaletteLength (dl, DL_COLOR_POWER);
 				else if (cl.items & IT_QUAD)
 					CL_ColorDlightPaletteLength (dl, DL_COLOR_QUAD);
@@ -680,7 +680,7 @@ void CL_RelinkEntities (void)
 			dl->die = cl.time + 0.001;
 			
 			// set the appropriate colour
-			if ((ent->effects & EF_RED) && (ent->effects & EF_BLUE))
+			if ((ent->effects & (EF_BLUE | EF_RED)) == (EF_BLUE | EF_RED))
 				CL_ColorDlightPalette (dl, DL_COLOR_144);
 			else if (ent->effects & EF_RED)
 				CL_ColorDlightPalette (dl, DL_COLOR_79);
