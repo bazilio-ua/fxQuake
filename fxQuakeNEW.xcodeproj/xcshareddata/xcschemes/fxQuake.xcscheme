@@ -77,7 +77,15 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-hipnotic"
-            isEnabled = "YES">
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-game bbelief"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-quoth -game warp"
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-width 960 -height 600"
