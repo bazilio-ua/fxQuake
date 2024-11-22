@@ -101,6 +101,9 @@ typedef struct
 #define DL_COLOR_QUAD		37, 6
 #define DL_COLOR_PENT		73, 6
 #define DL_COLOR_POWER		129, 6
+//#define DL_COLOR_FLAME		238, 2
+#define DL_COLOR_FLAME		236, 4
+#define DL_COLOR_FLAME2		253, 2
 
 #define DL_COLOR_T_EXPLOSION	37, 8
 #define DL_COLOR_K_SPIKE	104, 4
@@ -302,6 +305,7 @@ extern	cvar_t	cl_lerpmuzzleflash;
 
 extern	cvar_t	cl_coloredlight;
 extern	cvar_t	cl_extradlight;
+extern	cvar_t	cl_extradlightstatic;
 
 extern	cvar_t	cl_pitchdriftspeed;
 extern	cvar_t	lookspring;

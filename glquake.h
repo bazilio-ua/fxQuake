@@ -503,6 +503,7 @@ extern	cvar_t	gl_gammablend;
 extern	cvar_t	gl_polyblend;
 extern	cvar_t	gl_flashblend;
 extern	cvar_t	gl_flashblendview;
+extern	cvar_t	gl_flashblendscale;
 extern	cvar_t	gl_overbright;
 extern	cvar_t	gl_oldspr;
 extern	cvar_t	gl_nocolors;

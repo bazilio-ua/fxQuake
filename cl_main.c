@@ -34,6 +34,7 @@ cvar_t	cl_lerpmuzzleflash = {"cl_lerpmuzzleflash","0", CVAR_NONE};
 
 cvar_t	cl_coloredlight = {"cl_coloredlight","0", CVAR_ARCHIVE};
 cvar_t	cl_extradlight = {"cl_extradlight","0", CVAR_ARCHIVE};
+cvar_t	cl_extradlightstatic = {"cl_extradlightstatic","0", CVAR_ARCHIVE};
 
 cvar_t	lookspring = {"lookspring","0", CVAR_ARCHIVE};
 cvar_t	lookstrafe = {"lookstrafe","0", CVAR_ARCHIVE};
@@ -950,6 +951,7 @@ void CL_Init (void)
 
 	Cvar_RegisterVariable (&cl_coloredlight);
 	Cvar_RegisterVariable (&cl_extradlight);
+	Cvar_RegisterVariable (&cl_extradlightstatic);
 
 	Cvar_RegisterVariable (&lookspring);
 	Cvar_RegisterVariable (&lookstrafe);

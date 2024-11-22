@@ -93,6 +93,7 @@ cvar_t	gl_gammablend = {"gl_gammablend","1", CVAR_ARCHIVE};
 cvar_t	gl_polyblend = {"gl_polyblend","1", CVAR_ARCHIVE};
 cvar_t	gl_flashblend = {"gl_flashblend","1", CVAR_ARCHIVE};
 cvar_t	gl_flashblendview = {"gl_flashblendview","1", CVAR_ARCHIVE};
+cvar_t	gl_flashblendscale = {"gl_flashblendscale","1", CVAR_ARCHIVE};
 cvar_t	gl_overbright = {"gl_overbright", "1", CVAR_ARCHIVE};
 cvar_t	gl_oldspr = {"gl_oldspr", "0", CVAR_NONE}; // Old opaque sprite
 cvar_t	gl_nocolors = {"gl_nocolors","0", CVAR_NONE};
@@ -607,7 +608,8 @@ void R_DrawAliasModel (entity_t *e)
 	{
 		for (lnum=0 ; lnum<MAX_DLIGHTS ; lnum++)
 		{
-			if (cl_dlights[lnum].die >= cl.time)
+//			if (cl_dlights[lnum].die >= cl.time)
+			if (cl_dlights[lnum].die >= cl.time || cl_dlights[lnum].radius > 0)
 			{
 				VectorSubtract (e->origin, cl_dlights[lnum].origin, dist);
 				add = cl_dlights[lnum].radius - VectorLength(dist);
@@ -776,6 +778,35 @@ cleanup:
 
 //==================================================================================
 
+void R_AddDlight (entity_t *e, int i)
+{
+	dlight_t	*dl;
+
+	if (cl_extradlightstatic.value)
+	{
+		if (!strcmp (e->model->name, "progs/flame.mdl"))
+		{
+			dl = CL_AllocDlight (i+1); //FIXME: +1
+			VectorCopy (e->origin, dl->origin);
+			dl->radius = 75;
+//			dl->minlight = 16;
+			dl->die = cl.time + 0.1;
+			
+			CL_ColorDlightPaletteLength (dl, DL_COLOR_FLAME);
+		}
+		else if (!strcmp (e->model->name, "progs/flame2.mdl"))
+		{
+			dl = CL_AllocDlight (i+1); //FIXME: +1
+			VectorCopy (e->origin, dl->origin);
+			dl->radius = 100;
+//			dl->minlight = 16;
+			dl->die = cl.time + 0.1;
+			
+			CL_ColorDlightPaletteLength (dl, DL_COLOR_FLAME2);
+		}
+	}
+}
+
 /*
 =============
 R_DrawEntities
@@ -808,6 +839,7 @@ void R_DrawEntities (void)
 			break;
 			
 		case mod_alias:
+			R_AddDlight(e, i);
 			if (ENTALPHA_DECODE(e->alpha) < 1)
 				R_AddToAlpha (ALPHA_ALIAS, R_GetAlphaDist(e->origin), e, NULL, 0);
 			else	
@@ -815,6 +847,7 @@ void R_DrawEntities (void)
 			break;
 			
 		case mod_sprite:
+			R_AddDlight(e, i);
 			R_AddToAlpha (ALPHA_SPRITE, R_GetAlphaDist(e->origin), e, NULL, 0);
 			break;
 			

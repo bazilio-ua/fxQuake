@@ -164,7 +164,7 @@ void R_RenderDlight (dlight_t *light)
 	
 	
 	VectorCopy (light->colored ? light->color : bubblecolor, color);
-	rad = light->radius * 0.1; // (orig. 0.35) reduce the bubble size so that it coexists more peacefully with proper light
+	rad = light->radius * 0.1 * CLAMP(1.0, gl_flashblendscale.value, 4.0); // (orig. 0.35) reduce the bubble size so that it coexists more peacefully with proper light
 	
 	VectorSubtract (light->origin, r_origin, v);
 	if (VectorLength (v) < rad)
