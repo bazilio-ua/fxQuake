@@ -284,6 +284,7 @@ dlight_t *CL_AllocDlight (int key)
 		{
 			if (dl->key == key)
 			{
+			// reuse this light
 				memset (dl, 0, sizeof(*dl));
 				dl->key = key;
 				dl->color[0] = dl->color[1] = dl->color[2] = 1.0; // lit support via lordhavoc
@@ -307,6 +308,7 @@ dlight_t *CL_AllocDlight (int key)
 		}
 	}
 
+// otherwise grab first dlight
 	dl = &cl_dlights[0];
 	memset (dl, 0, sizeof(*dl));
 	dl->key = key;
