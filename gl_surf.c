@@ -294,6 +294,7 @@ void R_AddDynamicLights (msurface_t *surf)
 		rad = l->radius;
 		dist = DotProduct (l->origin, surf->plane->normal) - surf->plane->dist;
 		rad -= fabs(dist);
+		// rad is now the highest intensity on the plane
 		minlight = l->minlight;
 
 		if (rad < minlight)
