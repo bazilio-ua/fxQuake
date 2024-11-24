@@ -319,7 +319,7 @@ dlight_t *CL_AllocDlight (int key)
 
 void CL_ColorDlight (dlight_t *dl, float r, float g, float b)
 {
-	// leave dlight with white value it had at allocation
+// leave dlight with white value it had at allocation
 	if (!cl_coloredlight.value)
 		return;
 
@@ -333,7 +333,7 @@ void CL_ColorDlightPalette (dlight_t *dl, int i)
 {
 	byte	*rgb;
 	
-	// leave dlight with white value it had at allocation
+// leave dlight with white value it had at allocation
 	if (!cl_coloredlight.value)
 		return;
 	
@@ -349,7 +349,7 @@ void CL_ColorDlightPaletteLength (dlight_t *dl, int start, int length)
 	int 	i;
 	byte	*rgb;
 	
-	// leave dlight with white value it had at allocation
+// leave dlight with white value it had at allocation
 	if (!cl_coloredlight.value)
 		return;
 	
