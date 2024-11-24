@@ -279,8 +279,7 @@ dlight_t *CL_AllocDlight (int key)
 // first look for an exact key match
 	if (key)
 	{
-		dl = cl_dlights;
-		for (i=0 ; i<MAX_DLIGHTS ; i++, dl++)
+		for (i=0, dl = cl_dlights ; i<MAX_DLIGHTS ; i++, dl++)
 		{
 			if (dl->key == key)
 			{
@@ -295,8 +294,7 @@ dlight_t *CL_AllocDlight (int key)
 	}
 
 // then look for anything else
-	dl = cl_dlights;
-	for (i=0 ; i<MAX_DLIGHTS ; i++, dl++)
+	for (i=0, dl = cl_dlights ; i<MAX_DLIGHTS ; i++, dl++)
 	{
 		if (dl->die < cl.time)
 		{
@@ -375,8 +373,7 @@ void CL_DecayLights (void)
 	
 	time = cl.time - cl.oldtime;
 
-	dl = cl_dlights;
-	for (i=0 ; i<MAX_DLIGHTS ; i++, dl++)
+	for (i=0, dl = cl_dlights ; i<MAX_DLIGHTS ; i++, dl++)
 	{
 		if (dl->die < cl.time || !dl->radius)
 			continue;

@@ -505,8 +505,10 @@ R_DrawAliasModel
 void R_DrawAliasModel (entity_t *e)
 {
 	int			lnum;
+	dlight_t	*l;
 	vec3_t		dist;
 	float		add;
+	float		dscale;
 	model_t		*clmodel;
 	aliashdr_t	*paliashdr;
 	int			anim;
@@ -606,16 +608,17 @@ void R_DrawAliasModel (entity_t *e)
 	// add dlights
 	if (r_dynamic.value) // EER1
 	{
-		for (lnum=0 ; lnum<MAX_DLIGHTS ; lnum++)
+		dscale = CLAMP(1.0, r_dynamicscale.value, 32.0);
+		
+		for (lnum=0, l = cl_dlights ; lnum<MAX_DLIGHTS ; lnum++, l++)
 		{
-//			if (cl_dlights[lnum].die >= cl.time)
-			if (cl_dlights[lnum].die >= cl.time || cl_dlights[lnum].radius > 0)
+			if (l->die >= cl.time || l->radius > 0)
 			{
-				VectorSubtract (e->origin, cl_dlights[lnum].origin, dist);
-				add = cl_dlights[lnum].radius - VectorLength(dist);
+				VectorSubtract (e->origin, l->origin, dist);
+				add = l->radius - VectorLength(dist);
 				
 				if (add > 0)
-					VectorMA (lightcolor, add * CLAMP(1.0, r_dynamicscale.value, 32.0), cl_dlights[lnum].color, lightcolor);
+					VectorMA (lightcolor, add * dscale, l->color, lightcolor);
 			}
 		}
 	}

@@ -230,9 +230,7 @@ void R_SetupDlights (void)
 
 	r_dlightframecount = r_framecount + 1;	// because the count hasn't advanced yet for this frame
 	
-	l = cl_dlights;
-	
-	for (i=0 ; i<MAX_DLIGHTS ; i++, l++)
+	for (i=0, l = cl_dlights ; i<MAX_DLIGHTS ; i++, l++)
 	{
 		if (l->die < cl.time || !l->radius)
 			continue;
@@ -354,9 +352,7 @@ void R_PushDlights (void)
 	
 	r_dlightframecount = r_framecount + 1;	// because the count hasn't advanced yet for this frame
 
-	l = cl_dlights;
-
-	for (i=0 ; i<MAX_DLIGHTS ; i++, l++)
+	for (i=0, l = cl_dlights ; i<MAX_DLIGHTS ; i++, l++)
 	{
 		if (l->die < cl.time || !l->radius)
 			continue;
