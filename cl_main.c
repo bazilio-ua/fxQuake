@@ -439,6 +439,40 @@ float	CL_LerpPoint (void)
 	return frac;
 }
 
+void CL_UpdateStatic (void)
+{
+	entity_t *ent;
+	int		i;
+	dlight_t	*dl;
+	
+	if (!cl_extradlightstatic.value)
+		return;
+	
+	for (i=1,ent=cl_static_entities ; i<cl.num_statics ; i++,ent++)
+	{
+		if (!ent->model)
+			continue;
+		
+		if (!strcmp (ent->model->name, "progs/flame.mdl"))
+		{
+			dl = CL_AllocDlight (i);
+			VectorCopy (ent->origin, dl->origin);
+			dl->radius = 75;
+			dl->die = cl.time + 0.1;
+			
+			CL_ColorDlightPaletteLength (dl, DL_COLOR_FLAME);
+		}
+		else if (!strcmp (ent->model->name, "progs/flame2.mdl"))
+		{
+			dl = CL_AllocDlight (i);
+			VectorCopy (ent->origin, dl->origin);
+			dl->radius = 100;
+			dl->die = cl.time + 0.1;
+			
+			CL_ColorDlightPaletteLength (dl, DL_COLOR_FLAME2);
+		}
+	}
+}
 
 /*
 ===============
@@ -804,9 +838,9 @@ int CL_ReadFromServer (void)
 	if (cl_shownet.value)
 		Con_Printf ("\n");
 
+	CL_UpdateStatic ();
 	CL_RelinkEntities ();
 	CL_UpdateTEnts ();
-//	CL_UpdateStatic
 
 //
 // bring the links up to date

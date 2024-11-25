@@ -781,35 +781,6 @@ cleanup:
 
 //==================================================================================
 
-void R_AddDlight (entity_t *e, int i)
-{
-	dlight_t	*dl;
-
-	if (cl_extradlightstatic.value)
-	{
-		if (!strcmp (e->model->name, "progs/flame.mdl"))
-		{
-			dl = CL_AllocDlight (i+1); //FIXME: +1
-			VectorCopy (e->origin, dl->origin);
-			dl->radius = 75;
-//			dl->minlight = 16;
-			dl->die = cl.time + 0.1;
-			
-			CL_ColorDlightPaletteLength (dl, DL_COLOR_FLAME);
-		}
-		else if (!strcmp (e->model->name, "progs/flame2.mdl"))
-		{
-			dl = CL_AllocDlight (i+1); //FIXME: +1
-			VectorCopy (e->origin, dl->origin);
-			dl->radius = 100;
-//			dl->minlight = 16;
-			dl->die = cl.time + 0.1;
-			
-			CL_ColorDlightPaletteLength (dl, DL_COLOR_FLAME2);
-		}
-	}
-}
-
 /*
 =============
 R_DrawEntities
@@ -842,7 +813,6 @@ void R_DrawEntities (void)
 			break;
 			
 		case mod_alias:
-//			R_AddDlight(e, i);
 			if (ENTALPHA_DECODE(e->alpha) < 1)
 				R_AddToAlpha (ALPHA_ALIAS, R_GetAlphaDist(e->origin), e, NULL, 0);
 			else	
@@ -850,7 +820,6 @@ void R_DrawEntities (void)
 			break;
 			
 		case mod_sprite:
-//			R_AddDlight(e, i);
 			R_AddToAlpha (ALPHA_SPRITE, R_GetAlphaDist(e->origin), e, NULL, 0);
 			break;
 			
