@@ -448,7 +448,8 @@ void CL_UpdateStatic (void)
 	if (!cl_extradlightstatic.value)
 		return;
 	
-	for (i=1,ent=cl_static_entities ; i<cl.num_statics ; i++,ent++)
+	for (i=cl.num_entities,ent=cl_static_entities ; i<cl.num_statics+cl.num_entities ; i++,ent++)
+//	for (i=1,ent=cl_static_entities ; i<cl.num_statics+1 ; i++,ent++)
 	{
 		if (!ent->model)
 			continue;
