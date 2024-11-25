@@ -612,14 +612,14 @@ void R_DrawAliasModel (entity_t *e)
 		
 		for (lnum=0, l = cl_dlights ; lnum<MAX_DLIGHTS ; lnum++, l++)
 		{
-			if (l->die >= cl.time || l->radius > 0)
-			{
-				VectorSubtract (e->origin, l->origin, dist);
-				add = l->radius - VectorLength(dist);
-				
-				if (add > 0)
-					VectorMA (lightcolor, add * dscale, l->color, lightcolor);
-			}
+			if (l->die < cl.time || !l->radius)
+				continue;
+			
+			VectorSubtract (e->origin, l->origin, dist);
+			add = l->radius - VectorLength(dist);
+			
+			if (add > 0)
+				VectorMA (lightcolor, add * dscale, l->color, lightcolor);
 		}
 	}
 
@@ -842,7 +842,7 @@ void R_DrawEntities (void)
 			break;
 			
 		case mod_alias:
-			R_AddDlight(e, i);
+//			R_AddDlight(e, i);
 			if (ENTALPHA_DECODE(e->alpha) < 1)
 				R_AddToAlpha (ALPHA_ALIAS, R_GetAlphaDist(e->origin), e, NULL, 0);
 			else	
@@ -850,7 +850,7 @@ void R_DrawEntities (void)
 			break;
 			
 		case mod_sprite:
-			R_AddDlight(e, i);
+//			R_AddDlight(e, i);
 			R_AddToAlpha (ALPHA_SPRITE, R_GetAlphaDist(e->origin), e, NULL, 0);
 			break;
 			

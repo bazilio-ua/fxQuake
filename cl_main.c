@@ -806,6 +806,7 @@ int CL_ReadFromServer (void)
 
 	CL_RelinkEntities ();
 	CL_UpdateTEnts ();
+//	CL_UpdateStatic
 
 //
 // bring the links up to date
