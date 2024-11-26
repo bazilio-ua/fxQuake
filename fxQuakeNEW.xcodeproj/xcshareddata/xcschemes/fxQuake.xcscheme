@@ -88,6 +88,10 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
+            argument = "-game p128rail"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
             argument = "-width 960 -height 600"
             isEnabled = "NO">
          </CommandLineArgument>
@@ -97,6 +101,10 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-width 320 -height 200"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-width 1152 -height 720"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
