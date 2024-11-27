@@ -187,9 +187,8 @@ qboolean R_CullBox (vec3_t emins, vec3_t emaxs)
 	int		i;
 	mplane_t *p;
     
-	for (i=0 ; i<4 ; i++)
+	for (i=0, p = frustum ; i<4 ; i++, p++)
     {
-		p = frustum + i;
 		switch(p->signbits)
 		{
         default:
@@ -227,6 +226,27 @@ qboolean R_CullBox (vec3_t emins, vec3_t emaxs)
             break;
 		}
     }
+	return false;
+}
+
+
+/*
+=================
+R_CullSphere
+
+Returns true if the sphere is completely outside the frustum
+=================
+*/
+qboolean R_CullSphere (vec3_t origin, float radius)
+{
+	int		i;
+	mplane_t *p;
+	
+	for (i=0, p = frustum ; i<4 ; i++, p++)
+	{
+		if (DotProduct (p->normal, origin) - p->dist <= -radius)
+			return true;
+	}
 	return false;
 }
 

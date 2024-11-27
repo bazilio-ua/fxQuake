@@ -235,6 +235,9 @@ void R_SetupDlights (void)
 		if (l->die < cl.time || !l->radius)
 			continue;
 		
+		if (R_CullSphere (l->origin, l->radius))
+			continue;
+		
 		R_AddToAlpha (ALPHA_DLIGHTS, R_GetAlphaDist(l->origin), l, NULL, 0);
 	}
 }
@@ -355,6 +358,9 @@ void R_PushDlights (void)
 	for (i=0, l = cl_dlights ; i<MAX_DLIGHTS ; i++, l++)
 	{
 		if (l->die < cl.time || !l->radius)
+			continue;
+		
+		if (R_CullSphere (l->origin, l->radius))
 			continue;
 		
 		R_MarkLights (l, 1ULL<<i, cl.worldmodel->nodes);
