@@ -182,7 +182,7 @@ typedef struct msurface_s
 
 // lighting info
 	int			dlightframe;
-	int			dlightbits;
+	unsigned long long			dlightbits;
 
 	int			lightmaptexture;
 	byte		styles[MAXLIGHTMAPS];
