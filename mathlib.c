@@ -33,11 +33,6 @@ float	anglemod(float a)
 
 /*-----------------------------------------------------------------*/
 
-vec_t PreciseDotProduct (vec3_t v1, vec3_t v2)
-{
-	return ((double)v1[0]*v2[0] + (double)v1[1]*v2[1] + (double)v1[2]*v2[2]);
-}
-
 vec_t DotProduct (vec3_t v1, vec3_t v2)
 {
 	return v1[0]*v2[0] + v1[1]*v2[1] + v1[2]*v2[2];

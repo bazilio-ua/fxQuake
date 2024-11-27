@@ -441,6 +441,7 @@ restart:
 	{
 		int i, ds, dt;
 		msurface_t *surf;
+		mtexinfo_t	*tex;
 
 	// check for impact on this node
 		VectorCopy (mid, lightspot);
@@ -452,11 +453,10 @@ restart:
 			if (surf->flags & SURF_DRAWTILED)
 				continue;	// no lightmaps
 
-            // ericw -- added double casts to force 64-bit precision.
-            // Without them the zombie at the start of jam3_ericw.bsp was
-            // incorrectly being lit up in SSE builds.
-			ds = (int) ((double) PreciseDotProduct (mid, surf->texinfo->vecs[0]) + surf->texinfo->vecs[0][3]);
-			dt = (int) ((double) PreciseDotProduct (mid, surf->texinfo->vecs[1]) + surf->texinfo->vecs[1][3]);
+			tex = surf->texinfo;
+			
+			ds = DotProduct (mid, tex->vecs[0]) + tex->vecs[0][3];
+			dt = DotProduct (mid, tex->vecs[1]) + tex->vecs[1][3];
 
 			if (ds < surf->texturemins[0] || dt < surf->texturemins[1])
 				continue;	// out of range
