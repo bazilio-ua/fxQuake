@@ -256,7 +256,7 @@ rewritten to use LordHavoc's lighting speedup
 recursive goes through the nodes marking the surfaces near the dynamic light as lit
 =============
 */
-void R_MarkLights (dlight_t *light, int num, mnode_t *node)
+void R_MarkLights (dlight_t *light, int bit, mnode_t *node)
 {
 	mplane_t	*plane;
 	msurface_t	*surf;
@@ -323,18 +323,18 @@ restart:
 		{
 			if (surf->dlightframe != r_dlightframecount) // not dynamic until now
 			{
-				surf->dlightbits[num >> 5] = 1U << (num & 31);
+				surf->dlightbits = bit;
 				surf->dlightframe = r_dlightframecount;
 			}
 			else // already dynamic
-				surf->dlightbits[num >> 5] |= 1U << (num & 31);
+				surf->dlightbits |= bit;
 		}
 	}
 
 	if (node->children[0]->contents >= 0)
-		R_MarkLights (light, num, node->children[0]);
+		R_MarkLights (light, bit, node->children[0]);
 	if (node->children[1]->contents >= 0)
-		R_MarkLights (light, num, node->children[1]);
+		R_MarkLights (light, bit, node->children[1]);
 }
 
 /*
@@ -357,7 +357,7 @@ void R_PushDlights (void)
 		if (l->die < cl.time || !l->radius)
 			continue;
 		
-		R_MarkLights (l, i, cl.worldmodel->nodes);
+		R_MarkLights (l, 1<<i, cl.worldmodel->nodes);
 	}
 }
 

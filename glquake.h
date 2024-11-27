@@ -302,7 +302,7 @@ void R_StoreEfrags (efrag_t **ppefrag);
 // gl_light.c
 void R_AnimateLight (void);
 void R_LightPoint (vec3_t p, vec3_t color);
-void R_MarkLights (dlight_t *light, int num, mnode_t *node);
+void R_MarkLights (dlight_t *light, int bit, mnode_t *node);
 void R_SetupDlights (void);
 void R_RenderDlight (dlight_t *light);
 
