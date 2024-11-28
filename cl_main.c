@@ -458,7 +458,7 @@ void CL_UpdateStatic (void)
 		{
 			dl = CL_AllocDlight (i);
 			VectorCopy (ent->origin, dl->origin);
-			dl->radius = 75;
+			dl->radius = 100;
 			dl->die = cl.time + 0.1;
 			
 			CL_ColorDlightPaletteLength (dl, DL_COLOR_FLAME);
@@ -467,10 +467,19 @@ void CL_UpdateStatic (void)
 		{
 			dl = CL_AllocDlight (i);
 			VectorCopy (ent->origin, dl->origin);
-			dl->radius = 100;
+			dl->radius = 125;
 			dl->die = cl.time + 0.1;
 			
 			CL_ColorDlightPaletteLength (dl, DL_COLOR_FLAME2);
+		}
+		else if (!strcmp (ent->model->name, "progs/s_light.spr"))
+		{
+			dl = CL_AllocDlight (i);
+			VectorCopy (ent->origin, dl->origin);
+			dl->radius = 85;
+			dl->die = cl.time + 0.1;
+			
+			CL_ColorDlightPalette (dl, DL_COLOR_111);
 		}
 	}
 }
