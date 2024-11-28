@@ -347,9 +347,7 @@ mspriteframe_t *R_GetSpriteFrame (entity_t *e)
 
 /*
 =================
-R_DrawSpriteModel 
-
-now supports all orientations
+R_DrawSpriteModel -- johnfitz -- rewritten: now supports all orientations
 =================
 */
 void R_DrawSpriteModel (entity_t *e)
@@ -363,6 +361,7 @@ void R_DrawSpriteModel (entity_t *e)
 	// don't even bother culling, because it's just a single
 	// polygon without a surface cache
 	//TODO: frustum cull it?
+
 	frame = R_GetSpriteFrame (e);
 	psprite = e->model->cache.data;
 
