@@ -792,6 +792,8 @@ void CL_RelinkEntities (void)
 			
 			if (!strcmp (ent->model->name, "progs/lavaball.mdl"))
 				CL_ColorDlightPaletteLength (dl, DL_COLOR_LAVA);
+			else if (!strcmp (ent->model->name, "progs/lavarock.mdl")) // hipnotic
+				CL_ColorDlightPaletteLength (dl, DL_COLOR_LAVA);
 			else
 				CL_ColorDlightPaletteLength (dl, DL_COLOR_ROCKET);
 		}
