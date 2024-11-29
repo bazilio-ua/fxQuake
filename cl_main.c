@@ -481,6 +481,24 @@ void CL_UpdateStatic (void)
 			
 			CL_ColorDlightPalette (dl, DL_COLOR_111);
 		}
+		else if (!strcmp (ent->model->name, "progs/candle.mdl")) // rogue
+		{
+			dl = CL_AllocDlight (i);
+			VectorCopy (ent->origin, dl->origin);
+			dl->radius = 55;
+			dl->die = cl.time + 0.1;
+			
+			CL_ColorDlightPaletteLength (dl, DL_COLOR_FLAME3);
+		}
+		else if (!strcmp (ent->model->name, "progs/lantern.mdl")) // rogue
+		{
+			dl = CL_AllocDlight (i);
+			VectorCopy (ent->origin, dl->origin);
+			dl->radius = 85;
+			dl->die = cl.time + 0.1;
+			
+			CL_ColorDlightPalette (dl, DL_COLOR_246);
+		}
 	}
 }
 

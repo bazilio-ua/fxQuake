@@ -101,9 +101,9 @@ typedef struct
 #define DL_COLOR_QUAD		37, 6
 #define DL_COLOR_PENT		73, 6
 #define DL_COLOR_POWER		129, 6
-//#define DL_COLOR_FLAME		238, 2
 #define DL_COLOR_FLAME		236, 4
 #define DL_COLOR_FLAME2		253, 2
+#define DL_COLOR_FLAME3		233, 6	// candle
 
 #define DL_COLOR_T_EXPLOSION	37, 8
 #define DL_COLOR_K_SPIKE	104, 4
@@ -122,6 +122,7 @@ typedef struct
 #define DL_COLOR_144		144		// red&blue
 
 #define DL_COLOR_111		111		// light sprite
+#define DL_COLOR_246		246		// lantern
 
 #define	MAX_BEAMS	256 //was 32 //johnfitz -- was 24
 typedef struct
