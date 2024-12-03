@@ -74,7 +74,7 @@ typedef struct
 // client_state_t should hold all pieces of the client state
 //
 
-#define	MAX_DLIGHTS		64 //johnfitz -- was 32
+#define	MAX_DLIGHTS		256 //johnfitz -- was 32
 typedef struct
 {
 	vec3_t	origin;
