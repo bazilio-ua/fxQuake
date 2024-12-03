@@ -708,7 +708,7 @@ void CL_RelinkEntities (void)
 			dl->origin[2] += 16;
 			AngleVectors (ent->angles, fv, rv, uv);
 			VectorMA (dl->origin, 18, fv, dl->origin);
-			dl->radius = 200 + (rand()&31);
+			dl->radius = ((ent->effects & EF_DIMLIGHT) ? 300 : 200) + (rand()&31);
 			dl->die = cl.time + 0.1;
 			dl->minlight = 32;
 			
