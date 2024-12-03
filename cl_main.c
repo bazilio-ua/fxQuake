@@ -639,6 +639,8 @@ void CL_RelinkEntities (void)
 			{
                 if (i == cl.viewentity)
                     cl.viewent.lerpflags |= LERP_RESETANIM|LERP_RESETANIM2; // no lerping for two frames
+				else
+					ent->lerpflags |= LERP_RESETANIM|LERP_RESETANIM2; // no lerping for two frames
 			}
             
 			if (i == cl.viewentity)
