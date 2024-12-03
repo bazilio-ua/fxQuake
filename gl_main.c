@@ -634,6 +634,9 @@ void R_DrawAliasModel (entity_t *e)
 			if (l->die < cl.time || !l->radius)
 				continue;
 			
+			if (R_CullSphere (l->origin, l->radius))
+				continue;
+			
 			VectorSubtract (e->origin, l->origin, dist);
 			add = l->radius - VectorLength(dist);
 			
