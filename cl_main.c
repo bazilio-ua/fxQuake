@@ -739,9 +739,7 @@ void CL_RelinkEntities (void)
 					CL_ColorDlightPalette (dl, DL_COLOR_254); // uncoloured
 			}
 		}
-		
-// Nehahra
-		if ((ent->effects & EF_RED) || (ent->effects & EF_BLUE))
+		if ((ent->effects & EF_RED) || (ent->effects & EF_BLUE)) // Nehahra
 		{
 			dl = CL_AllocDlight (key);
 			VectorCopy (ent->origin,  dl->origin);
