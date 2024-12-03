@@ -631,8 +631,8 @@ void CL_RelinkEntities (void)
 			AngleVectors (ent->angles, fv, rv, uv);
 			VectorMA (dl->origin, 18, fv, dl->origin);
 			dl->radius = 200 + (rand()&31);
-			dl->minlight = 32;
 			dl->die = cl.time + 0.1;
+			dl->minlight = 32;
 			
 			//johnfitz -- assume muzzle flash accompanied by muzzle flare, which looks bad when lerped
 			if (!cl_lerpmuzzleflash.value)
