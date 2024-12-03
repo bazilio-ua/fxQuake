@@ -621,62 +621,7 @@ void CL_RelinkEntities (void)
 		
 		if (ent->effects & EF_BRIGHTFIELD)
 			R_EntityParticles (ent);
-		if (ent->effects & EF_MUZZLEFLASH)
-		{
-			vec3_t		fv, rv, uv;
-			
-			dl = CL_AllocDlight (key);
-			VectorCopy (ent->origin,  dl->origin);
-			dl->origin[2] += 16;
-			AngleVectors (ent->angles, fv, rv, uv);
-			VectorMA (dl->origin, 18, fv, dl->origin);
-			dl->radius = 200 + (rand()&31);
-			dl->die = cl.time + 0.1;
-			dl->minlight = 32;
-			
-			//johnfitz -- assume muzzle flash accompanied by muzzle flare, which looks bad when lerped
-			if (!cl_lerpmuzzleflash.value)
-			{
-                if (i == cl.viewentity)
-                    cl.viewent.lerpflags |= LERP_RESETANIM|LERP_RESETANIM2; // no lerping for two frames
-				else
-					ent->lerpflags |= LERP_RESETANIM|LERP_RESETANIM2; // no lerping for two frames
-			}
-            
-			if (i == cl.viewentity)
-			{
-				// switch the flash colour for the current weapon
-				if (cl.stats[STAT_ACTIVEWEAPON] == IT_LIGHTNING)
-					CL_ColorDlightPaletteLength (dl, DL_COLOR_LIGHTNING);
-				else if (rogue && cl.stats[STAT_ACTIVEWEAPON] == RIT_PLASMA_GUN)
-					CL_ColorDlightPaletteLength (dl, DL_COLOR_LIGHTNING);
-				else if (quoth && cl.stats[STAT_ACTIVEWEAPON] == HIT_LASER_CANNON) // quoth plasma gun uses the same bit as hipnotic laser cannon, so check it first
-					CL_ColorDlightPaletteLength (dl, DL_COLOR_LIGHTNING);
-				else if (hipnotic && cl.stats[STAT_ACTIVEWEAPON] == HIT_LASER_CANNON)
-					CL_ColorDlightPaletteLength (dl, DL_COLOR_LASER2);
-				else
-					CL_ColorDlightPaletteLength (dl, DL_COLOR_SHOT);
-			}
-			else
-			{
-				// some entities have different attacks resulting in a different flash colour
-				if (!strcmp (ent->model->name, "progs/wizard.mdl"))
-					CL_ColorDlightPaletteLength (dl, DL_COLOR_W_SPIKE);
-				else if (!strcmp (ent->model->name, "progs/shalrath.mdl"))
-					CL_ColorDlightPaletteLength (dl, DL_COLOR_V_SPIKE);
-				else if (!strcmp (ent->model->name, "progs/shambler.mdl"))
-					CL_ColorDlightPaletteLength (dl, DL_COLOR_LIGHTNING);
-				else if (!strcmp (ent->model->name, "progs/enforcer.mdl"))
-					CL_ColorDlightPaletteLength (dl, DL_COLOR_LASER);
-				else if (!strcmp (ent->model->name, "progs/wrath.mdl") ||
-						 !strcmp (ent->model->name, "progs/s_wrath.mdl")) // rogue wrath
-					CL_ColorDlightPaletteLength (dl, DL_COLOR_W_BALL);
-				else if (!strcmp (ent->model->name, "progs/dragon.mdl"))
-					CL_ColorDlightPaletteLength (dl, DL_COLOR_FIRE);
-				else
-					CL_ColorDlightPaletteLength (dl, DL_COLOR_SHOT);
-			}
-		}
+		
 		if (ent->effects & EF_BRIGHTLIGHT) // rogue plasma and eel
 		{
 			dl = CL_AllocDlight (key);
@@ -753,6 +698,62 @@ void CL_RelinkEntities (void)
 				CL_ColorDlightPalette (dl, DL_COLOR_79);
 			else if (ent->effects & EF_BLUE)
 				CL_ColorDlightPalette (dl, DL_COLOR_47);
+		}
+		if (ent->effects & EF_MUZZLEFLASH)
+		{
+			vec3_t		fv, rv, uv;
+			
+			dl = CL_AllocDlight (key);
+			VectorCopy (ent->origin,  dl->origin);
+			dl->origin[2] += 16;
+			AngleVectors (ent->angles, fv, rv, uv);
+			VectorMA (dl->origin, 18, fv, dl->origin);
+			dl->radius = 200 + (rand()&31);
+			dl->die = cl.time + 0.1;
+			dl->minlight = 32;
+			
+			//johnfitz -- assume muzzle flash accompanied by muzzle flare, which looks bad when lerped
+			if (!cl_lerpmuzzleflash.value)
+			{
+				if (i == cl.viewentity)
+					cl.viewent.lerpflags |= LERP_RESETANIM|LERP_RESETANIM2; // no lerping for two frames
+				else
+					ent->lerpflags |= LERP_RESETANIM|LERP_RESETANIM2; // no lerping for two frames
+			}
+			
+			if (i == cl.viewentity)
+			{
+				// switch the flash colour for the current weapon
+				if (cl.stats[STAT_ACTIVEWEAPON] == IT_LIGHTNING)
+					CL_ColorDlightPaletteLength (dl, DL_COLOR_LIGHTNING);
+				else if (rogue && cl.stats[STAT_ACTIVEWEAPON] == RIT_PLASMA_GUN)
+					CL_ColorDlightPaletteLength (dl, DL_COLOR_LIGHTNING);
+				else if (quoth && cl.stats[STAT_ACTIVEWEAPON] == HIT_LASER_CANNON) // quoth plasma gun uses the same bit as hipnotic laser cannon, so check it first
+					CL_ColorDlightPaletteLength (dl, DL_COLOR_LIGHTNING);
+				else if (hipnotic && cl.stats[STAT_ACTIVEWEAPON] == HIT_LASER_CANNON)
+					CL_ColorDlightPaletteLength (dl, DL_COLOR_LASER2);
+				else
+					CL_ColorDlightPaletteLength (dl, DL_COLOR_SHOT);
+			}
+			else
+			{
+				// some entities have different attacks resulting in a different flash colour
+				if (!strcmp (ent->model->name, "progs/wizard.mdl"))
+					CL_ColorDlightPaletteLength (dl, DL_COLOR_W_SPIKE);
+				else if (!strcmp (ent->model->name, "progs/shalrath.mdl"))
+					CL_ColorDlightPaletteLength (dl, DL_COLOR_V_SPIKE);
+				else if (!strcmp (ent->model->name, "progs/shambler.mdl"))
+					CL_ColorDlightPaletteLength (dl, DL_COLOR_LIGHTNING);
+				else if (!strcmp (ent->model->name, "progs/enforcer.mdl"))
+					CL_ColorDlightPaletteLength (dl, DL_COLOR_LASER);
+				else if (!strcmp (ent->model->name, "progs/wrath.mdl") ||
+						 !strcmp (ent->model->name, "progs/s_wrath.mdl")) // rogue wrath
+					CL_ColorDlightPaletteLength (dl, DL_COLOR_W_BALL);
+				else if (!strcmp (ent->model->name, "progs/dragon.mdl"))
+					CL_ColorDlightPaletteLength (dl, DL_COLOR_FIRE);
+				else
+					CL_ColorDlightPaletteLength (dl, DL_COLOR_SHOT);
+			}
 		}
 		
 		if (ent->model->flags & EF_GIB)
