@@ -444,19 +444,21 @@ void CL_UpdateStatic (void)
 	entity_t *ent;
 	int		i;
 	dlight_t	*dl;
+	int		key;
 	
 	if (!cl_extradlightstatic.value)
 		return;
 	
-	for (i=cl.num_entities,ent=cl_static_entities ; i<cl.num_statics+cl.num_entities ; i++,ent++)
-//	for (i=1,ent=cl_static_entities ; i<cl.num_statics+1 ; i++,ent++)
+	for (i=0,ent=cl_static_entities ; i<cl.num_statics ; i++,ent++)
 	{
 		if (!ent->model)
 			continue;
 		
+		key = i + 1;
+		
 		if (!strcmp (ent->model->name, "progs/flame.mdl"))
 		{
-			dl = CL_AllocDlight (i);
+			dl = CL_AllocDlight (key);
 			VectorCopy (ent->origin, dl->origin);
 			dl->radius = 100;
 			dl->die = cl.time + 0.1;
@@ -465,7 +467,7 @@ void CL_UpdateStatic (void)
 		}
 		else if (!strcmp (ent->model->name, "progs/flame2.mdl"))
 		{
-			dl = CL_AllocDlight (i);
+			dl = CL_AllocDlight (key);
 			VectorCopy (ent->origin, dl->origin);
 			dl->radius = 125;
 			dl->die = cl.time + 0.1;
@@ -474,7 +476,7 @@ void CL_UpdateStatic (void)
 		}
 		else if (!strcmp (ent->model->name, "progs/s_light.spr"))
 		{
-			dl = CL_AllocDlight (i);
+			dl = CL_AllocDlight (key);
 			VectorCopy (ent->origin, dl->origin);
 			dl->radius = 85;
 			dl->die = cl.time + 0.1;
@@ -483,7 +485,7 @@ void CL_UpdateStatic (void)
 		}
 		else if (!strcmp (ent->model->name, "progs/candle.mdl")) // rogue
 		{
-			dl = CL_AllocDlight (i);
+			dl = CL_AllocDlight (key);
 			VectorCopy (ent->origin, dl->origin);
 			dl->radius = 55;
 			dl->die = cl.time + 0.1;
@@ -492,7 +494,7 @@ void CL_UpdateStatic (void)
 		}
 		else if (!strcmp (ent->model->name, "progs/lantern.mdl")) // rogue
 		{
-			dl = CL_AllocDlight (i);
+			dl = CL_AllocDlight (key);
 			VectorCopy (ent->origin, dl->origin);
 			dl->radius = 85;
 			dl->die = cl.time + 0.1;
@@ -517,6 +519,7 @@ void CL_RelinkEntities (void)
 	vec3_t		oldorg;
 	dlight_t	*dl;
 	static float	lastmsg = 0;
+	int		key;
 
 // determine partial update time
 	frac = CL_LerpPoint ();
@@ -610,6 +613,8 @@ void CL_RelinkEntities (void)
 			}
 		}
 		
+		key = i + cl.num_statics + 1;
+		
 // rotate binary objects locally
 		if (ent->model->flags & EF_ROTATE)
 			ent->angles[1] = objrotate;
@@ -620,7 +625,7 @@ void CL_RelinkEntities (void)
 		{
 			vec3_t		fv, rv, uv;
 			
-			dl = CL_AllocDlight (i);
+			dl = CL_AllocDlight (key);
 			VectorCopy (ent->origin,  dl->origin);
 			dl->origin[2] += 16;
 			AngleVectors (ent->angles, fv, rv, uv);
@@ -672,7 +677,7 @@ void CL_RelinkEntities (void)
 		}
 		if (ent->effects & EF_BRIGHTLIGHT) // rogue plasma and eel
 		{
-			dl = CL_AllocDlight (i);
+			dl = CL_AllocDlight (key);
 			VectorCopy (ent->origin,  dl->origin);
 			dl->origin[2] += 16;
 			dl->radius = 400 + (rand()&31);
@@ -689,7 +694,7 @@ void CL_RelinkEntities (void)
 		}
 		if (ent->effects & EF_DIMLIGHT) // powerup(s) glows and laser 
 		{
-			dl = CL_AllocDlight (i);
+			dl = CL_AllocDlight (key);
 			VectorCopy (ent->origin,  dl->origin);
 			dl->radius = 200 + (rand()&31);
 			dl->die = cl.time + 0.001;
@@ -736,7 +741,7 @@ void CL_RelinkEntities (void)
 // Nehahra
 		if ((ent->effects & EF_RED) || (ent->effects & EF_BLUE))
 		{
-			dl = CL_AllocDlight (i);
+			dl = CL_AllocDlight (key);
 			VectorCopy (ent->origin,  dl->origin);
 			dl->radius = 200 + (rand()&31);
 			dl->die = cl.time + 0.001;
@@ -761,7 +766,7 @@ void CL_RelinkEntities (void)
 			// wizard trail
 			if (cl_extradlight.value)
 			{
-				dl = CL_AllocDlight (i);
+				dl = CL_AllocDlight (key);
 				VectorCopy (ent->origin, dl->origin);
 				dl->radius = 200;
 				dl->die = cl.time + 0.01;
@@ -776,7 +781,7 @@ void CL_RelinkEntities (void)
 			// knight trail
 			if (cl_extradlight.value)
 			{
-				dl = CL_AllocDlight (i);
+				dl = CL_AllocDlight (key);
 				VectorCopy (ent->origin, dl->origin);
 				dl->radius = 200;
 				dl->die = cl.time + 0.01;
@@ -791,7 +796,7 @@ void CL_RelinkEntities (void)
 			// vore trail
 			if (cl_extradlight.value)
 			{
-				dl = CL_AllocDlight (i);
+				dl = CL_AllocDlight (key);
 				VectorCopy (ent->origin, dl->origin);
 				dl->radius = 200;
 				dl->die = cl.time + 0.01;
@@ -803,7 +808,7 @@ void CL_RelinkEntities (void)
 		{
 			R_RocketTrail (oldorg, ent->origin, RT_ROCKET);
 			
-			dl = CL_AllocDlight (i);
+			dl = CL_AllocDlight (key);
 			VectorCopy (ent->origin, dl->origin);
 			dl->radius = 200;
 			dl->die = cl.time + 0.01;
