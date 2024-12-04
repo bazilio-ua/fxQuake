@@ -637,7 +637,7 @@ void CL_RelinkEntities (void)
 			else if (!strcmp (ent->model->name, "progs/lasrspik.mdl")) // EER1 (laser for extended hipnotic prog)
 				CL_ColorDlightPaletteLength (dl, DL_COLOR_LASER2);
 			else
-				CL_ColorDlightPalette (dl, DL_COLOR_254); // uncoloured
+				CL_ColorDlightPalette (dl, DL_COLOR_254); // uncoloured (full white)
 		}
 		if (ent->effects & EF_DIMLIGHT) // powerup(s) glows and laser 
 		{
@@ -659,7 +659,7 @@ void CL_RelinkEntities (void)
 				else if (hipnotic && (cl.items & HIT_EMPATHY_SHIELDS)) // hipnotic empathy shield
 					CL_ColorDlightPalette (dl, DL_COLOR_167);
 				else
-					CL_ColorDlightPalette (dl, DL_COLOR_254); // uncoloured
+					CL_ColorDlightPalette (dl, DL_COLOR_15); // uncoloured (dim white)
 			}
 			else
 			{
@@ -681,7 +681,7 @@ void CL_RelinkEntities (void)
 				else if (!strcmp (ent->model->name, "progs/lasrspik.mdl")) // hipnotic laser
 					CL_ColorDlightPaletteLength (dl, DL_COLOR_LASER2);
 				else
-					CL_ColorDlightPalette (dl, DL_COLOR_254); // uncoloured
+					CL_ColorDlightPalette (dl, DL_COLOR_15); // uncoloured (dim white)
 			}
 		}
 		if ((ent->effects & EF_RED) || (ent->effects & EF_BLUE)) // Nehahra

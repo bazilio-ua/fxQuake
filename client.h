@@ -112,6 +112,7 @@ typedef struct
 #define DL_COLOR_W_BALL		247, 3	// rogue wrath spike
 
 #define DL_COLOR_8			8		// gray 123
+#define DL_COLOR_15			15		// dim white 235
 #define DL_COLOR_235		235		// fire
 #define DL_COLOR_252		252		// beam
 #define DL_COLOR_254		254		// full white
