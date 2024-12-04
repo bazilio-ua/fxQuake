@@ -741,6 +741,7 @@ void TexMgr_BindTexture (gltexture_t *texture)
 	{
 		currenttexture[currenttarget - GL_TEXTURE0_ARB] = texture->texnum;
 		glBindTexture (GL_TEXTURE_2D, texture->texnum);
+		glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, texture->max_miplevel);
 	}
 }
 
@@ -2542,6 +2543,8 @@ void TexMgr_Upload32 (gltexture_t *glt, unsigned *data)
 		glTexImage2D (GL_TEXTURE_2D, 0, internalformat, glt->width, glt->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, scaled);
 	}
     
+	glt->max_miplevel = 0;
+	
 	// upload mipmaps
 	if (glt->flags & TEXPREF_MIPMAP)
 	{
@@ -2550,6 +2553,8 @@ void TexMgr_Upload32 (gltexture_t *glt, unsigned *data)
 		
 		max_miplevel = GL_GetMaxMipLevel(mipwidth, mipheight, internalformat);
 		miplevel = 1;
+		
+		glt->max_miplevel = max_miplevel;
 		
 		while (miplevel <= max_miplevel)
 		{

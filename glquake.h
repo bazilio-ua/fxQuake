@@ -201,6 +201,7 @@ typedef struct gltexture_s {
 	char				name[64];
 	unsigned int		width;						// size of image as it exists in opengl
 	unsigned int		height;						// size of image as it exists in opengl
+	unsigned int		max_miplevel;
 	unsigned int		flags;						// texture preference flags
 	char				source_file[MAX_QPATH];		// relative filepath to data source, or "" if source is in memory
 	uintptr_t			source_offset;				// byte offset into file, or memory address
