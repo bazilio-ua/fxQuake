@@ -762,17 +762,22 @@ void CL_RelinkEntities (void)
 			R_RocketTrail (oldorg, ent->origin, RT_ZOMGIB);
 		else if (ent->model->flags & EF_TRACER)
 		{
-			R_RocketTrail (oldorg, ent->origin, RT_WIZARD);
-			
-			// wizard trail
-			if (cl_extradlight.value)
+			if (!strcmp (ent->model->name, "progs/flag.mdl")) // threewave ctf
+				R_RocketTrail (oldorg, ent->origin, RT_ROCKET);
+			else
 			{
-				dl = CL_AllocDlight (key);
-				VectorCopy (ent->origin, dl->origin);
-				dl->radius = 200;
-				dl->die = cl.time + 0.01;
+				R_RocketTrail (oldorg, ent->origin, RT_WIZARD);
 				
-				CL_ColorDlightPaletteLength (dl, DL_COLOR_W_SPIKE);
+				// wizard trail
+				if (cl_extradlight.value)
+				{
+					dl = CL_AllocDlight (key);
+					VectorCopy (ent->origin, dl->origin);
+					dl->radius = 200;
+					dl->die = cl.time + 0.01;
+					
+					CL_ColorDlightPaletteLength (dl, DL_COLOR_W_SPIKE);
+				}
 			}
 		}
 		else if (ent->model->flags & EF_TRACER2)

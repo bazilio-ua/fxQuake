@@ -576,7 +576,7 @@ void R_RocketTrail (vec3_t start, vec3_t end, int type)
 		case RT_KNIGHT:		// knight tracer
 			p->die = cl.time + 0.5;
 			p->type = pt_static;
-			if (type == 3)
+			if (type == RT_WIZARD)
 				p->color = 52 + ((tracercount&4)<<1);
 			else
 				p->color = 230 + ((tracercount&4)<<1);
