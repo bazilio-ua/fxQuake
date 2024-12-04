@@ -661,7 +661,7 @@ called at the beginning of each frame
 void R_FogSetupFrame (void)
 {
 	glFogfv(GL_FOG_COLOR, R_FogGetColor());
-	glFogf(GL_FOG_DENSITY, R_FogGetDensity() / 256.0f); // was 64.0
+	glFogf(GL_FOG_DENSITY, R_FogGetDensity() / 64.0f);
 }
 
 /*
