@@ -140,7 +140,7 @@ hull_t *SV_HullForEntity (edict_t *ent, vec3_t mins, vec3_t maxs, vec3_t offset)
 		model = sv.models[ (int)ent->v.modelindex ];
 
 		if (!model || model->type != mod_brush)
-			Host_Error ("MOVETYPE_PUSH with a non bsp model");
+			Host_Error ("SOLID_BSP with a non bsp model");
 
 		VectorSubtract (maxs, mins, size);
 		if (size[0] < 3)
@@ -516,7 +516,7 @@ int SV_HullPointContents (hull_t *hull, int num, vec3_t p)
 		if (plane->type < 3)
 			d = p[plane->type] - plane->dist;
 		else
-			d = PreciseDotProduct (plane->normal, p) - plane->dist;
+			d = DotProduct (plane->normal, p) - plane->dist;
 		if (d < 0)
 			num = node->children[1];
 		else
@@ -632,8 +632,8 @@ restart:
 		t2 = p2[plane->type] - plane->dist;
 		break;
 	default:
-		t1 = PreciseDotProduct (plane->normal, p1) - plane->dist;
-		t2 = PreciseDotProduct (plane->normal, p2) - plane->dist;
+		t1 = DotProduct (plane->normal, p1) - plane->dist;
+		t2 = DotProduct (plane->normal, p2) - plane->dist;
 		break;
 	}
 

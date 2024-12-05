@@ -2504,7 +2504,7 @@ void Mod_FloodFillSkin( byte *skin, int skinwidth, int skinheight, char *name )
 	// can't fill to filled color or to transparent color (used as visited marker)
 	if ((fillcolor == filledcolor) || (fillcolor == 255))
 	{
-		if (developer.value > 2)
+		if (developer.value > 3)
 			Con_DPrintf ("Mod_FloodFillSkin: not filling skin in '%s' from %d to %d\n", name, fillcolor, filledcolor);
 		return;
 	}

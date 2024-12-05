@@ -27,6 +27,7 @@ cvar_t		gl_picmip = {"gl_picmip", "0", CVAR_NONE};
 //cvar_t		gl_texquality = {"gl_texquality", "1", CVAR_NONE};
 cvar_t		gl_swapinterval = {"gl_swapinterval", "1", CVAR_ARCHIVE};
 cvar_t		gl_warp_image_size = {"gl_warp_image_size", "256", CVAR_ARCHIVE}; // was 512, for water warp
+cvar_t		gl_compression = {"gl_compression", "1", CVAR_ARCHIVE};
 
 byte		*draw_chars;				// 8*8 graphic characters
 qpic_t		*draw_disc;
@@ -65,8 +66,6 @@ int		gl_filter_mag = GL_LINEAR;
 float	gl_hardware_max_anisotropy = 1; // just in case
 float 	gl_texture_anisotropy = 1;
 
-qboolean gl_texture_NPOT = false; //ericw
-
 GLint		gl_hardware_max_size = 1024; // just in case
 //int		gl_texture_max_size = 1024;
 
@@ -95,9 +94,13 @@ const char *gl_extensions;
 
 qboolean fullsbardraw = false;
 qboolean isIntel = false; // intel video workaround
+
 qboolean gl_mtexable = false;
 qboolean gl_texture_env_combine = false;
 qboolean gl_texture_env_add = false;
+qboolean gl_texture_NPOT = false; //ericw
+qboolean gl_texture_compression = false; // EER1
+
 qboolean gl_swap_control = false;
 int gl_stencilbits;
 
@@ -317,6 +320,70 @@ void GL_CheckExtension_NPoT (void)
 	}
 }
 
+void GL_CheckExtension_TextureCompression (void)
+{
+	qboolean ARBcompression, EXTcompression;
+	
+	//
+	// Texture add environment mode
+	//
+	ARBcompression = strstr (gl_extensions, "GL_ARB_texture_compression") != NULL;
+	EXTcompression = strstr (gl_extensions, "GL_EXT_texture_compression_s3tc") != NULL;
+	
+	if (COM_CheckParm("-nocompression"))
+	{
+		Con_Warning ("Texture compression disabled at command line\n");
+	}
+	else if (ARBcompression || EXTcompression)
+	{
+		qglCompressedTexImage2D = (void *) qglGetProcAddress ("glCompressedTexImage2D");
+		
+		if (!qglCompressedTexImage2D)
+		{
+			Con_Warning ("Texture compression not supported (qglGetProcAddress failed)\n");
+		}
+		else
+		{
+			if (ARBcompression)
+			{
+				// query for the available compression formats
+				GLint num = 0;
+				glGetIntegerv(GL_NUM_COMPRESSED_TEXTURE_FORMATS, &num);
+				if (num)
+				{
+					GLint formats[num];
+					glGetIntegerv(GL_COMPRESSED_TEXTURE_FORMATS, formats);
+					
+					qboolean DXT1ext = false;
+					qboolean DXT5ext = false;
+					for (int i = 0; i < num; i++)
+					{
+						if (formats[i] == GL_COMPRESSED_RGB_S3TC_DXT1_EXT)
+							DXT1ext = true;
+						if (formats[i] == GL_COMPRESSED_RGBA_S3TC_DXT5_EXT)
+							DXT5ext = true;
+					}
+					
+					if (DXT1ext && DXT5ext)
+						gl_texture_compression = true;
+				}
+			}
+			
+			if (EXTcompression)
+				gl_texture_compression = true;
+			
+			if (gl_texture_compression)
+				Con_Printf ("Found GL_%s_texture_compression%s\n", ARBcompression ? "ARB" : "EXT", ARBcompression ? "" : "_s3tc");
+			else
+				Con_Warning ("Texture compression not supported (compression formats unavailable)\n");
+		}
+	}
+	else
+	{
+		Con_Warning ("Texture compression not supported (extension not found)\n");
+	}
+}
+
 void GL_CheckExtension_Anisotropy (void)
 {
 	qboolean anisotropy;
@@ -455,6 +522,7 @@ void GL_CheckExtensions (void)
 //	GL_CheckExtension_Anisotropy ();
 	
 	GL_CheckExtension_NPoT ();
+	GL_CheckExtension_TextureCompression ();
 	GL_CheckExtension_Anisotropy ();
 	GL_CheckExtension_VSync ();
 	
@@ -673,6 +741,7 @@ void TexMgr_BindTexture (gltexture_t *texture)
 	{
 		currenttexture[currenttarget - GL_TEXTURE0_ARB] = texture->texnum;
 		glBindTexture (GL_TEXTURE_2D, texture->texnum);
+		glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, texture->max_miplevel);
 	}
 }
 
@@ -1131,6 +1200,7 @@ void Draw_Init (void)
 	Cvar_RegisterVariableCallback (&gl_picmip, TexMgr_ReloadTextures);
 //	Cvar_RegisterVariable (&gl_texquality); // TODO: unused?
 	Cvar_RegisterVariableCallback (&gl_warp_image_size, TexMgr_UploadWarpImage);
+	Cvar_RegisterVariableCallback (&gl_compression, TexMgr_ReloadTextures);
 
 	Cmd_AddCommand ("gl_texturemode", &GL_TextureMode_f);
 	Cmd_AddCommand ("gl_texture_anisotropy", &GL_Texture_Anisotropy_f);
@@ -1756,7 +1826,7 @@ unsigned *TexMgr_MipMapH (unsigned *data, int width, int height)
 TexMgr_ResampleTexture -- bilinear resample
 ================
 */
-unsigned *TexMgr_ResampleTexture (unsigned *in, int inwidth, int inheight, qboolean alpha)
+unsigned *TexMgr_ResampleTexture (char *name, unsigned *in, int inwidth, int inheight, qboolean alpha)
 {
 	byte *nwpx, *nepx, *swpx, *sepx, *dest;
 	unsigned xfrac, yfrac, x, y, modx, mody, imodx, imody, injump, outjump;
@@ -1770,6 +1840,9 @@ unsigned *TexMgr_ResampleTexture (unsigned *in, int inwidth, int inheight, qbool
 	outheight = TexMgr_Pad(inheight);
 	out = Hunk_Alloc(outwidth*outheight*4);
     
+	if (developer.value > 1)
+		Con_DPrintf ("TexMgr_ResampleTexture: in:%dx%d, out:%dx%d, '%s'\n", inwidth, inheight, outwidth, outheight, name);
+	
 	xfrac = ((inwidth-1) << 16) / (outwidth-1);
 	yfrac = ((inheight-1) << 16) / (outheight-1);
 	y = outjump = 0;
@@ -1961,7 +2034,7 @@ unsigned *TexMgr_8to32 (byte *in, int pixels, unsigned int *usepal)
 TexMgr_PadImageW -- return image with width padded up to power-of-two dimentions
 ================
 */
-byte *TexMgr_PadImageW (byte *in, int width, int height, byte padbyte)
+byte *TexMgr_PadImageW (char *name, byte *in, int width, int height, byte padbyte)
 {
 	int i, j, outwidth;
 	byte *out, *data;
@@ -1973,6 +2046,9 @@ byte *TexMgr_PadImageW (byte *in, int width, int height, byte padbyte)
     
 	out = data = Hunk_Alloc(outwidth*height);
     
+	if (developer.value > 1)
+		Con_DPrintf ("TexMgr_PadImageW: in:%d, out:%d, '%s'\n", width, outwidth, name);
+	
 	for (i=0; i<height; i++)
 	{
 		for (j=0; j<width; j++)
@@ -1989,7 +2065,7 @@ byte *TexMgr_PadImageW (byte *in, int width, int height, byte padbyte)
 TexMgr_PadImageH -- return image with height padded up to power-of-two dimentions
 ================
 */
-byte *TexMgr_PadImageH (byte *in, int width, int height, byte padbyte)
+byte *TexMgr_PadImageH (char *name, byte *in, int width, int height, byte padbyte)
 {
 	int i, srcpix, dstpix;
 	byte *data, *out;
@@ -2002,6 +2078,9 @@ byte *TexMgr_PadImageH (byte *in, int width, int height, byte padbyte)
     
 	out = data = Hunk_Alloc(dstpix);
     
+	if (developer.value > 1)
+		Con_DPrintf ("TexMgr_PadImageH: in:%d, out:%d, '%s'\n", height, dstpix/width, name);
+	
 	for (i=0; i<srcpix; i++)
 		*out++ = *in++;
 	for (   ; i<dstpix; i++)
@@ -2180,6 +2259,142 @@ GL_ScaleSize
 //	return newsize;
 //}
 
+
+//
+
+#define STB_DXT_IMPLEMENTATION
+#include "stb_dxt.h"
+
+static void
+DXT_ExtractColorBlock(unsigned dst[16], unsigned *in, int inwidth, int inheight, int x, int y)
+{
+
+	const unsigned *src = in + y * inwidth + x;
+	if (inheight - y >= 4 && inwidth - x >= 4) {
+		/* Fast path for a full block */
+		memcpy(dst +  0, src + inwidth * 0, 16);
+		memcpy(dst +  4, src + inwidth * 1, 16);
+		memcpy(dst +  8, src + inwidth * 2, 16);
+		memcpy(dst + 12, src + inwidth * 3, 16);
+	} else {
+		/* Partial block, pad with black and alpha 1.0 */
+		const unsigned black = (unsigned)LittleLong(255ul << 24);
+		const int width  = min(inwidth  - x, 4);
+		const int height = min(inheight - y, 4);
+		int y = 0;
+		for ( ; y < height; y++) {
+			int x = 0;
+			for ( ; x < width; x++)
+				dst[y * 4 + x] = src[y * inwidth + x];
+			for ( ; x < 4; x++)
+				dst[y * 4 + x] = black;
+		}
+		for ( ; y < 4; y++) {
+			for (int x = 0; x < 4; x++)
+				dst[y * 4 + x] = black;
+		}
+	}
+}
+
+static void
+QPic_CompressDxt1(unsigned *in, int inwidth, int inheight, byte *dst)
+{
+	unsigned colorblock[16];
+	const int width = inwidth;
+	const int height = inheight;
+
+	for (int y = 0; y < height; y += 4) {
+		for (int x = 0; x < width; x += 4) {
+			DXT_ExtractColorBlock(colorblock, in, inwidth, inheight, x, y);
+			stb_compress_dxt_block(dst, (byte *)colorblock, false, STB_DXT_HIGHQUAL);
+			dst += 8;
+		}
+	}
+}
+
+static void
+QPic_CompressDxt5(unsigned *in, int inwidth, int inheight, byte *dst)
+{
+	unsigned colorblock[16];
+	const int width = inwidth;
+	const int height = inheight;
+
+	for (int y = 0; y < height; y += 4) {
+		for (int x = 0; x < width; x += 4) {
+			DXT_ExtractColorBlock(colorblock, in, inwidth, inheight, x, y);
+			stb_compress_dxt_block(dst, (byte *)colorblock, true, STB_DXT_HIGHQUAL);
+			dst += 16;
+		}
+	}
+}
+
+
+//
+
+
+static int
+GL_GetMipMemorySize(int width, int height, GLint format)
+{
+	int blocksize = 1;
+	int blockbytes = 4;
+	switch (format) {
+		case GL_COMPRESSED_RGB_S3TC_DXT1_EXT:
+		case GL_COMPRESSED_RGBA_S3TC_DXT1_EXT:
+			blocksize = 4;
+			blockbytes = 8;
+			break;
+		case GL_COMPRESSED_RGBA_S3TC_DXT3_EXT:
+		case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT:
+			blocksize = 4;
+			blockbytes = 16;
+			break;
+	}
+
+	int blockwidth  = (width  + blocksize - 1) / blocksize;
+	int blockheight = (height + blocksize - 1) / blocksize;
+
+	return blockwidth * blockheight * blockbytes;
+}
+
+
+static void
+GL_CompressMip(unsigned *in, int inwidth, int inheight, GLint format, byte *dst)
+{
+	switch (format) {
+		case GL_COMPRESSED_RGB_S3TC_DXT1_EXT:
+			QPic_CompressDxt1(in, inwidth, inheight, dst);
+			break;
+		case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT:
+			QPic_CompressDxt5(in, inwidth, inheight, dst);
+			break;
+		default:
+			Sys_Error("Unsupported compressed format");
+	}
+}
+
+static int
+GL_GetMaxMipLevel(int width, int height, GLint format)
+{
+	int blocksize = 1;
+	switch (format) {
+		case GL_COMPRESSED_RGB_S3TC_DXT1_EXT:
+		case GL_COMPRESSED_RGBA_S3TC_DXT1_EXT:
+		case GL_COMPRESSED_RGBA_S3TC_DXT3_EXT:
+		case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT:
+			blocksize = 4;
+	}
+
+	int max_level = 0;
+	while (width > blocksize || height > blocksize) {
+		max_level++;
+	width  = width  > 1 ? width  >> 1 : 1;
+	height = height > 1 ? height >> 1 : 1;
+	}
+
+	return max_level;
+}
+
+
 /*
 ===============
 TexMgr_Upload32
@@ -2275,10 +2490,13 @@ void TexMgr_Upload32 (gltexture_t *glt, unsigned *data)
     
     int	internalformat,	miplevel, mipwidth, mipheight, picmip;
     unsigned	*scaled = NULL;
-    
+	byte *compressed = NULL;
+	int mip_memory_size;
+	int max_miplevel;
+	
     if (!gl_texture_NPOT) {
         // resample up
-        scaled = TexMgr_ResampleTexture (data, glt->width, glt->height, glt->flags & TEXPREF_ALPHA);
+        scaled = TexMgr_ResampleTexture (glt->name, data, glt->width, glt->height, glt->flags & TEXPREF_ALPHA);
         glt->width = TexMgr_Pad(glt->width);
         glt->height = TexMgr_Pad(glt->height);
     } else
@@ -2290,14 +2508,14 @@ void TexMgr_Upload32 (gltexture_t *glt, unsigned *data)
 	mipheight = TexMgr_SafeTextureSize (glt->height >> picmip);
 	while (glt->width > mipwidth)
 	{
-		TexMgr_MipMapW (scaled, glt->width, glt->height);
+		scaled = TexMgr_MipMapW (scaled, glt->width, glt->height);
 		glt->width >>= 1;
 		if (glt->flags & TEXPREF_ALPHA)
 			TexMgr_AlphaEdgeFix ((byte *)scaled, glt->width, glt->height);
 	}
 	while (glt->height > mipheight)
 	{
-		TexMgr_MipMapH (scaled, glt->width, glt->height);
+		scaled = TexMgr_MipMapH (scaled, glt->width, glt->height);
 		glt->height >>= 1;
 		if (glt->flags & TEXPREF_ALPHA)
 			TexMgr_AlphaEdgeFix ((byte *)scaled, glt->width, glt->height);
@@ -2305,28 +2523,65 @@ void TexMgr_Upload32 (gltexture_t *glt, unsigned *data)
     
 	// upload
 	TexMgr_BindTexture (glt);
+	
 	internalformat = (glt->flags & TEXPREF_ALPHA) ? GL_RGBA : GL_RGB;
-	glTexImage2D (GL_TEXTURE_2D, 0, internalformat, glt->width, glt->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, scaled);
+	if (gl_texture_compression && gl_compression.value && !(glt->flags & TEXPREF_NOPICMIP)) {
+		internalformat = (glt->flags & TEXPREF_ALPHA) ? GL_COMPRESSED_RGBA_S3TC_DXT5_EXT : GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
+		mip_memory_size = GL_GetMipMemorySize(glt->width, glt->height, internalformat);
+		switch (internalformat) {
+			case GL_COMPRESSED_RGB_S3TC_DXT1_EXT:
+			case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT:
+				compressed = Hunk_Alloc(mip_memory_size);
+				break;
+		}
+	}
+	
+	if (compressed) {
+		GL_CompressMip(scaled, glt->width, glt->height, internalformat, compressed);
+		qglCompressedTexImage2D(GL_TEXTURE_2D, 0, internalformat, glt->width, glt->height, 0, mip_memory_size, compressed);
+	} else {
+		glTexImage2D (GL_TEXTURE_2D, 0, internalformat, glt->width, glt->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, scaled);
+	}
     
+	glt->max_miplevel = 0;
+	
 	// upload mipmaps
 	if (glt->flags & TEXPREF_MIPMAP)
 	{
 		mipwidth = glt->width;
 		mipheight = glt->height;
-        
-		for (miplevel=1; mipwidth > 1 || mipheight > 1; miplevel++)
+		
+		max_miplevel = GL_GetMaxMipLevel(mipwidth, mipheight, internalformat);
+		miplevel = 1;
+		
+		glt->max_miplevel = max_miplevel;
+		
+		while (miplevel <= max_miplevel)
 		{
 			if (mipwidth > 1)
 			{
-				TexMgr_MipMapW (scaled, mipwidth, mipheight);
+				scaled = TexMgr_MipMapW (scaled, mipwidth, mipheight);
 				mipwidth >>= 1;
+				if (glt->flags & TEXPREF_ALPHA)
+					TexMgr_AlphaEdgeFix ((byte *)scaled, mipwidth, mipheight);
 			}
 			if (mipheight > 1)
 			{
-				TexMgr_MipMapH (scaled, mipwidth, mipheight);
+				scaled = TexMgr_MipMapH (scaled, mipwidth, mipheight);
 				mipheight >>= 1;
+				if (glt->flags & TEXPREF_ALPHA)
+					TexMgr_AlphaEdgeFix ((byte *)scaled, mipwidth, mipheight);
 			}
-			glTexImage2D (GL_TEXTURE_2D, miplevel, internalformat, mipwidth, mipheight, 0, GL_RGBA, GL_UNSIGNED_BYTE, scaled);
+			
+			if (compressed) {
+				mip_memory_size = GL_GetMipMemorySize(mipwidth, mipheight, internalformat);
+				GL_CompressMip(scaled, mipwidth, mipheight, internalformat, compressed);
+				qglCompressedTexImage2D(GL_TEXTURE_2D, miplevel, internalformat, mipwidth, mipheight, 0, mip_memory_size, compressed);
+			} else {
+				glTexImage2D (GL_TEXTURE_2D, miplevel, internalformat, mipwidth, mipheight, 0, GL_RGBA, GL_UNSIGNED_BYTE, scaled);
+			}
+			
+			miplevel++;
 		}
 	}
     
@@ -2446,13 +2701,13 @@ void TexMgr_Upload8 (gltexture_t *glt, byte *data)
 	{
 		if ((int) glt->width < TexMgr_SafeTextureSize(glt->width))
 		{
-			data = TexMgr_PadImageW (data, glt->width, glt->height, padbyte);
+			data = TexMgr_PadImageW (glt->name, data, glt->width, glt->height, padbyte);
 			glt->width = TexMgr_Pad(glt->width);
 			padw = true;
 		}
 		if ((int) glt->height < TexMgr_SafeTextureSize(glt->height))
 		{
-			data = TexMgr_PadImageH (data, glt->width, glt->height, padbyte);
+			data = TexMgr_PadImageH (glt->name, data, glt->width, glt->height, padbyte);
 			glt->height = TexMgr_Pad(glt->height);
 			padh = true;
 		}

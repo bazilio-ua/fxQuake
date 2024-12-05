@@ -59,7 +59,6 @@ float	anglemod(float a);
 
 /*-----------------------------------------------------------------*/
 
-vec_t PreciseDotProduct (vec3_t v1, vec3_t v2);
 vec_t DotProduct (vec3_t v1, vec3_t v2);
 void CrossProduct (vec3_t v1, vec3_t v2, vec3_t cross);
 

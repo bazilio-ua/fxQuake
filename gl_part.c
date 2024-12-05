@@ -34,6 +34,7 @@ int				r_numparticles;
 float			texturescalefactor; // compensate for apparent size of different particle textures
 
 cvar_t	r_particles = {"r_particles","1", CVAR_ARCHIVE};
+cvar_t	r_particlescale = {"r_particlescale","1", CVAR_ARCHIVE};
 
 /*
 ===============
@@ -112,16 +113,17 @@ R_Particles -- johnfitz
 */
 void R_Particles (void)
 {
+	float scale = CLAMP(1.0, r_particlescale.value, 4.0);
 	switch ((int)(r_particles.value))
 	{
 	default:
 	case 1:
 		particletexture = particletexture1;
-		texturescalefactor = 1.25;
+		texturescalefactor = 1.25 * scale;
 		break;
 	case 2:
 		particletexture = particletexture2;
-		texturescalefactor = 1.0;
+		texturescalefactor = 1.0 * scale;
 		break;
 	}
 }
@@ -139,6 +141,7 @@ void R_InitParticles (void)
 			Hunk_AllocName (r_numparticles * sizeof(particle_t), "particles");
 
 	Cvar_RegisterVariableCallback (&r_particles, R_Particles);
+	Cvar_RegisterVariableCallback (&r_particlescale, R_Particles);
 
 	R_InitParticleTextures ();
 }
@@ -573,7 +576,7 @@ void R_RocketTrail (vec3_t start, vec3_t end, int type)
 		case RT_KNIGHT:		// knight tracer
 			p->die = cl.time + 0.5;
 			p->type = pt_static;
-			if (type == 3)
+			if (type == RT_WIZARD)
 				p->color = 52 + ((tracercount&4)<<1);
 			else
 				p->color = 230 + ((tracercount&4)<<1);

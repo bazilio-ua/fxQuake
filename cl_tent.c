@@ -100,7 +100,6 @@ void CL_ParseTEnt (void)
 	dlight_t	*dl;
 	int		rnd;
 	int		colorStart, colorLength;
-	byte		*colorByte;
 	int		ent;
 	vec3_t	start, end;
 	char	*name;
@@ -122,7 +121,7 @@ void CL_ParseTEnt (void)
 			dl->die = cl.time + 0.5;
 			dl->decay = 300;
 			
-			CL_ColorDlight (dl, DL_COLOR_GREEN);
+			CL_ColorDlightPaletteLength (dl, DL_COLOR_W_SPIKE);
 		}
 		
 		R_RunParticleEffect (pos, vec3_origin, 20, 30);
@@ -142,7 +141,7 @@ void CL_ParseTEnt (void)
 			dl->die = cl.time + 0.5;
 			dl->decay = 300;
 			
-			CL_ColorDlight (dl, DL_COLOR_ORANGE);
+			CL_ColorDlightPaletteLength (dl, DL_COLOR_K_SPIKE);
 		}
 		
 		R_RunParticleEffect (pos, vec3_origin, 226, 20);
@@ -208,7 +207,7 @@ void CL_ParseTEnt (void)
 		dl->die = cl.time + 0.5;
 		dl->decay = 300;
 		
-		CL_ColorDlight (dl, DL_COLOR_ORANGE);
+		CL_ColorDlightPaletteLength (dl, DL_COLOR_ROCKET);
 		
 		R_ParticleExplosion (pos);
 		S_StartSound (-1, 0, cl_sfx_r_exp3, pos, 1, 1);
@@ -227,7 +226,7 @@ void CL_ParseTEnt (void)
 			dl->die = cl.time + 0.5;
 			dl->decay = 300;
 			
-			CL_ColorDlight (dl, DL_COLOR_PURPLE);
+			CL_ColorDlightPaletteLength (dl, DL_COLOR_T_EXPLOSION);
 		}
 		
 		R_BlobExplosion (pos);
@@ -253,7 +252,7 @@ void CL_ParseTEnt (void)
 			dl->die = cl.time + 0.1;
 			dl->decay = 300;
 			
-			CL_ColorDlight (dl, DL_COLOR_LIGHTBLUE);
+			CL_ColorDlightPaletteLength (dl, DL_COLOR_LIGHTNING);
 			
 			dl = CL_AllocDlight (0);
 			VectorCopy (end, dl->origin);
@@ -261,7 +260,7 @@ void CL_ParseTEnt (void)
 			dl->die = cl.time + 0.1;
 			dl->decay = 300;
 			
-			CL_ColorDlight (dl, DL_COLOR_LIGHTBLUE);
+			CL_ColorDlightPaletteLength (dl, DL_COLOR_LIGHTNING);
 		}
 		
 		CL_ParseBeam (Mod_ForName("progs/bolt.mdl", true), ent, start, end);
@@ -286,7 +285,7 @@ void CL_ParseTEnt (void)
 			dl->die = cl.time + 0.1;
 			dl->decay = 300;
 			
-			CL_ColorDlight (dl, DL_COLOR_LIGHTBLUE);
+			CL_ColorDlightPaletteLength (dl, DL_COLOR_LIGHTNING);
 			
 			dl = CL_AllocDlight (0);
 			VectorCopy (end, dl->origin);
@@ -294,7 +293,7 @@ void CL_ParseTEnt (void)
 			dl->die = cl.time + 0.1;
 			dl->decay = 300;
 			
-			CL_ColorDlight (dl, DL_COLOR_LIGHTBLUE);
+			CL_ColorDlightPaletteLength (dl, DL_COLOR_LIGHTNING);
 		}
 		
 		CL_ParseBeam (Mod_ForName("progs/bolt2.mdl", true), ent, start, end);
@@ -319,7 +318,7 @@ void CL_ParseTEnt (void)
 			dl->die = cl.time + 0.1;
 			dl->decay = 300;
 			
-			CL_ColorDlight (dl, DL_COLOR_LIGHTBLUE);
+			CL_ColorDlightPaletteLength (dl, DL_COLOR_LIGHTNING);
 			
 			dl = CL_AllocDlight (0);
 			VectorCopy (end, dl->origin);
@@ -327,7 +326,7 @@ void CL_ParseTEnt (void)
 			dl->die = cl.time + 0.1;
 			dl->decay = 300;
 			
-			CL_ColorDlight (dl, DL_COLOR_LIGHTBLUE);
+			CL_ColorDlightPaletteLength (dl, DL_COLOR_LIGHTNING);
 		}
 		
 		CL_ParseBeam (Mod_ForName("progs/bolt3.mdl", true), ent, start, end);
@@ -356,7 +355,7 @@ void CL_ParseTEnt (void)
 			dl->die = cl.time + 0.1;
 			dl->decay = 300;
 			
-			CL_ColorDlight (dl, DL_COLOR_LIGHTBLUE);
+			CL_ColorDlightPaletteLength (dl, DL_COLOR_LIGHTNING);
 			
 			dl = CL_AllocDlight (0);
 			VectorCopy (end, dl->origin);
@@ -364,7 +363,7 @@ void CL_ParseTEnt (void)
 			dl->die = cl.time + 0.1;
 			dl->decay = 300;
 			
-			CL_ColorDlight (dl, DL_COLOR_LIGHTBLUE);
+			CL_ColorDlightPaletteLength (dl, DL_COLOR_LIGHTNING);
 		}
 		
 		CL_ParseBeam (Mod_ForName(name, true), ent, start, end);
@@ -390,7 +389,7 @@ void CL_ParseTEnt (void)
 			dl->die = cl.time + 0.1;
 			dl->decay = 300;
 			
-			CL_ColorDlight (dl, DL_COLOR_YELLOW);
+			CL_ColorDlightPalette (dl, DL_COLOR_252);
 			
 			dl = CL_AllocDlight (0);
 			VectorCopy (end, dl->origin);
@@ -398,7 +397,7 @@ void CL_ParseTEnt (void)
 			dl->die = cl.time + 0.1;
 			dl->decay = 300;
 			
-			CL_ColorDlight (dl, DL_COLOR_YELLOW);
+			CL_ColorDlightPalette (dl, DL_COLOR_252);
 		}
 		
 		CL_ParseBeam (Mod_ForName("progs/beam.mdl", true), ent, start, end);
@@ -418,7 +417,7 @@ void CL_ParseTEnt (void)
 			dl->die = cl.time + 3.5;
 			dl->decay = 300;
 			
-			CL_ColorDlight (dl, DL_COLOR_RED);
+			CL_ColorDlightPaletteLength (dl, DL_COLOR_LAVA);
 		}
 		
 		R_LavaSplash (pos);
@@ -437,7 +436,7 @@ void CL_ParseTEnt (void)
 			dl->die = cl.time + 0.2;
 			dl->decay = 300;
 			
-			CL_ColorDlight (dl, DL_COLOR_WHITE);
+			CL_ColorDlightPalette (dl, DL_COLOR_254); // white
 		}
 		
 		R_TeleportSplash (pos);
@@ -457,11 +456,7 @@ void CL_ParseTEnt (void)
 		dl->die = cl.time + 0.5;
 		dl->decay = 300;
 		
-		colorByte = (byte *)&d_8to24table[colorStart];
-		color[0] = colorByte[0] * (2.0 / 255.0);
-		color[1] = colorByte[1] * (2.0 / 255.0);
-		color[2] = colorByte[2] * (2.0 / 255.0);
-		CL_ColorDlight (dl, color[0], color[1], color[2]);
+		CL_ColorDlightPaletteLength (dl, colorStart, colorLength);
 		
 		R_ParticleExplosion2 (pos, colorStart, colorLength);
 		S_StartSound (-1, 0, cl_sfx_r_exp3, pos, 1, 1);

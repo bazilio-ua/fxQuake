@@ -164,7 +164,7 @@ void R_RenderDlight (dlight_t *light)
 	
 	
 	VectorCopy (light->colored ? light->color : bubblecolor, color);
-	rad = light->radius * 0.1; // (orig. 0.35) reduce the bubble size so that it coexists more peacefully with proper light
+	rad = light->radius * 0.1 * CLAMP(1.0, gl_flashblendscale.value, 16.0); // (orig. 0.35) reduce the bubble size so that it coexists more peacefully with proper light
 	
 	VectorSubtract (light->origin, r_origin, v);
 	if (VectorLength (v) < rad)
@@ -230,11 +230,12 @@ void R_SetupDlights (void)
 
 	r_dlightframecount = r_framecount + 1;	// because the count hasn't advanced yet for this frame
 	
-	l = cl_dlights;
-	
-	for (i=0 ; i<MAX_DLIGHTS ; i++, l++)
+	for (i=0, l = cl_dlights ; i<MAX_DLIGHTS ; i++, l++)
 	{
 		if (l->die < cl.time || !l->radius)
+			continue;
+		
+		if (R_CullSphere (l->origin, l->radius))
 			continue;
 		
 		R_AddToAlpha (ALPHA_DLIGHTS, R_GetAlphaDist(l->origin), l, NULL, 0);
@@ -325,6 +326,7 @@ restart:
 		{
 			if (surf->dlightframe != r_dlightframecount) // not dynamic until now
 			{
+				memset (surf->dlightbits, 0, sizeof(surf->dlightbits));
 				surf->dlightbits[num >> 5] = 1U << (num & 31);
 				surf->dlightframe = r_dlightframecount;
 			}
@@ -354,11 +356,12 @@ void R_PushDlights (void)
 	
 	r_dlightframecount = r_framecount + 1;	// because the count hasn't advanced yet for this frame
 
-	l = cl_dlights;
-
-	for (i=0 ; i<MAX_DLIGHTS ; i++, l++)
+	for (i=0, l = cl_dlights ; i<MAX_DLIGHTS ; i++, l++)
 	{
 		if (l->die < cl.time || !l->radius)
+			continue;
+		
+		if (R_CullSphere (l->origin, l->radius))
 			continue;
 		
 		R_MarkLights (l, i, cl.worldmodel->nodes);
@@ -439,6 +442,7 @@ restart:
 	{
 		int i, ds, dt;
 		msurface_t *surf;
+		mtexinfo_t	*tex;
 
 	// check for impact on this node
 		VectorCopy (mid, lightspot);
@@ -450,11 +454,10 @@ restart:
 			if (surf->flags & SURF_DRAWTILED)
 				continue;	// no lightmaps
 
-            // ericw -- added double casts to force 64-bit precision.
-            // Without them the zombie at the start of jam3_ericw.bsp was
-            // incorrectly being lit up in SSE builds.
-			ds = (int) ((double) PreciseDotProduct (mid, surf->texinfo->vecs[0]) + surf->texinfo->vecs[0][3]);
-			dt = (int) ((double) PreciseDotProduct (mid, surf->texinfo->vecs[1]) + surf->texinfo->vecs[1][3]);
+			tex = surf->texinfo;
+			
+			ds = DotProduct (mid, tex->vecs[0]) + tex->vecs[0][3];
+			dt = DotProduct (mid, tex->vecs[1]) + tex->vecs[1][3];
 
 			if (ds < surf->texturemins[0] || dt < surf->texturemins[1])
 				continue;	// out of range

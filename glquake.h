@@ -141,6 +141,7 @@ extern qboolean isIntel; // intel video workaround
 extern qboolean gl_mtexable;
 extern qboolean gl_texture_env_combine;
 extern qboolean gl_texture_env_add;
+extern qboolean gl_texture_compression;
 extern int		gl_stencilbits;
 
 extern GLint gl_hardware_max_size;
@@ -165,6 +166,10 @@ GLint (GLAPIENTRY *qglSwapInterval)(GLint interval);
 
 extern float gl_hardware_max_anisotropy;
 extern float gl_texture_anisotropy;
+
+// Texture compression
+qboolean gl_texture_compression;
+void (GLAPIENTRY *qglCompressedTexImage2D) (GLenum target, GLint level, GLenum internalformat, GLsizei width, GLsizei height, GLint border, GLsizei imageSize, const void *data);
 
 //====================================================
 
@@ -199,6 +204,7 @@ typedef struct gltexture_s {
 	char				name[64];
 	unsigned int		width;						// size of image as it exists in opengl
 	unsigned int		height;						// size of image as it exists in opengl
+	unsigned int		max_miplevel;
 	unsigned int		flags;						// texture preference flags
 	char				source_file[MAX_QPATH];		// relative filepath to data source, or "" if source is in memory
 	uintptr_t			source_offset;				// byte offset into file, or memory address
@@ -247,6 +253,7 @@ void GL_EndRendering (void);
 // gl_main.c
 int BoxOnPlaneSide (vec3_t emins, vec3_t emaxs, mplane_t *p);
 qboolean R_CullBox (vec3_t emins, vec3_t emaxs);
+qboolean R_CullSphere (vec3_t origin, float radius);
 qboolean R_CullModelForEntity (entity_t *e);
 void R_DrawAliasModel (entity_t *e);
 void R_DrawSpriteModel (entity_t *e);
@@ -497,9 +504,11 @@ extern	cvar_t	gl_cull;
 extern	cvar_t	gl_farclip;
 extern	cvar_t	gl_smoothmodels;
 extern	cvar_t	gl_affinemodels;
+extern	cvar_t	gl_gammablend;
 extern	cvar_t	gl_polyblend;
 extern	cvar_t	gl_flashblend;
 extern	cvar_t	gl_flashblendview;
+extern	cvar_t	gl_flashblendscale;
 extern	cvar_t	gl_overbright;
 extern	cvar_t	gl_oldspr;
 extern	cvar_t	gl_nocolors;

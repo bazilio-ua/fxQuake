@@ -182,8 +182,7 @@ typedef struct msurface_s
 
 // lighting info
 	int			dlightframe;
-	unsigned int		dlightbits[(MAX_DLIGHTS + 31) >> 5];
-				// int is 32 bits, need an array for MAX_DLIGHTS > 32
+	unsigned int		dlightbits[(MAX_DLIGHTS + 31) >> 5]; // int is 32 bits, need an array for MAX_DLIGHTS > 32
 
 	int			lightmaptexture;
 	byte		styles[MAXLIGHTMAPS];

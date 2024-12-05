@@ -53,6 +53,10 @@
       <CommandLineArguments>
          <CommandLineArgument
             argument = "-basedir /Users/vnikitiuk/Quake"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-basedir /Users/bazilio/Quake"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
@@ -64,7 +68,7 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-developer 3"
+            argument = "-developer 4"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
@@ -73,6 +77,30 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-hipnotic"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-game bbelief"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-game ctf"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-quoth -game warp"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-game p128rail"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-game zerdem"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-game zer"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
@@ -88,6 +116,10 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
+            argument = "-width 1152 -height 720"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
             argument = "+gl_picmip 10"
             isEnabled = "NO">
          </CommandLineArgument>
@@ -100,8 +132,12 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
+            argument = "-nocompression"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
             argument = "-width 1920 -height 1200"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "+sv_protocol 999"
@@ -145,7 +181,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-window"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-dedicated"

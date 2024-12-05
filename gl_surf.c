@@ -264,6 +264,7 @@ R_AddDynamicLights
 void R_AddDynamicLights (msurface_t *surf)
 {
 	int			lnum;
+	dlight_t	*l;
 	int			sd, td;
 	float		dist, rad, minlight;
 	vec3_t		impact, local;
@@ -274,26 +275,27 @@ void R_AddDynamicLights (msurface_t *surf)
 	// lit support via lordhavoc
 	float		r, g, b, brightness;
 	unsigned	*bl;
-	float		scale;
+	float		dscale;
 	
 	if (!r_dynamic.value) // EER1
 		return;
 	
-	scale = CLAMP(1.0, r_dynamicscale.value, 32.0) * 256.0f;
+	dscale = CLAMP(1.0, r_dynamicscale.value, 32.0);
 	
 	smax = (surf->extents[0]>>4)+1;
 	tmax = (surf->extents[1]>>4)+1;
 	tex = surf->texinfo;
 
-	for (lnum=0 ; lnum<MAX_DLIGHTS ; lnum++)
+	for (lnum=0, l = cl_dlights ; lnum<MAX_DLIGHTS ; lnum++, l++)
 	{
 		if ( !(surf->dlightbits[lnum >> 5] & (1U << (lnum & 31))) )
 			continue;		// not lit by this light
 
-		rad = cl_dlights[lnum].radius;
-		dist = DotProduct (cl_dlights[lnum].origin, surf->plane->normal) - surf->plane->dist;
+		rad = l->radius;
+		dist = DotProduct (l->origin, surf->plane->normal) - surf->plane->dist;
 		rad -= fabs(dist);
-		minlight = cl_dlights[lnum].minlight;
+		// rad is now the highest intensity on the plane
+		minlight = l->minlight;
 
 		if (rad < minlight)
 			continue;
@@ -302,7 +304,7 @@ void R_AddDynamicLights (msurface_t *surf)
 
 		for (i=0 ; i<3 ; i++)
 		{
-			impact[i] = cl_dlights[lnum].origin[i] - surf->plane->normal[i]*dist;
+			impact[i] = l->origin[i] - surf->plane->normal[i]*dist;
 		}
 
 		local[0] = DotProduct (impact, tex->vecs[0]) + tex->vecs[0][3];
@@ -313,9 +315,9 @@ void R_AddDynamicLights (msurface_t *surf)
 		
 		// lit support via lordhavoc
 		bl = blocklights;
-		r = cl_dlights[lnum].color[0] * scale;//256.0f;
-		g = cl_dlights[lnum].color[1] * scale;//256.0f;
-		b = cl_dlights[lnum].color[2] * scale;//256.0f;
+		r = l->color[0] * dscale * 256.0f;
+		g = l->color[1] * dscale * 256.0f;
+		b = l->color[2] * dscale * 256.0f;
 
 		for (t = 0 ; t<tmax ; t++)
 		{
@@ -875,6 +877,7 @@ R_DrawBrushModel
 void R_DrawBrushModel (entity_t *e)
 {
 	int			k, i;
+	dlight_t	*l;
 	msurface_t	*psurf;
 	float		dot;
 	mplane_t	*pplane;
@@ -909,13 +912,15 @@ void R_DrawBrushModel (entity_t *e)
 	// calculate dynamic lighting for bmodel if it's not an instanced model
 	if (clmodel->firstmodelsurface != 0) // EER1
 	{
-		for (k=0 ; k<MAX_DLIGHTS ; k++)
+		for (k=0, l = cl_dlights ; k<MAX_DLIGHTS ; k++, l++)
 		{
-			if ((cl_dlights[k].die < cl.time) ||
-				(!cl_dlights[k].radius))
+			if (l->die < cl.time || !l->radius)
 				continue;
 
-			R_MarkLights (&cl_dlights[k], k, clmodel->nodes + clmodel->hulls[0].firstclipnode);
+			if (R_CullSphere (l->origin, l->radius))
+				continue;
+			
+			R_MarkLights (l, k, clmodel->nodes + clmodel->hulls[0].firstclipnode);
 		}
 	}
 

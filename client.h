@@ -74,7 +74,7 @@ typedef struct
 // client_state_t should hold all pieces of the client state
 //
 
-#define	MAX_DLIGHTS		128 //was 64 //johnfitz -- was 32
+#define	MAX_DLIGHTS		512 //johnfitz -- was 32
 typedef struct
 {
 	vec3_t	origin;
@@ -88,16 +88,42 @@ typedef struct
 } dlight_t;
 
 // keep dlight colours in the one place so that if i need to change them i only need to do it once
-#define DL_COLOR_GREEN		0.419608, 0.556863, 0.137255 // olivedrab	rgb 0.419608 0.556863 0.137255
-#define DL_COLOR_PURPLE		0.854902, 0.439216, 0.839216 // orchid	rgb 0.854902 0.439216 0.839216
-#define DL_COLOR_BLUE		0.254902, 0.411765, 0.882353 // royalblue	rgb 0.254902 0.411765 0.882353
-#define DL_COLOR_LIGHTBLUE	0.529412, 0.807843, 0.921569 // skyblue	rgb 0.529412 0.807843 0.921569
-#define DL_COLOR_ORANGE		1.000000, 0.647059, 0.000000 // orange rgb 1 0.647059 0
-#define DL_COLOR_RED		1.000000, 0.270588, 0.000000 // orangered rgb 1 0.270588 0
-#define DL_COLOR_GOLD		1.000000, 0.843137, 0.000000 // gold rgb 1 0.843137 0
-#define DL_COLOR_YELLOW		0.933333, 0.866667, 0.509804 // lightgoldenrod rgb 0.933333 0.866667 0.509804
-#define DL_COLOR_WHITE		1.000000, 1.000000, 1.000000 // full white
 
+#define DL_COLOR_SHOT		236, 4
+#define DL_COLOR_LASER		231, 5	// id laser
+#define DL_COLOR_LASER2		247, 5	// hipnotic red laser
+#define DL_COLOR_LASER3		252, 3	// rogue yellow laser
+#define DL_COLOR_LIGHTNING	244, 3
+#define DL_COLOR_BEAM		240, 4
+#define DL_COLOR_LAVA		226, 10
+#define DL_COLOR_ROCKET		232, 8
+#define DL_COLOR_FIRE		228, 12
+#define DL_COLOR_QUAD		37, 6
+#define DL_COLOR_PENT		73, 6
+#define DL_COLOR_POWER		129, 6
+#define DL_COLOR_FLAME		236, 4
+#define DL_COLOR_FLAME2		253, 2
+#define DL_COLOR_FLAME3		233, 6	// candle
+
+#define DL_COLOR_T_EXPLOSION	37, 8
+#define DL_COLOR_K_SPIKE	104, 4
+#define DL_COLOR_V_SPIKE	146, 3
+#define DL_COLOR_W_SPIKE	192, 5
+#define DL_COLOR_W_BALL		247, 3	// rogue wrath spike
+
+#define DL_COLOR_8			8		// gray 123
+#define DL_COLOR_15			15		// dim white 235
+#define DL_COLOR_235		235		// fire
+#define DL_COLOR_252		252		// beam
+#define DL_COLOR_254		254		// full white
+#define DL_COLOR_167		167
+
+#define DL_COLOR_47			47		// blue
+#define DL_COLOR_79			79		// red
+#define DL_COLOR_144		144		// red&blue
+
+#define DL_COLOR_111		111		// light sprite
+#define DL_COLOR_246		246		// lantern
 
 #define	MAX_BEAMS	256 //was 32 //johnfitz -- was 24
 typedef struct
@@ -282,6 +308,7 @@ extern	cvar_t	cl_lerpmuzzleflash;
 
 extern	cvar_t	cl_coloredlight;
 extern	cvar_t	cl_extradlight;
+extern	cvar_t	cl_extradlightstatic;
 
 extern	cvar_t	cl_pitchdriftspeed;
 extern	cvar_t	lookspring;
@@ -315,6 +342,8 @@ extern	beam_t			cl_beams[MAX_BEAMS];
 //
 dlight_t *CL_AllocDlight (int key);
 void	CL_ColorDlight (dlight_t *dl, float r, float g, float b);
+void	CL_ColorDlightPalette (dlight_t *dl, int i);
+void	CL_ColorDlightPaletteLength (dlight_t *dl, int start, int length);
 void	CL_DecayLights (void);
 
 void CL_Init (void);

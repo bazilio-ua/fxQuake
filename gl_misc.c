@@ -234,9 +234,11 @@ void R_Init (void)
 	Cvar_RegisterVariable (&gl_farclip);
 	Cvar_RegisterVariable (&gl_smoothmodels);
 	Cvar_RegisterVariable (&gl_affinemodels);
+	Cvar_RegisterVariable (&gl_gammablend);
 	Cvar_RegisterVariable (&gl_polyblend);
 	Cvar_RegisterVariable (&gl_flashblend);
 	Cvar_RegisterVariable (&gl_flashblendview);
+	Cvar_RegisterVariable (&gl_flashblendscale);
 	Cvar_RegisterVariableCallback (&gl_overbright, GL_Overbright);
 	Cvar_RegisterVariable (&gl_oldspr);
 	Cvar_RegisterVariable (&gl_nocolors);

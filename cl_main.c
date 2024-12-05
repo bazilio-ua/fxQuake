@@ -34,6 +34,7 @@ cvar_t	cl_lerpmuzzleflash = {"cl_lerpmuzzleflash","0", CVAR_NONE};
 
 cvar_t	cl_coloredlight = {"cl_coloredlight","0", CVAR_ARCHIVE};
 cvar_t	cl_extradlight = {"cl_extradlight","0", CVAR_ARCHIVE};
+cvar_t	cl_extradlightstatic = {"cl_extradlightstatic","0", CVAR_ARCHIVE};
 
 cvar_t	lookspring = {"lookspring","0", CVAR_ARCHIVE};
 cvar_t	lookstrafe = {"lookstrafe","0", CVAR_ARCHIVE};
@@ -278,11 +279,11 @@ dlight_t *CL_AllocDlight (int key)
 // first look for an exact key match
 	if (key)
 	{
-		dl = cl_dlights;
-		for (i=0 ; i<MAX_DLIGHTS ; i++, dl++)
+		for (i=0, dl = cl_dlights ; i<MAX_DLIGHTS ; i++, dl++)
 		{
 			if (dl->key == key)
 			{
+			// reuse this light
 				memset (dl, 0, sizeof(*dl));
 				dl->key = key;
 				dl->color[0] = dl->color[1] = dl->color[2] = 1.0; // lit support via lordhavoc
@@ -293,8 +294,7 @@ dlight_t *CL_AllocDlight (int key)
 	}
 
 // then look for anything else
-	dl = cl_dlights;
-	for (i=0 ; i<MAX_DLIGHTS ; i++, dl++)
+	for (i=0, dl = cl_dlights ; i<MAX_DLIGHTS ; i++, dl++)
 	{
 		if (dl->die < cl.time)
 		{
@@ -306,6 +306,7 @@ dlight_t *CL_AllocDlight (int key)
 		}
 	}
 
+// otherwise grab first dlight
 	dl = &cl_dlights[0];
 	memset (dl, 0, sizeof(*dl));
 	dl->key = key;
@@ -316,7 +317,7 @@ dlight_t *CL_AllocDlight (int key)
 
 void CL_ColorDlight (dlight_t *dl, float r, float g, float b)
 {
-	// leave dlight with white value it had at allocation
+// leave dlight with white value it had at allocation
 	if (!cl_coloredlight.value)
 		return;
 
@@ -326,6 +327,37 @@ void CL_ColorDlight (dlight_t *dl, float r, float g, float b)
 	dl->colored = true;
 }
 
+void CL_ColorDlightPalette (dlight_t *dl, int i)
+{
+	byte	*rgb;
+	
+// leave dlight with white value it had at allocation
+	if (!cl_coloredlight.value)
+		return;
+	
+	rgb = (byte *)&d_8to24table[i];
+	dl->color[0] = rgb[0] * (1.0 / 255.0);
+	dl->color[1] = rgb[1] * (1.0 / 255.0);
+	dl->color[2] = rgb[2] * (1.0 / 255.0);
+	dl->colored = true;
+}
+
+void CL_ColorDlightPaletteLength (dlight_t *dl, int start, int length)
+{
+	int 	i;
+	byte	*rgb;
+	
+// leave dlight with white value it had at allocation
+	if (!cl_coloredlight.value)
+		return;
+	
+	i = (start + (rand() % length));
+	rgb = (byte *)&d_8to24table[i];
+	dl->color[0] = rgb[0] * (1.0 / 255.0);
+	dl->color[1] = rgb[1] * (1.0 / 255.0);
+	dl->color[2] = rgb[2] * (1.0 / 255.0);
+	dl->colored = true;
+}
 
 /*
 ===============
@@ -341,8 +373,7 @@ void CL_DecayLights (void)
 	
 	time = cl.time - cl.oldtime;
 
-	dl = cl_dlights;
-	for (i=0 ; i<MAX_DLIGHTS ; i++, dl++)
+	for (i=0, dl = cl_dlights ; i<MAX_DLIGHTS ; i++, dl++)
 	{
 		if (dl->die < cl.time || !dl->radius)
 			continue;
@@ -408,6 +439,70 @@ float	CL_LerpPoint (void)
 	return frac;
 }
 
+void CL_UpdateStatic (void)
+{
+	entity_t *ent;
+	int		i;
+	dlight_t	*dl;
+	int		key;
+	
+	if (!cl_extradlightstatic.value)
+		return;
+	
+	for (i=0,ent=cl_static_entities ; i<cl.num_statics ; i++,ent++)
+	{
+		if (!ent->model)
+			continue;
+		
+		key = i + 1;
+		
+		if (!strcmp (ent->model->name, "progs/flame.mdl"))
+		{
+			dl = CL_AllocDlight (key);
+			VectorCopy (ent->origin, dl->origin);
+			dl->radius = 100;
+			dl->die = cl.time + 0.1;
+			
+			CL_ColorDlightPaletteLength (dl, DL_COLOR_FLAME);
+		}
+		else if (!strcmp (ent->model->name, "progs/flame2.mdl"))
+		{
+			dl = CL_AllocDlight (key);
+			VectorCopy (ent->origin, dl->origin);
+			dl->radius = 125;
+			dl->die = cl.time + 0.1;
+			
+			CL_ColorDlightPaletteLength (dl, DL_COLOR_FLAME2);
+		}
+		else if (!strcmp (ent->model->name, "progs/s_light.spr"))
+		{
+			dl = CL_AllocDlight (key);
+			VectorCopy (ent->origin, dl->origin);
+			dl->radius = 85;
+			dl->die = cl.time + 0.1;
+			
+			CL_ColorDlightPalette (dl, DL_COLOR_111);
+		}
+		else if (!strcmp (ent->model->name, "progs/candle.mdl")) // rogue
+		{
+			dl = CL_AllocDlight (key);
+			VectorCopy (ent->origin, dl->origin);
+			dl->radius = 55;
+			dl->die = cl.time + 0.1;
+			
+			CL_ColorDlightPaletteLength (dl, DL_COLOR_FLAME3);
+		}
+		else if (!strcmp (ent->model->name, "progs/lantern.mdl")) // rogue
+		{
+			dl = CL_AllocDlight (key);
+			VectorCopy (ent->origin, dl->origin);
+			dl->radius = 85;
+			dl->die = cl.time + 0.1;
+			
+			CL_ColorDlightPalette (dl, DL_COLOR_246);
+		}
+	}
+}
 
 /*
 ===============
@@ -424,6 +519,7 @@ void CL_RelinkEntities (void)
 	vec3_t		oldorg;
 	dlight_t	*dl;
 	static float	lastmsg = 0;
+	int		key;
 
 // determine partial update time
 	frac = CL_LerpPoint ();
@@ -517,86 +613,35 @@ void CL_RelinkEntities (void)
 			}
 		}
 		
+		key = i + cl.num_statics + 1;
+		
 // rotate binary objects locally
 		if (ent->model->flags & EF_ROTATE)
 			ent->angles[1] = objrotate;
 		
 		if (ent->effects & EF_BRIGHTFIELD)
 			R_EntityParticles (ent);
-		if (ent->effects & EF_MUZZLEFLASH)
-		{
-			vec3_t		fv, rv, uv;
-			
-			dl = CL_AllocDlight (i);
-			VectorCopy (ent->origin,  dl->origin);
-			dl->origin[2] += 16;
-			AngleVectors (ent->angles, fv, rv, uv);
-			VectorMA (dl->origin, 18, fv, dl->origin);
-			dl->radius = 200 + (rand()&31);
-			dl->minlight = 32;
-			dl->die = cl.time + 0.1;
-			
-			//johnfitz -- assume muzzle flash accompanied by muzzle flare, which looks bad when lerped
-			if (!cl_lerpmuzzleflash.value)
-			{
-                if (i == cl.viewentity)
-                    cl.viewent.lerpflags |= LERP_RESETANIM|LERP_RESETANIM2; // no lerping for two frames
-			}
-            
-			if (i == cl.viewentity)
-			{
-				// switch the flash colour for the current weapon
-				if (cl.stats[STAT_ACTIVEWEAPON] == IT_LIGHTNING)
-					CL_ColorDlight (dl, DL_COLOR_LIGHTBLUE);
-				else if (rogue && cl.stats[STAT_ACTIVEWEAPON] == RIT_PLASMA_GUN)
-					CL_ColorDlight (dl, DL_COLOR_LIGHTBLUE);
-				else if (quoth && cl.stats[STAT_ACTIVEWEAPON] == HIT_LASER_CANNON) // quoth plasma gun uses the same bit as hipnotic laser cannon, so check it first
-					CL_ColorDlight (dl, DL_COLOR_LIGHTBLUE);
-				else if (hipnotic && cl.stats[STAT_ACTIVEWEAPON] == HIT_LASER_CANNON)
-					CL_ColorDlight (dl, DL_COLOR_RED);
-				else
-					CL_ColorDlight (dl, DL_COLOR_ORANGE);
-			}
-			else
-			{
-				// some entities have different attacks resulting in a different flash colour
-				if (!strcmp (ent->model->name, "progs/wizard.mdl"))
-					CL_ColorDlight (dl, DL_COLOR_GREEN);
-				else if (!strcmp (ent->model->name, "progs/shalrath.mdl"))
-					CL_ColorDlight (dl, DL_COLOR_PURPLE);
-				else if (!strcmp (ent->model->name, "progs/shambler.mdl"))
-					CL_ColorDlight (dl, DL_COLOR_LIGHTBLUE);
-				else if (!strcmp (ent->model->name, "progs/enforcer.mdl"))
-					CL_ColorDlight (dl, DL_COLOR_ORANGE);
-				else if (!strcmp (ent->model->name, "progs/wrath.mdl") ||
-						 !strcmp (ent->model->name, "progs/s_wrath.mdl")) // rogue wrath
-					CL_ColorDlight (dl, DL_COLOR_RED);
-				else if (!strcmp (ent->model->name, "progs/dragon.mdl"))
-					CL_ColorDlight (dl, DL_COLOR_GOLD);
-				else
-					CL_ColorDlight (dl, DL_COLOR_ORANGE);
-			}
-		}
+		
 		if (ent->effects & EF_BRIGHTLIGHT) // rogue plasma and eel
 		{
-			dl = CL_AllocDlight (i);
+			dl = CL_AllocDlight (key);
 			VectorCopy (ent->origin,  dl->origin);
 			dl->origin[2] += 16;
 			dl->radius = 400 + (rand()&31);
 			dl->die = cl.time + 0.001;
 			
 			if (!strcmp (ent->model->name, "progs/plasma.mdl")) // rogue plasma
-				CL_ColorDlight (dl, DL_COLOR_LIGHTBLUE);
+				CL_ColorDlightPaletteLength (dl, DL_COLOR_LIGHTNING);
 			else if (!strcmp (ent->model->name, "progs/eel2.mdl")) // rogue eel
-				CL_ColorDlight (dl, DL_COLOR_LIGHTBLUE);
+				CL_ColorDlightPaletteLength (dl, DL_COLOR_LIGHTNING);
 			else if (!strcmp (ent->model->name, "progs/lasrspik.mdl")) // EER1 (laser for extended hipnotic prog)
-				CL_ColorDlight (dl, DL_COLOR_RED);
+				CL_ColorDlightPaletteLength (dl, DL_COLOR_LASER2);
 			else
-				CL_ColorDlight (dl, DL_COLOR_WHITE); // uncoloured
+				CL_ColorDlightPalette (dl, DL_COLOR_254); // uncoloured (full white)
 		}
 		if (ent->effects & EF_DIMLIGHT) // powerup(s) glows and laser 
 		{
-			dl = CL_AllocDlight (i);
+			dl = CL_AllocDlight (key);
 			VectorCopy (ent->origin,  dl->origin);
 			dl->radius = 200 + (rand()&31);
 			dl->die = cl.time + 0.001;
@@ -605,56 +650,110 @@ void CL_RelinkEntities (void)
 			if (i == cl.viewentity)
 			{
 				// set the appropriate colour depending on the current powerup(s)
-				if ((cl.items & IT_QUAD) && (cl.items & IT_INVULNERABILITY))
-					CL_ColorDlight (dl, DL_COLOR_PURPLE);
+				if ((cl.items & (IT_QUAD | IT_INVULNERABILITY)) == (IT_QUAD | IT_INVULNERABILITY))
+					CL_ColorDlightPaletteLength (dl, DL_COLOR_POWER);
 				else if (cl.items & IT_QUAD)
-					CL_ColorDlight (dl, DL_COLOR_BLUE);
+					CL_ColorDlightPaletteLength (dl, DL_COLOR_QUAD);
 				else if (cl.items & IT_INVULNERABILITY)
-					CL_ColorDlight (dl, DL_COLOR_RED);
+					CL_ColorDlightPaletteLength (dl, DL_COLOR_PENT);
 				else if (hipnotic && (cl.items & HIT_EMPATHY_SHIELDS)) // hipnotic empathy shield
-					CL_ColorDlight (dl, DL_COLOR_GOLD);
+					CL_ColorDlightPalette (dl, DL_COLOR_167);
 				else
-					CL_ColorDlight (dl, DL_COLOR_WHITE); // uncoloured
+					CL_ColorDlightPalette (dl, DL_COLOR_15); // uncoloured (dim white)
 			}
 			else
 			{
 				if (!strcmp (ent->model->name, "progs/laser.mdl")) // id enforcer and rogue morph sometime
 				{
 					if (rogue)
-						CL_ColorDlight (dl, DL_COLOR_YELLOW); // morph laser
+						CL_ColorDlightPaletteLength (dl, ent->skinnum == 1 ? DL_COLOR_LASER3 : DL_COLOR_LASER); // skin1 morph yellow laser
 					else
-						CL_ColorDlight (dl, DL_COLOR_ORANGE);
+						CL_ColorDlightPaletteLength (dl, DL_COLOR_LASER);
 				}
 				else if (!strcmp (ent->model->name, "progs/morph_az.mdl") ||
 						 !strcmp (ent->model->name, "progs/morph_eg.mdl") ||
 						 !strcmp (ent->model->name, "progs/morph_gr.mdl")) // rogue morph
-					CL_ColorDlight (dl, DL_COLOR_YELLOW);
+					CL_ColorDlightPalette (dl, DL_COLOR_235);
 				else if (!strcmp (ent->model->name, "progs/eel2.mdl")) // rogue eel
-					CL_ColorDlight (dl, DL_COLOR_LIGHTBLUE);
+					CL_ColorDlightPaletteLength (dl, DL_COLOR_LIGHTNING);
 				else if (!strcmp (ent->model->name, "progs/sword.mdl")) // rogue invisible swordsman
-					CL_ColorDlight (dl, DL_COLOR_YELLOW);
+					CL_ColorDlightPalette (dl, DL_COLOR_8);
 				else if (!strcmp (ent->model->name, "progs/lasrspik.mdl")) // hipnotic laser
-					CL_ColorDlight (dl, DL_COLOR_RED);
+					CL_ColorDlightPaletteLength (dl, DL_COLOR_LASER2);
 				else
-					CL_ColorDlight (dl, DL_COLOR_WHITE); // uncoloured
+					CL_ColorDlightPalette (dl, DL_COLOR_15); // uncoloured (dim white)
 			}
 		}
-		
-// Nehahra
-		if ((ent->effects & EF_RED) || (ent->effects & EF_BLUE))
+		if ((ent->effects & EF_RED) || (ent->effects & EF_BLUE)) // Nehahra
 		{
-			dl = CL_AllocDlight (i);
+			dl = CL_AllocDlight (key);
 			VectorCopy (ent->origin,  dl->origin);
 			dl->radius = 200 + (rand()&31);
 			dl->die = cl.time + 0.001;
 			
 			// set the appropriate colour
-			if ((ent->effects & EF_RED) && (ent->effects & EF_BLUE))
-				CL_ColorDlight (dl, DL_COLOR_PURPLE);
+			if ((ent->effects & (EF_BLUE | EF_RED)) == (EF_BLUE | EF_RED))
+				CL_ColorDlightPalette (dl, DL_COLOR_144);
 			else if (ent->effects & EF_RED)
-				CL_ColorDlight (dl, DL_COLOR_RED);
+				CL_ColorDlightPalette (dl, DL_COLOR_79);
 			else if (ent->effects & EF_BLUE)
-				CL_ColorDlight (dl, DL_COLOR_BLUE);
+				CL_ColorDlightPalette (dl, DL_COLOR_47);
+		}
+		if (ent->effects & EF_MUZZLEFLASH)
+		{
+			vec3_t		fv, rv, uv;
+			
+			dl = CL_AllocDlight (key);
+			VectorCopy (ent->origin,  dl->origin);
+			dl->origin[2] += 16;
+			AngleVectors (ent->angles, fv, rv, uv);
+			VectorMA (dl->origin, 18, fv, dl->origin);
+			dl->radius = ((ent->effects & EF_DIMLIGHT) ? 300 : 200) + (rand()&31);
+			dl->die = cl.time + 0.1;
+			dl->minlight = 32;
+			
+			//johnfitz -- assume muzzle flash accompanied by muzzle flare, which looks bad when lerped
+			if (!cl_lerpmuzzleflash.value)
+			{
+				if (i == cl.viewentity)
+					cl.viewent.lerpflags |= LERP_RESETANIM|LERP_RESETANIM2; // no lerping for two frames
+				else
+					ent->lerpflags |= LERP_RESETANIM|LERP_RESETANIM2; // no lerping for two frames
+			}
+			
+			if (i == cl.viewentity)
+			{
+				// switch the flash colour for the current weapon
+				if (cl.stats[STAT_ACTIVEWEAPON] == IT_LIGHTNING)
+					CL_ColorDlightPaletteLength (dl, DL_COLOR_LIGHTNING);
+				else if (rogue && cl.stats[STAT_ACTIVEWEAPON] == RIT_PLASMA_GUN)
+					CL_ColorDlightPaletteLength (dl, DL_COLOR_LIGHTNING);
+				else if (quoth && cl.stats[STAT_ACTIVEWEAPON] == HIT_LASER_CANNON) // quoth plasma gun uses the same bit as hipnotic laser cannon, so check it first
+					CL_ColorDlightPaletteLength (dl, DL_COLOR_LIGHTNING);
+				else if (hipnotic && cl.stats[STAT_ACTIVEWEAPON] == HIT_LASER_CANNON)
+					CL_ColorDlightPaletteLength (dl, DL_COLOR_LASER2);
+				else
+					CL_ColorDlightPaletteLength (dl, DL_COLOR_SHOT);
+			}
+			else
+			{
+				// some entities have different attacks resulting in a different flash colour
+				if (!strcmp (ent->model->name, "progs/wizard.mdl"))
+					CL_ColorDlightPaletteLength (dl, DL_COLOR_W_SPIKE);
+				else if (!strcmp (ent->model->name, "progs/shalrath.mdl"))
+					CL_ColorDlightPaletteLength (dl, DL_COLOR_V_SPIKE);
+				else if (!strcmp (ent->model->name, "progs/shambler.mdl"))
+					CL_ColorDlightPaletteLength (dl, DL_COLOR_LIGHTNING);
+				else if (!strcmp (ent->model->name, "progs/enforcer.mdl"))
+					CL_ColorDlightPaletteLength (dl, DL_COLOR_LASER);
+				else if (!strcmp (ent->model->name, "progs/wrath.mdl") ||
+						 !strcmp (ent->model->name, "progs/s_wrath.mdl")) // rogue wrath
+					CL_ColorDlightPaletteLength (dl, DL_COLOR_W_BALL);
+				else if (!strcmp (ent->model->name, "progs/dragon.mdl"))
+					CL_ColorDlightPaletteLength (dl, DL_COLOR_FIRE);
+				else
+					CL_ColorDlightPaletteLength (dl, DL_COLOR_SHOT);
+			}
 		}
 		
 		if (ent->model->flags & EF_GIB)
@@ -663,17 +762,22 @@ void CL_RelinkEntities (void)
 			R_RocketTrail (oldorg, ent->origin, RT_ZOMGIB);
 		else if (ent->model->flags & EF_TRACER)
 		{
-			R_RocketTrail (oldorg, ent->origin, RT_WIZARD);
-			
-			// wizard trail
-			if (cl_extradlight.value)
+			if (!strcmp (ent->model->name, "progs/flag.mdl")) // threewave ctf
+				R_RocketTrail (oldorg, ent->origin, RT_ROCKET);
+			else
 			{
-				dl = CL_AllocDlight (i);
-				VectorCopy (ent->origin, dl->origin);
-				dl->radius = 200;
-				dl->die = cl.time + 0.01;
+				R_RocketTrail (oldorg, ent->origin, RT_WIZARD);
 				
-				CL_ColorDlight (dl, DL_COLOR_GREEN);
+				// wizard trail
+				if (cl_extradlight.value)
+				{
+					dl = CL_AllocDlight (key);
+					VectorCopy (ent->origin, dl->origin);
+					dl->radius = 200;
+					dl->die = cl.time + 0.01;
+					
+					CL_ColorDlightPaletteLength (dl, DL_COLOR_W_SPIKE);
+				}
 			}
 		}
 		else if (ent->model->flags & EF_TRACER2)
@@ -683,12 +787,12 @@ void CL_RelinkEntities (void)
 			// knight trail
 			if (cl_extradlight.value)
 			{
-				dl = CL_AllocDlight (i);
+				dl = CL_AllocDlight (key);
 				VectorCopy (ent->origin, dl->origin);
 				dl->radius = 200;
 				dl->die = cl.time + 0.01;
 				
-				CL_ColorDlight (dl, DL_COLOR_ORANGE);
+				CL_ColorDlightPaletteLength (dl, DL_COLOR_K_SPIKE);
 			}
 		}
 		else if (ent->model->flags & EF_TRACER3)
@@ -698,24 +802,29 @@ void CL_RelinkEntities (void)
 			// vore trail
 			if (cl_extradlight.value)
 			{
-				dl = CL_AllocDlight (i);
+				dl = CL_AllocDlight (key);
 				VectorCopy (ent->origin, dl->origin);
 				dl->radius = 200;
 				dl->die = cl.time + 0.01;
 				
-				CL_ColorDlight (dl, DL_COLOR_PURPLE);
+				CL_ColorDlightPaletteLength (dl, DL_COLOR_V_SPIKE);
 			}
 		}
 		else if (ent->model->flags & EF_ROCKET)
 		{
 			R_RocketTrail (oldorg, ent->origin, RT_ROCKET);
 			
-			dl = CL_AllocDlight (i);
+			dl = CL_AllocDlight (key);
 			VectorCopy (ent->origin, dl->origin);
 			dl->radius = 200;
 			dl->die = cl.time + 0.01;
 			
-			CL_ColorDlight (dl, DL_COLOR_ORANGE);
+			if (!strcmp (ent->model->name, "progs/lavaball.mdl"))
+				CL_ColorDlightPaletteLength (dl, DL_COLOR_LAVA);
+			else if (!strcmp (ent->model->name, "progs/lavarock.mdl")) // hipnotic
+				CL_ColorDlightPaletteLength (dl, DL_COLOR_LAVA);
+			else
+				CL_ColorDlightPaletteLength (dl, DL_COLOR_ROCKET);
 		}
 		else if (ent->model->flags & EF_GRENADE)
 			R_RocketTrail (oldorg, ent->origin, RT_GRENADE);
@@ -770,6 +879,7 @@ int CL_ReadFromServer (void)
 	if (cl_shownet.value)
 		Con_Printf ("\n");
 
+	CL_UpdateStatic ();
 	CL_RelinkEntities ();
 	CL_UpdateTEnts ();
 
@@ -916,6 +1026,7 @@ void CL_Init (void)
 
 	Cvar_RegisterVariable (&cl_coloredlight);
 	Cvar_RegisterVariable (&cl_extradlight);
+	Cvar_RegisterVariable (&cl_extradlightstatic);
 
 	Cvar_RegisterVariable (&lookspring);
 	Cvar_RegisterVariable (&lookstrafe);

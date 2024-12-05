@@ -89,9 +89,11 @@ cvar_t	gl_cull = {"gl_cull","1", CVAR_NONE};
 cvar_t	gl_farclip = {"gl_farclip","16384", CVAR_ARCHIVE};
 cvar_t	gl_smoothmodels = {"gl_smoothmodels","1", CVAR_NONE};
 cvar_t	gl_affinemodels = {"gl_affinemodels","0", CVAR_NONE};
+cvar_t	gl_gammablend = {"gl_gammablend","1", CVAR_ARCHIVE};
 cvar_t	gl_polyblend = {"gl_polyblend","1", CVAR_ARCHIVE};
 cvar_t	gl_flashblend = {"gl_flashblend","1", CVAR_ARCHIVE};
 cvar_t	gl_flashblendview = {"gl_flashblendview","1", CVAR_ARCHIVE};
+cvar_t	gl_flashblendscale = {"gl_flashblendscale","1", CVAR_ARCHIVE};
 cvar_t	gl_overbright = {"gl_overbright", "1", CVAR_ARCHIVE};
 cvar_t	gl_oldspr = {"gl_oldspr", "0", CVAR_NONE}; // Old opaque sprite
 cvar_t	gl_nocolors = {"gl_nocolors","0", CVAR_NONE};
@@ -185,9 +187,8 @@ qboolean R_CullBox (vec3_t emins, vec3_t emaxs)
 	int		i;
 	mplane_t *p;
     
-	for (i=0 ; i<4 ; i++)
+	for (i=0, p = frustum ; i<4 ; i++, p++)
     {
-		p = frustum + i;
 		switch(p->signbits)
 		{
         default:
@@ -225,6 +226,27 @@ qboolean R_CullBox (vec3_t emins, vec3_t emaxs)
             break;
 		}
     }
+	return false;
+}
+
+
+/*
+=================
+R_CullSphere
+
+Returns true if the sphere is completely outside the frustum
+=================
+*/
+qboolean R_CullSphere (vec3_t origin, float radius)
+{
+	int		i;
+	mplane_t *p;
+	
+	for (i=0, p = frustum ; i<4 ; i++, p++)
+	{
+		if (DotProduct (p->normal, origin) - p->dist <= -radius)
+			return true;
+	}
 	return false;
 }
 
@@ -325,9 +347,7 @@ mspriteframe_t *R_GetSpriteFrame (entity_t *e)
 
 /*
 =================
-R_DrawSpriteModel 
-
-now supports all orientations
+R_DrawSpriteModel -- johnfitz -- rewritten: now supports all orientations
 =================
 */
 void R_DrawSpriteModel (entity_t *e)
@@ -341,6 +361,7 @@ void R_DrawSpriteModel (entity_t *e)
 	// don't even bother culling, because it's just a single
 	// polygon without a surface cache
 	//TODO: frustum cull it?
+
 	frame = R_GetSpriteFrame (e);
 	psprite = e->model->cache.data;
 
@@ -503,8 +524,10 @@ R_DrawAliasModel
 void R_DrawAliasModel (entity_t *e)
 {
 	int			lnum;
+	dlight_t	*l;
 	vec3_t		dist;
 	float		add;
+	float		dscale;
 	model_t		*clmodel;
 	aliashdr_t	*paliashdr;
 	int			anim;
@@ -604,16 +627,21 @@ void R_DrawAliasModel (entity_t *e)
 	// add dlights
 	if (r_dynamic.value) // EER1
 	{
-		for (lnum=0 ; lnum<MAX_DLIGHTS ; lnum++)
+		dscale = CLAMP(1.0, r_dynamicscale.value, 32.0);
+		
+		for (lnum=0, l = cl_dlights ; lnum<MAX_DLIGHTS ; lnum++, l++)
 		{
-			if (cl_dlights[lnum].die >= cl.time)
-			{
-				VectorSubtract (e->origin, cl_dlights[lnum].origin, dist);
-				add = cl_dlights[lnum].radius - VectorLength(dist);
-				
-				if (add > 0)
-					VectorMA (lightcolor, add * CLAMP(1.0, r_dynamicscale.value, 32.0), cl_dlights[lnum].color, lightcolor);
-			}
+			if (l->die < cl.time || !l->radius)
+				continue;
+			
+			if (R_CullSphere (l->origin, l->radius))
+				continue;
+			
+			VectorSubtract (e->origin, l->origin, dist);
+			add = l->radius - VectorLength(dist);
+			
+			if (add > 0)
+				VectorMA (lightcolor, add * dscale, l->color, lightcolor);
 		}
 	}
 
@@ -878,40 +906,70 @@ R_PolyBlend
 */
 void R_PolyBlend (void)
 {
-	if (!gl_polyblend.value)
-		return;
-
-	if (!v_blend[3])
-		return;
-
-	GL_DisableMultitexture (); // selects TEXTURE0
-
-//	glDisable (GL_ALPHA_TEST); //FX don't disable perform alpha test here, because bloom later
-	glDisable (GL_TEXTURE_2D);
-	glDisable (GL_DEPTH_TEST);
-	glEnable (GL_BLEND);
-
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity ();
-
-	glOrtho (0, 1, 1, 0, -99999, 99999);
-
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity ();
-
-	glColor4fv (v_blend);
-
-	glBegin (GL_QUADS);
-	glVertex2f (0, 0);
-	glVertex2f (1, 0);
-	glVertex2f (1, 1);
-	glVertex2f (0, 1);
-	glEnd ();
-
-	glDisable (GL_BLEND);
-	glEnable (GL_DEPTH_TEST);
-	glEnable (GL_TEXTURE_2D);
-//	glEnable (GL_ALPHA_TEST); //FX
+	float gamma = CLAMP(0.0, gl_gammablend.value, 1.0);
+	
+//	if (!gl_polyblend.value)
+//		return;
+//
+//	if (!v_blend[3])
+//		return;
+	
+	if ((gl_polyblend.value && v_blend[3]) || gamma < 1.0)
+	{
+		GL_DisableMultitexture (); // selects TEXTURE0
+		
+//		glDisable (GL_ALPHA_TEST); //FX don't disable perform alpha test here, because bloom later
+		glDisable (GL_TEXTURE_2D);
+		glDisable (GL_DEPTH_TEST);
+		glEnable (GL_BLEND);
+		
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity ();
+		
+		glOrtho (0, 1, 1, 0, -99999, 99999);
+		
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity ();
+		
+		if (gl_polyblend.value && v_blend[3]) {
+			glColor4fv (v_blend);
+			
+			glBegin (GL_QUADS);
+			glVertex2f (0, 0);
+			glVertex2f (1, 0);
+			glVertex2f (1, 1);
+			glVertex2f (0, 1);
+			glEnd ();
+		}
+		
+		if (gamma < 1.0) {
+			glBlendFunc(GL_DST_COLOR, GL_ONE_MINUS_SRC_ALPHA);
+			glColor4f(1, 1, 1, gamma);
+			
+			glBegin (GL_QUADS);
+			glVertex2f (0, 0);
+			glVertex2f (1, 0);
+			glVertex2f (1, 1);
+			glVertex2f (0, 1);
+			glEnd ();
+			
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		}
+		
+//		glColor4fv (v_blend);
+//		
+//		glBegin (GL_QUADS);
+//		glVertex2f (0, 0);
+//		glVertex2f (1, 0);
+//		glVertex2f (1, 1);
+//		glVertex2f (0, 1);
+//		glEnd ();
+		
+		glDisable (GL_BLEND);
+		glEnable (GL_DEPTH_TEST);
+		glEnable (GL_TEXTURE_2D);
+//		glEnable (GL_ALPHA_TEST); //FX
+	}
 }
 
 
