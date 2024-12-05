@@ -173,11 +173,19 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-mem 512"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-game ad"
             isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-game ad +map r_yellow"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-game alphamaskmodeltexture +map start"
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-window"
