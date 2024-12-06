@@ -136,6 +136,18 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
+            argument = "-nomtex"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-noadd"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-nocombine"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
             argument = "-width 1920 -height 1200"
             isEnabled = "NO">
          </CommandLineArgument>
@@ -177,6 +189,14 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-game ad"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-game ad +map r_yellow"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-game alphamaskmodeltexture +map start"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
