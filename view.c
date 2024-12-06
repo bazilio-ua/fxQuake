@@ -636,7 +636,7 @@ void V_UpdateGamma (void)
 
 }
 
-void V_ShiftPalette (unsigned char *palette)
+void V_ShiftPalette (byte *palette)
 {
 	// set shifted palette
 	V_SetPalette (palette);
@@ -644,7 +644,7 @@ void V_ShiftPalette (unsigned char *palette)
 	TexMgr_ReloadTextures ();
 }
 
-void V_SetPalette (unsigned char *palette)
+void V_SetPalette (byte *palette)
 {
 	byte *pal, *src, *dst;
 	int i;
@@ -729,7 +729,7 @@ void V_SetPalette (unsigned char *palette)
 	((byte *)&d_8to24table_conchars[0])[3] = 0;
 }
 
-void V_SetOriginalPalette (unsigned char *palette)
+void V_SetOriginalPalette (byte *palette)
 {
 	byte *pal, *src, *dst;
 	int i;
