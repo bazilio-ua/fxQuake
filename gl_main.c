@@ -59,7 +59,7 @@ float r_fovx, r_fovy;
 void R_SetupAliasFrame (entity_t *e, aliashdr_t *paliashdr, lerpdata_t *lerpdata);
 void R_SetupEntityTransform (entity_t *e, lerpdata_t *lerpdata);
 void GL_DrawAliasFrame (aliashdr_t *paliashdr, lerpdata_t lerpdata);
-void GL_DrawEntityTransform (lerpdata_t lerpdata);
+void GL_EntityTransform (lerpdata_t lerpdata);
 
 
 cvar_t	r_norefresh = {"r_norefresh","0", CVAR_NONE};
@@ -581,7 +581,7 @@ void R_DrawAliasModel (entity_t *e)
 	//
 	glPushMatrix ();
 
-	GL_DrawEntityTransform (lerpdata); // FX
+	GL_EntityTransform (lerpdata); // FX
 
 	// special handling of view model to keep FOV from altering look.
 	if (e == &cl.viewent)
@@ -1248,12 +1248,12 @@ void R_RenderView (void)
 
 /*
 ===============
-GL_DrawEntityTransform -- model transform interpolation
+GL_EntityTransform -- model transform interpolation
 
 R_RotateForEntity renamed and modified to take lerpdata instead of pointer to entity
 ===============
 */
-void GL_DrawEntityTransform (lerpdata_t lerpdata)
+void GL_EntityTransform (lerpdata_t lerpdata)
 {
 	glTranslatef (lerpdata.origin[0], lerpdata.origin[1], lerpdata.origin[2]);
 	glRotatef (lerpdata.angles[1],  0, 0, 1);
