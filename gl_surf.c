@@ -548,7 +548,7 @@ void R_UploadLightmaps (void)
 		if (!lightmap_modified[lmap])
 			continue;
 
-		TexMgr_BindTexture (lightmap_textures[lmap]);
+		GL_BindTexture (lightmap_textures[lmap]);
 		lightmap_modified[lmap] = false;
 
 		rect = &lightmap_rectchange[lmap];
@@ -644,7 +644,7 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, int frame)
 			glColor4f(1, 1, 1, alpha);
 		}
 
-		TexMgr_BindTexture (s->texinfo->texture->warpimage);
+		GL_BindTexture (s->texinfo->texture->warpimage);
 
 		if ( !(s->flags & (SURF_DRAWLAVA | SURF_DRAWSLIME)) )
 		{
@@ -702,7 +702,7 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, int frame)
 			glColor4f(1, 1, 1, alpha);
 		}
 
-		TexMgr_BindTexture (t->gltexture);
+		GL_BindTexture (t->gltexture);
 		R_DrawGLPoly34 (p);
 		rs_c_brush_passes++; // r_speeds
 
@@ -739,12 +739,12 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, int frame)
 		{
 			// Binds world to texture env 0
 			GL_DisableMultitexture (); // selects TEXTURE0
-			TexMgr_BindTexture (t->gltexture);
+			GL_BindTexture (t->gltexture);
 			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
 			// Binds lightmap to texture env 1
 			GL_EnableMultitexture (); // selects TEXTURE1
-			TexMgr_BindTexture (lightmap_textures[s->lightmaptexture]);
+			GL_BindTexture (lightmap_textures[s->lightmaptexture]);
 			R_RenderDynamicLightmaps (s);
 
 			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_EXT);
@@ -771,7 +771,7 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, int frame)
 		} 
 		else if (alpha < 1.0 || (s->flags & SURF_DRAWFENCE)) // case 2: can't do multipass if brush has alpha, so just draw the texture
 		{
-			TexMgr_BindTexture (t->gltexture);
+			GL_BindTexture (t->gltexture);
 			R_DrawGLPoly34 (p);
 			rs_c_brush_passes++; // r_speeds
 		}
@@ -779,13 +779,13 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, int frame)
 		{
 			// first pass -- texture with no fog
 			R_FogDisableGFog ();
-			TexMgr_BindTexture (t->gltexture);
+			GL_BindTexture (t->gltexture);
 			R_DrawGLPoly34 (p);
 			rs_c_brush_passes++; // r_speeds
 			R_FogEnableGFog ();
 
 			// second pass -- lightmap with black fog, modulate blended
-			TexMgr_BindTexture (lightmap_textures[s->lightmaptexture]);
+			GL_BindTexture (lightmap_textures[s->lightmaptexture]);
 			R_RenderDynamicLightmaps (s);
 
 			glDepthMask (GL_FALSE); // don't bother writing Z
@@ -826,7 +826,7 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, int frame)
 
 		if (t->fullbright)
 		{
-			TexMgr_BindTexture (t->fullbright);
+			GL_BindTexture (t->fullbright);
 			glDepthMask (GL_FALSE); // don't bother writing Z
 			glEnable (GL_BLEND);
 			glBlendFunc (GL_ONE, GL_ONE);
@@ -1227,7 +1227,7 @@ void R_DrawTextureChains_Water (model_t *model, entity_t *ent, texchain_t chain)
         {
             if (!bound) //only bind once we are sure we need this texture
             {
-                TexMgr_BindTexture (t->warpimage);
+                GL_BindTexture (t->warpimage);
                 bound = true;
             }
             R_DrawGLPoly34 (s->polys);
@@ -1262,7 +1262,7 @@ void R_DrawTextureChains_NoTexture (model_t *model, texchain_t chain)
         {
             if (!bound) //only bind once we are sure we need this texture
             {
-                TexMgr_BindTexture (t->gltexture);
+                GL_BindTexture (t->gltexture);
                 bound = true;
             }
             R_DrawGLPoly34 (s->polys);
@@ -1297,7 +1297,7 @@ void R_DrawTextureChains_Multitexture (model_t *model, entity_t *ent, texchain_t
         {
             if (!bound) //only bind once we are sure we need this texture
             {
-                TexMgr_BindTexture ((R_TextureAnimation(t, ent != NULL ? ent->frame : 0))->gltexture);
+                GL_BindTexture ((R_TextureAnimation(t, ent != NULL ? ent->frame : 0))->gltexture);
                 
                 if (t->texturechains[chain]->flags & SURF_DRAWFENCE)
                     glEnable (GL_ALPHA_TEST); // Flip alpha test back on
@@ -1305,7 +1305,7 @@ void R_DrawTextureChains_Multitexture (model_t *model, entity_t *ent, texchain_t
                 GL_EnableMultitexture(); // selects TEXTURE1
                 bound = true;
             }
-            TexMgr_BindTexture (lightmap_textures[s->lightmaptexture]);
+            GL_BindTexture (lightmap_textures[s->lightmaptexture]);
             glBegin(GL_POLYGON);
             v = s->polys->verts[0];
             for (j=0 ; j<s->polys->numverts ; j++, v+= VERTEXSIZE)
@@ -1349,7 +1349,7 @@ void R_DrawTextureChains_TextureOnly (model_t *model, entity_t *ent, texchain_t 
         {
             if (!bound) //only bind once we are sure we need this texture
             {
-                TexMgr_BindTexture ((R_TextureAnimation(t, ent != NULL ? ent->frame : 0))->gltexture);
+                GL_BindTexture ((R_TextureAnimation(t, ent != NULL ? ent->frame : 0))->gltexture);
                 
                 if (t->texturechains[chain]->flags & SURF_DRAWFENCE)
                     glEnable (GL_ALPHA_TEST); // Flip alpha test back on
@@ -1383,7 +1383,7 @@ void R_DrawLightmapChains (void)
 		if (!lightmap_polys[i])
 			continue;
         
-		TexMgr_BindTexture (lightmap_textures[i]);
+		GL_BindTexture (lightmap_textures[i]);
 		for (p = lightmap_polys[i]; p; p=p->chain)
 		{
 			glBegin (GL_POLYGON);
@@ -1425,7 +1425,7 @@ void R_DrawTextureChains_Glow (model_t *model, entity_t *ent, texchain_t chain)
         {
             if (!bound) //only bind once we are sure we need this texture
             {
-                TexMgr_BindTexture (glt);
+                GL_BindTexture (glt);
                 bound = true;
             }
             R_DrawGLPoly34 (s->polys);
@@ -1890,7 +1890,7 @@ void R_RebuildAllLightmaps (void)
 	{
 		if (!allocated[i][0])
 			break;
-		TexMgr_BindTexture (lightmap_textures[i]);
+		GL_BindTexture (lightmap_textures[i]);
 		glTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, BLOCK_WIDTH, BLOCK_HEIGHT, GL_RGBA,
                          GL_UNSIGNED_BYTE, lightmaps+i*BLOCK_WIDTH*BLOCK_HEIGHT*lightmap_bytes);
 	}

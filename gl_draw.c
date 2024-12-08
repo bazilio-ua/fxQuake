@@ -183,12 +183,12 @@ void TexMgr_UploadWarpImage (void)
 	{
 		if (glt->flags & TEXPREF_WARPIMAGE)
 		{
-			TexMgr_BindTexture (glt);
+			GL_BindTexture (glt);
 			glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, gl_warpimage_size, gl_warpimage_size, 0, GL_RGBA, GL_UNSIGNED_BYTE, dummy);
 			glt->width = glt->height = gl_warpimage_size;
             
             // set filter modes
-            TexMgr_SetFilterModes (glt);
+            GL_SetFilterModes (glt);
 		}
 	}
 
@@ -729,10 +729,10 @@ void GL_Init (void)
 
 /*
 ================
-TexMgr_BindTexture
+GL_BindTexture
 ================
 */
-void TexMgr_BindTexture (gltexture_t *texture)
+void GL_BindTexture (gltexture_t *texture)
 {
 	if (!texture)
 		texture = nulltexture;
@@ -747,13 +747,13 @@ void TexMgr_BindTexture (gltexture_t *texture)
 
 /*
 ================
-TexMgr_DeleteTexture -- ericw
+GL_DeleteTexture -- ericw
 
 Wrapper around glDeleteTextures that also clears the given texture number
 from our per-TMU cached texture binding table.
 ================
 */
-void TexMgr_DeleteTexture (gltexture_t *texture)
+void GL_DeleteTexture (gltexture_t *texture)
 {
 	glDeleteTextures (1, &texture->texnum);
     
@@ -768,9 +768,9 @@ void TexMgr_DeleteTexture (gltexture_t *texture)
 ================
 GL_ClearBindings -- ericw
 
-Invalidates cached bindings, so the next TexMgr_BindTexture calls for each TMU will
+Invalidates cached bindings, so the next GL_BindTexture calls for each TMU will
 make real glBindTexture calls.
-Call this after changing the binding outside of TexMgr_BindTexture.
+Call this after changing the binding outside of GL_BindTexture.
 ================
 */
 //#if 0
@@ -1032,12 +1032,12 @@ qpic_t *Draw_CachePic (char *path)
 
 /*
 ===============
-TexMgr_SetFilterModes
+GL_SetFilterModes
 ===============
 */
-void TexMgr_SetFilterModes (gltexture_t *glt)
+void GL_SetFilterModes (gltexture_t *glt)
 {
-//	TexMgr_BindTexture (glt);
+//	GL_BindTexture (glt);
 
 	if (glt->flags & TEXPREF_NEAREST)
 	{
@@ -1106,8 +1106,8 @@ void GL_TextureMode_f (void)
 	// change all the existing texture objects
 	for (glt=active_gltextures; glt; glt=glt->next) 
     {
-        TexMgr_BindTexture (glt);
-		TexMgr_SetFilterModes (glt);
+        GL_BindTexture (glt);
+		GL_SetFilterModes (glt);
     }
 
 	Sbar_Changed (); // sbar graphics need to be redrawn with new filter mode
@@ -1132,8 +1132,8 @@ void GL_Texture_Anisotropy_f (void)
 
 	for (glt=active_gltextures; glt; glt=glt->next) 
     {
-        TexMgr_BindTexture (glt);
-		TexMgr_SetFilterModes (glt);
+        GL_BindTexture (glt);
+		GL_SetFilterModes (glt);
     }
 }
 
@@ -1287,7 +1287,7 @@ void Draw_Character (int x, int y, int num)
 	if (num == 32)
 		return; // don't waste verts on spaces
 
-	TexMgr_BindTexture (char_texture);
+	GL_BindTexture (char_texture);
 	glBegin (GL_QUADS);
 
 	Draw_CharacterQuad (x, y, (char) num);
@@ -1307,7 +1307,7 @@ void Draw_String (int x, int y, char *str)
 	if (y <= -8)
 		return;			// totally off screen
 
-	TexMgr_BindTexture (char_texture);
+	GL_BindTexture (char_texture);
 	glBegin (GL_QUADS);
 
 	while (*str)
@@ -1339,7 +1339,7 @@ void Draw_AlphaPic (int x, int y, qpic_t *pic, float alpha)
 	glDisable (GL_ALPHA_TEST);
 	glEnable (GL_BLEND);
 	glColor4f (1,1,1,alpha);
-	TexMgr_BindTexture (gl->gltexture);
+	GL_BindTexture (gl->gltexture);
 	glBegin (GL_QUADS);
 	glTexCoord2f (gl->sl, gl->tl);
 	glVertex2f (x, y);
@@ -1373,7 +1373,7 @@ void Draw_Pic (int x, int y, qpic_t *pic)
 	glDisable (GL_ALPHA_TEST); //FX new
 	glEnable (GL_BLEND); //FX
 	glColor4f (1,1,1,1);
-	TexMgr_BindTexture (gl->gltexture);
+	GL_BindTexture (gl->gltexture);
 	glBegin (GL_QUADS);
 	glTexCoord2f (gl->sl, gl->tl);
 	glVertex2f (x, y);
@@ -1416,7 +1416,7 @@ void Draw_SubPic (int x, int y, qpic_t *pic, int srcx, int srcy, int width, int 
 	glDisable (GL_ALPHA_TEST); //FX new
 	glEnable (GL_BLEND); //FX
 	glColor4f (1,1,1,1);
-	TexMgr_BindTexture (gl->gltexture);
+	GL_BindTexture (gl->gltexture);
 	glBegin (GL_QUADS);
 	glTexCoord2f (newsl, newtl);
 	glVertex2f (x, y);
@@ -1559,7 +1559,7 @@ void Draw_TileClear (int x, int y, int w, int h)
 	glEnable (GL_BLEND); //FX
 //	glColor3f (1,1,1);
 	glColor4f (1,1,1,1); //FX new
-	TexMgr_BindTexture (gl->gltexture);
+	GL_BindTexture (gl->gltexture);
 	glBegin (GL_QUADS);
 	glTexCoord2f (x/64.0, y/64.0);
 	glVertex2f (x, y);
@@ -2460,7 +2460,7 @@ void TexMgr_Upload32 (gltexture_t *glt, unsigned *data)
 //	}
 //
 //	// upload
-//	TexMgr_BindTexture (glt);
+//	GL_BindTexture (glt);
 //	internalformat = (glt->flags & TEXPREF_ALPHA) ? GL_RGBA : GL_RGB;
 //	glTexImage2D (GL_TEXTURE_2D, 0, internalformat, scaled_width, scaled_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, scaled);
 //
@@ -2483,7 +2483,7 @@ void TexMgr_Upload32 (gltexture_t *glt, unsigned *data)
 //	}
 //
 //	// set filter modes
-//	TexMgr_SetFilterModes (glt);
+//	GL_SetFilterModes (glt);
 //
 //	// free allocated memory
     
@@ -2522,7 +2522,7 @@ void TexMgr_Upload32 (gltexture_t *glt, unsigned *data)
 	}
     
 	// upload
-	TexMgr_BindTexture (glt);
+	GL_BindTexture (glt);
 	
 	internalformat = (glt->flags & TEXPREF_ALPHA) ? GL_RGBA : GL_RGB;
 	if (gl_texture_compression && gl_compression.value && !(glt->flags & TEXPREF_NOPICMIP)) {
@@ -2586,7 +2586,7 @@ void TexMgr_Upload32 (gltexture_t *glt, unsigned *data)
 	}
     
 	// set filter modes
-	TexMgr_SetFilterModes (glt);
+	GL_SetFilterModes (glt);
 }
 
 /*
@@ -2599,11 +2599,11 @@ handles bloom data
 void TexMgr_UploadBloom (gltexture_t *glt, unsigned *data)
 {
 	// upload it
-	TexMgr_BindTexture (glt);
+	GL_BindTexture (glt);
 	glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, glt->width, glt->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 
 	// set filter modes
-	TexMgr_SetFilterModes (glt);
+	GL_SetFilterModes (glt);
 }
 
 /*
@@ -2616,11 +2616,11 @@ handles lightmap data
 void TexMgr_UploadLightmap (gltexture_t *glt, byte *data)
 {
 	// upload it
-	TexMgr_BindTexture (glt);
+	GL_BindTexture (glt);
 	glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, glt->width, glt->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 
 	// set filter modes
-	TexMgr_SetFilterModes (glt);
+	GL_SetFilterModes (glt);
 }
 
 /*
@@ -2809,7 +2809,7 @@ void TexMgr_FreeTexture (gltexture_t *texture)
 		texture->next = free_gltextures;
 		free_gltextures = texture;
 
-		TexMgr_DeleteTexture(texture);
+		GL_DeleteTexture(texture);
 		numgltextures--;
 		return;
 	}
@@ -2822,7 +2822,7 @@ void TexMgr_FreeTexture (gltexture_t *texture)
 			texture->next = free_gltextures;
 			free_gltextures = texture;
 
-            TexMgr_DeleteTexture(texture);
+            GL_DeleteTexture(texture);
 			numgltextures--;
 			return;
 		}
@@ -3156,12 +3156,12 @@ void TexMgr_ReloadTextures (void)
 	{
 		if (glt->flags & TEXPREF_WARPIMAGE)
 		{
-			TexMgr_BindTexture (glt);
+			GL_BindTexture (glt);
 			glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, gl_warpimage_size, gl_warpimage_size, 0, GL_RGBA, GL_UNSIGNED_BYTE, dummy);
 			glt->width = glt->height = gl_warpimage_size;
             
             // set filter modes
-            TexMgr_SetFilterModes (glt);
+            GL_SetFilterModes (glt);
 		}
 	}
     

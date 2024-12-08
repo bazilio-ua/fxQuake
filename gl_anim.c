@@ -462,7 +462,7 @@ void R_UpdateWarpTextures (void)
 
 		glDisable (GL_ALPHA_TEST); //FX new
 		glEnable (GL_BLEND); //FX
-		TexMgr_BindTexture (tx->gltexture);
+		GL_BindTexture (tx->gltexture);
 		for (x=0.0; x<128.0; x=x2)
 		{
 			x2 = x + warptess;
@@ -480,7 +480,7 @@ void R_UpdateWarpTextures (void)
 		glDisable (GL_BLEND); //FX
 
 		// copy to texture
-		TexMgr_BindTexture (tx->warpimage);
+		GL_BindTexture (tx->warpimage);
 		glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, glx, gly + glheight - gl_warpimage_size, gl_warpimage_size, gl_warpimage_size);
 //		glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, glx, gly, gl_warpimage_size, gl_warpimage_size);
 
@@ -928,7 +928,7 @@ void R_SkyDrawSkyBox (void)
 		if (skymins[0][i] >= skymaxs[0][i] || skymins[1][i] >= skymaxs[1][i])
 			continue;
 
-		TexMgr_BindTexture (skyboxtextures[skytexorder[i]]);
+		GL_BindTexture (skyboxtextures[skytexorder[i]]);
 
 //FIXME: this is to avoid tjunctions until i can do it the right way
 		skymins[0][i] = -1;
@@ -1050,9 +1050,9 @@ void R_SkyDrawFaceQuad (glpoly_t *p)
 	skyalpha = CLAMP(0.0, r_skyalpha.value, 1.0);
 	if (gl_mtexable && skyalpha >= 1.0)
 	{
-		TexMgr_BindTexture (solidskytexture);
+		GL_BindTexture (solidskytexture);
 		GL_EnableMultitexture (); // selects TEXTURE1
-		TexMgr_BindTexture (alphaskytexture);
+		GL_BindTexture (alphaskytexture);
 		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
 
 		glBegin (GL_QUADS);
@@ -1074,7 +1074,7 @@ void R_SkyDrawFaceQuad (glpoly_t *p)
 	}
 	else
 	{
-		TexMgr_BindTexture (solidskytexture);
+		GL_BindTexture (solidskytexture);
 
 		if (skyalpha < 1.0)
 			glColor3f (1, 1, 1);
@@ -1088,7 +1088,7 @@ void R_SkyDrawFaceQuad (glpoly_t *p)
 		}
 		glEnd ();
 		
-		TexMgr_BindTexture (alphaskytexture);
+		GL_BindTexture (alphaskytexture);
 		glEnable (GL_BLEND);
 
 		if (skyalpha < 1.0)
@@ -2006,7 +2006,7 @@ void R_Bloom_DrawEffect (void)
 
 	alpha = CLAMP(0.0, r_bloom_alpha.value, 1.0);
 
-	TexMgr_BindTexture (bloomeffecttexture);
+	GL_BindTexture (bloomeffecttexture);
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_ONE, GL_ONE);
@@ -2050,7 +2050,7 @@ void R_Bloom_GeneratexDiamonds (void)
 	glLoadIdentity ();
 
 	// copy small scene into bloomeffecttexture
-	TexMgr_BindTexture (bloomeffecttexture);
+	GL_BindTexture (bloomeffecttexture);
 	glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, 0, 0, sample_texture_width, sample_texture_height);
 
 	// start modifying the small scene corner
@@ -2139,12 +2139,12 @@ void R_Bloom_DownsampleView (void)
 		int midsample_texture_height = ( screen_downsampling_texture_size * sample_texture_coord_height );
 
 		// copy the screen and draw resized
-		TexMgr_BindTexture (bloomscreentexture);
+		GL_BindTexture (bloomscreentexture);
 		glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, glx, glheight - (gly + glheight), glwidth, glheight);
 		R_Bloom_Quad (0, glheight - midsample_texture_height, midsample_texture_width, midsample_texture_height, screen_texture_coord_width, screen_texture_coord_height);
 
 		// now copy into downsampling (mid-sized) texture
-		TexMgr_BindTexture (bloomdownsamplingtexture);
+		GL_BindTexture (bloomdownsamplingtexture);
 		glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, 0, 0, midsample_texture_width, midsample_texture_height);
 
 		// now draw again in bloom size
@@ -2155,7 +2155,7 @@ void R_Bloom_DownsampleView (void)
 		glEnable (GL_BLEND);
 		glBlendFunc (GL_ONE, GL_ONE);
 		glColor4f (0.5f, 0.5f, 0.5f, 1.0f);
-		TexMgr_BindTexture (bloomscreentexture);
+		GL_BindTexture (bloomscreentexture);
 		R_Bloom_Quad (0, glheight - sample_texture_height, sample_texture_width, sample_texture_height, screen_texture_coord_width, screen_texture_coord_height);
 		glColor4f (1.0f, 1.0f, 1.0f, 1.0f);
 		glDisable (GL_BLEND);
@@ -2163,7 +2163,7 @@ void R_Bloom_DownsampleView (void)
 	else
 	{
 		// downsample simple
-		TexMgr_BindTexture (bloomscreentexture);
+		GL_BindTexture (bloomscreentexture);
 		glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, glx, glheight - (gly + glheight), glwidth, glheight);
 		R_Bloom_Quad (0, glheight - sample_texture_height, sample_texture_width, sample_texture_height, screen_texture_coord_width, screen_texture_coord_height);
 	}
@@ -2214,7 +2214,7 @@ void R_BloomBlend (void)
 	//
 	// copy the screen space we'll use to work into the backup texture
 	//
-	TexMgr_BindTexture (bloombackuptexture);
+	GL_BindTexture (bloombackuptexture);
 	glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, 0, 0, screen_backup_texture_width, screen_backup_texture_height);
 
 	//
@@ -2239,7 +2239,7 @@ void R_BloomBlend (void)
 	//
 	// restore the screen-backup to the screen
 	//
-	TexMgr_BindTexture (bloombackuptexture);
+	GL_BindTexture (bloombackuptexture);
 	R_Bloom_Quad (0, glheight - screen_backup_texture_height, screen_backup_texture_width, screen_backup_texture_height, 1.0f, 1.0f);
 	
 	// draw the bloom effect

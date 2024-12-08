@@ -773,7 +773,7 @@ void R_DrawParticle (particle_t *p)
 	VectorScale (vup, 1.5, up);
 	VectorScale (vright, 1.5, right);
 
-	TexMgr_BindTexture (particletexture);
+	GL_BindTexture (particletexture);
 
 	glEnable (GL_BLEND);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);

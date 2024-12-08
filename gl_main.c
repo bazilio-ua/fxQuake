@@ -419,7 +419,7 @@ void R_DrawSpriteModel (entity_t *e)
 	}
 
 	GL_DisableMultitexture (); // selects TEXTURE0
-	TexMgr_BindTexture (frame->gltexture);
+	GL_BindTexture (frame->gltexture);
 
 	// offset decals
 	if (psprite->type == SPR_ORIENTED)
@@ -701,7 +701,7 @@ void R_DrawAliasModel (entity_t *e)
 	{
 		// Binds normal skin to texture env 0
 		GL_DisableMultitexture (); // selects TEXTURE0
-		TexMgr_BindTexture (tx);
+		GL_BindTexture (tx);
 		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_EXT);
 		glTexEnvf (GL_TEXTURE_ENV, GL_COMBINE_RGB_EXT, GL_MODULATE);
 		glTexEnvf (GL_TEXTURE_ENV, GL_SOURCE0_RGB_EXT, GL_TEXTURE);
@@ -710,7 +710,7 @@ void R_DrawAliasModel (entity_t *e)
 
 		// Binds fullbright skin to texture env 1
 		GL_EnableMultitexture (); // selects TEXTURE1
-		TexMgr_BindTexture (fb);
+		GL_BindTexture (fb);
 		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_ADD);
 		glEnable (GL_BLEND);
 		GL_DrawAliasFrame (paliashdr, lerpdata); // FX
@@ -721,7 +721,7 @@ void R_DrawAliasModel (entity_t *e)
 	else if (gl_texture_env_combine) // case 2: overbright in one pass, then fullbright pass
 	{
 		// first pass
-		TexMgr_BindTexture (tx);
+		GL_BindTexture (tx);
 		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_EXT);
 		glTexEnvf (GL_TEXTURE_ENV, GL_COMBINE_RGB_EXT, GL_MODULATE);
 		glTexEnvf (GL_TEXTURE_ENV, GL_SOURCE0_RGB_EXT, GL_TEXTURE);
@@ -734,7 +734,7 @@ void R_DrawAliasModel (entity_t *e)
 		// second pass
 		if (fb)
 		{
-			TexMgr_BindTexture (fb);
+			GL_BindTexture (fb);
 			glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 			glEnable (GL_BLEND);
 			glBlendFunc (GL_ONE, GL_ONE);
@@ -753,7 +753,7 @@ void R_DrawAliasModel (entity_t *e)
 	else // case 3: overbright in two passes, then fullbright pass
 	{
 		// first pass
-		TexMgr_BindTexture (tx);
+		GL_BindTexture (tx);
 		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		GL_DrawAliasFrame (paliashdr, lerpdata); // FX
 
@@ -772,7 +772,7 @@ void R_DrawAliasModel (entity_t *e)
 		// third pass
 		if (fb)
 		{
-			TexMgr_BindTexture (fb);
+			GL_BindTexture (fb);
 			glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 			glEnable (GL_BLEND);
 			glBlendFunc (GL_ONE, GL_ONE);
