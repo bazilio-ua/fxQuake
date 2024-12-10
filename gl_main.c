@@ -609,7 +609,7 @@ void R_DrawAliasModel (entity_t *e)
 	//
 	aliasalpha = ENTALPHA_DECODE(e->alpha);
 
-//	aliasalpha = 0.5f;
+//	aliasalpha = 0.5f; // test
 	
     alphatest = !!(e->model->flags & MF_HOLEY);
 
@@ -619,11 +619,11 @@ void R_DrawAliasModel (entity_t *e)
 	alphablend = (aliasalpha < 1.0);
 	if (alphablend)
 	{
-		glEnable (GL_BLEND);
 		glDepthMask (GL_FALSE);
+		glEnable (GL_BLEND);
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
-	
+	else
 	if (alphatest)
 		glEnable (GL_ALPHA_TEST);
 	
@@ -847,11 +847,11 @@ cleanup:
 	
 	if (alphablend)
 	{
-		glColor4f (1, 1, 1, 1);
 		glDepthMask (GL_TRUE);
 		glDisable (GL_BLEND);
+		glColor4f (1, 1, 1, 1);
 	}
-	
+	else
 	if (alphatest)
 		glDisable (GL_ALPHA_TEST);
 	
