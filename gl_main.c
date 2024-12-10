@@ -514,6 +514,7 @@ float	*shadedots = r_avertexnormal_dots[0];
 qboolean shading = true; // if false, disable vertex shading for various reasons (fullbright, etc)
 
 float	aliasalpha;
+qboolean	aliasglow;
 
 
 /*
@@ -538,7 +539,8 @@ void R_DrawAliasModel (entity_t *e)
 	lerpdata_t	lerpdata;
 	float		scale;
 	qboolean	alphatest;
-
+	qboolean	alphablend;
+	
 	//
 	// locate the proper data
 	//
@@ -607,17 +609,31 @@ void R_DrawAliasModel (entity_t *e)
 	//
 	aliasalpha = ENTALPHA_DECODE(e->alpha);
 
+//	aliasalpha = 0.5f;
+	
     alphatest = !!(e->model->flags & MF_HOLEY);
 
 	if (aliasalpha == 0)
 		goto cleanup;
 
-	if (aliasalpha < 1.0)
+	alphablend = (aliasalpha < 1.0);
+	if (alphablend)
 	{
-		glDepthMask (GL_FALSE);
 		glEnable (GL_BLEND);
-	} else if (alphatest)
+		glDepthMask (GL_FALSE);
+		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	}
+	
+	if (alphatest)
 		glEnable (GL_ALPHA_TEST);
+	
+	
+//	if (aliasalpha < 1.0)
+//	{
+//		glDepthMask (GL_FALSE);
+//		glEnable (GL_BLEND);
+//	} else if (alphatest)
+//		glEnable (GL_ALPHA_TEST);
 
 	//
 	// set up lighting
@@ -686,6 +702,8 @@ void R_DrawAliasModel (entity_t *e)
 	tx = paliashdr->gltexture[skinnum][anim];
 	fb = paliashdr->fullbright[skinnum][anim];
 
+	aliasglow = (fb != NULL);
+	
 	// we can't dynamically colormap textures, so they are cached
 	// seperately for the players.  Heads are just uncolored.
 	if (e->colormap != vid.colormap && !gl_nocolors.value)
@@ -697,6 +715,36 @@ void R_DrawAliasModel (entity_t *e)
 	//
 	// draw it
 	//
+	
+	GL_SelectTMU0 ();
+	GL_BindTexture (tx);
+	glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_EXT);
+	glTexEnvf (GL_TEXTURE_ENV, GL_COMBINE_RGB_EXT, GL_MODULATE);
+	glTexEnvf (GL_TEXTURE_ENV, GL_SOURCE0_RGB_EXT, GL_TEXTURE);
+	glTexEnvf (GL_TEXTURE_ENV, GL_SOURCE1_RGB_EXT, GL_PRIMARY_COLOR_EXT);
+	glTexEnvf (GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, d_overbrightscale);
+	
+	if (aliasglow)
+	{
+		GL_SelectTMU1 ();
+		GL_BindTexture (fb);
+		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_ADD);
+		glEnable (GL_BLEND);
+	}
+	
+	GL_DrawAliasFrame (paliashdr, lerpdata); // FX
+	
+	if (aliasglow)
+	{
+		glDisable (GL_BLEND);
+		GL_SelectTMU0 ();
+	}
+	
+	glTexEnvf (GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, 1.0f);
+	glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+	
+	
+/*
 	if (gl_mtexable && gl_texture_env_combine && gl_texture_env_add && fb) // case 1: everything in one pass
 	{
 		// Binds normal skin to texture env 0
@@ -788,16 +836,32 @@ void R_DrawAliasModel (entity_t *e)
 			glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 		}
 	}
-
+*/
+ 
+ 
 cleanup:
-	glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+//	glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 	glHint (GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST); // gl_affinemodels
 	glShadeModel (GL_FLAT); // gl_smoothmodels
-	glDepthMask (GL_TRUE);
-	glDisable (GL_BLEND);
+	
+	
+	if (alphablend)
+	{
+		glColor4f (1, 1, 1, 1);
+		glDepthMask (GL_TRUE);
+		glDisable (GL_BLEND);
+	}
+	
 	if (alphatest)
 		glDisable (GL_ALPHA_TEST);
-	glColor3f (1, 1, 1);
+	
+	
+//	glDepthMask (GL_TRUE);
+//	glDisable (GL_BLEND);
+//	if (alphatest)
+//		glDisable (GL_ALPHA_TEST);
+//	glColor3f (1, 1, 1);
+	
 	glPopMatrix ();
 }
 
@@ -1325,15 +1389,16 @@ void GL_DrawAliasFrame (aliashdr_t *paliashdr, lerpdata_t lerpdata)
 			u = ((float *)commands)[0];
 			v = ((float *)commands)[1];
 
-			if (mtexenabled)
+//			if (mtexenabled)
 			{
 				qglMultiTexCoord2f (GL_TEXTURE0_ARB, u, v);
-				qglMultiTexCoord2f (GL_TEXTURE1_ARB, u, v);
+				if (aliasglow)
+					qglMultiTexCoord2f (GL_TEXTURE1_ARB, u, v);
 			}
-			else
-			{
-				glTexCoord2f (u, v);
-			}
+//			else
+//			{
+//				glTexCoord2f (u, v);
+//			}
 
 			commands += 2;
 

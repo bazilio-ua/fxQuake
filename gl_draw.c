@@ -836,24 +836,36 @@ void GL_EnableMultitexture (void)
 
 void GL_SelectTMU0 (void)
 {
+	if (GL_TEXTURE0_ARB == currenttarget)
+		return;
+
 	glDisable (GL_TEXTURE_2D);
 	GL_SelectTexture (GL_TEXTURE0_ARB);
 }
 
 void GL_SelectTMU1 (void)
 {
+	if (GL_TEXTURE1_ARB == currenttarget)
+		return;
+	
 	GL_SelectTexture (GL_TEXTURE1_ARB);
 	glEnable (GL_TEXTURE_2D);
 }
 
 void GL_SelectTMU2 (void)
 {
+	if (GL_TEXTURE2_ARB == currenttarget)
+		return;
+
 	GL_SelectTexture (GL_TEXTURE2_ARB);
 	glEnable (GL_TEXTURE_2D);
 }
 
 void GL_SelectTMU3 (void)
 {
+	if (GL_TEXTURE3_ARB == currenttarget)
+		return;
+
 	GL_SelectTexture (GL_TEXTURE3_ARB);
 	glEnable (GL_TEXTURE_2D);
 }
