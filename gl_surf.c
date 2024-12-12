@@ -1569,7 +1569,8 @@ void R_DrawTextureChains (model_t *model, entity_t *ent, texchain_t chain)
 	
 	
 	GL_SelectTMU0 ();
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE); //?
+//	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE); //?
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 	
 //	GL_SelectTMU2 ();
 //	glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_ADD);
