@@ -1300,6 +1300,9 @@ void R_DrawTextureChains_Multitexture (model_t *model, entity_t *ent, texchain_t
         {
             if (!bound) //only bind once we are sure we need this texture
             {
+//				GL_DisableMultitexture(); // selects TEXTURE0
+				GL_SelectTMU0 ();
+				
                 GL_BindTexture ((R_TextureAnimation(t, ent != NULL ? ent->frame : 0))->gltexture);
                 
                 if (t->texturechains[chain]->flags & SURF_DRAWFENCE)
@@ -1307,19 +1310,23 @@ void R_DrawTextureChains_Multitexture (model_t *model, entity_t *ent, texchain_t
                 
                 bound = true;
             }
-			GL_EnableMultitexture(); // selects TEXTURE1
+			
+			
+//			GL_EnableMultitexture(); // selects TEXTURE1
+			GL_SelectTMU1 ();
             GL_BindTexture (lightmap_textures[s->lightmaptexture]);
 			
 			
 			if ( !bound2 && (fb = R_TextureAnimation(t, ent != NULL ? ent->frame : 0)->fullbright) )
 			{
 				// Binds fullbright to texture env 2
-				GL_SelectTexture(GL_TEXTURE2_ARB);
-				glEnable (GL_TEXTURE_2D); // disable it later in GL_DisableMultitexture()
+//				GL_SelectTexture(GL_TEXTURE2_ARB);
+//				glEnable (GL_TEXTURE_2D); // disable it later in GL_DisableMultitexture()
+				GL_SelectTMU2 ();
 				
 				GL_BindTexture (fb);
 				
-				glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_ADD);
+//				glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_ADD);
 				glEnable (GL_BLEND);
 				
 				bound2 = true;
@@ -1347,7 +1354,7 @@ void R_DrawTextureChains_Multitexture (model_t *model, entity_t *ent, texchain_t
 			glDisable (GL_BLEND);
 		
 		
-		GL_DisableMultitexture(); // selects TEXTURE0
+//		GL_DisableMultitexture(); // selects TEXTURE0
         
 		if (bound && t->texturechains[chain]->flags & SURF_DRAWFENCE)
 			glDisable (GL_ALPHA_TEST); // Flip alpha test back off
@@ -1485,22 +1492,32 @@ void R_DrawTextureChains (model_t *model, entity_t *ent, texchain_t chain)
     R_DrawTextureChains_NoTexture (model, chain);
 	
 	
+	GL_SelectTMU0 ();
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE); //?
 	
-	GL_EnableMultitexture (); // selects TEXTURE1
+//	GL_SelectTMU2 ();
+//	glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_ADD);
+	
+	GL_SelectTMU1 ();
 	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_EXT);
 	glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB_EXT, GL_MODULATE);
 	glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB_EXT, GL_PREVIOUS_EXT);
 	glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB_EXT, GL_TEXTURE);
 	glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, d_overbrightscale);
-	GL_DisableMultitexture (); // selects TEXTURE0
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE); //?
+	
+//	GL_SelectTMU0 ();
+//	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE); //?
+	
+	GL_SelectTMU2 ();
+	glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_ADD);
 	
 	R_DrawTextureChains_Multitexture (model, ent, chain);
 	
-	GL_EnableMultitexture (); // selects TEXTURE1
+	GL_SelectTMU1 ();
 	glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, 1.0f);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-	GL_DisableMultitexture (); // selects TEXTURE0
+	
+	GL_SelectTMU0 ();
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 	
 	
