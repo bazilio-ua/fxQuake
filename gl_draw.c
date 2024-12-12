@@ -792,8 +792,8 @@ GL_SelectTexture
 */
 void GL_SelectTexture (GLenum target)
 {
-	if (target == currenttarget)
-		return;
+//	if (target == currenttarget)
+//		return;
 
 	qglActiveTexture (target);
 	currenttarget = target;

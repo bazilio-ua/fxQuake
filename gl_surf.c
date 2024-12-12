@@ -734,7 +734,78 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, int frame)
 
 		if (s->flags & SURF_DRAWFENCE)
 			glEnable (GL_ALPHA_TEST); // Flip on alpha test
+		
+		
+		
+		// Binds world to texture env 0
+//		GL_DisableMultitexture (); // selects TEXTURE0
+		GL_SelectTMU0 ();
+		GL_BindTexture (t->gltexture);
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
+		// Binds lightmap to texture env 1
+//		GL_EnableMultitexture (); // selects TEXTURE1
+		GL_SelectTMU1 ();
+		GL_BindTexture (lightmap_textures[s->lightmaptexture]);
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_EXT);
+		glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_RGB_EXT, GL_MODULATE);
+		glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE0_RGB_EXT, GL_PREVIOUS_EXT);
+		glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE1_RGB_EXT, GL_TEXTURE);
+		glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, d_overbrightscale);
+		
+		
+		R_RenderDynamicLightmaps (s);
+		
+		
+		if (t->fullbright)
+		{
+			// Binds fullbright to texture env 2
+//			GL_SelectTexture(GL_TEXTURE2_ARB);
+//			glEnable (GL_TEXTURE_2D); // disable it later in GL_DisableMultitexture()
+			GL_SelectTMU2 ();
+			
+			GL_BindTexture (t->fullbright);
+			
+			glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_ADD);
+			glEnable (GL_BLEND);
+		}
+		
+		
+		glBegin(GL_POLYGON);
+		v = p->verts[0];
+		for (i=0 ; i<p->numverts ; i++, v+= VERTEXSIZE)
+		{
+			qglMultiTexCoord2f (GL_TEXTURE0_ARB, v[3], v[4]);
+			qglMultiTexCoord2f (GL_TEXTURE1_ARB, v[5], v[6]);
+			
+			
+			if (t->fullbright)
+				qglMultiTexCoord2f (GL_TEXTURE2_ARB, v[3], v[4]);
+			
+			
+			glVertex3fv (v);
+		}
+		glEnd ();
+		rs_c_brush_passes++; // r_speeds
+
+		
+		if (t->fullbright)
+		{
+			glDisable (GL_BLEND);
+//			GL_SelectTMU1 ();
+		}
+
+//		GL_EnableMultitexture (); // selects TEXTURE1
+		GL_SelectTMU1 ();
+		glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, 1.0f);
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+		
+//		GL_DisableMultitexture (); // selects TEXTURE0
+		GL_SelectTMU0 ();
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);//FX
+		
+		
+/*
 		if (gl_mtexable && gl_texture_env_combine) // case 1: texture and lightmap in one pass, overbright using texture combiners
 		{
 			// Binds world to texture env 0
@@ -812,7 +883,9 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, int frame)
 			glDisable (GL_BLEND);
 			glDepthMask (GL_TRUE); // back to normal Z buffering
 		}
-
+*/
+		
+		
 		if (alpha < 1.0)
 		{
 			glDepthMask(GL_TRUE);
@@ -824,24 +897,24 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, int frame)
 		if (s->flags & SURF_DRAWFENCE)
 			glDisable (GL_ALPHA_TEST); // Flip alpha test back off
 
-		if (t->fullbright)
-		{
-			GL_BindTexture (t->fullbright);
-			glDepthMask (GL_FALSE); // don't bother writing Z
-			glEnable (GL_BLEND);
-			glBlendFunc (GL_ONE, GL_ONE);
-			glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-			glColor3f (alpha, alpha, alpha);
-			R_FogStartAdditive ();
-			R_DrawGLPoly34 (p);
-			rs_c_brush_passes++; // r_speeds
-			R_FogStopAdditive ();
-			glColor3f (1, 1, 1);
-			glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-			glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-			glDisable (GL_BLEND);
-			glDepthMask (GL_TRUE); // back to normal Z buffering
-		}
+//		if (t->fullbright)
+//		{
+//			GL_BindTexture (t->fullbright);
+//			glDepthMask (GL_FALSE); // don't bother writing Z
+//			glEnable (GL_BLEND);
+//			glBlendFunc (GL_ONE, GL_ONE);
+//			glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+//			glColor3f (alpha, alpha, alpha);
+//			R_FogStartAdditive ();
+//			R_DrawGLPoly34 (p);
+//			rs_c_brush_passes++; // r_speeds
+//			R_FogStopAdditive ();
+//			glColor3f (1, 1, 1);
+//			glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+//			glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//			glDisable (GL_BLEND);
+//			glDepthMask (GL_TRUE); // back to normal Z buffering
+//		}
 	}
 }
 

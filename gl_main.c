@@ -418,7 +418,8 @@ void R_DrawSpriteModel (entity_t *e)
 		return;
 	}
 
-	GL_DisableMultitexture (); // selects TEXTURE0
+//	GL_DisableMultitexture (); // selects TEXTURE0
+	GL_SelectTMU0 ();
 	GL_BindTexture (frame->gltexture);
 
 	// offset decals
@@ -976,7 +977,8 @@ void R_PolyBlend (void)
 	
 	if ((gl_polyblend.value && v_blend[3]) || gamma < 1.0)
 	{
-		GL_DisableMultitexture (); // selects TEXTURE0
+//		GL_DisableMultitexture (); // selects TEXTURE0
+		GL_SelectTMU0 ();
 		
 //		glDisable (GL_ALPHA_TEST); //FX don't disable perform alpha test here, because bloom later
 		glDisable (GL_TEXTURE_2D);
