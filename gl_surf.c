@@ -1387,7 +1387,7 @@ void R_DrawTextureChains_Multitexture (model_t *model, entity_t *ent, texchain_t
 			
 //			GL_EnableMultitexture(); // selects TEXTURE1
 			GL_SelectTMU1 ();
-            GL_BindTexture (lightmap_textures[s->lightmaptexture]);
+			GL_BindTexture (lightmap_textures[s->lightmaptexture]);
 			
 			
 			if ( !bound2 && (fb = R_TextureAnimation(t, ent != NULL ? ent->frame : 0)->fullbright) )
@@ -1423,11 +1423,14 @@ void R_DrawTextureChains_Multitexture (model_t *model, entity_t *ent, texchain_t
         }
 		
 		
+		GL_SelectTMU2 ();
+		
 		if ( bound2 && fb ) // assume our current selection is TMU2
 			glDisable (GL_BLEND);
 		
 		
 //		GL_DisableMultitexture(); // selects TEXTURE0
+		GL_SelectTMU0 ();
         
 		if (bound && t->texturechains[chain]->flags & SURF_DRAWFENCE)
 			glDisable (GL_ALPHA_TEST); // Flip alpha test back off
