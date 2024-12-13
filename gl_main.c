@@ -737,6 +737,7 @@ void R_DrawAliasModel (entity_t *e)
 	
 	if (aliasglow)
 	{
+		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 		glDisable (GL_BLEND);
 		GL_SelectTMU0 ();
 	}

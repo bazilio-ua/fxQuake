@@ -1356,7 +1356,6 @@ void R_DrawTextureChains_Multitexture (model_t *model, entity_t *ent, texchain_t
 	texture_t	*t;
 	float		*v;
 	qboolean	bound;
-	qboolean	bound2;
 	gltexture_t	*fb;
 
 	for (i=0 ; i<model->numtextures ; i++)
@@ -1367,44 +1366,31 @@ void R_DrawTextureChains_Multitexture (model_t *model, entity_t *ent, texchain_t
 			continue;
         
 		bound = false;
-		bound2 = false;
         
 		for (s = t->texturechains[chain]; s; s = s->texturechain)
         {
             if (!bound) //only bind once we are sure we need this texture
             {
-//				GL_DisableMultitexture(); // selects TEXTURE0
 				GL_SelectTMU0 ();
-				
                 GL_BindTexture ((R_TextureAnimation(t, ent != NULL ? ent->frame : 0))->gltexture);
                 
                 if (t->texturechains[chain]->flags & SURF_DRAWFENCE)
                     glEnable (GL_ALPHA_TEST); // Flip alpha test back on
-                
+				
+				if ((fb = R_TextureAnimation(t, ent != NULL ? ent->frame : 0)->fullbright))
+				{
+					GL_SelectTMU2 ();
+					GL_BindTexture (fb);
+					
+					glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_ADD);
+					glEnable (GL_BLEND);
+				}
+				
                 bound = true;
             }
 			
-			
-//			GL_EnableMultitexture(); // selects TEXTURE1
 			GL_SelectTMU1 ();
 			GL_BindTexture (lightmap_textures[s->lightmaptexture]);
-			
-			
-			if ( !bound2 && (fb = R_TextureAnimation(t, ent != NULL ? ent->frame : 0)->fullbright) )
-			{
-				// Binds fullbright to texture env 2
-//				GL_SelectTexture(GL_TEXTURE2_ARB);
-//				glEnable (GL_TEXTURE_2D); // disable it later in GL_DisableMultitexture()
-				GL_SelectTMU2 ();
-				
-				GL_BindTexture (fb);
-				
-//				glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_ADD);
-				glEnable (GL_BLEND);
-				
-				bound2 = true;
-			}
-			
 			
             glBegin(GL_POLYGON);
             v = s->polys->verts[0];
@@ -1412,7 +1398,6 @@ void R_DrawTextureChains_Multitexture (model_t *model, entity_t *ent, texchain_t
             {
                 qglMultiTexCoord2f (GL_TEXTURE0_ARB, v[3], v[4]);
                 qglMultiTexCoord2f (GL_TEXTURE1_ARB, v[5], v[6]);
-				
 				if (fb)
 					qglMultiTexCoord2f (GL_TEXTURE2_ARB, v[3], v[4]);
 				
@@ -1422,14 +1407,13 @@ void R_DrawTextureChains_Multitexture (model_t *model, entity_t *ent, texchain_t
             rs_c_brush_passes++;
         }
 		
-		
-		GL_SelectTMU2 ();
-		
-		if ( bound2 && fb ) // assume our current selection is TMU2
+		if (fb) // assume our current selection is TMU2
+		{
+			GL_SelectTMU2 ();
+			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 			glDisable (GL_BLEND);
+		}
 		
-		
-//		GL_DisableMultitexture(); // selects TEXTURE0
 		GL_SelectTMU0 ();
         
 		if (bound && t->texturechains[chain]->flags & SURF_DRAWFENCE)
@@ -1568,12 +1552,6 @@ void R_DrawTextureChains (model_t *model, entity_t *ent, texchain_t chain)
     R_DrawTextureChains_NoTexture (model, chain);
 	
 	
-	GL_SelectTMU0 ();
-//	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE); //?
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-	
-//	GL_SelectTMU2 ();
-//	glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_ADD);
 	
 	GL_SelectTMU1 ();
 	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_EXT);
@@ -1582,12 +1560,8 @@ void R_DrawTextureChains (model_t *model, entity_t *ent, texchain_t chain)
 	glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB_EXT, GL_TEXTURE);
 	glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, d_overbrightscale);
 	
-//	GL_SelectTMU0 ();
-//	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE); //?
-//	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-	
-	GL_SelectTMU2 ();
-	glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_ADD);
+	GL_SelectTMU0 ();
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE); // FIXME: already in this mode?
 	
 	R_DrawTextureChains_Multitexture (model, ent, chain);
 	
