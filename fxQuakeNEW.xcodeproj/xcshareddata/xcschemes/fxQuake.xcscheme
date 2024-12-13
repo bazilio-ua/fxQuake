@@ -193,7 +193,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-game ad +map r_yellow"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-game alphamaskmodeltexture +map start"

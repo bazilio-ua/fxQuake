@@ -727,7 +727,7 @@ void R_DrawAliasModel (entity_t *e)
 	
 	if (aliasglow)
 	{
-		GL_SelectTMU1 ();
+		GL_SelectTMU2 ();
 		GL_BindTexture (fb);
 		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_ADD);
 		glEnable (GL_BLEND);
@@ -1395,7 +1395,7 @@ void GL_DrawAliasFrame (aliashdr_t *paliashdr, lerpdata_t lerpdata)
 			{
 				qglMultiTexCoord2f (GL_TEXTURE0_ARB, u, v);
 				if (aliasglow)
-					qglMultiTexCoord2f (GL_TEXTURE1_ARB, u, v);
+					qglMultiTexCoord2f (GL_TEXTURE2_ARB, u, v);
 			}
 //			else
 //			{
