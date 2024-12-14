@@ -722,8 +722,6 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, int frame)
 	//
 	if ( !(s->flags & SURF_DRAWTILED) )
 	{
-//		return; // test
-		
 		if (alpha < 1.0)
 		{
 			glDepthMask (GL_FALSE);
