@@ -722,6 +722,8 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, int frame)
 	//
 	if ( !(s->flags & SURF_DRAWTILED) )
 	{
+//		return; // test
+		
 		if (alpha < 1.0)
 		{
 			glDepthMask (GL_FALSE);
@@ -738,13 +740,11 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, int frame)
 		
 		
 		// Binds world to texture env 0
-//		GL_DisableMultitexture (); // selects TEXTURE0
 		GL_SelectTMU0 ();
 		GL_BindTexture (t->gltexture);
 		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-
+		
 		// Binds lightmap to texture env 1
-//		GL_EnableMultitexture (); // selects TEXTURE1
 		GL_SelectTMU1 ();
 		GL_BindTexture (lightmap_textures[s->lightmaptexture]);
 		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_EXT);
@@ -753,23 +753,16 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, int frame)
 		glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE1_RGB_EXT, GL_TEXTURE);
 		glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, d_overbrightscale);
 		
-		
-		R_RenderDynamicLightmaps (s);
-		
-		
 		if (t->fullbright)
 		{
 			// Binds fullbright to texture env 2
-//			GL_SelectTexture(GL_TEXTURE2_ARB);
-//			glEnable (GL_TEXTURE_2D); // disable it later in GL_DisableMultitexture()
 			GL_SelectTMU2 ();
-			
 			GL_BindTexture (t->fullbright);
-			
 			glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_ADD);
 			glEnable (GL_BLEND);
 		}
 		
+		R_RenderDynamicLightmaps (s);
 		
 		glBegin(GL_POLYGON);
 		v = p->verts[0];
@@ -777,32 +770,28 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, int frame)
 		{
 			qglMultiTexCoord2f (GL_TEXTURE0_ARB, v[3], v[4]);
 			qglMultiTexCoord2f (GL_TEXTURE1_ARB, v[5], v[6]);
-			
-			
 			if (t->fullbright)
 				qglMultiTexCoord2f (GL_TEXTURE2_ARB, v[3], v[4]);
-			
 			
 			glVertex3fv (v);
 		}
 		glEnd ();
 		rs_c_brush_passes++; // r_speeds
-
 		
 		if (t->fullbright)
 		{
+			GL_SelectTMU2 ();
+			glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 			glDisable (GL_BLEND);
-//			GL_SelectTMU1 ();
 		}
-
-//		GL_EnableMultitexture (); // selects TEXTURE1
-		GL_SelectTMU1 ();
-		glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, 1.0f);
-		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		
-//		GL_DisableMultitexture (); // selects TEXTURE0
+		GL_SelectTMU1 ();
+		glTexEnvf (GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, 1.0f);
+		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+		
 		GL_SelectTMU0 ();
-		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);//FX
+		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE); //FX
+		
 		
 		
 /*
