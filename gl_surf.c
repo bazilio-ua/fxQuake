@@ -755,9 +755,11 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, int frame)
 		{
 			// Binds fullbright to texture env 2
 			GL_SelectTMU2 ();
+			glEnable(GL_TEXTURE_2D);
 			GL_BindTexture (t->fullbright);
-			glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_ADD);
-			glEnable (GL_BLEND);
+//			glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_ADD);
+			glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+//			glEnable (GL_BLEND);
 		}
 		
 		R_RenderDynamicLightmaps (s);
@@ -778,12 +780,14 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, int frame)
 		
 		if (t->fullbright)
 		{
-			GL_SelectTMU2 ();
-			glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-			glDisable (GL_BLEND);
+			glDisable(GL_TEXTURE_2D);
+//			GL_SelectTMU1 ();
+			GL_SelectTexture (GL_TEXTURE1_ARB);
+//			glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+//			glDisable (GL_BLEND);
 		}
 		
-		GL_SelectTMU1 ();
+//		GL_SelectTMU1 ();
 		glTexEnvf (GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, 1.0f);
 		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		
