@@ -757,8 +757,8 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, int frame)
 			GL_SelectTMU2 ();
 			glEnable(GL_TEXTURE_2D);
 			GL_BindTexture (t->fullbright);
-//			glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_ADD);
-			glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+			glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_ADD);
+//			glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
 //			glEnable (GL_BLEND);
 		}
 		
