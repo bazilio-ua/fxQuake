@@ -176,7 +176,10 @@ void R_DrawAlpha (void)
 	
 	if (gl_alphalist_num == 0)
 		return;
-		
+	
+	if (r_noalphasort.value) // EER1
+		goto skipsort;
+	
 	//
 	// sort
 	//
@@ -200,6 +203,7 @@ void R_DrawAlpha (void)
 		qsort((void *)gl_alphalist, gl_alphalist_num, sizeof(gl_alphalist_t), alphadistcompare);
 	}
 	
+skipsort:
 	//
 	// draw
 	//
