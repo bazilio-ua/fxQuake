@@ -185,6 +185,10 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-mem 512"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-mem 1024"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
