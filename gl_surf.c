@@ -744,31 +744,30 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, int frame)
 		// Binds world to texture env 0
 		GL_SelectTMU0 ();
 		GL_BindTexture (t->gltexture);
-		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-		
-		// Binds lightmap to texture env 1
-		GL_SelectTMU1 ();
-		GL_BindTexture (lightmap_textures[s->lightmaptexture]);
-		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_EXT);
-		glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_RGB_EXT, GL_MODULATE);
-		glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE0_RGB_EXT, GL_PREVIOUS_EXT);
-		glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE1_RGB_EXT, GL_TEXTURE);
-		glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, d_overbrightscale);
+		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		
 		if (t->fullbright)
 		{
 			// Binds fullbright to texture env 2
 			GL_SelectTMU2 ();
-			glEnable(GL_TEXTURE_2D);
 			GL_BindTexture (t->fullbright);
-			glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_ADD);
-//			glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
-//			glEnable (GL_BLEND);
+			glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_ADD); // GL_DECAL
+			glEnable (GL_BLEND);
 		}
+		
+		// Binds lightmap to texture env 1
+		GL_SelectTMU1 ();
+		GL_BindTexture (lightmap_textures[s->lightmaptexture]);
+		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_EXT);
+		glTexEnvf (GL_TEXTURE_ENV, GL_COMBINE_RGB_EXT, GL_MODULATE);
+		glTexEnvf (GL_TEXTURE_ENV, GL_SOURCE0_RGB_EXT, GL_PREVIOUS_EXT);
+		glTexEnvf (GL_TEXTURE_ENV, GL_SOURCE1_RGB_EXT, GL_TEXTURE);
+		glTexEnvf (GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, d_overbrightscale);
+		
 		
 		R_RenderDynamicLightmaps (s);
 		
-		glBegin(GL_POLYGON);
+		glBegin (GL_POLYGON);
 		v = p->verts[0];
 		for (i=0 ; i<p->numverts ; i++, v+= VERTEXSIZE)
 		{
@@ -782,22 +781,21 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, int frame)
 		glEnd ();
 		rs_c_brush_passes++; // r_speeds
 		
-		if (t->fullbright)
-		{
-			glDisable(GL_TEXTURE_2D);
-//			GL_SelectTMU1 ();
-			GL_SelectTexture (GL_TEXTURE1_ARB);
-//			glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-//			glDisable (GL_BLEND);
-		}
 		
 //		GL_SelectTMU1 ();
 		glTexEnvf (GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, 1.0f);
 		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		
+		if (t->fullbright)
+		{
+			glDisable (GL_TEXTURE_2D);
+			GL_SelectTMU2 ();
+			glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+			glDisable (GL_BLEND);
+		}
+		
 		GL_SelectTMU0 ();
 		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE); //FX
-		
 		
 		
 /*
@@ -883,10 +881,10 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, int frame)
 		
 		if (alpha < 1.0)
 		{
-			glDepthMask(GL_TRUE);
-			glDisable(GL_BLEND);
-			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-			glColor3f(1, 1, 1);
+			glDepthMask (GL_TRUE);
+			glDisable (GL_BLEND);
+			glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+			glColor3f (1, 1, 1);
 		}
 
 		if (s->flags & SURF_DRAWFENCE)
@@ -1404,8 +1402,9 @@ void R_DrawTextureChains_Multitexture (model_t *model, entity_t *ent, texchain_t
 		
 		if (fb) // assume our current selection is TMU2
 		{
+			glDisable (GL_TEXTURE_2D);
 			GL_SelectTMU2 ();
-			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+			glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 			glDisable (GL_BLEND);
 		}
 		
