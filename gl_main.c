@@ -68,6 +68,7 @@ cvar_t	r_drawworld = {"r_drawworld","1", CVAR_NONE};
 cvar_t	r_drawviewmodel = {"r_drawviewmodel","1", CVAR_NONE};
 cvar_t	r_speeds = {"r_speeds","0", CVAR_NONE};
 cvar_t	r_fullbright = {"r_fullbright","0", CVAR_NONE};
+cvar_t	r_ambient = { "r_ambient","0", CVAR_NONE};
 cvar_t	r_wateralpha = {"r_wateralpha","1", CVAR_ARCHIVE};
 cvar_t	r_lockalpha = {"r_lockalpha","0", CVAR_ARCHIVE};
 cvar_t	r_lavafog = {"r_lavafog","0.5", CVAR_ARCHIVE};
@@ -1118,6 +1119,7 @@ void R_SetupFrame (void)
 		Cvar_Set ("r_drawentities", "1");
 		Cvar_Set ("r_drawworld", "1");
 		Cvar_Set ("r_fullbright", "0");
+		Cvar_Set ("r_ambient", "0");
 	}
 
 	R_PushDlights ();

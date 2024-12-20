@@ -366,9 +366,8 @@ void R_BuildLightMap (msurface_t *surf, byte *dest, int stride)
 	int			t;
 	int			i, j, size;
 	byte		*lightmap;
-	unsigned	scale;
 	int			maps;
-	unsigned	*bl;
+	unsigned	scale, *bl, ambient_light;
 	int			shift;
 
 	surf->cached_dlight = (surf->dlightframe == r_framecount);
@@ -385,7 +384,17 @@ void R_BuildLightMap (msurface_t *surf, byte *dest, int stride)
 	{
 		// clear to no light
 		memset (&blocklights[0], 0, size * 3 * sizeof (unsigned int)); // lit support via lordhavoc
-
+		
+		// clear to ambient
+		bl = blocklights;
+		ambient_light = (unsigned int)(max(0, r_ambient.value)) << 8;
+		for (i = 0; i < size; i++)
+		{
+			*bl++ = ambient_light;
+			*bl++ = ambient_light;
+			*bl++ = ambient_light;
+		}
+		
 		// add all the lightmaps
 		if (lightmap)
 			for (maps = 0 ; maps < MAXLIGHTMAPS && surf->styles[maps] != 255 ; maps++)

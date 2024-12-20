@@ -155,6 +155,17 @@ void R_FullBright (void)
 
 /*
 ====================
+R_Ambient
+====================
+*/
+void R_Ambient (void)
+{
+	// Refresh lightmaps
+	R_RebuildAllLightmaps ();
+}
+
+/*
+====================
 R_ClearColor
 ====================
 */
@@ -203,6 +214,7 @@ void R_Init (void)
 
 	Cvar_RegisterVariable (&r_norefresh);
 	Cvar_RegisterVariableCallback (&r_fullbright, R_FullBright);
+	Cvar_RegisterVariableCallback (&r_ambient, R_Ambient);
 	Cvar_RegisterVariable (&r_drawentities);
 	Cvar_RegisterVariable (&r_drawworld);
 	Cvar_RegisterVariable (&r_drawviewmodel);

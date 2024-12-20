@@ -522,6 +522,6 @@ void R_LightPoint (vec3_t p, vec3_t color)
 	end[1] = p[1];
 	end[2] = p[2] - 8192; // was 2048
 
-	color[0] = color[1] = color[2] = 0;
+	color[0] = color[1] = color[2] = max(0, r_ambient.value);
 	R_RecursiveLightPoint (color, cl.worldmodel->nodes, p, end);
 }
