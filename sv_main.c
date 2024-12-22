@@ -757,24 +757,27 @@ void SV_WriteEntitiesToClient (edict_t	*clent, sizebuf_t *msg)
 			continue;
 		//johnfitz
 
+		val = GetEdictFieldValue(ent, "scale");
+		if (val)
+			ent->scale = ENTSCALE_ENCODE(val->_float);
+		else
+			ent->scale = ENTSCALE_DEFAULT;
+
 		//johnfitz -- PROTOCOL_FITZQUAKE
 		if (sv.protocol == PROTOCOL_FITZQUAKE || sv.protocol == PROTOCOL_MARKV || sv.protocol == PROTOCOL_RMQ)
 		{
 			if (ent->baseline.alpha != ent->alpha)
 				bits |= U_ALPHA;
-
+			if (ent->baseline.scale != ent->scale)
+				bits |= U_SCALE;
 			if (bits & U_FRAME && (int)ent->v.frame & 0xFF00)
 				bits |= U_FRAME2;
-
 			if (bits & U_MODEL && (int)ent->v.modelindex & 0xFF00)
 				bits |= U_MODEL2;
-
 			if (ent->sendinterval)
 				bits |= U_LERPFINISH;
-
 			if (bits >= 65536)
 				bits |= U_EXTEND1;
-
 			if (bits >= 16777216)
 				bits |= U_EXTEND2;
 		}
@@ -798,7 +801,9 @@ void SV_WriteEntitiesToClient (edict_t	*clent, sizebuf_t *msg)
 		{
 			//johnfitz -- max size for protocol 15 is 18 bytes, not 16 as originally assumed here.
 			//And, for protocol 85(PROTOCOL_FITZQUAKE?) the max size is actually 24 bytes.
-			packetsize = 24;
+			//For float coords and angles the limit is 40. PROTOCOL_RMQ?
+//			packetsize = 24;
+			packetsize = 40;
 
 			if (msg->maxsize - msg->cursize < packetsize)
 			{
@@ -890,6 +895,8 @@ void SV_WriteEntitiesToClient (edict_t	*clent, sizebuf_t *msg)
 			//johnfitz -- PROTOCOL_FITZQUAKE
 			if (bits & U_ALPHA)
 				MSG_WriteByte(msg, ent->alpha);
+			if (bits & U_SCALE)
+				MSG_WriteByte(msg, ent->scale);
 			if (bits & U_FRAME2)
 				MSG_WriteByte(msg, (int)ent->v.frame >> 8);
 			if (bits & U_MODEL2)
@@ -1377,6 +1384,7 @@ void SV_CreateBaseline (void)
 			svent->baseline.colormap = entnum;
 			svent->baseline.modelindex = SV_ModelIndex("progs/player.mdl");
 			svent->baseline.alpha = ENTALPHA_DEFAULT; //johnfitz -- alpha support
+			svent->baseline.scale = ENTSCALE_DEFAULT;
 		}
 		else
 		{
@@ -1384,6 +1392,15 @@ void SV_CreateBaseline (void)
 			svent->baseline.colormap = 0;
 			svent->baseline.modelindex = SV_ModelIndex(PR_GetString(svent->v.model));
 			svent->baseline.alpha = svent->alpha; //johnfitz -- alpha support
+//			svent->baseline.scale = svent->scale;
+			svent->baseline.scale = ENTSCALE_DEFAULT;
+			if (sv.protocol == PROTOCOL_RMQ)
+			{
+				eval_t* val;
+				val = GetEdictFieldValue(svent, "scale");
+				if (val)
+					svent->baseline.scale = ENTSCALE_ENCODE(val->_float);
+			}
 		}
 
 		//johnfitz -- PROTOCOL_FITZQUAKE
@@ -1396,6 +1413,8 @@ void SV_CreateBaseline (void)
 				bits |= B_LARGEFRAME;
 			if (svent->baseline.alpha != ENTALPHA_DEFAULT)
 				bits |= B_ALPHA;
+			if (svent->baseline.scale != ENTSCALE_DEFAULT)
+				bits |= B_SCALE;
 		}
 		else //still want to send baseline in PROTOCOL_NETQUAKE, so reset these values
 		{
@@ -1404,6 +1423,7 @@ void SV_CreateBaseline (void)
 			if (svent->baseline.frame & 0xFF00)
 				svent->baseline.frame = 0;
 			svent->baseline.alpha = ENTALPHA_DEFAULT;
+			svent->baseline.scale = ENTSCALE_DEFAULT;
 		}
 		//johnfitz
 
@@ -1463,6 +1483,8 @@ void SV_CreateBaseline (void)
 		{
 			if (bits & B_ALPHA)
 				MSG_WriteByte (&sv.signon, svent->baseline.alpha);
+			if (bits & B_SCALE)
+				MSG_WriteByte (&sv.signon, svent->baseline.scale);
 		}
 		//johnfitz
 	}

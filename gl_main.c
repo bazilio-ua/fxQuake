@@ -59,7 +59,7 @@ float r_fovx, r_fovy;
 void R_SetupAliasFrame (entity_t *e, aliashdr_t *paliashdr, lerpdata_t *lerpdata);
 void R_SetupEntityTransform (entity_t *e, lerpdata_t *lerpdata);
 void GL_DrawAliasFrame (aliashdr_t *paliashdr, lerpdata_t lerpdata);
-void GL_EntityTransform (lerpdata_t lerpdata);
+void GL_EntityTransform (lerpdata_t lerpdata, byte scale);
 
 
 cvar_t	r_norefresh = {"r_norefresh","0", CVAR_NONE};
@@ -263,21 +263,40 @@ uses correct bounds based on rotation
 qboolean R_CullModelForEntity (entity_t *e)
 {
 	vec3_t mins, maxs;
+	vec_t scalefactor, *minbounds, *maxbounds;
 
 	if (e->angles[0] || e->angles[2]) // pitch or roll
 	{
-		VectorAdd (e->origin, e->model->rmins, mins);
-		VectorAdd (e->origin, e->model->rmaxs, maxs);
+//		VectorAdd (e->origin, e->model->rmins, mins);
+//		VectorAdd (e->origin, e->model->rmaxs, maxs);
+		minbounds = e->model->rmins;
+		maxbounds = e->model->rmaxs;
 	}
 	else if (e->angles[1]) // yaw
 	{
-		VectorAdd (e->origin, e->model->ymins, mins);
-		VectorAdd (e->origin, e->model->ymaxs, maxs);
+//		VectorAdd (e->origin, e->model->ymins, mins);
+//		VectorAdd (e->origin, e->model->ymaxs, maxs);
+		minbounds = e->model->ymins;
+		maxbounds = e->model->ymaxs;
 	}
 	else // no rotation
 	{
-		VectorAdd (e->origin, e->model->mins, mins);
-		VectorAdd (e->origin, e->model->maxs, maxs);
+//		VectorAdd (e->origin, e->model->mins, mins);
+//		VectorAdd (e->origin, e->model->maxs, maxs);
+		minbounds = e->model->mins;
+		maxbounds = e->model->maxs;
+	}
+	
+	scalefactor = ENTSCALE_DECODE(e->scale);
+	if (scalefactor != 1.0f)
+	{
+		VectorMA (e->origin, scalefactor, minbounds, mins);
+		VectorMA (e->origin, scalefactor, maxbounds, maxs);
+	}
+	else
+	{
+		VectorAdd (e->origin, minbounds, mins);
+		VectorAdd (e->origin, maxbounds, maxs);
 	}
 
 	return R_CullBox (mins, maxs);
@@ -359,6 +378,7 @@ void R_DrawSpriteModel (entity_t *e)
 	mspriteframe_t	*frame;
 	float			*s_up, *s_right;
 	float			angle, sr, cr;
+	float			scale = ENTSCALE_DECODE(e->scale);
 
 	// don't even bother culling, because it's just a single
 	// polygon without a surface cache
@@ -449,23 +469,31 @@ void R_DrawSpriteModel (entity_t *e)
 	glBegin (GL_QUADS);
 
 	glTexCoord2f (0, 1);
-	VectorMA (e->origin, frame->down, s_up, point);
-	VectorMA (point, frame->left, s_right, point);
+//	VectorMA (e->origin, frame->down, s_up, point);
+//	VectorMA (point, frame->left, s_right, point);
+	VectorMA (e->origin, frame->down * scale, s_up, point);
+	VectorMA (point, frame->left * scale, s_right, point);
 	glVertex3fv (point);
 
 	glTexCoord2f (0, 0);
-	VectorMA (e->origin, frame->up, s_up, point);
-	VectorMA (point, frame->left, s_right, point);
+//	VectorMA (e->origin, frame->up, s_up, point);
+//	VectorMA (point, frame->left, s_right, point);
+	VectorMA (e->origin, frame->up * scale, s_up, point);
+	VectorMA (point, frame->left * scale, s_right, point);
 	glVertex3fv (point);
 
 	glTexCoord2f (1, 0);
-	VectorMA (e->origin, frame->up, s_up, point);
-	VectorMA (point, frame->right, s_right, point);
+//	VectorMA (e->origin, frame->up, s_up, point);
+//	VectorMA (point, frame->right, s_right, point);
+	VectorMA (e->origin, frame->up * scale, s_up, point);
+	VectorMA (point, frame->right * scale, s_right, point);
 	glVertex3fv (point);
 
 	glTexCoord2f (1, 1);
-	VectorMA (e->origin, frame->down, s_up, point);
-	VectorMA (point, frame->right, s_right, point);
+//	VectorMA (e->origin, frame->down, s_up, point);
+//	VectorMA (point, frame->right, s_right, point);
+	VectorMA (e->origin, frame->down * scale, s_up, point);
+	VectorMA (point, frame->right * scale, s_right, point);
 	glVertex3fv (point);
 
 	glEnd ();
@@ -540,7 +568,7 @@ void R_DrawAliasModel (entity_t *e)
 	gltexture_t	*tx, *fb;
 	static float	lastmsg = 0;
 	lerpdata_t	lerpdata;
-	float		scale;
+	float		fovscale = 1.0f;
 	qboolean	alphatest;
 	qboolean	alphablend;
 	
@@ -586,16 +614,14 @@ void R_DrawAliasModel (entity_t *e)
 	//
 	glPushMatrix ();
 
-	GL_EntityTransform (lerpdata); // FX
+	GL_EntityTransform (lerpdata, e->scale); // FX
 
 	// special handling of view model to keep FOV from altering look.
 	if (e == &cl.viewent)
-		scale = 1.0f / tan( DEG2RAD (r_fovx / 2.0f) ) * r_refdef.weaponfov_x / 90.0f; // reverse out fov and do fov we want
-	else
-		scale = 1.0f;
+		fovscale = 1.0f / tan( DEG2RAD (r_fovx / 2.0f) ) * r_refdef.weaponfov_x / 90.0f; // reverse out fov and do fov we want
 
-	glTranslatef (paliashdr->scale_origin[0] * scale, paliashdr->scale_origin[1], paliashdr->scale_origin[2]);
-	glScalef (paliashdr->scale[0] * scale, paliashdr->scale[1], paliashdr->scale[2]);
+	glTranslatef (paliashdr->scale_origin[0] * fovscale, paliashdr->scale_origin[1], paliashdr->scale_origin[2]);
+	glScalef (paliashdr->scale[0] * fovscale, paliashdr->scale[1], paliashdr->scale[2]);
 
 	//
 	// model rendering stuff
@@ -1323,12 +1349,15 @@ GL_EntityTransform -- model transform interpolation
 R_RotateForEntity renamed and modified to take lerpdata instead of pointer to entity
 ===============
 */
-void GL_EntityTransform (lerpdata_t lerpdata)
+void GL_EntityTransform (lerpdata_t lerpdata, byte scale)
 {
+	float scalefactor = ENTSCALE_DECODE(scale);
 	glTranslatef (lerpdata.origin[0], lerpdata.origin[1], lerpdata.origin[2]);
 	glRotatef (lerpdata.angles[1],  0, 0, 1);
 	glRotatef (stupidquakebugfix ? lerpdata.angles[0] : -lerpdata.angles[0],  0, 1, 0);
 	glRotatef (lerpdata.angles[2],  1, 0, 0);
+	if (scalefactor != 1.0f)
+		glScalef(scalefactor, scalefactor, scalefactor);
 }
 
 /*

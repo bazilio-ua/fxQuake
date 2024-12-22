@@ -79,6 +79,7 @@ typedef struct entity_s
 	
 	// Nehahra - Model Transparency
 	byte					alpha;			// alpha
+	byte					scale;			// PROTOCOL_RMQ scale
 	float					fullbright;		// fullbright
 
 	// fitzquake protocol+lerping

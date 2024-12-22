@@ -111,6 +111,7 @@ entity_t	*CL_EntityNum (int num)
 		{
 			cl_entities[cl.num_entities].colormap = vid.colormap;
 			cl_entities[cl.num_entities].lerpflags |= LERP_RESETMOVE|LERP_RESETANIM; //johnfitz
+			cl_entities[cl.num_entities].baseline.scale = ENTSCALE_DEFAULT;
 			cl.num_entities++;
 		}
 	}
@@ -585,7 +586,9 @@ void CL_ParseUpdate (int bits)
 		else
 			ent->alpha = ent->baseline.alpha;
 		if (bits & U_SCALE)
-			MSG_ReadByte (net_message); // PROTOCOL_RMQ: currently ignored
+			ent->scale = MSG_ReadByte (net_message); // PROTOCOL_RMQ
+		else
+			ent->scale = ent->baseline.scale;
 		if (bits & U_FRAME2)
 			ent->frame = (ent->frame & 0x00FF) | (MSG_ReadByte (net_message) << 8);
 		if (bits & U_MODEL2)
@@ -626,6 +629,8 @@ void CL_ParseUpdate (int bits)
 //			ent->alpha = ENTALPHA_DEFAULT;
 			ent->alpha = ent->baseline.alpha;
 		}
+//		ent->scale = ENTSCALE_DEFAULT;
+		ent->scale = ent->baseline.scale;
 	}
 	//johnfitz
 
@@ -704,9 +709,15 @@ void CL_ParseBaseline (entity_t *ent, int version) //johnfitz -- added argument
 
 	//johnfitz -- PROTOCOL_FITZQUAKE
 	if (cl.protocol == PROTOCOL_FITZQUAKE || cl.protocol == PROTOCOL_MARKV || cl.protocol == PROTOCOL_RMQ)
+	{
 		ent->baseline.alpha = (bits & B_ALPHA) ? MSG_ReadByte (net_message) : ENTALPHA_DEFAULT;
-	else 
+		ent->baseline.scale = (bits & B_SCALE) ? MSG_ReadByte (net_message) : ENTSCALE_DEFAULT;
+	}
+	else
+	{
 		ent->baseline.alpha = ENTALPHA_DEFAULT;
+		ent->baseline.scale = ENTSCALE_DEFAULT;
+	}
 }
 
 
@@ -951,6 +962,7 @@ void CL_ParseStatic (int version) //johnfitz -- added a parameter
 	ent->skinnum = ent->baseline.skin;
 	ent->effects = ent->baseline.effects;
 	ent->alpha = ent->baseline.alpha; //johnfitz -- alpha
+	ent->scale = ent->baseline.scale;
 
 	VectorCopy (ent->baseline.origin, ent->origin);
 	VectorCopy (ent->baseline.angles, ent->angles);

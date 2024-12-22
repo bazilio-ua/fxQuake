@@ -43,6 +43,7 @@ typedef struct edict_s
 
 	entity_state_t	baseline;
 	byte		alpha;				// johnfitz -- hack to support alpha since it's not part of entvars_t
+	byte		scale;				// Quakespasm: added for model scale support
 	float		fullbright;
 	qboolean	sendinterval;		// johnfitz -- send time until nextthink to client for better lerp timing
 	float		freetime;			// sv.time when the object was freed
@@ -80,6 +81,7 @@ void PR_Profile_f (void);
 
 edict_t *ED_Alloc (void);
 void	ED_Free (edict_t *ed);
+void ED_ClearEdict (edict_t *e);
 
 char	*ED_NewString (char *string);
 // returns a copy of the string allocated from the server's string heap

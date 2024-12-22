@@ -985,6 +985,9 @@ void R_DrawBrushModel (entity_t *e)
 		glRotatef (e->angles[0],  0, 1, 0);
 		glRotatef (e->angles[2],  1, 0, 0);
 	}
+	float scalefactor = ENTSCALE_DECODE(e->scale);
+	if (scalefactor != 1.0f)
+		glScalef(scalefactor, scalefactor, scalefactor);
 	
     //
 	// set all chains to null

@@ -138,7 +138,8 @@ void R_AddEfrags (entity_t *ent)
     r_efragdef_t ed;
 	model_t		*entmodel;
 	int			i;
-		
+	vec_t		scalefactor;
+
 	// entities with no model won't get drawn
 	if (!ent->model)
 		return;
@@ -152,12 +153,24 @@ void R_AddEfrags (entity_t *ent)
 			
 	entmodel = ent->model;
 
-	for (i=0 ; i<3 ; i++)
+//	for (i=0 ; i<3 ; i++)
+//	{
+//		ed.mins[i] = ent->origin[i] + entmodel->mins[i];
+//		ed.maxs[i] = ent->origin[i] + entmodel->maxs[i];
+//	}
+	
+	scalefactor = ENTSCALE_DECODE(ent->scale);
+	if (scalefactor != 1.0f)
 	{
-		ed.mins[i] = ent->origin[i] + entmodel->mins[i];
-		ed.maxs[i] = ent->origin[i] + entmodel->maxs[i];
+		VectorMA (ent->origin, scalefactor, entmodel->mins, ed.mins);
+		VectorMA (ent->origin, scalefactor, entmodel->maxs, ed.maxs);
 	}
-
+	else
+	{
+		VectorAdd (ent->origin, entmodel->mins, ed.mins);
+		VectorAdd (ent->origin, entmodel->maxs, ed.maxs);
+	}
+	
 	if (!cl.worldmodel)
 		Host_Error ("R_AddEfrags: NULL worldmodel");
 

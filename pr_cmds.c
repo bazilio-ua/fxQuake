@@ -1626,6 +1626,19 @@ void PF_makestatic (void)
 			bits |= B_LARGEFRAME;
 		if (ent->alpha != ENTALPHA_DEFAULT)
 			bits |= B_ALPHA;
+		
+		if (sv.protocol == PROTOCOL_RMQ)
+		{
+			eval_t	*val; // PROTOCOL_RMQ
+			val = GetEdictFieldValue(ent, "scale");
+			if (val)
+				ent->scale = ENTSCALE_ENCODE(val->_float);
+			else
+				ent->scale = ENTSCALE_DEFAULT;
+			
+			if (ent->scale != ENTSCALE_DEFAULT)
+				bits |= B_SCALE;
+		}
 	}
 	else // PROTOCOL_NETQUAKE
 	{
@@ -1669,6 +1682,10 @@ void PF_makestatic (void)
 		MSG_WriteByte (&sv.signon, ent->alpha);
 	//johnfitz
 
+	// PROTOCOL_RMQ
+	if (bits & B_SCALE)
+		MSG_WriteByte (&sv.signon, ent->scale);
+	
 // throw the entity away now
 	ED_Free (ent);
 }
