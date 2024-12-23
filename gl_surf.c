@@ -649,6 +649,11 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, int frame)
 	//
 	if (s->flags & SURF_DRAWTURB)
 	{
+		qboolean	flatcolor = r_fastturb.value;
+		
+		if (flatcolor)
+			glDisable (GL_TEXTURE_2D);
+		
 		if (alpha < 1.0)
 		{
 			glDepthMask(GL_FALSE);
@@ -656,9 +661,15 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, int frame)
 			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 			glColor4f(1, 1, 1, alpha);
 		}
-
-		GL_BindTexture (s->texinfo->texture->warpimage);
-
+		
+		if (flatcolor) {
+			glColor4f (s->texinfo->texture->gltexture->colors.flatcolor[0],
+					   s->texinfo->texture->gltexture->colors.flatcolor[1],
+					   s->texinfo->texture->gltexture->colors.flatcolor[2], alpha);
+		}
+		else
+			GL_BindTexture (s->texinfo->texture->warpimage);
+		
 		if ( !(s->flags & (SURF_DRAWLAVA | SURF_DRAWSLIME)) )
 		{
 			R_DrawGLPoly34 (p);
@@ -695,6 +706,11 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, int frame)
 			glDisable(GL_BLEND);
 			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 			glColor3f(1, 1, 1);
+		}
+		
+		if (flatcolor) {
+			glColor3f (1, 1, 1);
+			glEnable (GL_TEXTURE_2D);
 		}
 		
 		return;
@@ -1292,7 +1308,11 @@ void R_DrawTextureChains_Water (model_t *model, entity_t *ent, texchain_t chain)
 	msurface_t	*s;
 	texture_t	*t;
 	qboolean	bound;
-    
+	qboolean	flatcolor = r_fastturb.value;
+	
+	if (flatcolor)
+		glDisable (GL_TEXTURE_2D);
+	
     for (i=0 ; i<model->numtextures ; i++)
     {
         t = model->textures[i];
@@ -1305,13 +1325,21 @@ void R_DrawTextureChains_Water (model_t *model, entity_t *ent, texchain_t chain)
         {
             if (!bound) //only bind once we are sure we need this texture
             {
-                GL_BindTexture (t->warpimage);
+				if (flatcolor)
+					glColor3fv (t->gltexture->colors.flatcolor);
+				else
+					GL_BindTexture (t->warpimage);
                 bound = true;
             }
             R_DrawGLPoly34 (s->polys);
             rs_c_brush_passes++;
         }
     }
+	
+	if (flatcolor) {
+		glColor3f (1, 1, 1);
+		glEnable (GL_TEXTURE_2D);
+	}
 }
 
 /*
