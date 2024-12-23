@@ -751,7 +751,7 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, int frame)
 	//
 	if ( !(s->flags & SURF_DRAWTILED) )
 	{
-		qboolean	flatcolor = r_flatcolor.value;
+		qboolean	flatcolor = r_flatworld.value;
 		
 		if (flatcolor)
 			glDisable (GL_TEXTURE_2D);
@@ -1407,7 +1407,7 @@ void R_DrawTextureChains_Multitexture (model_t *model, entity_t *ent, texchain_t
 	gltexture_t	*tx;
 	gltexture_t	*fb;
 	qboolean	bound;
-	qboolean	flatcolor = r_flatcolor.value;
+	qboolean	flatcolor = r_flatworld.value;
 	
 	if (flatcolor)
 		glDisable (GL_TEXTURE_2D);
