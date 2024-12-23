@@ -194,6 +194,13 @@ void (GLAPIENTRY *qglCompressedTexImage2D) (GLenum target, GLint level, GLenum i
 
 enum srcformat {SRC_INDEXED, SRC_LIGHTMAP, SRC_RGBA, SRC_BLOOM};
 
+typedef struct
+{
+	vec3_t		basecolor;
+	vec3_t		glowcolor;
+	vec3_t		flatcolor;
+} flatcolors_t;
+
 typedef struct gltexture_s {
 //managed by texture manager
 	GLuint				texnum;
@@ -214,6 +221,8 @@ typedef struct gltexture_s {
 	
 	signed char			top_color;					// 0-13 top color, or -1 if never colormapped
 	signed char			bottom_color;				// 0-13 bottom color, or -1 if never colormapped
+	
+	flatcolors_t		colors;
 } gltexture_t;
 
 typedef struct

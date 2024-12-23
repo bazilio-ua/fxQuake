@@ -2661,6 +2661,60 @@ void TexMgr_UploadLightmap (gltexture_t *glt, byte *data)
 
 /*
 ===============
+TexMgr_CalculateFlatColors
+
+calculate flat color based on average of all opaque colors
+===============
+*/
+void TexMgr_CalculateFlatColors (gltexture_t *glt, byte *data, int size)
+{
+	int			i;
+	int			p;
+	unsigned	*rgba;
+	int			r0, g0, b0, count0;
+	int			r1, g1, b1, count1;
+	
+	r0 = g0 = b0 = count0 = 0;
+	r1 = g1 = b1 = count1 = 0;
+	for (i=0 ; i<size ; i++)
+	{
+		p = data[i];
+		if (p != 0 && p != 255)
+		{
+			rgba = &d_8to24table[p];
+			
+			if (p > 223) // fullbrights
+			{
+				r1 += ((byte *)rgba)[0];
+				g1 += ((byte *)rgba)[1];
+				b1 += ((byte *)rgba)[2];
+				count1++;
+			}
+			else
+			{
+				r0 += ((byte *)rgba)[0];
+				g0 += ((byte *)rgba)[1];
+				b0 += ((byte *)rgba)[2];
+				count0++;
+			}
+		}
+	}
+	if (count0) {
+		glt->colors.basecolor[0] = (float)r0/(count0*255);
+		glt->colors.basecolor[1] = (float)g0/(count0*255);
+		glt->colors.basecolor[2] = (float)b0/(count0*255);
+	}
+	if (count1) {
+		glt->colors.glowcolor[0] = (float)r1/(count1*255);
+		glt->colors.glowcolor[1] = (float)g1/(count1*255);
+		glt->colors.glowcolor[2] = (float)b1/(count1*255);
+	}
+	
+	VectorAdd (glt->colors.basecolor, glt->colors.glowcolor, glt->colors.flatcolor);
+}
+
+/*
+===============
 TexMgr_Upload8
 
 handles 8bit source data, then passes it to TexMgr_Upload32
@@ -2690,7 +2744,10 @@ void TexMgr_Upload8 (gltexture_t *glt, byte *data)
 
 	// allocate dynamic memory
 //	trans = Hunk_Alloc (size * sizeof(unsigned)); // 4
-
+	
+	// calculate flat colors
+	TexMgr_CalculateFlatColors (glt, data, size);
+	
 	// detect false alpha cases
 	if (glt->flags & TEXPREF_ALPHA && !(glt->flags & TEXPREF_CONCHARS))
 	{
@@ -2970,6 +3027,7 @@ gltexture_t *TexMgr_LoadTexture (model_t *owner, char *name, int width, int heig
 	glt->source_crc = crc;
 	glt->top_color = -1;
 	glt->bottom_color = -1;
+	memset (&glt->colors, 0, sizeof(glt->colors));
 
 	//upload it
 	mark = Hunk_LowMark ();
