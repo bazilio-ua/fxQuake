@@ -995,7 +995,13 @@ R_FastSkyColor
 void R_FastSkyColor (void)
 {
 	if (solidskytexture && alphaskytexture)
-		VectorAdd (solidskytexture->colors.flatcolor, alphaskytexture->colors.flatcolor, skyflatcolor);
+	{
+		float r = 0.5f;
+		
+		skyflatcolor[0] = solidskytexture->colors.flatcolor[0] * (1-r) + alphaskytexture->colors.flatcolor[0] * r;
+		skyflatcolor[1] = solidskytexture->colors.flatcolor[1] * (1-r) + alphaskytexture->colors.flatcolor[1] * r;
+		skyflatcolor[2] = solidskytexture->colors.flatcolor[2] * (1-r) + alphaskytexture->colors.flatcolor[2] * r;
+	}
 }
 
 /*
@@ -1687,6 +1693,8 @@ void R_InitSky (texture_t *mt)
 //	skyflatcolor[0] = (float)r/(count*255);
 //	skyflatcolor[1] = (float)g/(count*255);
 //	skyflatcolor[2] = (float)b/(count*255);
+	
+	R_FastSkyColor ();
 }
 
 

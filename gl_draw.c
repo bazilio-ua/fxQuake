@@ -2671,9 +2671,11 @@ void TexMgr_CalculateFlatColors (gltexture_t *glt, byte *data, int size)
 	int			i;
 	int			p;
 	unsigned	*rgba;
+	int			r, g, b, count;
 	int			r0, g0, b0, count0;
 	int			r1, g1, b1, count1;
 	
+	r = g = b = count = 0;
 	r0 = g0 = b0 = count0 = 0;
 	r1 = g1 = b1 = count1 = 0;
 	for (i=0 ; i<size ; i++)
@@ -2683,6 +2685,11 @@ void TexMgr_CalculateFlatColors (gltexture_t *glt, byte *data, int size)
 		{
 			rgba = &d_8to24table[p];
 			
+			r += ((byte *)rgba)[0];
+			g += ((byte *)rgba)[1];
+			b += ((byte *)rgba)[2];
+			count++;
+			
 			if (p > 223) // fullbrights
 			{
 				r1 += ((byte *)rgba)[0];
@@ -2690,7 +2697,7 @@ void TexMgr_CalculateFlatColors (gltexture_t *glt, byte *data, int size)
 				b1 += ((byte *)rgba)[2];
 				count1++;
 			}
-			else
+			else // nobrights
 			{
 				r0 += ((byte *)rgba)[0];
 				g0 += ((byte *)rgba)[1];
@@ -2709,8 +2716,11 @@ void TexMgr_CalculateFlatColors (gltexture_t *glt, byte *data, int size)
 		glt->colors.glowcolor[1] = (float)g1/(count1*255);
 		glt->colors.glowcolor[2] = (float)b1/(count1*255);
 	}
-	
-	VectorAdd (glt->colors.basecolor, glt->colors.glowcolor, glt->colors.flatcolor);
+	if (count) {
+		glt->colors.flatcolor[0] = (float)r/(count*255);
+		glt->colors.flatcolor[1] = (float)g/(count*255);
+		glt->colors.flatcolor[2] = (float)b/(count*255);
+	}
 }
 
 /*
