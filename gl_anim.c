@@ -28,6 +28,7 @@ cvar_t	r_skyfog = {"r_skyfog","0.5", CVAR_ARCHIVE};
 cvar_t	r_oldsky = {"r_oldsky", "0", CVAR_NONE};
 
 cvar_t	r_waterquality = {"r_waterquality", "12", CVAR_NONE};
+cvar_t	r_fastturb = {"r_fastturb","0", CVAR_NONE};
 
 // Nehahra
 cvar_t	gl_fogenable = {"gl_fogenable", "0", CVAR_NONE};
@@ -1610,13 +1611,14 @@ A sky texture is 256*128, with the right side being a masked overlay
 void R_InitSky (texture_t *mt)
 {
 	char		texturename[64];
-	int			i, j, p, r, g, b, count;
+	int			i, j;
+//	int p, r, g, b, count;
 	int			scaledx;
 	byte		*src;
 	byte		fixedsky[256*128];
 	static byte	front_data[128*128];
 	static byte	back_data[128*128];
-	unsigned	*rgba;
+//	unsigned	*rgba;
 
 	src = (byte *)mt + mt->offsets[0];
 
