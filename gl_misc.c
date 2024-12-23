@@ -235,7 +235,7 @@ void R_Init (void)
 	Cvar_RegisterVariable (&r_speeds);
 	Cvar_RegisterVariable (&r_waterwarp);
 	Cvar_RegisterVariableCallback (&r_clearcolor, R_ClearColor);
-	Cvar_RegisterVariable (&r_fastsky);
+	Cvar_RegisterVariableCallback (&r_fastsky, R_FastSkyColor);
 	Cvar_RegisterVariable (&r_skyquality);
 	Cvar_RegisterVariable (&r_skyalpha);
 	Cvar_RegisterVariable (&r_skyfog);

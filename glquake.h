@@ -349,6 +349,7 @@ void R_InitMapGlobals (void);
 void R_ParseWorldspawn (void);
 void R_DrawSky (void);
 void R_LoadSkyBox (char *skybox);
+void R_FastSkyColor (void);
 
 void R_FogParseServerMessage (void);
 void R_FogParseServerMessage2 (void);

@@ -642,6 +642,8 @@ void V_ShiftPalette (byte *palette)
 	V_SetPalette (palette);
 	// do reload textures
 	TexMgr_ReloadTextures ();
+	// reload fast sky colors
+	R_FastSkyColor ();
 }
 
 void V_SetPalette (byte *palette)

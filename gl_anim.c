@@ -987,6 +987,17 @@ gltexture_t		*solidskytexture, *alphaskytexture;
 float	skyflatcolor[3];
 
 /*
+====================
+R_FastSkyColor
+====================
+*/
+void R_FastSkyColor (void)
+{
+	if (solidskytexture && alphaskytexture)
+		VectorAdd (solidskytexture->colors.flatcolor, alphaskytexture->colors.flatcolor, skyflatcolor);
+}
+
+/*
 ==============
 R_SkySetBoxVert
 ==============
@@ -1654,26 +1665,26 @@ void R_InitSky (texture_t *mt)
 	alphaskytexture = TexMgr_LoadTexture (loadmodel, texturename, 128, 128, SRC_INDEXED, front_data, "", (uintptr_t)front_data, TEXPREF_SKY | TEXPREF_ALPHA);
 
 // calculate r_fastsky color based on average of all opaque foreground colors
-	r = g = b = count = 0;
-	for (i=0 ; i<128 ; i++)
-	{
-		for (j=0 ; j<128 ; j++)
-		{
-			p = src[i*256 + j];
-			if (p != 0)
-			{
-				rgba = &d_8to24table[p];
-				r += ((byte *)rgba)[0];
-				g += ((byte *)rgba)[1];
-				b += ((byte *)rgba)[2];
-				count++;
-			}
-		}
-	}
-
-	skyflatcolor[0] = (float)r/(count*255);
-	skyflatcolor[1] = (float)g/(count*255);
-	skyflatcolor[2] = (float)b/(count*255);
+//	r = g = b = count = 0;
+//	for (i=0 ; i<128 ; i++)
+//	{
+//		for (j=0 ; j<128 ; j++)
+//		{
+//			p = src[i*256 + j];
+//			if (p != 0)
+//			{
+//				rgba = &d_8to24table[p];
+//				r += ((byte *)rgba)[0];
+//				g += ((byte *)rgba)[1];
+//				b += ((byte *)rgba)[2];
+//				count++;
+//			}
+//		}
+//	}
+//
+//	skyflatcolor[0] = (float)r/(count*255);
+//	skyflatcolor[1] = (float)g/(count*255);
+//	skyflatcolor[2] = (float)b/(count*255);
 }
 
 
