@@ -28,7 +28,7 @@ cvar_t	r_skyfog = {"r_skyfog","0.5", CVAR_ARCHIVE};
 cvar_t	r_oldsky = {"r_oldsky", "0", CVAR_NONE};
 
 cvar_t	r_waterquality = {"r_waterquality", "12", CVAR_NONE};
-cvar_t	r_fastturb = {"r_fastturb","0", CVAR_NONE};
+cvar_t	r_flatturb = {"r_flatturb","0", CVAR_NONE};
 
 // Nehahra
 cvar_t	gl_fogenable = {"gl_fogenable", "0", CVAR_NONE};

@@ -218,7 +218,7 @@ void R_Init (void)
 	Cvar_RegisterVariable (&r_drawentities);
 	Cvar_RegisterVariable (&r_drawworld);
 	Cvar_RegisterVariable (&r_drawviewmodel);
-	Cvar_RegisterVariable (&r_fastturb);
+	Cvar_RegisterVariable (&r_flatturb);
 	Cvar_RegisterVariable (&r_waterquality);
 	Cvar_RegisterVariable (&r_wateralpha);
 	Cvar_RegisterVariable (&r_lockalpha);

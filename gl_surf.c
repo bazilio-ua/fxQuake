@@ -649,7 +649,7 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, int frame)
 	//
 	if (s->flags & SURF_DRAWTURB)
 	{
-		qboolean	flatcolor = r_fastturb.value;
+		qboolean	flatcolor = r_flatturb.value;
 		
 		if (flatcolor)
 			glDisable (GL_TEXTURE_2D);
@@ -1324,7 +1324,7 @@ void R_DrawTextureChains_Water (model_t *model, entity_t *ent, texchain_t chain)
 	msurface_t	*s;
 	texture_t	*t;
 	qboolean	bound;
-	qboolean	flatcolor = r_fastturb.value;
+	qboolean	flatcolor = r_flatturb.value;
 	
 	if (flatcolor)
 		glDisable (GL_TEXTURE_2D);
