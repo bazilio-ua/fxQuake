@@ -751,6 +751,11 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, int frame)
 	//
 	if ( !(s->flags & SURF_DRAWTILED) )
 	{
+		qboolean	flatcolor = r_flatcolor.value;
+		
+		if (flatcolor)
+			glDisable (GL_TEXTURE_2D);
+		
 		if (alpha < 1.0)
 		{
 			glDepthMask (GL_FALSE);
@@ -768,7 +773,13 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, int frame)
 		
 		// Binds world to texture env 0
 		GL_SelectTMU0 ();
-		GL_BindTexture (t->gltexture);
+		if (flatcolor) {
+			glColor4f (t->gltexture->colors.basecolor[0],
+					   t->gltexture->colors.basecolor[1],
+					   t->gltexture->colors.basecolor[2], alpha);
+		}
+		else
+			GL_BindTexture (t->gltexture);
 		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		
 		if (t->fullbright)
@@ -914,7 +925,12 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, int frame)
 
 		if (s->flags & SURF_DRAWFENCE)
 			glDisable (GL_ALPHA_TEST); // Flip alpha test back off
-
+		
+		if (flatcolor) {
+			glColor3f (1, 1, 1);
+			glEnable (GL_TEXTURE_2D);
+		}
+		
 //		if (t->fullbright)
 //		{
 //			GL_BindTexture (t->fullbright);
@@ -1388,9 +1404,14 @@ void R_DrawTextureChains_Multitexture (model_t *model, entity_t *ent, texchain_t
 	msurface_t	*s;
 	texture_t	*t;
 	float		*v;
-	qboolean	bound;
+	gltexture_t	*tx;
 	gltexture_t	*fb;
-
+	qboolean	bound;
+	qboolean	flatcolor = r_flatcolor.value;
+	
+	if (flatcolor)
+		glDisable (GL_TEXTURE_2D);
+	
 	for (i=0 ; i<model->numtextures ; i++)
 	{
 		t = model->textures[i];
@@ -1404,8 +1425,12 @@ void R_DrawTextureChains_Multitexture (model_t *model, entity_t *ent, texchain_t
         {
             if (!bound) //only bind once we are sure we need this texture
             {
+				tx = (R_TextureAnimation(t, ent != NULL ? ent->frame : 0))->gltexture;
 				GL_SelectTMU0 ();
-                GL_BindTexture ((R_TextureAnimation(t, ent != NULL ? ent->frame : 0))->gltexture);
+				if (flatcolor)
+					glColor3fv (tx->colors.basecolor);
+				else
+					GL_BindTexture (tx);
                 
                 if (t->texturechains[chain]->flags & SURF_DRAWFENCE)
                     glEnable (GL_ALPHA_TEST); // Flip alpha test back on
@@ -1452,6 +1477,11 @@ void R_DrawTextureChains_Multitexture (model_t *model, entity_t *ent, texchain_t
         
 		if (bound && t->texturechains[chain]->flags & SURF_DRAWFENCE)
 			glDisable (GL_ALPHA_TEST); // Flip alpha test back off
+	}
+	
+	if (flatcolor) {
+		glColor3f (1, 1, 1);
+		glEnable (GL_TEXTURE_2D);
 	}
 }
 
