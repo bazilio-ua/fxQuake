@@ -762,6 +762,8 @@ int	vec_to_st[6][3] =
 float	skymins[2][6], skymaxs[2][6];
 int		skytexorder[6] = {0,2,1,3,4,5}; // for skybox
 
+float	squarerootof3;
+
 /*
 =============================================================
 
@@ -881,11 +883,10 @@ void R_SkyEmitSkyBoxVertex (float s, float t, int axis)
 	vec3_t		v, b;
 	int			j, k;
 	float		w, h;
-	float		q = sqrt(3.0);
 
-	b[0] = s * gl_farclip.value / q;
-	b[1] = t * gl_farclip.value / q;
-	b[2] = gl_farclip.value / q;
+	b[0] = s * gl_farclip.value / squarerootof3;
+	b[1] = t * gl_farclip.value / squarerootof3;
+	b[2] = gl_farclip.value / squarerootof3;
 
 	for (j=0 ; j<3 ; j++)
 	{
@@ -1014,11 +1015,10 @@ void R_SkySetBoxVert (float s, float t, int axis, vec3_t v)
 {
 	vec3_t		b;
 	int			j, k;
-	float		q = sqrt(3.0);
 
-	b[0] = s * gl_farclip.value / q;
-	b[1] = t * gl_farclip.value / q;
-	b[2] = gl_farclip.value / q;
+	b[0] = s * gl_farclip.value / squarerootof3;
+	b[1] = t * gl_farclip.value / squarerootof3;
+	b[2] = gl_farclip.value / squarerootof3;
 
 	for (j=0 ; j<3 ; j++)
 	{
@@ -1563,6 +1563,8 @@ void R_DrawSky (void)
 {
 	int				i;
 
+	squarerootof3 = sqrt(3.0);
+	
 	//
 	// reset sky bounds
 	//

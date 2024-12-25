@@ -212,6 +212,10 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
+            argument = "-game Tershibboleth"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
             argument = "-window"
             isEnabled = "YES">
          </CommandLineArgument>
