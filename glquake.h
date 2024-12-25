@@ -509,6 +509,7 @@ extern	cvar_t	r_lockfrustum;
 extern	cvar_t	r_lockpvs;
 extern	cvar_t	r_clearcolor;
 extern	cvar_t	r_fastsky;
+extern	cvar_t	r_fastskycolor;
 extern	cvar_t	r_skyquality;
 extern	cvar_t	r_skyalpha;
 extern	cvar_t	r_skyfog;

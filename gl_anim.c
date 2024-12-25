@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "quakedef.h"
 
 cvar_t	r_fastsky = {"r_fastsky","0", CVAR_NONE};
+cvar_t	r_fastskycolor = {"r_fastskycolor", "", CVAR_ARCHIVE}; // woods #fastskycolor
 cvar_t	r_skyquality = {"r_skyquality","12", CVAR_NONE};
 cvar_t	r_skyalpha = {"r_skyalpha","1", CVAR_ARCHIVE};
 cvar_t	r_skyfog = {"r_skyfog","0.5", CVAR_ARCHIVE};
@@ -999,7 +1000,17 @@ void R_FastSkyColor (void)
 {
 	int			i, j, p, r, g, b, count;
 	unsigned	*rgba;
+	byte *rgb;
 	
+	if (r_fastskycolor.value)
+	{
+	// update skycolor
+		rgb = (byte *)(d_8to24table + ((int)r_fastskycolor.value & 0xFF));
+		skyflatcolor[0] = (float)rgb[0]/255.0;
+		skyflatcolor[1] = (float)rgb[1]/255.0;
+		skyflatcolor[2] = (float)rgb[2]/255.0;
+	}
+	else
 	if (skydata)
 	{
 	// calculate r_fastsky color based on average of all opaque foreground colors
