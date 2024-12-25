@@ -988,6 +988,7 @@ gltexture_t		*solidskytexture, *alphaskytexture;
 #define	MAX_CLIP_VERTS 64
 
 float	skyflatcolor[3];
+byte	*skydata;
 
 /*
 ====================
@@ -996,13 +997,32 @@ R_FastSkyColor
 */
 void R_FastSkyColor (void)
 {
-	if (solidskytexture && alphaskytexture)
+	int			i, j, p, r, g, b, count;
+	unsigned	*rgba;
+	
+	if (skydata)
 	{
-		float r = 0.5f;
+	// calculate r_fastsky color based on average of all opaque foreground colors
+		r = g = b = count = 0;
+		for (i=0 ; i<128 ; i++)
+		{
+			for (j=0 ; j<128 ; j++)
+			{
+				p = skydata[i*256 + j];
+				if (p != 0)
+				{
+					rgba = &d_8to24table[p];
+					r += ((byte *)rgba)[0];
+					g += ((byte *)rgba)[1];
+					b += ((byte *)rgba)[2];
+					count++;
+				}
+			}
+		}
 		
-		skyflatcolor[0] = solidskytexture->colors.flatcolor[0] * (1-r) + alphaskytexture->colors.flatcolor[0] * r;
-		skyflatcolor[1] = solidskytexture->colors.flatcolor[1] * (1-r) + alphaskytexture->colors.flatcolor[1] * r;
-		skyflatcolor[2] = solidskytexture->colors.flatcolor[2] * (1-r) + alphaskytexture->colors.flatcolor[2] * r;
+		skyflatcolor[0] = (float)r/(count*255);
+		skyflatcolor[1] = (float)g/(count*255);
+		skyflatcolor[2] = (float)b/(count*255);
 	}
 }
 
@@ -1622,13 +1642,11 @@ void R_InitSky (texture_t *mt)
 {
 	char		texturename[64];
 	int			i, j;
-//	int p, r, g, b, count;
 	int			scaledx;
 	byte		*src;
 	byte		fixedsky[256*128];
 	static byte	front_data[128*128];
 	static byte	back_data[128*128];
-//	unsigned	*rgba;
 
 	src = (byte *)mt + mt->offsets[0];
 
@@ -1676,27 +1694,7 @@ void R_InitSky (texture_t *mt)
 	sprintf (texturename, "%s:%s_front", loadmodel->name, mt->name);
 	alphaskytexture = TexMgr_LoadTexture (loadmodel, texturename, 128, 128, SRC_INDEXED, front_data, "", (uintptr_t)front_data, TEXPREF_SKY | TEXPREF_ALPHA);
 
-// calculate r_fastsky color based on average of all opaque foreground colors
-//	r = g = b = count = 0;
-//	for (i=0 ; i<128 ; i++)
-//	{
-//		for (j=0 ; j<128 ; j++)
-//		{
-//			p = src[i*256 + j];
-//			if (p != 0)
-//			{
-//				rgba = &d_8to24table[p];
-//				r += ((byte *)rgba)[0];
-//				g += ((byte *)rgba)[1];
-//				b += ((byte *)rgba)[2];
-//				count++;
-//			}
-//		}
-//	}
-//
-//	skyflatcolor[0] = (float)r/(count*255);
-//	skyflatcolor[1] = (float)g/(count*255);
-//	skyflatcolor[2] = (float)b/(count*255);
+	skydata = src;
 	
 	R_FastSkyColor ();
 }

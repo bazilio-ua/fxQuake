@@ -1404,9 +1404,9 @@ void R_DrawTextureChains_Multitexture (model_t *model, entity_t *ent, texchain_t
 	msurface_t	*s;
 	texture_t	*t;
 	float		*v;
+	qboolean	bound;
 	gltexture_t	*tx;
 	gltexture_t	*fb;
-	qboolean	bound;
 	qboolean	flatcolor = r_flatworld.value;
 	
 	if (flatcolor)
