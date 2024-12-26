@@ -1340,7 +1340,7 @@ void R_DrawTextureChains_Water (model_t *model, entity_t *ent, texchain_t chain)
 		for (i=0 ; i<model->numtextures ; i++)
 		{
 			t = model->textures[i];
-			if (!t || !t->texturechains[chain] || !(t->texturechains[chain]->flags & SURF_DRAWTURB))
+			if (!t || !t->texturechains[chain] || t->texturechains[chain]->alpha < 1.0 || !(t->texturechains[chain]->flags & SURF_DRAWTURB))
 				continue;
 			
 			if (t->texturechains[chain]->texinfo->flags & TEX_SPECIAL)
