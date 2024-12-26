@@ -76,6 +76,7 @@ cvar_t	r_slimefog = {"r_slimefog","0.8", CVAR_ARCHIVE};
 cvar_t	r_lavaalpha = {"r_lavaalpha","1", CVAR_ARCHIVE};
 cvar_t	r_slimealpha = {"r_slimealpha","1", CVAR_ARCHIVE};
 cvar_t	r_teleportalpha = {"r_teleportalpha","1", CVAR_ARCHIVE};
+cvar_t	r_litwater = {"r_litwater","1", CVAR_NONE};
 cvar_t	r_noalphasort = {"r_noalphasort","0", CVAR_NONE};
 cvar_t	r_dynamic = {"r_dynamic","1", CVAR_ARCHIVE};
 cvar_t	r_dynamicscale = {"r_dynamicscale","1", CVAR_ARCHIVE};

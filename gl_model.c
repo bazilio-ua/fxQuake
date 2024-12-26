@@ -1297,7 +1297,15 @@ void Mod_SetDrawingFlags (msurface_t *out)
 	}
 	else if (out->texinfo->texture->name[0] == '*') // warp surface
 	{
-		out->flags |= (SURF_DRAWTURB | SURF_DRAWTILED);
+//		out->flags |= (SURF_DRAWTURB | SURF_DRAWTILED);
+		out->flags |= SURF_DRAWTURB;
+		if (out->texinfo->flags & TEX_SPECIAL)
+			out->flags |= SURF_DRAWTILED;
+		else if (out->samples && !loadmodel->haslitwater)
+		{
+			Con_DPrintf ("Map has lit water\n");
+			loadmodel->haslitwater = true;
+		}
 
 		// detect special liquid types
 		if (!strncasecmp(out->texinfo->texture->name, "*lava", 5)
@@ -1312,8 +1320,16 @@ void Mod_SetDrawingFlags (msurface_t *out)
 		else
 			out->flags |= SURF_DRAWWATER; 
 
-		Mod_PolyForUnlitSurface (out);
-		// no more subdivision 
+//		Mod_PolyForUnlitSurface (out);
+		// no more subdivision
+		// polys are only created for unlit water here.
+		// lit water is handled in BuildSurfaceDisplayList
+		if (out->flags & SURF_DRAWTILED)
+		{
+			Mod_PolyForUnlitSurface (out);
+			// no more subdivision
+		}
+
 	}
 	else if (out->texinfo->texture->name[0] == '{') // surface with fence texture
 	{

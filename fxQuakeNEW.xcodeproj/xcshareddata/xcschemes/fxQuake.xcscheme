@@ -168,6 +168,10 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
+            argument = "+map test_liquids"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
             argument = "+load a"
             isEnabled = "NO">
          </CommandLineArgument>
@@ -188,7 +192,7 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-mem 1024"
+            argument = "-mem 2000"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument

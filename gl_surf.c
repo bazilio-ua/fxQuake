@@ -1320,37 +1320,113 @@ R_DrawTextureChains_Water -- johnfitz
 */
 void R_DrawTextureChains_Water (model_t *model, entity_t *ent, texchain_t chain)
 {
-	int			i;
+	int			i, j;
 	msurface_t	*s;
 	texture_t	*t;
+	float		*v;
 	qboolean	bound;
 	qboolean	flatcolor = r_flatturb.value;
+	int			lastlightmap;
+	qboolean	has_lit_water = false;
+	qboolean	has_unlit_water = false;
 	
 	if (flatcolor)
 		glDisable (GL_TEXTURE_2D);
 	
-    for (i=0 ; i<model->numtextures ; i++)
-    {
-        t = model->textures[i];
-        if (!t || !t->texturechains[chain] || t->texturechains[chain]->alpha < 1.0 || !(t->texturechains[chain]->flags & SURF_DRAWTURB))
-            continue;
-        
-        bound = false;
-        
-        for (s = t->texturechains[chain]; s; s = s->texturechain)
-        {
-            if (!bound) //only bind once we are sure we need this texture
-            {
-				if (flatcolor)
-					glColor3fv (t->gltexture->colors.flatcolor);
-				else
-					GL_BindTexture (t->warpimage);
-                bound = true;
-            }
-            R_DrawGLPoly34 (s->polys);
-            rs_c_brush_passes++;
-        }
-    }
+	
+	if (cl.worldmodel->haslitwater && r_litwater.value)
+	{
+		has_lit_water = true;
+		
+		// Lit water
+		for (i=0 ; i<model->numtextures ; i++)
+		{
+			t = model->textures[i];
+			if (!t || !t->texturechains[chain] || !(t->texturechains[chain]->flags & SURF_DRAWTURB))
+				continue;
+			
+			if (t->texturechains[chain]->texinfo->flags & TEX_SPECIAL)
+			{
+				has_unlit_water = true;
+				continue;
+			}
+
+			bound = false;
+
+			lastlightmap = 0;
+			for (s = t->texturechains[chain]; s; s = s->texturechain)
+			{
+				if (!bound) //only bind once we are sure we need this texture
+				{
+					GL_SelectTMU0 ();
+					if (flatcolor)
+						glColor3fv (t->gltexture->colors.flatcolor);
+					else
+						GL_BindTexture (t->warpimage);
+					
+					bound = true;
+					lastlightmap = s->lightmaptexture; // ???
+				}
+				
+				
+				if (s->lightmaptexture != lastlightmap) // ???
+					;
+
+				
+				GL_SelectTMU1 ();
+				GL_BindTexture (lightmap_textures[s->lightmaptexture]);
+				
+				lastlightmap = s->lightmaptexture; // ???
+
+				glBegin(GL_POLYGON);
+				v = s->polys->verts[0];
+				for (j=0 ; j<s->polys->numverts ; j++, v+= VERTEXSIZE)
+				{
+					qglMultiTexCoord2f (GL_TEXTURE0_ARB, v[3], v[4]);
+					qglMultiTexCoord2f (GL_TEXTURE1_ARB, v[5], v[6]);
+					
+					glVertex3fv (v);
+				}
+				glEnd ();
+				rs_c_brush_passes++;
+			}
+			
+			GL_SelectTMU0 ();
+		}
+		
+	}
+	else
+		has_unlit_water = true;
+	
+	if (has_unlit_water)
+	{
+		// Unlit water
+		for (i=0 ; i<model->numtextures ; i++)
+		{
+			t = model->textures[i];
+			if (!t || !t->texturechains[chain] || t->texturechains[chain]->alpha < 1.0 || !(t->texturechains[chain]->flags & SURF_DRAWTURB))
+				continue;
+			
+			if (has_lit_water && !(t->texturechains[chain]->texinfo->flags & TEX_SPECIAL))
+				continue;
+			
+			bound = false;
+			
+			for (s = t->texturechains[chain]; s; s = s->texturechain)
+			{
+				if (!bound) //only bind once we are sure we need this texture
+				{
+					if (flatcolor)
+						glColor3fv (t->gltexture->colors.flatcolor);
+					else
+						GL_BindTexture (t->warpimage);
+					bound = true;
+				}
+				R_DrawGLPoly34 (s->polys);
+				rs_c_brush_passes++;
+			}
+		}
+	}
 	
 	if (flatcolor) {
 		glColor3f (1, 1, 1);
@@ -1416,7 +1492,8 @@ void R_DrawTextureChains_Multitexture (model_t *model, entity_t *ent, texchain_t
 	{
 		t = model->textures[i];
         
-		if (!t || !t->texturechains[chain] || t->texturechains[chain]->alpha < 1.0 || t->texturechains[chain]->flags & (SURF_DRAWTILED | SURF_NOTEXTURE))
+		if (!t || !t->texturechains[chain] || t->texturechains[chain]->alpha < 1.0 || t->texturechains[chain]->flags & (SURF_DRAWTURB | SURF_DRAWTILED | SURF_NOTEXTURE))
+//		if (!t || !t->texturechains[chain] || t->texturechains[chain]->alpha < 1.0 || t->texturechains[chain]->flags & (SURF_DRAWTILED | SURF_NOTEXTURE))
 			continue;
         
 		bound = false;
@@ -1612,7 +1689,30 @@ void R_DrawTextureChains (model_t *model, entity_t *ent, texchain_t chain)
 	R_UploadLightmaps ();
     
     R_DrawTextureChains_Alpha (model, ent, chain);
+	
+	if (cl.worldmodel->haslitwater && r_litwater.value)
+	{
+		GL_SelectTMU1 ();
+		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_EXT);
+		glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB_EXT, GL_MODULATE);
+		glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB_EXT, GL_PREVIOUS_EXT);
+		glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB_EXT, GL_TEXTURE);
+		glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, d_overbrightscale);
+		
+		GL_SelectTMU0 ();
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE); // FIXME: already in this mode?
+	}
     R_DrawTextureChains_Water (model, ent, chain);
+	if (cl.worldmodel->haslitwater && r_litwater.value)
+	{
+		GL_SelectTMU1 ();
+		glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, 1.0f);
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+		
+		GL_SelectTMU0 ();
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+	}
+	
     R_DrawTextureChains_NoTexture (model, chain);
 	
 	
@@ -1883,7 +1983,8 @@ void R_BuildSurfaceDisplayList (msurface_t *surf)
 	int			i, lindex, lnumverts;
 	medge_t		*pedges, *r_pedge;
 	float		*vec;
-	float		s, t;
+//	float		s, t;
+	float		s, t, s0, t0, sdiv, tdiv;
 	glpoly_t	*poly;
 
 // reconstruct the polygon
@@ -1899,6 +2000,20 @@ void R_BuildSurfaceDisplayList (msurface_t *surf)
 	surf->polys = poly;
 	poly->numverts = lnumverts;
 
+	if (surf->flags & SURF_DRAWTURB)
+	{
+		// match Mod_PolyForUnlitSurface
+		s0 = t0 = 0.f;
+		sdiv = tdiv = 128.f;
+	}
+	else
+	{
+		s0 = surf->texinfo->vecs[0][3];
+		t0 = surf->texinfo->vecs[1][3];
+		sdiv = surf->texinfo->texture->width;
+		tdiv = surf->texinfo->texture->height;
+	}
+	
 	for (i=0 ; i<lnumverts ; i++)
 	{
 		lindex = currentmodel->surfedges[surf->firstedge + i];
@@ -1913,11 +2028,15 @@ void R_BuildSurfaceDisplayList (msurface_t *surf)
 			r_pedge = &pedges[-lindex];
 			vec = r_pcurrentvertbase[r_pedge->v[1]].position;
 		}
-		s = DotProduct (vec, surf->texinfo->vecs[0]) + surf->texinfo->vecs[0][3];
-		s /= surf->texinfo->texture->width;
+//		s = DotProduct (vec, surf->texinfo->vecs[0]) + surf->texinfo->vecs[0][3];
+//		s /= surf->texinfo->texture->width;
+		s = DotProduct (vec, surf->texinfo->vecs[0]) + s0;
+		s /= sdiv;
 
-		t = DotProduct (vec, surf->texinfo->vecs[1]) + surf->texinfo->vecs[1][3];
-		t /= surf->texinfo->texture->height;
+//		t = DotProduct (vec, surf->texinfo->vecs[1]) + surf->texinfo->vecs[1][3];
+//		t /= surf->texinfo->texture->height;
+		t = DotProduct (vec, surf->texinfo->vecs[1]) + t0;
+		t /= tdiv;
 
 		VectorCopy (vec, poly->verts[i]);
 		poly->verts[i][3] = s;
@@ -1955,6 +2074,12 @@ void R_CreateSurfaceLightmap (msurface_t *surf)
 	int		smax, tmax;
 	byte	*base;
 
+	if (surf->flags & SURF_DRAWTILED)
+	{
+		surf->lightmaptexture = -1;
+		return;
+	}
+	
 	smax = (surf->extents[0]>>4)+1;
 	tmax = (surf->extents[1]>>4)+1;
 

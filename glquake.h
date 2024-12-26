@@ -501,6 +501,7 @@ extern	cvar_t	r_slimefog;
 extern	cvar_t	r_lavaalpha;
 extern	cvar_t	r_slimealpha;
 extern	cvar_t	r_teleportalpha;
+extern	cvar_t	r_litwater;
 extern	cvar_t	r_noalphasort;
 extern	cvar_t	r_dynamic;
 extern	cvar_t	r_dynamicscale;
