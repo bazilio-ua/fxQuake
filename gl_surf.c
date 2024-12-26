@@ -1326,13 +1326,11 @@ void R_DrawTextureChains_Water (model_t *model, entity_t *ent, texchain_t chain)
 	float		*v;
 	qboolean	bound;
 	qboolean	flatcolor = r_flatturb.value;
-	int			lastlightmap;
 	qboolean	has_lit_water = false;
 	qboolean	has_unlit_water = false;
 	
 	if (flatcolor)
 		glDisable (GL_TEXTURE_2D);
-	
 	
 	if (cl.worldmodel->haslitwater && r_litwater.value)
 	{
@@ -1350,10 +1348,9 @@ void R_DrawTextureChains_Water (model_t *model, entity_t *ent, texchain_t chain)
 				has_unlit_water = true;
 				continue;
 			}
-
+			
 			bound = false;
-
-			lastlightmap = 0;
+			
 			for (s = t->texturechains[chain]; s; s = s->texturechain)
 			{
 				if (!bound) //only bind once we are sure we need this texture
@@ -1365,19 +1362,11 @@ void R_DrawTextureChains_Water (model_t *model, entity_t *ent, texchain_t chain)
 						GL_BindTexture (t->warpimage);
 					
 					bound = true;
-					lastlightmap = s->lightmaptexture; // ???
 				}
-				
-				
-				if (s->lightmaptexture != lastlightmap) // ???
-					;
-
 				
 				GL_SelectTMU1 ();
 				GL_BindTexture (lightmap_textures[s->lightmaptexture]);
 				
-				lastlightmap = s->lightmaptexture; // ???
-
 				glBegin(GL_POLYGON);
 				v = s->polys->verts[0];
 				for (j=0 ; j<s->polys->numverts ; j++, v+= VERTEXSIZE)
@@ -1393,7 +1382,6 @@ void R_DrawTextureChains_Water (model_t *model, entity_t *ent, texchain_t chain)
 			
 			GL_SelectTMU0 ();
 		}
-		
 	}
 	else
 		has_unlit_water = true;
