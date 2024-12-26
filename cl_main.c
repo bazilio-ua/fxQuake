@@ -460,6 +460,7 @@ void CL_UpdateStatic (void)
 		{
 			dl = CL_AllocDlight (key);
 			VectorCopy (ent->origin, dl->origin);
+			dl->origin[2] += 12;
 			dl->radius = 100;
 			dl->die = cl.time + 0.1;
 			
@@ -469,6 +470,7 @@ void CL_UpdateStatic (void)
 		{
 			dl = CL_AllocDlight (key);
 			VectorCopy (ent->origin, dl->origin);
+			dl->origin[2] += 12;
 			dl->radius = 125;
 			dl->die = cl.time + 0.1;
 			
@@ -487,6 +489,7 @@ void CL_UpdateStatic (void)
 		{
 			dl = CL_AllocDlight (key);
 			VectorCopy (ent->origin, dl->origin);
+			dl->origin[2] += 8;
 			dl->radius = 55;
 			dl->die = cl.time + 0.1;
 			
