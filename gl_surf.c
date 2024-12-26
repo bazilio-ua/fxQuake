@@ -223,13 +223,13 @@ skipsort:
 					glPushMatrix ();
 					glLoadMatrixf (a.entity->matrix); // load entity matrix
 					
-					R_DrawSequentialPoly ((msurface_t *)a.data, a.alpha, a.entity->frame); // draw entity surfaces
+					R_DrawSequentialPoly ((msurface_t *)a.data, a.alpha, a.entity); // draw entity surfaces
 					
 					glPopMatrix ();
 				}
 				else 
 				{
-					R_DrawSequentialPoly ((msurface_t *)a.data, a.alpha, 0); // draw world surfaces
+					R_DrawSequentialPoly ((msurface_t *)a.data, a.alpha, NULL); // draw world surfaces
 				}
 			}
 			break;
@@ -628,7 +628,7 @@ Systems that have fast state and texture changes can
 just do everything as it passes with no need to sort
 ================
 */
-void R_DrawSequentialPoly (msurface_t *s, float alpha, int frame)
+void R_DrawSequentialPoly (msurface_t *s, float alpha, entity_t *ent)
 {
 	glpoly_t	*p;
 	texture_t	*t;
@@ -716,7 +716,7 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, int frame)
 		return;
 	}
 
-	t = R_TextureAnimation (s->texinfo->texture, frame);
+	t = R_TextureAnimation (s->texinfo->texture, ent != NULL ? ent->frame : 0);
 
 	//
 	// missing texture
@@ -1332,7 +1332,7 @@ void R_DrawTextureChains_Water (model_t *model, entity_t *ent, texchain_t chain)
 	if (flatcolor)
 		glDisable (GL_TEXTURE_2D);
 	
-	if (cl.worldmodel->haslitwater && r_litwater.value)
+	if (model->haslitwater && r_litwater.value)
 	{
 		has_lit_water = true;
 		
@@ -1678,7 +1678,7 @@ void R_DrawTextureChains (model_t *model, entity_t *ent, texchain_t chain)
     
     R_DrawTextureChains_Alpha (model, ent, chain);
 	
-	if (cl.worldmodel->haslitwater && r_litwater.value)
+	if (model->haslitwater && r_litwater.value)
 	{
 		GL_SelectTMU1 ();
 		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_EXT);
@@ -1691,7 +1691,7 @@ void R_DrawTextureChains (model_t *model, entity_t *ent, texchain_t chain)
 		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE); // FIXME: already in this mode?
 	}
     R_DrawTextureChains_Water (model, ent, chain);
-	if (cl.worldmodel->haslitwater && r_litwater.value)
+	if (model->haslitwater && r_litwater.value)
 	{
 		GL_SelectTMU1 ();
 		glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, 1.0f);

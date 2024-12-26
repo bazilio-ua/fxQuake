@@ -333,7 +333,7 @@ void R_DrawBrushModel (entity_t *e);
 void R_DrawWorld (void);
 void R_DrawGLPoly34 (glpoly_t *p);
 void R_DrawGLPoly56 (glpoly_t *p);
-void R_DrawSequentialPoly (msurface_t *s, float alpha, int frame);
+void R_DrawSequentialPoly (msurface_t *s, float alpha, entity_t *ent);
 void R_BuildLightmaps (void);
 void R_UploadLightmaps (void);
 void R_RebuildAllLightmaps (void);
