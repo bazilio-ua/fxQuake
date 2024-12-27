@@ -650,7 +650,9 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, entity_t *ent)
 	if (s->flags & SURF_DRAWTURB)
 	{
 		qboolean	flatcolor = r_flatturb.value;
-		
+		qboolean	has_lit_water = false;
+		qboolean	has_unlit_water = false;
+
 		if (flatcolor)
 			glDisable (GL_TEXTURE_2D);
 		
@@ -662,44 +664,114 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, entity_t *ent)
 			glColor4f(1, 1, 1, alpha);
 		}
 		
-		if (flatcolor) {
-			glColor4f (s->texinfo->texture->gltexture->colors.flatcolor[0],
-					   s->texinfo->texture->gltexture->colors.flatcolor[1],
-					   s->texinfo->texture->gltexture->colors.flatcolor[2], alpha);
-		}
-		else
-			GL_BindTexture (s->texinfo->texture->warpimage);
 		
-		if ( !(s->flags & (SURF_DRAWLAVA | SURF_DRAWSLIME)) )
+		// TODO: - refactor fog
+		if ( ((ent && ent->model->haslitwater) || (!ent && cl.worldmodel->haslitwater)) && r_litwater.value )
 		{
-			R_DrawGLPoly34 (p);
+			has_lit_water = true;
+			
+			if (s->flags & TEX_SPECIAL)
+			{
+				has_unlit_water = true;
+				goto skip;
+			}
+			
+			
+			// Binds world to texture env 0
+			GL_SelectTMU0 ();
+			if (flatcolor) {
+				glColor4f (s->texinfo->texture->gltexture->colors.flatcolor[0],
+						   s->texinfo->texture->gltexture->colors.flatcolor[1],
+						   s->texinfo->texture->gltexture->colors.flatcolor[2], alpha);
+			}
+			else
+				GL_BindTexture (s->texinfo->texture->warpimage);
+			glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+			
+			
+			// Binds lightmap to texture env 1
+			GL_SelectTMU1 ();
+			GL_BindTexture (lightmap_textures[s->lightmaptexture]);
+			glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_EXT);
+			glTexEnvf (GL_TEXTURE_ENV, GL_COMBINE_RGB_EXT, GL_MODULATE);
+			glTexEnvf (GL_TEXTURE_ENV, GL_SOURCE0_RGB_EXT, GL_PREVIOUS_EXT);
+			glTexEnvf (GL_TEXTURE_ENV, GL_SOURCE1_RGB_EXT, GL_TEXTURE);
+			glTexEnvf (GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, d_overbrightscale);
+			
+			
+			R_RenderDynamicLightmaps (s);
+			
+			glBegin (GL_POLYGON);
+			v = p->verts[0];
+			for (i=0 ; i<p->numverts ; i++, v+= VERTEXSIZE)
+			{
+				qglMultiTexCoord2f (GL_TEXTURE0_ARB, v[3], v[4]);
+				qglMultiTexCoord2f (GL_TEXTURE1_ARB, v[5], v[6]);
+				
+				glVertex3fv (v);
+			}
+			glEnd ();
 			rs_c_brush_passes++; // r_speeds
+			
+			
+	//		GL_SelectTMU1 ();
+			glTexEnvf (GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, 1.0f);
+			glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+			
+			
+			GL_SelectTMU0 ();
+			glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE); //FX
+			
+			
 		}
 		else
+			has_unlit_water = true;
+skip:
+		
+		
+		if (has_unlit_water)
 		{
-			R_FogDisableGFog ();
-			R_DrawGLPoly34 (p);
-			rs_c_brush_passes++; // r_speeds
-			R_FogEnableGFog ();
-
-			if (s->flags & SURF_DRAWLAVA)
-				lfog = CLAMP(0.0, r_lavafog.value, 1.0);
-			else if (s->flags & SURF_DRAWSLIME)
-				lfog = CLAMP(0.0, r_slimefog.value, 1.0);
-
-			if (R_FogGetDensity() > 0 && lfog > 0)
+			
+			if (flatcolor) {
+				glColor4f (s->texinfo->texture->gltexture->colors.flatcolor[0],
+						   s->texinfo->texture->gltexture->colors.flatcolor[1],
+						   s->texinfo->texture->gltexture->colors.flatcolor[2], alpha);
+			}
+			else
+				GL_BindTexture (s->texinfo->texture->warpimage);
+			
+			if ( !(s->flags & (SURF_DRAWLAVA | SURF_DRAWSLIME)) )
 			{
-				float *c = R_FogGetColor();
-
-				glEnable (GL_BLEND);
-				glColor4f (c[0],c[1],c[2], lfog);
 				R_DrawGLPoly34 (p);
 				rs_c_brush_passes++; // r_speeds
-				glColor3f (1, 1, 1);
-				glDisable (GL_BLEND);
 			}
+			else
+			{
+				R_FogDisableGFog ();
+				R_DrawGLPoly34 (p);
+				rs_c_brush_passes++; // r_speeds
+				R_FogEnableGFog ();
+				
+				if (s->flags & SURF_DRAWLAVA)
+					lfog = CLAMP(0.0, r_lavafog.value, 1.0);
+				else if (s->flags & SURF_DRAWSLIME)
+					lfog = CLAMP(0.0, r_slimefog.value, 1.0);
+				
+				if (R_FogGetDensity() > 0 && lfog > 0)
+				{
+					float *c = R_FogGetColor();
+					
+					glEnable (GL_BLEND);
+					glColor4f (c[0],c[1],c[2], lfog);
+					R_DrawGLPoly34 (p);
+					rs_c_brush_passes++; // r_speeds
+					glColor3f (1, 1, 1);
+					glDisable (GL_BLEND);
+				}
+			}
+			
 		}
-
+		
 		if (alpha < 1.0)
 		{
 			glDepthMask(GL_TRUE);
