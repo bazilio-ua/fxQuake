@@ -238,7 +238,7 @@ void R_SetupDlights (void)
 		if (R_CullSphere (l->origin, l->radius))
 			continue;
 		
-		R_AddToAlpha (ALPHA_DLIGHTS, R_GetAlphaDist(l->origin), l, NULL, 0);
+		R_AddToAlpha (ALPHA_DLIGHTS, R_GetAlphaDist(l->origin), l, NULL, NULL, 0);
 	}
 }
 

@@ -132,7 +132,7 @@ vec_t R_GetAlphaDist (vec3_t origin)
 R_AddToAlpha
 ===============
 */
-void R_AddToAlpha (int type, vec_t dist, void *data, entity_t *entity, float alpha)
+void R_AddToAlpha (int type, vec_t dist, void *data, model_t *model, entity_t *entity, float alpha)
 {
 	if (gl_alphalist_num == MAX_ALPHA_ITEMS)
 		return;
@@ -140,6 +140,7 @@ void R_AddToAlpha (int type, vec_t dist, void *data, entity_t *entity, float alp
 	gl_alphalist[gl_alphalist_num].type = type;
 	gl_alphalist[gl_alphalist_num].dist = dist;
 	gl_alphalist[gl_alphalist_num].data = data;
+	gl_alphalist[gl_alphalist_num].model = model;
 	
 	gl_alphalist[gl_alphalist_num].entity = entity;
 	gl_alphalist[gl_alphalist_num].alpha = alpha;
@@ -223,13 +224,13 @@ skipsort:
 					glPushMatrix ();
 					glLoadMatrixf (a.entity->matrix); // load entity matrix
 					
-					R_DrawSequentialPoly ((msurface_t *)a.data, a.alpha, a.entity); // draw entity surfaces
+					R_DrawSequentialPoly ((msurface_t *)a.data, a.alpha, a.model, a.entity); // draw entity surfaces
 					
 					glPopMatrix ();
 				}
 				else 
 				{
-					R_DrawSequentialPoly ((msurface_t *)a.data, a.alpha, NULL); // draw world surfaces
+					R_DrawSequentialPoly ((msurface_t *)a.data, a.alpha, a.model, NULL); // draw world surfaces
 				}
 			}
 			break;
@@ -628,7 +629,7 @@ Systems that have fast state and texture changes can
 just do everything as it passes with no need to sort
 ================
 */
-void R_DrawSequentialPoly (msurface_t *s, float alpha, entity_t *ent)
+void R_DrawSequentialPoly (msurface_t *s, float alpha, model_t *model, entity_t *ent)
 {
 	glpoly_t	*p;
 	texture_t	*t;
@@ -666,7 +667,8 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, entity_t *ent)
 		
 		
 		// TODO: - refactor fog
-		if ( ((ent && ent->model->haslitwater) || (!ent && cl.worldmodel->haslitwater)) && r_litwater.value )
+		if (model->haslitwater && r_litwater.value)
+//		if ( ((ent && ent->model->haslitwater) || (!ent && cl.worldmodel->haslitwater)) && r_litwater.value )
 		{
 			has_lit_water = true;
 			
@@ -1369,14 +1371,14 @@ void R_DrawTextureChains_Alpha (model_t *model, entity_t *e, texchain_t chain)
                 }
                 
                 midp_dist = R_GetAlphaDist(midp);
-                R_AddToAlpha (ALPHA_SURFACE, midp_dist, s, e, s->alpha);
+				R_AddToAlpha (ALPHA_SURFACE, midp_dist, s, model, e, s->alpha);
             }
             else 
             {
                 vec_t midp_dist;
                 
                 midp_dist = R_GetAlphaDist(s->midp);
-                R_AddToAlpha (ALPHA_SURFACE, midp_dist, s, NULL, s->alpha);
+				R_AddToAlpha (ALPHA_SURFACE, midp_dist, s, model, NULL, s->alpha);
             }
             
 //            rs_c_brush_passes++;
@@ -1462,7 +1464,7 @@ R_DrawTextureChains_NoTexture -- johnfitz
 draws surfs whose textures were missing from the BSP
 ================
 */
-void R_DrawTextureChains_NoTexture (model_t *model, texchain_t chain)
+void R_DrawTextureChains_NoTexture (model_t *model, entity_t *ent, texchain_t chain)
 {
 	int			i;
 	msurface_t	*s;
@@ -1728,7 +1730,7 @@ void R_DrawTextureChains (model_t *model, entity_t *ent, texchain_t chain)
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE); // FIXME: already in this mode?
 	
 	R_DrawTextureChains_Water (model, ent, chain);
-	R_DrawTextureChains_NoTexture (model, chain);
+	R_DrawTextureChains_NoTexture (model, ent, chain);
 	
 	R_DrawTextureChains_Multitexture (model, ent, chain);
 	

@@ -333,7 +333,7 @@ void R_DrawBrushModel (entity_t *e);
 void R_DrawWorld (void);
 void R_DrawGLPoly34 (glpoly_t *p);
 void R_DrawGLPoly56 (glpoly_t *p);
-void R_DrawSequentialPoly (msurface_t *s, float alpha, entity_t *ent);
+void R_DrawSequentialPoly (msurface_t *s, float alpha, model_t *model, entity_t *ent);
 void R_BuildLightmaps (void);
 void R_UploadLightmaps (void);
 void R_RebuildAllLightmaps (void);
@@ -413,6 +413,7 @@ typedef struct gl_alphalist_s
 	int			type;
 	vec_t		dist;
 	void 		*data;
+	model_t 	*model;
 	
 	// for alpha surface
 	entity_t	*entity;
@@ -425,7 +426,7 @@ extern int				gl_alphalist_num;
 qboolean R_SetAlphaSurface(msurface_t *s, float alpha);
 float R_GetTurbAlpha (msurface_t *s);
 vec_t R_GetAlphaDist (vec3_t origin);
-void R_AddToAlpha (int type, vec_t dist, void *data, entity_t *entity, float alpha);
+void R_AddToAlpha (int type, vec_t dist, void *data, model_t *model, entity_t *entity, float alpha);
 void R_DrawAlpha (void);
 
 //====================================================
