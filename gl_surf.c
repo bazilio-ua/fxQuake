@@ -1398,15 +1398,18 @@ void R_DrawTextureChains_Water (model_t *model, entity_t *ent, texchain_t chain)
 	float		*v;
 	qboolean	bound;
 	qboolean	flatcolor = r_flatturb.value;
-	qboolean	has_lit_water = false;
-	qboolean	has_unlit_water = false;
+//	qboolean	has_lit_water = false;
+//	qboolean	has_unlit_water = false;
+	
+	qboolean	litwater = model->haslitwater && r_litwater.value;
+	qboolean	special;
 	
 	if (flatcolor)
 		glDisable (GL_TEXTURE_2D);
 	
-	if (model->haslitwater && r_litwater.value)
+//	if (model->haslitwater && r_litwater.value)
 	{
-		has_lit_water = true;
+//		has_lit_water = true;
 		
 		// Lit water
 		for (i=0 ; i<model->numtextures ; i++)
@@ -1415,11 +1418,12 @@ void R_DrawTextureChains_Water (model_t *model, entity_t *ent, texchain_t chain)
 			if (!t || !t->texturechains[chain] || t->texturechains[chain]->alpha < 1.0 || !(t->texturechains[chain]->flags & SURF_DRAWTURB))
 				continue;
 			
-			if (t->texturechains[chain]->texinfo->flags & TEX_SPECIAL)
-			{
-				has_unlit_water = true;
-				continue;
-			}
+			special = (t->texturechains[chain]->texinfo->flags & TEX_SPECIAL);
+//			if (t->texturechains[chain]->texinfo->flags & TEX_SPECIAL)
+//			{
+//				has_unlit_water = true;
+//				continue;
+//			}
 			
 			bound = false;
 			
@@ -1436,15 +1440,18 @@ void R_DrawTextureChains_Water (model_t *model, entity_t *ent, texchain_t chain)
 					bound = true;
 				}
 				
-				GL_SelectTMU1 ();
-				GL_BindTexture (lightmap_textures[s->lightmaptexture]);
+				if (litwater && !special) {
+					GL_SelectTMU1 ();
+					GL_BindTexture (lightmap_textures[s->lightmaptexture]);
+				}
 				
 				glBegin(GL_POLYGON);
 				v = s->polys->verts[0];
 				for (j=0 ; j<s->polys->numverts ; j++, v+= VERTEXSIZE)
 				{
 					qglMultiTexCoord2f (GL_TEXTURE0_ARB, v[3], v[4]);
-					qglMultiTexCoord2f (GL_TEXTURE1_ARB, v[5], v[6]);
+					if (litwater && !special)
+						qglMultiTexCoord2f (GL_TEXTURE1_ARB, v[5], v[6]);
 					
 					glVertex3fv (v);
 				}
@@ -1455,38 +1462,38 @@ void R_DrawTextureChains_Water (model_t *model, entity_t *ent, texchain_t chain)
 			GL_SelectTMU0 ();
 		}
 	}
-	else
-		has_unlit_water = true;
+//	else
+//		has_unlit_water = true;
 	
-	if (has_unlit_water)
-	{
-		// Unlit water
-		for (i=0 ; i<model->numtextures ; i++)
-		{
-			t = model->textures[i];
-			if (!t || !t->texturechains[chain] || t->texturechains[chain]->alpha < 1.0 || !(t->texturechains[chain]->flags & SURF_DRAWTURB))
-				continue;
-			
-			if (has_lit_water && !(t->texturechains[chain]->texinfo->flags & TEX_SPECIAL))
-				continue;
-			
-			bound = false;
-			
-			for (s = t->texturechains[chain]; s; s = s->texturechain)
-			{
-				if (!bound) //only bind once we are sure we need this texture
-				{
-					if (flatcolor)
-						glColor3fv (t->gltexture->colors.flatcolor);
-					else
-						GL_BindTexture (t->warpimage);
-					bound = true;
-				}
-				R_DrawGLPoly34 (s->polys);
-				rs_c_brush_passes++;
-			}
-		}
-	}
+//	if (has_unlit_water)
+//	{
+//		// Unlit water
+//		for (i=0 ; i<model->numtextures ; i++)
+//		{
+//			t = model->textures[i];
+//			if (!t || !t->texturechains[chain] || t->texturechains[chain]->alpha < 1.0 || !(t->texturechains[chain]->flags & SURF_DRAWTURB))
+//				continue;
+//			
+//			if (has_lit_water && !(t->texturechains[chain]->texinfo->flags & TEX_SPECIAL))
+//				continue;
+//			
+//			bound = false;
+//			
+//			for (s = t->texturechains[chain]; s; s = s->texturechain)
+//			{
+//				if (!bound) //only bind once we are sure we need this texture
+//				{
+//					if (flatcolor)
+//						glColor3fv (t->gltexture->colors.flatcolor);
+//					else
+//						GL_BindTexture (t->warpimage);
+//					bound = true;
+//				}
+//				R_DrawGLPoly34 (s->polys);
+//				rs_c_brush_passes++;
+//			}
+//		}
+//	}
 	
 	if (flatcolor) {
 		glColor3f (1, 1, 1);
@@ -1739,7 +1746,7 @@ R_DrawTextureChains -- johnfitz
 */
 void R_DrawTextureChains (model_t *model, entity_t *ent, texchain_t chain)
 {
-    float alpha = 1.0f;
+//    float alpha = 1.0f;
 
     // ericw -- the mh dynamic lightmap speedup: make a first pass through all
     // surfaces we are going to draw, and rebuild any lightmaps that need it.
@@ -1750,30 +1757,30 @@ void R_DrawTextureChains (model_t *model, entity_t *ent, texchain_t chain)
     
     R_DrawTextureChains_Alpha (model, ent, chain);
 	
-	if (model->haslitwater && r_litwater.value)
-	{
-		GL_SelectTMU1 ();
-		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_EXT);
-		glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB_EXT, GL_MODULATE);
-		glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB_EXT, GL_PREVIOUS_EXT);
-		glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB_EXT, GL_TEXTURE);
-		glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, d_overbrightscale);
-		
-		GL_SelectTMU0 ();
-		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE); // FIXME: already in this mode?
-	}
-    R_DrawTextureChains_Water (model, ent, chain);
-	if (model->haslitwater && r_litwater.value)
-	{
-		GL_SelectTMU1 ();
-		glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, 1.0f);
-		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-		
-		GL_SelectTMU0 ();
-		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-	}
-	
-    R_DrawTextureChains_NoTexture (model, chain);
+//	if (model->haslitwater && r_litwater.value)
+//	{
+//		GL_SelectTMU1 ();
+//		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_EXT);
+//		glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB_EXT, GL_MODULATE);
+//		glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB_EXT, GL_PREVIOUS_EXT);
+//		glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB_EXT, GL_TEXTURE);
+//		glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, d_overbrightscale);
+//		
+//		GL_SelectTMU0 ();
+//		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE); // FIXME: already in this mode?
+//	}
+//    R_DrawTextureChains_Water (model, ent, chain);
+//	if (model->haslitwater && r_litwater.value)
+//	{
+//		GL_SelectTMU1 ();
+//		glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, 1.0f);
+//		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+//		
+//		GL_SelectTMU0 ();
+//		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+//	}
+//	
+//    R_DrawTextureChains_NoTexture (model, chain);
 	
 	
 	
@@ -1786,6 +1793,9 @@ void R_DrawTextureChains (model_t *model, entity_t *ent, texchain_t chain)
 	
 	GL_SelectTMU0 ();
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE); // FIXME: already in this mode?
+	
+	R_DrawTextureChains_Water (model, ent, chain);
+	R_DrawTextureChains_NoTexture (model, chain);
 	
 	R_DrawTextureChains_Multitexture (model, ent, chain);
 	
