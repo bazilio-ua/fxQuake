@@ -651,8 +651,6 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, model_t *model, entity_t 
 	if (s->flags & SURF_DRAWTURB)
 	{
 		qboolean	flatcolor = r_flatturb.value;
-//		qboolean	has_lit_water = false;
-//		qboolean	has_unlit_water = false;
 		qboolean	litwater = model->haslitwater && r_litwater.value;
 		qboolean	special;
 
@@ -668,76 +666,59 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, model_t *model, entity_t 
 		}
 		
 		
-		// TODO: - refactor fog
-//		if (model->haslitwater && r_litwater.value)
-//		if ( ((ent && ent->model->haslitwater) || (!ent && cl.worldmodel->haslitwater)) && r_litwater.value )
-		{
-//			has_lit_water = true;
-			
-			special = !!(s->flags & TEX_SPECIAL);
-//			if (s->flags & TEX_SPECIAL)
-//			{
-//				has_unlit_water = true;
-//				goto skip;
-//			}
-			
-			
-			// Binds world to texture env 0
-			GL_SelectTMU0 ();
-			if (flatcolor) {
-				glColor4f (s->texinfo->texture->gltexture->colors.flatcolor[0],
-						   s->texinfo->texture->gltexture->colors.flatcolor[1],
-						   s->texinfo->texture->gltexture->colors.flatcolor[2], alpha);
-			}
-			else
-				GL_BindTexture (s->texinfo->texture->warpimage);
-			glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-			
-			
-			if (litwater && !special) {
-				// Binds lightmap to texture env 1
-				GL_SelectTMU1 ();
-				GL_BindTexture (lightmap_textures[s->lightmaptexture]);
-				glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_EXT);
-				glTexEnvf (GL_TEXTURE_ENV, GL_COMBINE_RGB_EXT, GL_MODULATE);
-				glTexEnvf (GL_TEXTURE_ENV, GL_SOURCE0_RGB_EXT, GL_PREVIOUS_EXT);
-				glTexEnvf (GL_TEXTURE_ENV, GL_SOURCE1_RGB_EXT, GL_TEXTURE);
-				glTexEnvf (GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, d_overbrightscale);
-				
-				R_RenderDynamicLightmaps (s);
-			}
-			
-			
-			glBegin (GL_POLYGON);
-			v = p->verts[0];
-			for (i=0 ; i<p->numverts ; i++, v+= VERTEXSIZE)
-			{
-				qglMultiTexCoord2f (GL_TEXTURE0_ARB, v[3], v[4]);
-				if (litwater && !special)
-					qglMultiTexCoord2f (GL_TEXTURE1_ARB, v[5], v[6]);
-				
-				glVertex3fv (v);
-			}
-			glEnd ();
-			rs_c_brush_passes++; // r_speeds
-			
-			
-			if (litwater && !special) {
-//				GL_SelectTMU1 ();
-				glTexEnvf (GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, 1.0f);
-				glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-			}
-			
-			GL_SelectTMU0 ();
-			glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE); //FX
-			
-			
+		special = !!(s->flags & TEX_SPECIAL);
+		
+		// Binds world to texture env 0
+		GL_SelectTMU0 ();
+		if (flatcolor) {
+			glColor4f (s->texinfo->texture->gltexture->colors.flatcolor[0],
+					   s->texinfo->texture->gltexture->colors.flatcolor[1],
+					   s->texinfo->texture->gltexture->colors.flatcolor[2], alpha);
 		}
-//		else
-//			has_unlit_water = true;
-//skip:
-//		
-//		
+		else
+			GL_BindTexture (s->texinfo->texture->warpimage);
+		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+		
+		if (litwater && !special) {
+			// Binds lightmap to texture env 1
+			GL_SelectTMU1 ();
+			GL_BindTexture (lightmap_textures[s->lightmaptexture]);
+			glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_EXT);
+			glTexEnvf (GL_TEXTURE_ENV, GL_COMBINE_RGB_EXT, GL_MODULATE);
+			glTexEnvf (GL_TEXTURE_ENV, GL_SOURCE0_RGB_EXT, GL_PREVIOUS_EXT);
+			glTexEnvf (GL_TEXTURE_ENV, GL_SOURCE1_RGB_EXT, GL_TEXTURE);
+			glTexEnvf (GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, d_overbrightscale);
+			
+			R_RenderDynamicLightmaps (s);
+		}
+		
+		
+		glBegin (GL_POLYGON);
+		v = p->verts[0];
+		for (i=0 ; i<p->numverts ; i++, v+= VERTEXSIZE)
+		{
+			qglMultiTexCoord2f (GL_TEXTURE0_ARB, v[3], v[4]);
+			if (litwater && !special)
+				qglMultiTexCoord2f (GL_TEXTURE1_ARB, v[5], v[6]);
+			
+			glVertex3fv (v);
+		}
+		glEnd ();
+		rs_c_brush_passes++; // r_speeds
+		
+		
+		if (litwater && !special) {
+//			GL_SelectTMU1 ();
+			glTexEnvf (GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, 1.0f);
+			glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+		}
+		
+		GL_SelectTMU0 ();
+		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE); //FX
+		
+		
+		// TODO: - refactor fog
+		
 //		if (has_unlit_water)
 //		{
 //			
