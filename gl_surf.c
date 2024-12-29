@@ -1586,6 +1586,8 @@ void R_DrawTextureChains_Multitexture (model_t *model, entity_t *ent, texchain_t
 /*
 ================
 R_DrawTextureChains_TextureOnly -- johnfitz
+
+unused
 ================
 */
 void R_DrawTextureChains_TextureOnly (model_t *model, entity_t *ent, texchain_t chain)
@@ -1661,6 +1663,8 @@ void R_DrawLightmapChains (void)
 /*
 ================
 R_DrawTextureChains_Glow -- johnfitz
+
+unused
 ================
 */
 void R_DrawTextureChains_Glow (model_t *model, entity_t *ent, texchain_t chain)
