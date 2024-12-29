@@ -1418,7 +1418,7 @@ void R_DrawTextureChains_Water (model_t *model, entity_t *ent, texchain_t chain)
 			if (!t || !t->texturechains[chain] || t->texturechains[chain]->alpha < 1.0 || !(t->texturechains[chain]->flags & SURF_DRAWTURB))
 				continue;
 			
-			special = (t->texturechains[chain]->texinfo->flags & TEX_SPECIAL);
+			special = !!(t->texturechains[chain]->texinfo->flags & TEX_SPECIAL);
 //			if (t->texturechains[chain]->texinfo->flags & TEX_SPECIAL)
 //			{
 //				has_unlit_water = true;

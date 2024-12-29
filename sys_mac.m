@@ -123,7 +123,7 @@ void Sys_Init (void)
         numcpus = (numcpus < 1) ? 1 : numcpus;
     
     host_parms->numcpus = numcpus;
-    has_smp = (numcpus > 1) ? true : false;
+    has_smp = !!(numcpus > 1);
     Sys_Printf("System has %d CPU%s.\n", numcpus, has_smp ? "s" : "");
 }
 
