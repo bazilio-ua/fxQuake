@@ -129,7 +129,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-notexturenpot"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-nocompression"
@@ -189,7 +189,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-mem 512"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-mem 2000"
@@ -233,7 +233,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-game mg1"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-window"
