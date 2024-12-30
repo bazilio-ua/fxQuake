@@ -21,30 +21,53 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "quakedef.h"
 
-#define	LMBLOCK_WIDTH		128
-#define	LMBLOCK_HEIGHT	128
+//#define	LMBLOCK_WIDTH		128
+//#define	LMBLOCK_HEIGHT	128
+#define LMBLOCK_WIDTH	256	//FIXME: make dynamic.
+#define LMBLOCK_HEIGHT	256 // if we have a decent card there's no real reason not to use 4k or 16k (assuming there's no lightstyles/dynamics that need uploading...)
+							// Alternatively, use texture arrays, which would avoid the need to switch textures as often.
 // was 18*18, added lit support (*3 for RGB) and loosened surface extents maximum (LMBLOCK_WIDTH*LMBLOCK_HEIGHT)
 #define BLOCKL_SIZE		(LMBLOCK_WIDTH*LMBLOCK_HEIGHT*3)
 unsigned		blocklights[BLOCKL_SIZE];
 
-#define	MAX_LIGHTMAPS	1024 // was 512 (orig. 64)
-gltexture_t *lightmap_textures[MAX_LIGHTMAPS]; // changed to an array
+//#define	MAX_LIGHTMAPS	1024 // was 512 (orig. 64)
+//gltexture_t *lightmap_textures[MAX_LIGHTMAPS]; // changed to an array
+#define	MAX_SANITY_LIGHTMAPS	(1u<<20)
 
+//typedef struct glRect_s
+//{
+//	byte l,t,w,h;
+//} glRect_t;
 typedef struct glRect_s
 {
-	byte l,t,w,h;
+	unsigned short l,t,w,h;
 } glRect_t;
 
-glpoly_t	*lightmap_polys[MAX_LIGHTMAPS];
-qboolean	lightmap_modified[MAX_LIGHTMAPS];
-glRect_t	lightmap_rectchange[MAX_LIGHTMAPS];
+//glpoly_t	*lightmap_polys[MAX_LIGHTMAPS];
+//qboolean	lightmap_modified[MAX_LIGHTMAPS];
+//glRect_t	lightmap_rectchange[MAX_LIGHTMAPS];
+typedef struct lightmap_s
+{
+	gltexture_t *texture;
+	glpoly_t	*polys;
+	qboolean	modified;
+	glRect_t	rectchange;
 
-int			allocated[MAX_LIGHTMAPS][LMBLOCK_WIDTH];
+	// the lightmap texture data needs to be kept in
+	// main memory so texsubimage can update properly
+	byte		*data;//[4*LMBLOCK_WIDTH*LMBLOCK_HEIGHT];
+} lightmap_t;
+
+lightmap_t	*lightmaps;
+int			lightmap_count;
+
+//int			allocated[MAX_LIGHTMAPS][LMBLOCK_WIDTH];
+int			allocated[LMBLOCK_WIDTH];
 int			last_lightmap_allocated; //ericw -- optimization: remember the index of the last lightmap Lightmap_AllocBlock stored a surf in
 
 // the lightmap texture data needs to be kept in
 // main memory so texsubimage can update properly
-byte		lightmaps[4*MAX_LIGHTMAPS*LMBLOCK_WIDTH*LMBLOCK_HEIGHT]; // (4)lightmap_bytes*MAX_LIGHTMAPS*LMBLOCK_WIDTH*LMBLOCK_HEIGHT
+//byte		lightmaps[4*MAX_LIGHTMAPS*LMBLOCK_WIDTH*LMBLOCK_HEIGHT]; // (4)lightmap_bytes*MAX_LIGHTMAPS*LMBLOCK_WIDTH*LMBLOCK_HEIGHT
 
 int			d_overbright = 1;
 float		d_overbrightscale = OVERBRIGHT_SCALE;
@@ -491,15 +514,18 @@ void R_RenderDynamicLightmaps (msurface_t *s)
 {
 	byte		*base;
 	int			maps;
-	glRect_t    *rect;
+	glRect_t	*rect;
+	lightmap_t	*lm;
 	int smax, tmax;
 
 	if (s->flags & SURF_DRAWTILED) // not a lightmapped surface
 		return;
 
 	// add to lightmap chain
-	s->polys->chain = lightmap_polys[s->lightmaptexture];
-	lightmap_polys[s->lightmaptexture] = s->polys;
+//	s->polys->chain = lightmap_polys[s->lightmaptexture];
+//	lightmap_polys[s->lightmaptexture] = s->polys;
+	s->polys->chain = lightmaps[s->lightmaptexture].polys;
+	lightmaps[s->lightmaptexture].polys = s->polys;
 
 	// check for lightmap modification
 	for (maps = 0 ; maps < MAXLIGHTMAPS && s->styles[maps] != 255 ; maps++)
@@ -512,10 +538,14 @@ void R_RenderDynamicLightmaps (msurface_t *s)
 dynamic:
 		if (!r_fullbright.value) // EER1
 		{
-			lightmap_modified[s->lightmaptexture] = true;
-			rect = &lightmap_rectchange[s->lightmaptexture];
+//			lightmap_modified[s->lightmaptexture] = true;
+//			rect = &lightmap_rectchange[s->lightmaptexture];
 
-			if (s->light_t < rect->t) 
+			lm = &lightmaps[s->lightmaptexture];
+			lm->modified = true;
+			rect = &lm->rectchange;
+			
+			if (s->light_t < rect->t)
 			{
 				if (rect->h)
 					rect->h += rect->t - s->light_t;
@@ -536,7 +566,8 @@ dynamic:
 			if ((rect->h + rect->t) < (s->light_t + tmax))
 				rect->h = (s->light_t-rect->t)+tmax;
 
-			base = lightmaps + s->lightmaptexture*lightmap_bytes*LMBLOCK_WIDTH*LMBLOCK_HEIGHT;
+//			base = lightmaps + s->lightmaptexture*lightmap_bytes*LMBLOCK_WIDTH*LMBLOCK_HEIGHT;
+			base = lm->data;
 			base += s->light_t * LMBLOCK_WIDTH * lightmap_bytes + s->light_s * lightmap_bytes;
 			R_BuildLightMap (s, base, LMBLOCK_WIDTH*lightmap_bytes);
 		}
@@ -555,26 +586,46 @@ assumes lightmap texture is already bound
 void R_UploadLightmaps (void)
 {
 	int lmap;
-	glRect_t	*rect;
+//	glRect_t	*rect;
+	lightmap_t	*lm;
 
-	for (lmap = 0; lmap < MAX_LIGHTMAPS; lmap++)
+	for (lmap = 0; lmap < lightmap_count; lmap++)
+//	for (lmap = 0; lmap < MAX_LIGHTMAPS; lmap++)
 	{
-		if (!lightmap_modified[lmap])
+		lm = &lightmaps[lmap];
+		
+		if (!lm->modified)
+//		if (!lightmaps[lmap].modified)
+//		if (!lightmap_modified[lmap])
 			continue;
 
-		GL_BindTexture (lightmap_textures[lmap]);
-		lightmap_modified[lmap] = false;
+		GL_BindTexture (lm->texture);
+//		GL_BindTexture (lightmaps[lmap].texture);
+//		GL_BindTexture (lightmap_textures[lmap]);
+	
+		lm->modified = false;
+//		lightmaps[lmap].modified = false;
+//		lightmap_modified[lmap] = false;
 
-		rect = &lightmap_rectchange[lmap];
+//		rect = &lightmaps[lmap].rectchange;
+//		rect = &lightmap_rectchange[lmap];
 
-		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, rect->t, LMBLOCK_WIDTH, rect->h, GL_RGBA,
-			GL_UNSIGNED_BYTE, lightmaps+(lmap* LMBLOCK_HEIGHT + rect->t) *LMBLOCK_WIDTH*lightmap_bytes);
+//		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, rect->t, LMBLOCK_WIDTH, rect->h, GL_RGBA,
+//			GL_UNSIGNED_BYTE, lightmaps+(lmap* LMBLOCK_HEIGHT + rect->t) *LMBLOCK_WIDTH*lightmap_bytes);
 
-		rect->l = LMBLOCK_WIDTH;
-		rect->t = LMBLOCK_HEIGHT;
-		rect->h = 0;
-		rect->w = 0;
-
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, lm->rectchange.t, LMBLOCK_WIDTH, lm->rectchange.h, GL_RGBA,
+			GL_UNSIGNED_BYTE, lm->data + lm->rectchange.t*LMBLOCK_WIDTH*lightmap_bytes);
+		
+//		rect->l = LMBLOCK_WIDTH;
+//		rect->t = LMBLOCK_HEIGHT;
+//		rect->h = 0;
+//		rect->w = 0;
+		
+		lm->rectchange.l = LMBLOCK_WIDTH;
+		lm->rectchange.t = LMBLOCK_HEIGHT;
+		lm->rectchange.h = 0;
+		lm->rectchange.w = 0;
+		
 		// r_speeds
 		rs_c_dynamic_lightmaps++;
 	}
@@ -634,7 +685,7 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, model_t *model, entity_t 
 	glpoly_t	*p;
 	texture_t	*t;
 	float		*v;
-	float		lfog = 0; // keep compiler happy
+//	float		lfog = 0; // keep compiler happy
 	int			i;
     
 	//
@@ -682,7 +733,8 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, model_t *model, entity_t 
 		if (litwater && !special) {
 			// Binds lightmap to texture env 1
 			GL_SelectTMU1 ();
-			GL_BindTexture (lightmap_textures[s->lightmaptexture]);
+			GL_BindTexture (lightmaps[s->lightmaptexture].texture);
+//			GL_BindTexture (lightmap_textures[s->lightmaptexture]);
 			glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_EXT);
 			glTexEnvf (GL_TEXTURE_ENV, GL_COMBINE_RGB_EXT, GL_MODULATE);
 			glTexEnvf (GL_TEXTURE_ENV, GL_SOURCE0_RGB_EXT, GL_PREVIOUS_EXT);
@@ -855,7 +907,8 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, model_t *model, entity_t 
 		
 		// Binds lightmap to texture env 1
 		GL_SelectTMU1 ();
-		GL_BindTexture (lightmap_textures[s->lightmaptexture]);
+		GL_BindTexture (lightmaps[s->lightmaptexture].texture);
+//		GL_BindTexture (lightmap_textures[s->lightmaptexture]);
 		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_EXT);
 		glTexEnvf (GL_TEXTURE_ENV, GL_COMBINE_RGB_EXT, GL_MODULATE);
 		glTexEnvf (GL_TEXTURE_ENV, GL_SOURCE0_RGB_EXT, GL_PREVIOUS_EXT);
@@ -1297,7 +1350,9 @@ void R_BuildLightmapChains (model_t *model, texchain_t chain)
 	int i;
     
 	// clear lightmap chains
-	memset (lightmap_polys, 0, sizeof(lightmap_polys));
+	for (i=0 ; i<lightmap_count ; i++)
+		lightmaps[i].polys = NULL;
+//	memset (lightmap_polys, 0, sizeof(lightmap_polys));
     
 	// now rebuild them
 	for (i=0 ; i<model->numtextures ; i++)
@@ -1419,7 +1474,8 @@ void R_DrawTextureChains_Water (model_t *model, entity_t *ent, texchain_t chain)
 			
 			if (litwater && !special) {
 				GL_SelectTMU1 ();
-				GL_BindTexture (lightmap_textures[s->lightmaptexture]);
+				GL_BindTexture (lightmaps[s->lightmaptexture].texture);
+//				GL_BindTexture (lightmap_textures[s->lightmaptexture]);
 			}
 			
 			glBegin(GL_POLYGON);
@@ -1536,7 +1592,8 @@ void R_DrawTextureChains_Multitexture (model_t *model, entity_t *ent, texchain_t
             }
 			
 			GL_SelectTMU1 ();
-			GL_BindTexture (lightmap_textures[s->lightmaptexture]);
+			GL_BindTexture (lightmaps[s->lightmaptexture].texture);
+//			GL_BindTexture (lightmap_textures[s->lightmaptexture]);
 			
             glBegin(GL_POLYGON);
             v = s->polys->verts[0];
@@ -1629,13 +1686,17 @@ void R_DrawLightmapChains (void)
 	glpoly_t	*p;
 	float		*v;
     
-	for (i=0 ; i<MAX_LIGHTMAPS ; i++)
+	for (i=0 ; i<lightmap_count ; i++)
+//	for (i=0 ; i<MAX_LIGHTMAPS ; i++)
 	{
-		if (!lightmap_polys[i])
+		if (!lightmaps[i].polys)
+//		if (!lightmap_polys[i])
 			continue;
         
-		GL_BindTexture (lightmap_textures[i]);
-		for (p = lightmap_polys[i]; p; p=p->chain)
+		GL_BindTexture (lightmaps[i].texture);
+//		GL_BindTexture (lightmap_textures[i]);
+		for (p = lightmaps[i].polys; p; p=p->chain)
+//		for (p = lightmap_polys[i]; p; p=p->chain)
 		{
 			glBegin (GL_POLYGON);
 			v = p->verts[0];
@@ -1927,9 +1988,20 @@ int Lightmap_AllocBlock (int w, int h, int *x, int *y)
 	// This makes Lightmap_AllocBlock much faster on large levels (can shave off 3+ seconds
 	// of load time on a level with 180 lightmaps), at a cost of not quite packing
 	// lightmaps as tightly vs. not doing this (uses ~5% more lightmaps)
-	for (texnum=last_lightmap_allocated ; texnum<MAX_LIGHTMAPS ; texnum++, last_lightmap_allocated++)
+	for (texnum=last_lightmap_allocated ; texnum<MAX_SANITY_LIGHTMAPS ; texnum++)
+//	for (texnum=last_lightmap_allocated ; texnum<MAX_LIGHTMAPS ; texnum++, last_lightmap_allocated++)
 //	for (texnum=0 ; texnum<MAX_LIGHTMAPS ; texnum++)
 	{
+		if (texnum == lightmap_count)
+		{
+			lightmap_count++;
+			lightmaps = (lightmap_t *) realloc (lightmaps, sizeof(*lightmaps)*lightmap_count);
+			memset (&lightmaps[texnum], 0, sizeof(lightmaps[texnum]));
+			lightmaps[texnum].data = (byte *) calloc (1, 4*LMBLOCK_WIDTH*LMBLOCK_HEIGHT);
+			//as we're only tracking one texture, we don't need multiple copies of allocated any more.
+			memset (allocated, 0, sizeof(allocated));
+		}
+		
 		best = LMBLOCK_HEIGHT;
 
 		for (i=0 ; i<LMBLOCK_WIDTH-w ; i++)
@@ -1938,10 +2010,10 @@ int Lightmap_AllocBlock (int w, int h, int *x, int *y)
 
 			for (j=0 ; j<w ; j++)
 			{
-				if (allocated[texnum][i+j] >= best)
+				if (allocated[i+j] >= best)
 					break;
-				if (allocated[texnum][i+j] > best2)
-					best2 = allocated[texnum][i+j];
+				if (allocated[i+j] > best2)
+					best2 = allocated[i+j];
 			}
 			if (j == w)
 			{	// this is a valid spot
@@ -1954,8 +2026,9 @@ int Lightmap_AllocBlock (int w, int h, int *x, int *y)
 			continue;
 
 		for (i=0 ; i<w ; i++)
-			allocated[texnum][*x + i] = best + h;
-
+			allocated[*x + i] = best + h;
+		
+		last_lightmap_allocated = texnum;
 		return texnum;
 	}
 
@@ -2080,7 +2153,8 @@ void R_CreateSurfaceLightmap (msurface_t *surf)
 	if (surf->lightmaptexture == -1)
 		Sys_Error ("Lightmap_AllocBlock: full");
 
-	base = lightmaps + surf->lightmaptexture*lightmap_bytes*LMBLOCK_WIDTH*LMBLOCK_HEIGHT;
+//	base = lightmaps + surf->lightmaptexture*lightmap_bytes*LMBLOCK_WIDTH*LMBLOCK_HEIGHT;
+	base = lightmaps[surf->lightmaptexture].data;
 	base += (surf->light_t * LMBLOCK_WIDTH + surf->light_s) * lightmap_bytes;
 	R_BuildLightMap (surf, base, LMBLOCK_WIDTH*lightmap_bytes);
 }
@@ -2088,9 +2162,8 @@ void R_CreateSurfaceLightmap (msurface_t *surf)
 
 /*
 ==================
-R_BuildLightmaps
+R_BuildLightmaps -- called at level load time
 
-called at level load time
 Builds the lightmap texture
 with all the surfaces from all brush models
 ==================
@@ -2098,19 +2171,28 @@ with all the surfaces from all brush models
 void R_BuildLightmaps (void)
 {
 	char	name[64];
-	byte	*data;
+//	byte	*data;
 	int		i, j;
+	lightmap_t *lm;
 	model_t	*m;
 
-	memset (allocated, 0, sizeof(allocated));
-	last_lightmap_allocated = 0;
+//	memset (allocated, 0, sizeof(allocated));
+//	last_lightmap_allocated = 0;
 
 	r_framecount = 1;		// no dlightcache
 
 	// null out array (the gltexture objects themselves were already freed by Mod_ClearAll)
-	for (i=0; i < MAX_LIGHTMAPS; i++)
-		lightmap_textures[i] = NULL;
-
+//	for (i=0; i < MAX_LIGHTMAPS; i++)
+//		lightmap_textures[i] = NULL;
+	
+	// Spike -- wipe out all the lightmap data (johnfitz -- the gltexture objects were already freed by Mod_ClearAll)
+	for (i=0; i < lightmap_count; i++)
+		free (lightmaps[i].data);
+	free (lightmaps);
+	lightmaps = NULL;
+	last_lightmap_allocated = 0;
+	lightmap_count = 0;
+	
 	for (j=1 ; j<MAX_MODELS ; j++)
 	{
 		m = cl.model_precache[j];
@@ -2133,23 +2215,36 @@ void R_BuildLightmaps (void)
 	//
 	// upload all lightmaps that were filled
 	//
-	for (i=0 ; i<MAX_LIGHTMAPS ; i++)
+	for (i=0; i<lightmap_count; i++)
+//	for (i=0 ; i<MAX_LIGHTMAPS ; i++)
 	{
-		if (!allocated[i][0])
-			break;		// no more used
-		lightmap_modified[i] = false;
-		lightmap_rectchange[i].l = LMBLOCK_WIDTH;
-		lightmap_rectchange[i].t = LMBLOCK_HEIGHT;
-		lightmap_rectchange[i].w = 0;
-		lightmap_rectchange[i].h = 0;
-
-		sprintf(name, "lightmap%03i",i);
-
-		data = lightmaps+i*LMBLOCK_WIDTH*LMBLOCK_HEIGHT*lightmap_bytes;
-
-		lightmap_textures[i] = TexMgr_LoadTexture (cl.worldmodel, name, LMBLOCK_WIDTH, LMBLOCK_HEIGHT, SRC_LIGHTMAP, data, "", (uintptr_t)data, TEXPREF_LINEAR | TEXPREF_NOPICMIP);
+//		if (!allocated[i][0])
+//			break;		// no more used
+//		lightmap_modified[i] = false;
+//		lightmap_rectchange[i].l = LMBLOCK_WIDTH;
+//		lightmap_rectchange[i].t = LMBLOCK_HEIGHT;
+//		lightmap_rectchange[i].w = 0;
+//		lightmap_rectchange[i].h = 0;
+		
+		lm = &lightmaps[i];
+		lm->modified = false;
+		lm->rectchange.l = LMBLOCK_WIDTH;
+		lm->rectchange.t = LMBLOCK_HEIGHT;
+		lm->rectchange.w = 0;
+		lm->rectchange.h = 0;
+		
+		sprintf(name, "lightmap%07i",i);
+		
+//		data = lightmaps+i*LMBLOCK_WIDTH*LMBLOCK_HEIGHT*lightmap_bytes;
+//		lightmap_textures[i] = TexMgr_LoadTexture (cl.worldmodel, name, LMBLOCK_WIDTH, LMBLOCK_HEIGHT, SRC_LIGHTMAP, data, "", (uintptr_t)data, TEXPREF_LINEAR | TEXPREF_NOPICMIP);
+		
+		lm->texture = TexMgr_LoadTexture (cl.worldmodel, name, LMBLOCK_WIDTH, LMBLOCK_HEIGHT, SRC_LIGHTMAP, lm->data, "", (uintptr_t)lm->data, TEXPREF_LINEAR | TEXPREF_NOPICMIP);
 	}
-
+	
+	//johnfitz -- warn about exceeding old limits
+	//GLQuake limit was 64 textures of 128x128. Estimate how many 128x128 textures we would need
+	//given that we are using lightmap_count of LMBLOCK_WIDTH x LMBLOCK_HEIGHT
+	i = lightmap_count * ((LMBLOCK_WIDTH / 128) * (LMBLOCK_HEIGHT / 128));
 	// old limit warning
 	if (i > 64)
 		Con_DWarning ("R_BuildLightmaps: lightmaps exceeds standard limit (%d, normal max = %d)\n", i, 64);
@@ -2165,7 +2260,7 @@ void R_RebuildAllLightmaps (void)
 {
 	int			i, j;
 	model_t		*mod;
-	msurface_t	*fa;
+	msurface_t	*s;
 	byte		*base;
     
 	if (!cl.worldmodel) // is this the correct test?
@@ -2176,25 +2271,30 @@ void R_RebuildAllLightmaps (void)
 	{
 		if (!(mod = cl.model_precache[i]))
 			continue;
-		fa = &mod->surfaces[mod->firstmodelsurface];
-		for (j=0; j<mod->nummodelsurfaces; j++, fa++)
+		s = &mod->surfaces[mod->firstmodelsurface];
+		for (j=0; j<mod->nummodelsurfaces; j++, s++)
 		{
-			if (fa->flags & SURF_DRAWTILED)
+			if (s->flags & SURF_DRAWTILED)
 				continue;
-			base = lightmaps + fa->lightmaptexture*lightmap_bytes*LMBLOCK_WIDTH*LMBLOCK_HEIGHT;
-			base += fa->light_t * LMBLOCK_WIDTH * lightmap_bytes + fa->light_s * lightmap_bytes;
-			R_BuildLightMap (fa, base, LMBLOCK_WIDTH*lightmap_bytes);
+//			base = lightmaps + fa->lightmaptexture*lightmap_bytes*LMBLOCK_WIDTH*LMBLOCK_HEIGHT;
+			base = lightmaps[s->lightmaptexture].data;
+			base += s->light_t * LMBLOCK_WIDTH * lightmap_bytes + s->light_s * lightmap_bytes;
+			R_BuildLightMap (s, base, LMBLOCK_WIDTH*lightmap_bytes);
 		}
 	}
     
 	//for each lightmap, upload it
-	for (i=0; i<MAX_LIGHTMAPS; i++)
+	for (i=0; i<lightmap_count; i++)
+//	for (i=0; i<MAX_LIGHTMAPS; i++)
 	{
-		if (!allocated[i][0])
-			break;
-		GL_BindTexture (lightmap_textures[i]);
+//		if (!allocated[i][0])
+//			break;
+//		GL_BindTexture (lightmap_textures[i]);
+		GL_BindTexture (lightmaps[i].texture);
+//		glTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, LMBLOCK_WIDTH, LMBLOCK_HEIGHT, GL_RGBA,
+//                         GL_UNSIGNED_BYTE, lightmaps+i*LMBLOCK_WIDTH*LMBLOCK_HEIGHT*lightmap_bytes);
 		glTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, LMBLOCK_WIDTH, LMBLOCK_HEIGHT, GL_RGBA,
-                         GL_UNSIGNED_BYTE, lightmaps+i*LMBLOCK_WIDTH*LMBLOCK_HEIGHT*lightmap_bytes);
+						 GL_UNSIGNED_BYTE, lightmaps[i].data);
 	}
 }
 
