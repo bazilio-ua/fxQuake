@@ -478,7 +478,7 @@ void Mod_LoadTextures (lump_t *l)
 			Con_Warning ("Zero sized texture '%s' in %s\n", texname, loadmodel->name);
 		
 		if ( (mt->width & 15) || (mt->height & 15) )
-			Host_Error ("Mod_LoadTextures: texture '%s' is not 16 aligned (%dx%d) in %s", texname, mt->width, mt->height, loadmodel->name);
+			Con_Warning ("Mod_LoadTextures: texture '%s' is not 16 aligned (%dx%d) in %s\n", texname, mt->width, mt->height, loadmodel->name); // was Host_Error
 
 		pixels = mt->width*mt->height/64*85;
 		tx = Hunk_AllocName (sizeof(texture_t) +pixels, loadname );
