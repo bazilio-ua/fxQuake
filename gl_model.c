@@ -1192,22 +1192,49 @@ TODO: merge this into R_BuildSurfaceDisplayList?
 */
 void Mod_PolyForUnlitSurface (msurface_t *s)
 {
-	vec3_t		verts[64];
+//	vec3_t		verts[64];
 	int			numverts, i, lindex;
 	float		*vec;
 	glpoly_t	*poly;
 	float		texscale;
 
 	if (s->flags & (SURF_DRAWTURB | SURF_DRAWSKY))
-		texscale = (1.0/128.0); // warp animation repeats every 128 units
+		texscale = (1.0f/128.0f); // warp animation repeats every 128 units
 	else
-		texscale = (1.0/16.0); // to match notexture_mip
+		texscale = (1.0f/16.0f); // to match notexture_mip
 
 	//
 	// convert edges back to a normal polygon
 	//
-	numverts = 0;
-	for (i=0 ; i<s->numedges ; i++)
+//	numverts = 0;
+//	for (i=0 ; i<s->numedges ; i++)
+//	{
+//		lindex = loadmodel->surfedges[s->firstedge + i];
+//
+//		if (lindex > 0)
+//			vec = loadmodel->vertexes[loadmodel->edges[lindex].v[0]].position;
+//		else
+//			vec = loadmodel->vertexes[loadmodel->edges[-lindex].v[1]].position;
+//
+//		if (numverts >= 64)
+//			Host_Error ("Mod_PolyForUnlitSurface: excessive numverts %i", numverts);
+//
+//		VectorCopy (vec, verts[numverts]);
+//		numverts++;
+//	}
+
+	numverts = s->numedges;
+	
+	if (numverts >= 64)
+		Host_Error ("Mod_PolyForUnlitSurface: excessive numverts %i", numverts);
+
+	//create the poly
+	poly = Hunk_AllocName (sizeof(glpoly_t) + (numverts-4) * VERTEXSIZE * sizeof(float), "unlitpoly");
+	poly->next = NULL;
+	s->polys = poly;
+	poly->numverts = numverts;
+	for (i=0; i<numverts; i++)
+//	for (i=0, vec=(float *)verts; i<numverts; i++, vec+= 3)
 	{
 		lindex = loadmodel->surfedges[s->firstedge + i];
 
@@ -1216,20 +1243,6 @@ void Mod_PolyForUnlitSurface (msurface_t *s)
 		else
 			vec = loadmodel->vertexes[loadmodel->edges[-lindex].v[1]].position;
 
-		if (numverts >= 64)
-			Host_Error ("Mod_PolyForUnlitSurface: excessive numverts %i", numverts);
-
-		VectorCopy (vec, verts[numverts]);
-		numverts++;
-	}
-
-	//create the poly
-	poly = Hunk_AllocName (sizeof(glpoly_t) + (numverts-4) * VERTEXSIZE * sizeof(float), "unlitpoly");
-	poly->next = NULL;
-	s->polys = poly;
-	poly->numverts = numverts;
-	for (i=0, vec=(float *)verts; i<numverts; i++, vec+= 3)
-	{
 		VectorCopy (vec, poly->verts[i]);
 		poly->verts[i][3] = DotProduct(vec, s->texinfo->vecs[0]) * texscale;
 		poly->verts[i][4] = DotProduct(vec, s->texinfo->vecs[1]) * texscale;
