@@ -221,6 +221,10 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-game qbj"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-game limjam"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument

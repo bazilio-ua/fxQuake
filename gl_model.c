@@ -1226,7 +1226,7 @@ void Mod_PolyForUnlitSurface (msurface_t *s)
 	numverts = s->numedges;
 	
 	if (numverts >= 64)
-		Host_Error ("Mod_PolyForUnlitSurface: excessive numverts %i", numverts);
+		Con_Warning ("Mod_PolyForUnlitSurface: excessive numverts %i", numverts); // was Host_Error
 
 	//create the poly
 	poly = Hunk_AllocName (sizeof(glpoly_t) + (numverts-4) * VERTEXSIZE * sizeof(float), "unlitpoly");

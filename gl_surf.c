@@ -21,10 +21,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "quakedef.h"
 
-#define	BLOCK_WIDTH		128
-#define	BLOCK_HEIGHT	128
-// was 18*18, added lit support (*3 for RGB) and loosened surface extents maximum (BLOCK_WIDTH*BLOCK_HEIGHT)
-#define BLOCKL_SIZE		(BLOCK_WIDTH*BLOCK_HEIGHT*3)
+#define	LMBLOCK_WIDTH		128
+#define	LMBLOCK_HEIGHT	128
+// was 18*18, added lit support (*3 for RGB) and loosened surface extents maximum (LMBLOCK_WIDTH*LMBLOCK_HEIGHT)
+#define BLOCKL_SIZE		(LMBLOCK_WIDTH*LMBLOCK_HEIGHT*3)
 unsigned		blocklights[BLOCKL_SIZE];
 
 #define	MAX_LIGHTMAPS	1024 // was 512 (orig. 64)
@@ -39,12 +39,12 @@ glpoly_t	*lightmap_polys[MAX_LIGHTMAPS];
 qboolean	lightmap_modified[MAX_LIGHTMAPS];
 glRect_t	lightmap_rectchange[MAX_LIGHTMAPS];
 
-int			allocated[MAX_LIGHTMAPS][BLOCK_WIDTH];
+int			allocated[MAX_LIGHTMAPS][LMBLOCK_WIDTH];
 int			last_lightmap_allocated; //ericw -- optimization: remember the index of the last lightmap Lightmap_AllocBlock stored a surf in
 
 // the lightmap texture data needs to be kept in
 // main memory so texsubimage can update properly
-byte		lightmaps[4*MAX_LIGHTMAPS*BLOCK_WIDTH*BLOCK_HEIGHT]; // (4)lightmap_bytes*MAX_LIGHTMAPS*BLOCK_WIDTH*BLOCK_HEIGHT
+byte		lightmaps[4*MAX_LIGHTMAPS*LMBLOCK_WIDTH*LMBLOCK_HEIGHT]; // (4)lightmap_bytes*MAX_LIGHTMAPS*LMBLOCK_WIDTH*LMBLOCK_HEIGHT
 
 int			d_overbright = 1;
 float		d_overbrightscale = OVERBRIGHT_SCALE;
@@ -536,9 +536,9 @@ dynamic:
 			if ((rect->h + rect->t) < (s->light_t + tmax))
 				rect->h = (s->light_t-rect->t)+tmax;
 
-			base = lightmaps + s->lightmaptexture*lightmap_bytes*BLOCK_WIDTH*BLOCK_HEIGHT;
-			base += s->light_t * BLOCK_WIDTH * lightmap_bytes + s->light_s * lightmap_bytes;
-			R_BuildLightMap (s, base, BLOCK_WIDTH*lightmap_bytes);
+			base = lightmaps + s->lightmaptexture*lightmap_bytes*LMBLOCK_WIDTH*LMBLOCK_HEIGHT;
+			base += s->light_t * LMBLOCK_WIDTH * lightmap_bytes + s->light_s * lightmap_bytes;
+			R_BuildLightMap (s, base, LMBLOCK_WIDTH*lightmap_bytes);
 		}
 	}
 }
@@ -567,11 +567,11 @@ void R_UploadLightmaps (void)
 
 		rect = &lightmap_rectchange[lmap];
 
-		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, rect->t, BLOCK_WIDTH, rect->h, GL_RGBA,
-			GL_UNSIGNED_BYTE, lightmaps+(lmap* BLOCK_HEIGHT + rect->t) *BLOCK_WIDTH*lightmap_bytes);
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, rect->t, LMBLOCK_WIDTH, rect->h, GL_RGBA,
+			GL_UNSIGNED_BYTE, lightmaps+(lmap* LMBLOCK_HEIGHT + rect->t) *LMBLOCK_WIDTH*lightmap_bytes);
 
-		rect->l = BLOCK_WIDTH;
-		rect->t = BLOCK_HEIGHT;
+		rect->l = LMBLOCK_WIDTH;
+		rect->t = LMBLOCK_HEIGHT;
 		rect->h = 0;
 		rect->w = 0;
 
@@ -1930,9 +1930,9 @@ int Lightmap_AllocBlock (int w, int h, int *x, int *y)
 	for (texnum=last_lightmap_allocated ; texnum<MAX_LIGHTMAPS ; texnum++, last_lightmap_allocated++)
 //	for (texnum=0 ; texnum<MAX_LIGHTMAPS ; texnum++)
 	{
-		best = BLOCK_HEIGHT;
+		best = LMBLOCK_HEIGHT;
 
-		for (i=0 ; i<BLOCK_WIDTH-w ; i++)
+		for (i=0 ; i<LMBLOCK_WIDTH-w ; i++)
 		{
 			best2 = 0;
 
@@ -1950,7 +1950,7 @@ int Lightmap_AllocBlock (int w, int h, int *x, int *y)
 			}
 		}
 
-		if (best + h > BLOCK_HEIGHT)
+		if (best + h > LMBLOCK_HEIGHT)
 			continue;
 
 		for (i=0 ; i<w ; i++)
@@ -2042,13 +2042,13 @@ void R_BuildSurfaceDisplayList (msurface_t *surf)
 		s -= surf->texturemins[0];
 		s += surf->light_s*16;
 		s += 8;
-		s /= BLOCK_WIDTH*16; //surf->texinfo->texture->width;
+		s /= LMBLOCK_WIDTH*16; //surf->texinfo->texture->width;
 
 		t = DotProduct (vec, surf->texinfo->vecs[1]) + surf->texinfo->vecs[1][3];
 		t -= surf->texturemins[1];
 		t += surf->light_t*16;
 		t += 8;
-		t /= BLOCK_HEIGHT*16; //surf->texinfo->texture->height;
+		t /= LMBLOCK_HEIGHT*16; //surf->texinfo->texture->height;
 
 		poly->verts[i][5] = s;
 		poly->verts[i][6] = t;
@@ -2080,9 +2080,9 @@ void R_CreateSurfaceLightmap (msurface_t *surf)
 	if (surf->lightmaptexture == -1)
 		Sys_Error ("Lightmap_AllocBlock: full");
 
-	base = lightmaps + surf->lightmaptexture*lightmap_bytes*BLOCK_WIDTH*BLOCK_HEIGHT;
-	base += (surf->light_t * BLOCK_WIDTH + surf->light_s) * lightmap_bytes;
-	R_BuildLightMap (surf, base, BLOCK_WIDTH*lightmap_bytes);
+	base = lightmaps + surf->lightmaptexture*lightmap_bytes*LMBLOCK_WIDTH*LMBLOCK_HEIGHT;
+	base += (surf->light_t * LMBLOCK_WIDTH + surf->light_s) * lightmap_bytes;
+	R_BuildLightMap (surf, base, LMBLOCK_WIDTH*lightmap_bytes);
 }
 
 
@@ -2138,16 +2138,16 @@ void R_BuildLightmaps (void)
 		if (!allocated[i][0])
 			break;		// no more used
 		lightmap_modified[i] = false;
-		lightmap_rectchange[i].l = BLOCK_WIDTH;
-		lightmap_rectchange[i].t = BLOCK_HEIGHT;
+		lightmap_rectchange[i].l = LMBLOCK_WIDTH;
+		lightmap_rectchange[i].t = LMBLOCK_HEIGHT;
 		lightmap_rectchange[i].w = 0;
 		lightmap_rectchange[i].h = 0;
 
 		sprintf(name, "lightmap%03i",i);
 
-		data = lightmaps+i*BLOCK_WIDTH*BLOCK_HEIGHT*lightmap_bytes;
+		data = lightmaps+i*LMBLOCK_WIDTH*LMBLOCK_HEIGHT*lightmap_bytes;
 
-		lightmap_textures[i] = TexMgr_LoadTexture (cl.worldmodel, name, BLOCK_WIDTH, BLOCK_HEIGHT, SRC_LIGHTMAP, data, "", (uintptr_t)data, TEXPREF_LINEAR | TEXPREF_NOPICMIP);
+		lightmap_textures[i] = TexMgr_LoadTexture (cl.worldmodel, name, LMBLOCK_WIDTH, LMBLOCK_HEIGHT, SRC_LIGHTMAP, data, "", (uintptr_t)data, TEXPREF_LINEAR | TEXPREF_NOPICMIP);
 	}
 
 	// old limit warning
@@ -2181,9 +2181,9 @@ void R_RebuildAllLightmaps (void)
 		{
 			if (fa->flags & SURF_DRAWTILED)
 				continue;
-			base = lightmaps + fa->lightmaptexture*lightmap_bytes*BLOCK_WIDTH*BLOCK_HEIGHT;
-			base += fa->light_t * BLOCK_WIDTH * lightmap_bytes + fa->light_s * lightmap_bytes;
-			R_BuildLightMap (fa, base, BLOCK_WIDTH*lightmap_bytes);
+			base = lightmaps + fa->lightmaptexture*lightmap_bytes*LMBLOCK_WIDTH*LMBLOCK_HEIGHT;
+			base += fa->light_t * LMBLOCK_WIDTH * lightmap_bytes + fa->light_s * lightmap_bytes;
+			R_BuildLightMap (fa, base, LMBLOCK_WIDTH*lightmap_bytes);
 		}
 	}
     
@@ -2193,8 +2193,8 @@ void R_RebuildAllLightmaps (void)
 		if (!allocated[i][0])
 			break;
 		GL_BindTexture (lightmap_textures[i]);
-		glTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, BLOCK_WIDTH, BLOCK_HEIGHT, GL_RGBA,
-                         GL_UNSIGNED_BYTE, lightmaps+i*BLOCK_WIDTH*BLOCK_HEIGHT*lightmap_bytes);
+		glTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, LMBLOCK_WIDTH, LMBLOCK_HEIGHT, GL_RGBA,
+                         GL_UNSIGNED_BYTE, lightmaps+i*LMBLOCK_WIDTH*LMBLOCK_HEIGHT*lightmap_bytes);
 	}
 }
 
