@@ -1395,6 +1395,9 @@ void Mod_LoadFaces_S (lump_t *l)
 	{
 		out->firstedge = LittleLong (in->firstedge);
 		out->numedges = LittleShort (in->numedges);
+		if (out->numedges < 3)
+			Con_Warning ("Mod_LoadFaces_S: surfnum %d: bad numedges %d\n", surfnum, out->numedges);
+		
 		out->flags = 0;
 
 		planenum = LittleShort (in->planenum);
@@ -1452,6 +1455,9 @@ void Mod_LoadFaces_L (lump_t *l)
 	{
 		out->firstedge = LittleLong (in->firstedge);
 		out->numedges = LittleLong (in->numedges);
+		if (out->numedges < 3)
+			Con_Warning ("Mod_LoadFaces_L: surfnum %d: bad numedges %d\n", surfnum, out->numedges);
+		
 		out->flags = 0;
 
 		planenum = LittleLong (in->planenum);
