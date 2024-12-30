@@ -32,7 +32,8 @@ void ResampleSfx (sfx_t *sfx, int inrate, int inwidth, byte *data)
 	int		srcsample;
 	float	stepscale;
 	int		i;
-	int		sample, samplefrac, fracstep;
+	int		sample, fracstep;
+	long long	samplefrac;
 	sfxcache_t	*sc;
 	
 	sc = Cache_Check (&sfx->cache);
@@ -65,12 +66,13 @@ void ResampleSfx (sfx_t *sfx, int inrate, int inwidth, byte *data)
 	else
 	{
 // general case
+		// samplefrac can overflow 2**31 with very big sounds, see below.
 		samplefrac = 0;
-		fracstep = stepscale*256;
+		fracstep = (int)(stepscale * 256);
 		for (i=0 ; i<outcount ; i++)
 		{
-			srcsample = samplefrac >> 8;
-			samplefrac += fracstep;
+			srcsample = (int)(samplefrac >> 8);
+			samplefrac += fracstep; // need int64_t (long long) here to prevent overflow...
 			if (inwidth == 2)
 				sample = LittleShort ( ((short *)data)[srcsample] );
 			else
