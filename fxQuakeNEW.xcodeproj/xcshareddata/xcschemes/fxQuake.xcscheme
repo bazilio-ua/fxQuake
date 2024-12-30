@@ -229,6 +229,10 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-game mj8"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-game mg1"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument

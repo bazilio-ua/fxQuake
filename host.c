@@ -83,6 +83,10 @@ cvar_t	temp1 = {"temp1","0", CVAR_NONE};
 
 cvar_t	cutscene = {"cutscene", "1", CVAR_NONE}; // Nehahra
 
+cvar_t	campaign = {"campaign","0", CVAR_NONE}; // for the 2021 rerelease
+cvar_t	horde = {"horde","0", CVAR_NONE}; // for the 2021 rerelease
+cvar_t	sv_cheats = {"sv_cheats","0", CVAR_NONE}; // for the 2021 rerelease
+
 /*
 ================
 Host_MaxFPS -- ericw
@@ -288,6 +292,10 @@ void Host_InitLocal (void)
 	Cvar_RegisterVariable (&temp1);
 
 	Cvar_RegisterVariable (&cutscene); // Nehahra
+
+	Cvar_RegisterVariable (&campaign); // 2021 rerelease
+	Cvar_RegisterVariable (&horde); // 2021 rerelease
+	Cvar_RegisterVariable (&sv_cheats); // 2021 rerelease
 
 	Host_FindMaxClients ();
 
