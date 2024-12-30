@@ -77,7 +77,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-hipnotic"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-game bbelief"
@@ -169,7 +169,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "+map test_liquids"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "+load a"
@@ -189,7 +189,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-mem 512"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-mem 2000"
@@ -218,6 +218,10 @@
          <CommandLineArgument
             argument = "-game Tershibboleth"
             isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-game qbj"
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-window"

@@ -472,7 +472,10 @@ void Mod_LoadTextures (lump_t *l)
 			sprintf (texname, "unnamed%d", i);
 			Con_Warning ("Mod_LoadTextures: unnamed texture in %s, renaming to %s\n", loadmodel->name, texname);
 		}
-
+		
+		if (mt->width == 0 || mt->height == 0)
+			Con_Warning ("Zero sized texture '%s' in %s\n", texname, loadmodel->name);
+		
 		if ( (mt->width & 15) || (mt->height & 15) )
 			Host_Error ("Mod_LoadTextures: texture '%s' is not 16 aligned (%dx%d) in %s", texname, mt->width, mt->height, loadmodel->name);
 
