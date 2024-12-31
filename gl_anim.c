@@ -1638,8 +1638,6 @@ void R_DrawSky (void)
 {
 	int				i;
 
-	squarerootof3 = sqrt(3.0);
-	
 	//
 	// reset sky bounds
 	//
@@ -1703,6 +1701,8 @@ void R_InitSky (texture_t *mt)
 	static byte	front_data[128*128];
 	static byte	back_data[128*128];
 
+	squarerootof3 = sqrt(3.0);
+	
 	src = (byte *)mt + mt->offsets[0];
 
 	if (mt->width * mt->height != sizeof(fixedsky))
