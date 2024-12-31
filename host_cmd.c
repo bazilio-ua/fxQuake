@@ -115,17 +115,17 @@ test error shutdown procedures
 */
 void Host_Sys_Error_f (void)
 {
-    if (cmd_source == src_command)
-    {
-        Cmd_ForwardToServer ();
-        return;
-    }
+//    if (cmd_source == src_command)
+//    {
+//        Cmd_ForwardToServer ();
+//        return;
+//    }
     
-    if (pr_global_struct->deathmatch || pr_global_struct->coop)
-        return;
-    
-    if (!developer.value)
-        return;
+//    if (pr_global_struct->deathmatch || pr_global_struct->coop)
+//        return;
+//    
+//    if (!developer.value)
+//        return;
     
     if (Cmd_Argc() == 1)
     {
