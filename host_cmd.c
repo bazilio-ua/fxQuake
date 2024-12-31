@@ -127,12 +127,12 @@ void Host_Sys_Error_f (void)
 //    if (!developer.value)
 //        return;
     
-    if (Cmd_Argc() == 1)
-    {
-        Con_Printf ("specify a message, please\n");
-        Con_Printf ("error <\"message\">\n");
-        return;
-    }
+//    if (Cmd_Argc() == 1)
+//    {
+//        Con_Printf ("specify a message, please\n");
+//        Con_Printf ("error <\"message\">\n");
+//        return;
+//    }
     
     Sys_Error (Cmd_Argv(1));
 }
