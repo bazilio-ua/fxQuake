@@ -185,7 +185,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-mem 256"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-mem 512"
@@ -233,7 +233,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-game mg1"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-game dopa"
