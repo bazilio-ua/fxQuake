@@ -260,7 +260,7 @@ byte		ramps[3][256];
 float		v_blend[4];		// rgba 0.0 - 1.0
 
 //johnfitz -- deleted BuildGammaTable(), V_CheckGamma(), gammatable[], and ramps[][]
-//EER1 -- restored gammatable
+//EER1 -- restored BuildGammaTable(), V_CheckGamma(), gammatable[], and ramps[][]
 
 void BuildGammaTable (float gamma, float contrast)
 {
@@ -646,6 +646,14 @@ void V_ShiftPalette (byte *palette)
 	R_FastSkyColor ();
 }
 
+static void SetColor (unsigned int *dst, byte r, byte g, byte b, byte a)
+{
+	((byte *)dst)[0] = r;
+	((byte *)dst)[1] = g;
+	((byte *)dst)[2] = b;
+	((byte *)dst)[3] = a;
+}
+
 void V_SetPalette (byte *palette)
 {
 	byte *pal, *src, *dst;
@@ -653,6 +661,7 @@ void V_SetPalette (byte *palette)
 
 	pal = palette;
 
+/*
 	//
 	//standard palette, 255 is transparent
 	//
@@ -729,6 +738,56 @@ void V_SetPalette (byte *palette)
 	//
 	memcpy(d_8to24table_conchars, d_8to24table, 256*4);
 	((byte *)&d_8to24table_conchars[0])[3] = 0;
+ */
+	
+	//
+	//fill color tables
+	//
+	src = pal;
+	for (i = 0; i < 256; i++, src += 3)
+	{
+		//
+		//standard palette with alpha 255 for all colors
+		//
+		SetColor (&d_8to24table_opaque[i], src[0], src[1], src[2], 255);
+		if (GetBit (is_fullbright, i))
+		{
+			SetColor (&d_8to24table_alphabright[i],	src[0], src[1], src[2], 0);
+			SetColor (&d_8to24table_fbright[i],		src[0], src[1], src[2], 255);
+			SetColor (&d_8to24table_nobright[i],	0, 0, 0, 255);
+		}
+		else
+		{
+			SetColor (&d_8to24table_alphabright[i],	src[0], src[1], src[2], 255);
+			SetColor (&d_8to24table_fbright[i],		0, 0, 0, 255);
+			SetColor (&d_8to24table_nobright[i],	src[0], src[1], src[2], 255);
+		}
+	}
+	
+	//
+	//standard palette, 255 is transparent
+	//
+	memcpy (d_8to24table, d_8to24table_opaque, 256*4);
+	((byte *) &d_8to24table[255]) [3] = 0;
+	
+	//
+	//fullbright palette, for fence textures
+	//
+	memcpy (d_8to24table_fbright_fence, d_8to24table_fbright, 256*4);
+	d_8to24table_fbright_fence[255] = 0; // Alpha of zero.
+	
+	//
+	//nobright palette, for fence textures
+	//
+	memcpy (d_8to24table_nobright_fence, d_8to24table_nobright, 256*4);
+	d_8to24table_nobright_fence[255] = 0; // Alpha of zero.
+	
+	//
+	//conchars palette, 0 and 255 are transparent
+	//
+	memcpy (d_8to24table_conchars, d_8to24table, 256*4);
+	((byte *) &d_8to24table_conchars[0]) [3] = 0;
+	
 }
 
 void V_SetOriginalPalette (byte *palette)
@@ -756,7 +815,47 @@ void V_SetOriginalPalette (byte *palette)
 	// used in flood fill skin routine to detect black pixels
 }
 
-/* 
+/*
+==================
+V_FindFullbrightColors
+ 
+Use colormap to determine which colors are fullbright
+instead of using a hardcoded index threshold of 224
+==================
+*/
+void V_FindFullbrightColors (byte *palette, byte *colormap)
+{
+	byte *pal, *src;
+	int i, j, numfb;
+	
+	pal = palette;
+	
+	//
+	//find fullbright colors
+	//
+	memset (is_fullbright, 0, sizeof (is_fullbright));
+	numfb = 0;
+	src = pal;
+	for (i = 0; i < 256; i++, src += 3)
+	{
+		if (!src[0] && !src[1] && !src[2])
+			continue; // black can't be fullbright
+		
+		for (j = 1; j < 64; j++)
+			if (colormap[i + j * 256] != colormap[i])
+				break;
+		
+		if (j == 64)
+		{
+			SetBit (is_fullbright, i);
+			numfb++;
+		}
+	}
+	
+	Con_DPrintf ("Colormap has %d fullbright colors\n", numfb);
+}
+
+/*
 ============================================================================== 
  
 						VIEW RENDERING 

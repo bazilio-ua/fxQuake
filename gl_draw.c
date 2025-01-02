@@ -79,13 +79,17 @@ static GLuint currenttexture[3] = {GL_UNUSED_TEXTURE, GL_UNUSED_TEXTURE, GL_UNUS
 static GLenum currenttarget = GL_TEXTURE0_ARB;
 qboolean mtexenabled = false;
 
-unsigned int d_8to24table_original[256];
-unsigned int d_8to24table[256];
-unsigned int d_8to24table_fbright[256];
-unsigned int d_8to24table_fbright_fence[256];
-unsigned int d_8to24table_nobright[256];
-unsigned int d_8to24table_nobright_fence[256];
-unsigned int d_8to24table_conchars[256];
+unsigned int d_8to24table_original[256];		//standard unmodifyed palette
+unsigned int d_8to24table_opaque[256];			//standard palette with alpha 255 for all colors
+unsigned int d_8to24table[256];					//standard palette, 255 is transparent
+unsigned int d_8to24table_alphabright[256];		//palette with lighting mask in alpha channel (0=fullbright, 255=lit)
+unsigned int d_8to24table_fbright[256];			//fullbright palette, 0-223 are black (for additive blending)
+unsigned int d_8to24table_fbright_fence[256];	//fullbright palette, for fence textures
+unsigned int d_8to24table_nobright[256];		//nobright palette, 224-255 are black (for additive blending)
+unsigned int d_8to24table_nobright_fence[256];	//nobright palette, for fence textures
+unsigned int d_8to24table_conchars[256];		//conchars palette, 0 and 255 are transparent
+
+unsigned int is_fullbright[256/32];
 
 const char *gl_vendor;
 const char *gl_renderer;
@@ -1228,6 +1232,7 @@ void Draw_Init (void)
 	numgltextures = 0;
 
 	// palette
+	V_FindFullbrightColors (host_basepal, host_colormap);
 	V_SetOriginalPalette (host_basepal);
 	V_SetPalette (host_basepal);
 
@@ -2560,9 +2565,9 @@ void TexMgr_Upload32 (gltexture_t *glt, unsigned *data)
 	// upload
 	GL_BindTexture (glt);
 	
-	internalformat = (glt->flags & TEXPREF_ALPHA) ? GL_RGBA : GL_RGB;
+	internalformat = (glt->flags & TEXPREF_HASALPHA) ? GL_RGBA : GL_RGB;
 	if (gl_texture_compression && gl_compression.value && !(glt->flags & TEXPREF_NOPICMIP)) {
-		internalformat = (glt->flags & TEXPREF_ALPHA) ? GL_COMPRESSED_RGBA_S3TC_DXT5_EXT : GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
+		internalformat = (glt->flags & TEXPREF_HASALPHA) ? GL_COMPRESSED_RGBA_S3TC_DXT5_EXT : GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
 		mip_memory_size = GL_GetMipMemorySize(glt->width, glt->height, internalformat);
 		switch (internalformat) {
 			case GL_COMPRESSED_RGB_S3TC_DXT1_EXT:
@@ -2771,8 +2776,13 @@ void TexMgr_Upload8 (gltexture_t *glt, byte *data)
 			glt->flags &= ~TEXPREF_ALPHA;
 	}
 
-	// choose palette /* and convert to 32bit */
-	if (glt->flags & TEXPREF_FULLBRIGHT)
+	// choose palette and padbyte
+	if (glt->flags & TEXPREF_ALPHABRIGHT)
+	{
+		pal = d_8to24table_alphabright;
+		padbyte = 0;
+	}
+	else if (glt->flags & TEXPREF_FULLBRIGHT)
 	{
 		if (glt->flags & TEXPREF_ALPHA)
 			pal = d_8to24table_fbright_fence;

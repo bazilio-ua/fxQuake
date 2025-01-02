@@ -38,12 +38,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 
 extern unsigned int d_8to24table_original[256];
+extern unsigned int d_8to24table_opaque[256];
 extern unsigned int d_8to24table[256];
+extern unsigned int d_8to24table_alphabright[256];
 extern unsigned int d_8to24table_fbright[256];
 extern unsigned int d_8to24table_fbright_fence[256];
 extern unsigned int d_8to24table_nobright[256];
 extern unsigned int d_8to24table_nobright_fence[256];
 extern unsigned int d_8to24table_conchars[256];
+
+extern unsigned int is_fullbright[256/32];
 
 // wgl uses APIENTRY
 #ifndef APIENTRY
@@ -190,7 +194,10 @@ void (GLAPIENTRY *qglCompressedTexImage2D) (GLenum target, GLint level, GLenum i
 #define TEXPREF_TRANSPARENT		0x4000	// color 0 is transparent, odd - translucent, even - full value
 #define TEXPREF_HOLEY			0x8000	// color 0 is transparent
 #define TEXPREF_SPECIAL_TRANS	0x10000	// special (particle translucency table) H2
-#define TEXPREF_BLOOM			0x20000	// bloom texture (UNUSED)
+#define TEXPREF_ALPHABRIGHT		0x20000	// use palette with lighting mask in alpha channel (0=fullbright, 255=lit)
+#define TEXPREF_BLOOM			0x40000	// bloom texture (UNUSED)
+
+#define TEXPREF_HASALPHA		(TEXPREF_ALPHA|TEXPREF_ALPHABRIGHT) // texture has alpha channel
 
 enum srcformat {SRC_INDEXED, SRC_LIGHTMAP, SRC_RGBA, SRC_BLOOM};
 
