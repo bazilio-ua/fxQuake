@@ -746,20 +746,29 @@ void V_SetPalette (byte *palette)
 	src = pal;
 	for (i = 0; i < 256; i++, src += 3)
 	{
-		//
-		//standard palette with alpha 255 for all colors
-		//
+		//standard palette with alpha 255 for all colors, no transparency
 		SetColor (&d_8to24table_opaque[i], src[0], src[1], src[2], 255);
+		
 		if (GetBit (is_fullbright, i))
 		{
+			//alpha fullbright palette, (fullbright) 224-255 with all colors and zero alpha (full transparency)
 			SetColor (&d_8to24table_alphabright[i],	src[0], src[1], src[2], 0);
+			
+			//fullbright palette, (fullbright) 224-255 with all colors (for additive blending)
 			SetColor (&d_8to24table_fbright[i],		src[0], src[1], src[2], 255);
+			
+			//nobright palette, (fullbright) 224-255 are black (for additive blending)
 			SetColor (&d_8to24table_nobright[i],	0, 0, 0, 255);
 		}
 		else
 		{
+			//alpha fullbright palette, (not bright) 0-223 with all colors and no transparency
 			SetColor (&d_8to24table_alphabright[i],	src[0], src[1], src[2], 255);
+			
+			//fullbright palette, (not bright) 0-223 are black (for additive blending)
 			SetColor (&d_8to24table_fbright[i],		0, 0, 0, 255);
+			
+			//nobright palette, (not bright) 0-223 with all colors (for additive blending)
 			SetColor (&d_8to24table_nobright[i],	src[0], src[1], src[2], 255);
 		}
 	}

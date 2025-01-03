@@ -80,7 +80,7 @@ static GLenum currenttarget = GL_TEXTURE0_ARB;
 qboolean mtexenabled = false;
 
 unsigned int d_8to24table_original[256];		//standard unmodifyed palette
-unsigned int d_8to24table_opaque[256];			//standard palette with alpha 255 for all colors
+unsigned int d_8to24table_opaque[256];			//standard palette with alpha 255 for all colors, no transparency
 unsigned int d_8to24table[256];					//standard palette, 255 is transparent
 unsigned int d_8to24table_alphabright[256];		//palette with lighting mask in alpha channel (0=fullbright, 255=lit)
 unsigned int d_8to24table_fbright[256];			//fullbright palette, 0-223 are black (for additive blending)
