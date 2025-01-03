@@ -208,7 +208,7 @@ void (GLAPIENTRY *qglCompressedTexImage2D) (GLenum target, GLint level, GLenum i
 //#define TEXPREF_ALPHA_FULLBRIGHT	0x20000	// use palette with lighting mask in alpha channel (0=fullbright, 255=lit)
 #define TEXPREF_BLOOM			0x40000	// bloom texture (UNUSED)
 
-#define TEXPREF_ALPHA_FULLBRIGHT	( TEXPREF_ALPHA | TEXPREF_FULLBRIGHT )
+//#define TEXPREF_ALPHA_FULLBRIGHT	( TEXPREF_ALPHA | TEXPREF_FULLBRIGHT )
 //#define TEXPREF_HASALPHA			( TEXPREF_ALPHA | TEXPREF_ALPHA_FULLBRIGHT ) // texture has alpha channel
 
 enum srcformat {SRC_INDEXED, SRC_LIGHTMAP, SRC_RGBA, SRC_BLOOM};

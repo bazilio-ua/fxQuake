@@ -2585,7 +2585,7 @@ void TexMgr_Upload32 (gltexture_t *glt, unsigned *data)
     
 	// upload
 	GL_BindTexture (glt);
-	//TEXPREF_HASALPHA
+	
 	internalformat = (glt->flags & TEXPREF_ALPHA) ? GL_RGBA : GL_RGB;
 	if (gl_texture_compression && gl_compression.value && !(glt->flags & TEXPREF_NOPICMIP)) {
 		internalformat = (glt->flags & TEXPREF_ALPHA) ? GL_COMPRESSED_RGBA_S3TC_DXT5_EXT : GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
