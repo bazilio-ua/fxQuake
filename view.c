@@ -751,25 +751,31 @@ void V_SetPalette (byte *palette)
 		
 		if (GetBit (is_fullbright, i))
 		{
-			//alpha fullbright palette, (fullbright) 224-255 with all colors and zero alpha (full transparency)
-			SetColor (&d_8to24table_alphabright[i],	src[0], src[1], src[2], 0);
-			
-			//fullbright palette, (fullbright) 224-255 with all colors (for additive blending)
-			SetColor (&d_8to24table_fbright[i],		src[0], src[1], src[2], 255);
-			
-			//nobright palette, (fullbright) 224-255 are black (for additive blending)
-			SetColor (&d_8to24table_nobright[i],	0, 0, 0, 255);
+			//fullbright palette, 224-255 with all colors and no transparency
+			SetColor (&d_8to24table_fullbright[i],	src[0], src[1], src[2], 255);
+
+//			//alpha fullbright palette, (fullbright) 224-255 with all colors and zero alpha (0) (full transparency)
+//			SetColor (&d_8to24table_alphabright[i],	src[0], src[1], src[2], 0);
+//			
+//			//fullbright palette, (fullbright) 224-255 with all colors (for additive blending)
+//			SetColor (&d_8to24table_fbright[i],		src[0], src[1], src[2], 255);
+//			
+//			//nobright palette, (fullbright) 224-255 are black (for additive blending)
+//			SetColor (&d_8to24table_nobright[i],	0, 0, 0, 255);
 		}
 		else
 		{
-			//alpha fullbright palette, (not bright) 0-223 with all colors and no transparency
-			SetColor (&d_8to24table_alphabright[i],	src[0], src[1], src[2], 255);
+			//fullbright palette, 0-223 are transparent but keep their colors
+			SetColor (&d_8to24table_fullbright[i],	src[0], src[1], src[2], 0);
 			
-			//fullbright palette, (not bright) 0-223 are black (for additive blending)
-			SetColor (&d_8to24table_fbright[i],		0, 0, 0, 255);
-			
-			//nobright palette, (not bright) 0-223 with all colors (for additive blending)
-			SetColor (&d_8to24table_nobright[i],	src[0], src[1], src[2], 255);
+//			//alpha fullbright palette, (not bright) 0-223 with all colors and no transparency (255)
+//			SetColor (&d_8to24table_alphabright[i],	src[0], src[1], src[2], 255);
+//			
+//			//fullbright palette, (not bright) 0-223 are black (for additive blending)
+//			SetColor (&d_8to24table_fbright[i],		0, 0, 0, 255);
+//			
+//			//nobright palette, (not bright) 0-223 with all colors (for additive blending)
+//			SetColor (&d_8to24table_nobright[i],	src[0], src[1], src[2], 255);
 		}
 	}
 	
@@ -779,24 +785,51 @@ void V_SetPalette (byte *palette)
 	memcpy (d_8to24table, d_8to24table_opaque, 256*4);
 	((byte *) &d_8to24table[255]) [3] = 0;
 	
-	//
-	//fullbright palette, for fence textures
-	//
-	memcpy (d_8to24table_fbright_fence, d_8to24table_fbright, 256*4);
-	d_8to24table_fbright_fence[255] = 0; // Alpha of zero.
+//	//
+//	//fullbright palette, for fence textures
+//	//
+//	memcpy (d_8to24table_fbright_fence, d_8to24table_fbright, 256*4);
+//	d_8to24table_fbright_fence[255] = 0; // Alpha of zero.
+//	
+//	//
+//	//nobright palette, for fence textures
+//	//
+//	memcpy (d_8to24table_nobright_fence, d_8to24table_nobright, 256*4);
+//	d_8to24table_nobright_fence[255] = 0; // Alpha of zero.
+	
+
 	
 	//
-	//nobright palette, for fence textures
+	//standard palette, 255 is transparent (fence)
 	//
-	memcpy (d_8to24table_nobright_fence, d_8to24table_nobright, 256*4);
-	d_8to24table_nobright_fence[255] = 0; // Alpha of zero.
+	memcpy (d_8to24table_alpha, d_8to24table_opaque, 256*4);
+	d_8to24table_alpha[255] = 0;
+
+
+	//
+	//fullbright palette, 0-223 are transparent but keep their colors, 255 is transparent (fence)
+	//
+	memcpy (d_8to24table_alpha_fullbright, d_8to24table_fullbright, 256*4);
+	d_8to24table_alpha_fullbright[255] = 0;
+
 	
 	//
 	//conchars palette, 0 and 255 are transparent
 	//
-	memcpy (d_8to24table_conchars, d_8to24table, 256*4);
-	((byte *) &d_8to24table_conchars[0]) [3] = 0;
+//	memcpy (d_8to24table_conchars, d_8to24table, 256*4);// d_8to24table_opaque
+	//
+	//conchars palette, 0 are transparent (new) // TODO: d_8to24table_alpha_zero - conchars
+	//
+//	memcpy (d_8to24table_conchars, d_8to24table_opaque, 256*4);//
+//	((byte *) &d_8to24table_conchars[0]) [3] = 0;
 	
+	
+	//
+	//standard palette, 0 is transparent (conchars)
+	//
+	memcpy (d_8to24table_alpha_zero, d_8to24table_opaque, 256*4);//
+	((byte *) &d_8to24table_alpha_zero[0]) [3] = 0;
+
 }
 
 void V_SetOriginalPalette (byte *palette)

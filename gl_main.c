@@ -660,7 +660,7 @@ void R_DrawAliasModel (entity_t *e)
 		glEnable (GL_BLEND);
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
-	else
+//	else
 	if (alphatest)
 		glEnable (GL_ALPHA_TEST);
 	
@@ -894,7 +894,7 @@ cleanup:
 		glDisable (GL_BLEND);
 		glColor4f (1, 1, 1, 1);
 	}
-	else
+//	else
 	if (alphatest)
 		glDisable (GL_ALPHA_TEST);
 	

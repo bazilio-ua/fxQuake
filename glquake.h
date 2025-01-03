@@ -37,15 +37,26 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #endif
 
+//extern unsigned int d_8to24table_original[256];
+//extern unsigned int d_8to24table_opaque[256];
+//extern unsigned int d_8to24table[256];
+//extern unsigned int d_8to24table_alphabright[256];
+//extern unsigned int d_8to24table_fbright[256];
+//extern unsigned int d_8to24table_fbright_fence[256];
+//extern unsigned int d_8to24table_nobright[256];
+//extern unsigned int d_8to24table_nobright_fence[256];
+//extern unsigned int d_8to24table_conchars[256];
+
+
 extern unsigned int d_8to24table_original[256];
 extern unsigned int d_8to24table_opaque[256];
 extern unsigned int d_8to24table[256];
-extern unsigned int d_8to24table_alphabright[256];
-extern unsigned int d_8to24table_fbright[256];
-extern unsigned int d_8to24table_fbright_fence[256];
-extern unsigned int d_8to24table_nobright[256];
-extern unsigned int d_8to24table_nobright_fence[256];
-extern unsigned int d_8to24table_conchars[256];
+
+extern unsigned int d_8to24table_alpha_fullbright[256];
+extern unsigned int d_8to24table_fullbright[256];
+extern unsigned int d_8to24table_alpha[256];
+extern unsigned int d_8to24table_alpha_zero[256];
+
 
 extern unsigned int is_fullbright[256/32];
 
@@ -186,7 +197,7 @@ void (GLAPIENTRY *qglCompressedTexImage2D) (GLenum target, GLint level, GLenum i
 #define TEXPREF_OVERWRITE		0x0040	// overwrite existing same-name texture
 #define TEXPREF_NOPICMIP		0x0080	// always load full-sized
 #define TEXPREF_FULLBRIGHT		0x0100	// use fullbright mask palette
-#define TEXPREF_NOBRIGHT		0x0200	// use nobright mask palette
+//#define TEXPREF_NOBRIGHT		0x0200	// use nobright mask palette
 #define TEXPREF_CONCHARS		0x0400	// use conchars palette
 #define TEXPREF_WARP			0x0800	// warp texture
 #define TEXPREF_WARPIMAGE		0x1000	// resize this texture when gl_warpimage_size changes
@@ -194,10 +205,11 @@ void (GLAPIENTRY *qglCompressedTexImage2D) (GLenum target, GLint level, GLenum i
 #define TEXPREF_TRANSPARENT		0x4000	// color 0 is transparent, odd - translucent, even - full value
 #define TEXPREF_HOLEY			0x8000	// color 0 is transparent
 #define TEXPREF_SPECIAL_TRANS	0x10000	// special (particle translucency table) H2
-#define TEXPREF_ALPHABRIGHT		0x20000	// use palette with lighting mask in alpha channel (0=fullbright, 255=lit)
+//#define TEXPREF_ALPHA_FULLBRIGHT	0x20000	// use palette with lighting mask in alpha channel (0=fullbright, 255=lit)
 #define TEXPREF_BLOOM			0x40000	// bloom texture (UNUSED)
 
-#define TEXPREF_HASALPHA		(TEXPREF_ALPHA|TEXPREF_ALPHABRIGHT) // texture has alpha channel
+#define TEXPREF_ALPHA_FULLBRIGHT	( TEXPREF_ALPHA | TEXPREF_FULLBRIGHT )
+//#define TEXPREF_HASALPHA			( TEXPREF_ALPHA | TEXPREF_ALPHA_FULLBRIGHT ) // texture has alpha channel
 
 enum srcformat {SRC_INDEXED, SRC_LIGHTMAP, SRC_RGBA, SRC_BLOOM};
 

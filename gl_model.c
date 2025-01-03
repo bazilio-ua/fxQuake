@@ -550,26 +550,38 @@ void Mod_LoadTextures (lump_t *l)
 					extraflags |= TEXPREF_ALPHA;
 
 				offset = (uintptr_t)(mt+1) - (uintptr_t)mod_base;
+				
+				sprintf (texturename, "%s:%s", loadmodel->name, tx->name);
+				tx->gltexture = TexMgr_LoadTexture (loadmodel, texturename, tx->width, tx->height, SRC_INDEXED, (byte *)(tx+1), loadmodel->name, offset, TEXPREF_MIPMAP | extraflags);
+
 				if (Mod_CheckFullbrights ((byte *)(tx+1), pixels))
 				{
-					if (tx->name[0] != '{')
-					{
-						sprintf (texturename, "%s:%s_ab", loadmodel->name, tx->name);
-						tx->gltexture = TexMgr_LoadTexture (loadmodel, texturename, tx->width, tx->height, SRC_INDEXED, (byte *)(tx+1), loadmodel->name, offset, TEXPREF_MIPMAP | TEXPREF_ALPHABRIGHT | extraflags);
-					}
-					else
-					{
-						sprintf (texturename, "%s:%s", loadmodel->name, tx->name);
-						tx->gltexture = TexMgr_LoadTexture (loadmodel, texturename, tx->width, tx->height, SRC_INDEXED, (byte *)(tx+1), loadmodel->name, offset, TEXPREF_MIPMAP | TEXPREF_NOBRIGHT | extraflags);
-						sprintf (texturename, "%s:%s_glow", loadmodel->name, tx->name);
-						tx->fullbright = TexMgr_LoadTexture (loadmodel, texturename, tx->width, tx->height, SRC_INDEXED, (byte *)(tx+1), loadmodel->name, offset, TEXPREF_MIPMAP | TEXPREF_FULLBRIGHT | extraflags);
-					}
+//					extraflags |= TEXPREF_FULLBRIGHT;
+					
+					sprintf (texturename, "%s:%s_glow", loadmodel->name, tx->name);
+					tx->fullbright = TexMgr_LoadTexture (loadmodel, texturename, tx->width, tx->height, SRC_INDEXED, (byte *)(tx+1), loadmodel->name, offset, TEXPREF_MIPMAP | TEXPREF_FULLBRIGHT | extraflags);
 				}
-				else
-				{
-					sprintf (texturename, "%s:%s", loadmodel->name, tx->name);
-					tx->gltexture = TexMgr_LoadTexture (loadmodel, texturename, tx->width, tx->height, SRC_INDEXED, (byte *)(tx+1), loadmodel->name, offset, TEXPREF_MIPMAP | extraflags);
-				}
+				
+//				if (Mod_CheckFullbrights ((byte *)(tx+1), pixels))
+//				{
+//					if (tx->name[0] != '{')
+//					{
+//						sprintf (texturename, "%s:%s_ab", loadmodel->name, tx->name);
+//						tx->gltexture = TexMgr_LoadTexture (loadmodel, texturename, tx->width, tx->height, SRC_INDEXED, (byte *)(tx+1), loadmodel->name, offset, TEXPREF_MIPMAP | TEXPREF_ALPHABRIGHT | extraflags);
+//					}
+//					else
+//					{
+//						sprintf (texturename, "%s:%s", loadmodel->name, tx->name);
+//						tx->gltexture = TexMgr_LoadTexture (loadmodel, texturename, tx->width, tx->height, SRC_INDEXED, (byte *)(tx+1), loadmodel->name, offset, TEXPREF_MIPMAP | TEXPREF_NOBRIGHT | extraflags);
+//						sprintf (texturename, "%s:%s_glow", loadmodel->name, tx->name);
+//						tx->fullbright = TexMgr_LoadTexture (loadmodel, texturename, tx->width, tx->height, SRC_INDEXED, (byte *)(tx+1), loadmodel->name, offset, TEXPREF_MIPMAP | TEXPREF_FULLBRIGHT | extraflags);
+//					}
+//				}
+//				else
+//				{
+//					sprintf (texturename, "%s:%s", loadmodel->name, tx->name);
+//					tx->gltexture = TexMgr_LoadTexture (loadmodel, texturename, tx->width, tx->height, SRC_INDEXED, (byte *)(tx+1), loadmodel->name, offset, TEXPREF_MIPMAP | extraflags);
+//				}
 				
 				Hunk_FreeToLowMark (mark);
 			}
@@ -2652,49 +2664,74 @@ void *Mod_LoadAllSkins (int numskins, daliasskintype_t *pskintype)
 			}
 
 			offset = (uintptr_t)(pskintype + 1) - (uintptr_t)mod_base;
+			
+			sprintf (skinname, "%s:frame%i", loadmodel->name, i);
+			pheader->gltexture[i][0] =
+			pheader->gltexture[i][1] =
+			pheader->gltexture[i][2] =
+			pheader->gltexture[i][3] = TexMgr_LoadTexture (loadmodel, skinname, pheader->skinwidth, pheader->skinheight, SRC_INDEXED, (byte *)(pskintype + 1), loadmodel->name, offset, texflags);
+
 			if (Mod_CheckFullbrights ((byte *)(pskintype + 1), size))
 			{
-				if (!(loadmodel->flags & MF_HOLEY))
-				{
-					sprintf (skinname, "%s:frame%i_ab", loadmodel->name, i);
-					pheader->gltexture[i][0] =
-					pheader->gltexture[i][1] =
-					pheader->gltexture[i][2] =
-					pheader->gltexture[i][3] = TexMgr_LoadTexture (loadmodel, skinname, pheader->skinwidth, pheader->skinheight, SRC_INDEXED, (byte *)(pskintype + 1), loadmodel->name, offset, texflags | TEXPREF_ALPHABRIGHT);
-					
-					pheader->fullbright[i][0] =
-					pheader->fullbright[i][1] =
-					pheader->fullbright[i][2] =
-					pheader->fullbright[i][3] = NULL;
-				}
-				else
-				{
-					sprintf (skinname, "%s:frame%i", loadmodel->name, i);
-					pheader->gltexture[i][0] =
-					pheader->gltexture[i][1] =
-					pheader->gltexture[i][2] =
-					pheader->gltexture[i][3] = TexMgr_LoadTexture (loadmodel, skinname, pheader->skinwidth, pheader->skinheight, SRC_INDEXED, (byte *)(pskintype + 1), loadmodel->name, offset, texflags | TEXPREF_NOBRIGHT);
-					
-					sprintf (skinname, "%s:frame%i_glow", loadmodel->name, i);
-					pheader->fullbright[i][0] =
-					pheader->fullbright[i][1] =
-					pheader->fullbright[i][2] =
-					pheader->fullbright[i][3] = TexMgr_LoadTexture (loadmodel, skinname, pheader->skinwidth, pheader->skinheight, SRC_INDEXED, (byte *)(pskintype + 1), loadmodel->name, offset, texflags | TEXPREF_FULLBRIGHT);
-				}
+//				texflags |= TEXPREF_FULLBRIGHT;
+				
+				sprintf (skinname, "%s:frame%i_glow", loadmodel->name, i);
+				pheader->fullbright[i][0] =
+				pheader->fullbright[i][1] =
+				pheader->fullbright[i][2] =
+				pheader->fullbright[i][3] = TexMgr_LoadTexture (loadmodel, skinname, pheader->skinwidth, pheader->skinheight, SRC_INDEXED, (byte *)(pskintype + 1), loadmodel->name, offset, texflags | TEXPREF_FULLBRIGHT);
 			}
 			else
 			{
-				sprintf (skinname, "%s:frame%i", loadmodel->name, i);
-				pheader->gltexture[i][0] =
-				pheader->gltexture[i][1] =
-				pheader->gltexture[i][2] =
-				pheader->gltexture[i][3] = TexMgr_LoadTexture (loadmodel, skinname, pheader->skinwidth, pheader->skinheight, SRC_INDEXED, (byte *)(pskintype + 1), loadmodel->name, offset, texflags);
-
 				pheader->fullbright[i][0] =
 				pheader->fullbright[i][1] =
 				pheader->fullbright[i][2] =
 				pheader->fullbright[i][3] = NULL;
 			}
+			
+//			if (Mod_CheckFullbrights ((byte *)(pskintype + 1), size))
+//			{
+//				if (!(loadmodel->flags & MF_HOLEY))
+//				{
+//					sprintf (skinname, "%s:frame%i_ab", loadmodel->name, i);
+//					pheader->gltexture[i][0] =
+//					pheader->gltexture[i][1] =
+//					pheader->gltexture[i][2] =
+//					pheader->gltexture[i][3] = TexMgr_LoadTexture (loadmodel, skinname, pheader->skinwidth, pheader->skinheight, SRC_INDEXED, (byte *)(pskintype + 1), loadmodel->name, offset, texflags | TEXPREF_ALPHABRIGHT);
+//					
+//					pheader->fullbright[i][0] =
+//					pheader->fullbright[i][1] =
+//					pheader->fullbright[i][2] =
+//					pheader->fullbright[i][3] = NULL;
+//				}
+//				else
+//				{
+//					sprintf (skinname, "%s:frame%i", loadmodel->name, i);
+//					pheader->gltexture[i][0] =
+//					pheader->gltexture[i][1] =
+//					pheader->gltexture[i][2] =
+//					pheader->gltexture[i][3] = TexMgr_LoadTexture (loadmodel, skinname, pheader->skinwidth, pheader->skinheight, SRC_INDEXED, (byte *)(pskintype + 1), loadmodel->name, offset, texflags | TEXPREF_NOBRIGHT);
+//					
+//					sprintf (skinname, "%s:frame%i_glow", loadmodel->name, i);
+//					pheader->fullbright[i][0] =
+//					pheader->fullbright[i][1] =
+//					pheader->fullbright[i][2] =
+//					pheader->fullbright[i][3] = TexMgr_LoadTexture (loadmodel, skinname, pheader->skinwidth, pheader->skinheight, SRC_INDEXED, (byte *)(pskintype + 1), loadmodel->name, offset, texflags | TEXPREF_FULLBRIGHT);
+//				}
+//			}
+//			else
+//			{
+//				sprintf (skinname, "%s:frame%i", loadmodel->name, i);
+//				pheader->gltexture[i][0] =
+//				pheader->gltexture[i][1] =
+//				pheader->gltexture[i][2] =
+//				pheader->gltexture[i][3] = TexMgr_LoadTexture (loadmodel, skinname, pheader->skinwidth, pheader->skinheight, SRC_INDEXED, (byte *)(pskintype + 1), loadmodel->name, offset, texflags);
+//
+//				pheader->fullbright[i][0] =
+//				pheader->fullbright[i][1] =
+//				pheader->fullbright[i][2] =
+//				pheader->fullbright[i][3] = NULL;
+//			}
 
 			pskintype = (daliasskintype_t *)((byte *)(pskintype + 1) + size);
 		}
@@ -2720,31 +2757,47 @@ void *Mod_LoadAllSkins (int numskins, daliasskintype_t *pskintype)
 				}
 
 				offset = (uintptr_t)(pskintype) - (uintptr_t)mod_base; //johnfitz
+				
+				sprintf (skinname, "%s:frame%i_%i", loadmodel->name, i,j);
+				pheader->gltexture[i][j&3] = TexMgr_LoadTexture (loadmodel, skinname, pheader->skinwidth, pheader->skinheight, SRC_INDEXED, (byte *)(pskintype), loadmodel->name, offset, texflags);
+
 				if (Mod_CheckFullbrights ((byte *)(pskintype), size))
 				{
-					if (!(loadmodel->flags & MF_HOLEY))
-					{
-						sprintf (skinname, "%s:frame%i_%i_ab", loadmodel->name, i,j);
-						pheader->gltexture[i][j&3] = TexMgr_LoadTexture (loadmodel, skinname, pheader->skinwidth, pheader->skinheight, SRC_INDEXED, (byte *)(pskintype), loadmodel->name, offset, texflags | TEXPREF_ALPHABRIGHT);
-						
-						pheader->fullbright[i][j&3] = NULL;
-					}
-					else
-					{
-						sprintf (skinname, "%s:frame%i_%i", loadmodel->name, i,j);
-						pheader->gltexture[i][j&3] = TexMgr_LoadTexture (loadmodel, skinname, pheader->skinwidth, pheader->skinheight, SRC_INDEXED, (byte *)(pskintype), loadmodel->name, offset, texflags | TEXPREF_NOBRIGHT);
-						
-						sprintf (skinname, "%s:frame%i_%i_glow", loadmodel->name, i,j);
-						pheader->fullbright[i][j&3] = TexMgr_LoadTexture (loadmodel, skinname, pheader->skinwidth, pheader->skinheight, SRC_INDEXED, (byte *)(pskintype), loadmodel->name, offset, texflags | TEXPREF_FULLBRIGHT);
-					}
+//					texflags |= TEXPREF_FULLBRIGHT;
+
+					sprintf (skinname, "%s:frame%i_%i_glow", loadmodel->name, i,j);
+					pheader->fullbright[i][j&3] = TexMgr_LoadTexture (loadmodel, skinname, pheader->skinwidth, pheader->skinheight, SRC_INDEXED, (byte *)(pskintype), loadmodel->name, offset, texflags | TEXPREF_FULLBRIGHT);
 				}
 				else
 				{
-					sprintf (skinname, "%s:frame%i_%i", loadmodel->name, i,j);
-					pheader->gltexture[i][j&3] = TexMgr_LoadTexture (loadmodel, skinname, pheader->skinwidth, pheader->skinheight, SRC_INDEXED, (byte *)(pskintype), loadmodel->name, offset, texflags);
-
 					pheader->fullbright[i][j&3] = NULL;
 				}
+				
+//				if (Mod_CheckFullbrights ((byte *)(pskintype), size))
+//				{
+//					if (!(loadmodel->flags & MF_HOLEY))
+//					{
+//						sprintf (skinname, "%s:frame%i_%i_ab", loadmodel->name, i,j);
+//						pheader->gltexture[i][j&3] = TexMgr_LoadTexture (loadmodel, skinname, pheader->skinwidth, pheader->skinheight, SRC_INDEXED, (byte *)(pskintype), loadmodel->name, offset, texflags | TEXPREF_ALPHABRIGHT);
+//						
+//						pheader->fullbright[i][j&3] = NULL;
+//					}
+//					else
+//					{
+//						sprintf (skinname, "%s:frame%i_%i", loadmodel->name, i,j);
+//						pheader->gltexture[i][j&3] = TexMgr_LoadTexture (loadmodel, skinname, pheader->skinwidth, pheader->skinheight, SRC_INDEXED, (byte *)(pskintype), loadmodel->name, offset, texflags | TEXPREF_NOBRIGHT);
+//						
+//						sprintf (skinname, "%s:frame%i_%i_glow", loadmodel->name, i,j);
+//						pheader->fullbright[i][j&3] = TexMgr_LoadTexture (loadmodel, skinname, pheader->skinwidth, pheader->skinheight, SRC_INDEXED, (byte *)(pskintype), loadmodel->name, offset, texflags | TEXPREF_FULLBRIGHT);
+//					}
+//				}
+//				else
+//				{
+//					sprintf (skinname, "%s:frame%i_%i", loadmodel->name, i,j);
+//					pheader->gltexture[i][j&3] = TexMgr_LoadTexture (loadmodel, skinname, pheader->skinwidth, pheader->skinheight, SRC_INDEXED, (byte *)(pskintype), loadmodel->name, offset, texflags);
+//
+//					pheader->fullbright[i][j&3] = NULL;
+//				}
 
 				pskintype = (daliasskintype_t *)((byte *)(pskintype) + size);
 			}
