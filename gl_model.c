@@ -419,14 +419,33 @@ Mod_CheckFullbrights -- johnfitz
 detect 8-bit textures containing fullbrights
 =================
 */
-static qboolean Mod_CheckFullbrights (byte *pixels, int count)
+static qboolean Mod_CheckFullbrights (byte *pixels, int count, int flags)
 {
 //	extern uint32_t is_fullbright[];
 	int i;
+	unsigned int	*pal;
+	byte index;
+
+	// choose palette
+	if (flags & TEXPREF_CONCHARS)
+		pal = d_8to24table_alpha_zero;
+	else if (flags & TEXPREF_ALPHA)
+	{
+		if (flags & TEXPREF_FULLBRIGHT)
+			pal = d_8to24table_alpha_fullbright;
+		else
+			pal = d_8to24table_alpha;
+	}
+	else if (flags & TEXPREF_FULLBRIGHT)
+		pal = d_8to24table_fullbright;
+	else
+		pal = d_8to24table;
 	
 	for (i = 0; i < count; i++)
 	{
-		if (GetBit (is_fullbright, *pixels++))
+//		if (GetBit (is_fullbright, *pixels++))
+		index = *pixels++;
+		if ( GetBit (is_fullbright, index) && ((byte *)&pal[index])[3] )
 			return true;
 	}
 	
@@ -554,7 +573,8 @@ void Mod_LoadTextures (lump_t *l)
 				sprintf (texturename, "%s:%s", loadmodel->name, tx->name);
 				tx->gltexture = TexMgr_LoadTexture (loadmodel, texturename, tx->width, tx->height, SRC_INDEXED, (byte *)(tx+1), loadmodel->name, offset, TEXPREF_MIPMAP | extraflags);
 
-				if (Mod_CheckFullbrights ((byte *)(tx+1), pixels))
+//				if (Mod_CheckFullbrights ((byte *)(tx+1), pixels, extraflags))
+				if (Mod_CheckFullbrights ((byte *)(tx+1), tx->width*tx->height, extraflags))
 				{
 //					extraflags |= TEXPREF_FULLBRIGHT;
 					
@@ -2671,7 +2691,7 @@ void *Mod_LoadAllSkins (int numskins, daliasskintype_t *pskintype)
 			pheader->gltexture[i][2] =
 			pheader->gltexture[i][3] = TexMgr_LoadTexture (loadmodel, skinname, pheader->skinwidth, pheader->skinheight, SRC_INDEXED, (byte *)(pskintype + 1), loadmodel->name, offset, texflags);
 
-			if (Mod_CheckFullbrights ((byte *)(pskintype + 1), size))
+			if (Mod_CheckFullbrights ((byte *)(pskintype + 1), size, texflags))
 			{
 //				texflags |= TEXPREF_FULLBRIGHT;
 				
@@ -2761,7 +2781,7 @@ void *Mod_LoadAllSkins (int numskins, daliasskintype_t *pskintype)
 				sprintf (skinname, "%s:frame%i_%i", loadmodel->name, i,j);
 				pheader->gltexture[i][j&3] = TexMgr_LoadTexture (loadmodel, skinname, pheader->skinwidth, pheader->skinheight, SRC_INDEXED, (byte *)(pskintype), loadmodel->name, offset, texflags);
 
-				if (Mod_CheckFullbrights ((byte *)(pskintype), size))
+				if (Mod_CheckFullbrights ((byte *)(pskintype), size, texflags))
 				{
 //					texflags |= TEXPREF_FULLBRIGHT;
 
