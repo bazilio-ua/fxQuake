@@ -661,8 +661,11 @@ void R_DrawAliasModel (entity_t *e)
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 //	else
-	if (alphatest)
+	if (alphatest) {
 		glEnable (GL_ALPHA_TEST);
+		if (aliasalpha < 1.0f)
+			glAlphaFunc (GL_LEQUAL, aliasalpha);
+	}
 	
 	
 //	if (aliasalpha < 1.0)
@@ -770,8 +773,8 @@ void R_DrawAliasModel (entity_t *e)
 	{
 		GL_SelectTMU2 ();
 		GL_BindTexture (fb);
-		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_ADD);
-		glEnable (GL_BLEND);
+		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);//GL_ADD);
+//		glEnable (GL_BLEND);
 	}
 	
 	GL_DrawAliasFrame (paliashdr, lerpdata); // FX
@@ -779,7 +782,7 @@ void R_DrawAliasModel (entity_t *e)
 	if (aliasglow)
 	{
 		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-		glDisable (GL_BLEND);
+//		glDisable (GL_BLEND);
 		GL_SelectTMU0 ();
 	}
 	
@@ -895,8 +898,11 @@ cleanup:
 		glColor4f (1, 1, 1, 1);
 	}
 //	else
-	if (alphatest)
+	if (alphatest) {
 		glDisable (GL_ALPHA_TEST);
+		if (aliasalpha < 1.0f)
+			glAlphaFunc (GL_GREATER, 0.666);
+	}
 	
 	if (flatcolor) {
 		glColor4f (1, 1, 1, 1);

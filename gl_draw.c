@@ -1945,6 +1945,45 @@ unsigned *TexMgr_ResampleTexture (char *name, unsigned *in, int inwidth, int inh
 	return out;
 }
 
+
+void TexMgr_AlphaClampToZero (byte *data, int width, int height)
+{
+	int i,j;
+	byte *dest = data;
+	const int size = width * height * 4;
+	
+	
+//	for (i=0; i<height; i++)
+//	{
+//		for (j=0; j<width; j++, dest+=4)
+//		{
+////			if (dest[3]) //not transparent
+////				continue;
+//			
+//			if (dest[3] < 255)
+//				dest[3] = 0;
+//			else
+//				continue;
+//		}
+//	}
+	
+	byte *pixel;
+	
+	for (i = 0, pixel = data; i < size; i++, pixel++) {
+		if (pixel[3] < 255)
+			pixel[3] = 0;
+	}
+
+//	int i;
+//	byte *pixel = data;
+//	
+//	for (i=0 ; i<pixels ; i++, pixel++)
+//	{
+//		if (pixel[3] < 255)
+//			pixel[3] = 0;
+//	}
+}
+
 /*
 ===============
 TexMgr_AlphaEdgeFix
@@ -2586,9 +2625,24 @@ void TexMgr_Upload32 (gltexture_t *glt, unsigned *data)
 	// upload
 	GL_BindTexture (glt);
 	
-	internalformat = (glt->flags & TEXPREF_ALPHA) ? GL_RGBA : GL_RGB;
+	if (glt->flags & TEXPREF_ALPHA)
+		internalformat = GL_RGBA;
+	else if (glt->flags & TEXPREF_FULLBRIGHT)
+		internalformat = GL_RGBA;
+	else
+		internalformat = GL_RGB;
+	
+//	internalformat = (glt->flags & TEXPREF_ALPHA) ? GL_RGBA : GL_RGB;
 	if (gl_texture_compression && gl_compression.value && !(glt->flags & TEXPREF_NOPICMIP)) {
-		internalformat = (glt->flags & TEXPREF_ALPHA) ? GL_COMPRESSED_RGBA_S3TC_DXT5_EXT : GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
+		
+		if (glt->flags & TEXPREF_ALPHA)
+			internalformat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+		else if (glt->flags & TEXPREF_FULLBRIGHT)
+			internalformat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+		else
+			internalformat = GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
+		
+//		internalformat = (glt->flags & TEXPREF_ALPHA) ? GL_COMPRESSED_RGBA_S3TC_DXT5_EXT : GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
 		mip_memory_size = GL_GetMipMemorySize(glt->width, glt->height, internalformat);
 		switch (internalformat) {
 			case GL_COMPRESSED_RGB_S3TC_DXT1_EXT:
@@ -2891,6 +2945,10 @@ void TexMgr_Upload8 (gltexture_t *glt, byte *data)
 			TexMgr_PadEdgeFixH ((byte *)trans, glt->source_width, glt->source_height);
 	}
     
+	// clamp alpha to zero
+//	if (glt->flags & TEXPREF_FULLBRIGHT)
+//		TexMgr_AlphaClampToZero ((byte *)trans, glt->width, glt->height);
+	
 	// upload it
 	TexMgr_Upload32 (glt, trans);
     
