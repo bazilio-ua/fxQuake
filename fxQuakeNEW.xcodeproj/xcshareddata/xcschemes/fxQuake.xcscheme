@@ -240,6 +240,10 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
+            argument = "-game honey"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
             argument = "-window"
             isEnabled = "YES">
          </CommandLineArgument>

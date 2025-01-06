@@ -1139,7 +1139,7 @@ void SV_Physics_Client (edict_t	*ent, int num)
 // call standard player post-think
 //		
 	if (ent->v.movetype == MOVETYPE_NOCLIP)
-		SV_LinkEdict (ent, false); // don't touch triggers in noclip
+		SV_LinkEdict (ent, (qboolean)(sv_touchnoclip.value)); // don't touch triggers in noclip
 	else
 		SV_LinkEdict (ent, true);
 

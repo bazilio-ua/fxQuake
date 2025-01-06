@@ -22,7 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "quakedef.h"
 
 static long demofile_len, demofile_start;
-int	stufftext_frame;
+//int	stufftext_frame;
 
 void CL_FinishTimeDemo (void);
 
@@ -163,9 +163,9 @@ int CL_GetMessage (void)
 			// If the server stuffs a reconnect, we must wait for
 			// the client to re-initialize before accepting further
 			// messages. Otherwise demo playback may freeze.
-			if (stufftext_frame == host_framecount)
+			if (host_framecount == cls.stufftext_frame)
 				return 0;
-
+			
 			if (cls.timedemo)
 			{
 				if (host_framecount == cls.td_lastframe)
@@ -178,7 +178,7 @@ int CL_GetMessage (void)
 			}
 			else if ( /* cl.time > 0 && */ cl.time <= cl.mtime[0])
 			{
-					return 0;		// don't need another message yet
+				return 0;			// don't need another message yet
 			}
 		}
 

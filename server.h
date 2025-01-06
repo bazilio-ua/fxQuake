@@ -195,6 +195,7 @@ extern	cvar_t	sv_wateraccelerate;
 extern	cvar_t	sv_idealpitchscale;
 extern	cvar_t	sv_aim;
 extern	cvar_t	sv_altnoclip;
+extern	cvar_t	sv_touchnoclip;
 extern	cvar_t	sv_bouncedownslopes;
 extern	cvar_t	sv_novis;
 extern	cvar_t	sv_stupidquakebugfix;

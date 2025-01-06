@@ -40,6 +40,7 @@ usercmd_t	cmd;
 cvar_t	sv_edgefriction = {"sv_edgefriction", "2", CVAR_NONE};
 cvar_t	sv_idealpitchscale = {"sv_idealpitchscale", "0.8", CVAR_NONE};
 cvar_t	sv_altnoclip = {"sv_altnoclip", "0", CVAR_NONE};
+cvar_t	sv_touchnoclip = {"sv_touchnoclip", "0", CVAR_NONE};
 cvar_t	sv_maxspeed = {"sv_maxspeed", "320", CVAR_SERVER};
 cvar_t	sv_maxairspeed = {"sv_maxairspeed", "30", CVAR_NONE};
 cvar_t	sv_accelerate = {"sv_accelerate", "10", CVAR_NONE};

@@ -91,6 +91,7 @@ void SV_Init (void)
 	Cvar_RegisterVariable (&sv_aim);
 	Cvar_RegisterVariable (&sv_nostep);
 	Cvar_RegisterVariable (&sv_altnoclip);
+	Cvar_RegisterVariable (&sv_touchnoclip);
 	Cvar_RegisterVariableCallback (&sv_stupidquakebugfix, SV_StupidQuakeBugFix);
 
 	Cvar_RegisterVariable (&sv_novis);
