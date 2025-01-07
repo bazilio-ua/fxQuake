@@ -92,6 +92,10 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
+            argument = "-quoth"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
             argument = "-game p128rail"
             isEnabled = "NO">
          </CommandLineArgument>
@@ -188,6 +192,10 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
+            argument = "-mem 128"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
             argument = "-mem 512"
             isEnabled = "NO">
          </CommandLineArgument>
@@ -241,7 +249,11 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-game honey"
-            isEnabled = "YES">
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-game func_mapjam2"
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-window"

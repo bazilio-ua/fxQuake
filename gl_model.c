@@ -515,7 +515,7 @@ void Mod_LoadTextures (lump_t *l)
 		}
 		
 		if (mt->width == 0 || mt->height == 0)
-			Con_Warning ("Zero sized texture '%s' in %s\n", texname, loadmodel->name);
+			Con_Warning ("Mod_LoadTextures: zero sized texture '%s' in %s\n", texname, loadmodel->name);
 		
 		if ( (mt->width & 15) || (mt->height & 15) )
 			Con_Warning ("Mod_LoadTextures: texture '%s' is not 16 aligned (%dx%d) in %s\n", texname, mt->width, mt->height, loadmodel->name); // was Host_Error
@@ -529,6 +529,17 @@ void Mod_LoadTextures (lump_t *l)
 		tx->height = mt->height;
 		for (j=0 ; j<MIPLEVELS ; j++)
 			tx->offsets[j] = mt->offsets[j] + sizeof(texture_t) - sizeof(miptex_t);
+		
+		// ericw -- check for pixels extending past the end of the lump.
+		// appears in the wild; e.g. jam2_tronyn.bsp (func_mapjam2),
+		// kellbase1.bsp (quoth), and can lead to a segfault if we read past
+		// the end of the .bsp file buffer
+		if (((byte *)(mt+1) + pixels) > (mod_base + l->fileofs + l->filelen))
+		{
+			Con_Warning ("Mod_LoadTextures: texture '%s' extends past end of lump\n", mt->name);
+			pixels = max(0, (mod_base + l->fileofs + l->filelen) - (byte *)(mt+1));
+		}
+		
 		// the pixels immediately follow the structures
 		memcpy ( tx+1, mt+1, pixels);
 
