@@ -1546,6 +1546,7 @@ void R_DrawTextureChains_Multitexture (model_t *model, entity_t *ent, texchain_t
 	int			i, j;
 	msurface_t	*s;
 	texture_t	*t;
+	texture_t	*tex;
 	float		*v;
 	qboolean	bound;
 	gltexture_t	*tx;
@@ -1569,7 +1570,9 @@ void R_DrawTextureChains_Multitexture (model_t *model, entity_t *ent, texchain_t
         {
             if (!bound) //only bind once we are sure we need this texture
             {
-				tx = (R_TextureAnimation(t, ent != NULL ? ent->frame : 0))->gltexture;
+				tex = R_TextureAnimation (t, ent != NULL ? ent->frame : 0);
+				
+				tx = tex->gltexture;
 				GL_SelectTMU0 ();
 				GL_BindTexture (tx);
 				
@@ -1579,7 +1582,7 @@ void R_DrawTextureChains_Multitexture (model_t *model, entity_t *ent, texchain_t
                 if (t->texturechains[chain]->flags & SURF_DRAWFENCE)
                     glEnable (GL_ALPHA_TEST); // Flip alpha test back on
 				
-				if ((fb = R_TextureAnimation(t, ent != NULL ? ent->frame : 0)->fullbright))
+				if ((fb = tex->fullbright))
 				{
 					GL_SelectTMU2 ();
 					GL_BindTexture (fb);
@@ -1637,41 +1640,41 @@ R_DrawTextureChains_TextureOnly -- johnfitz
 unused
 ================
 */
-void R_DrawTextureChains_TextureOnly (model_t *model, entity_t *ent, texchain_t chain)
-{
-	int			i;
-	msurface_t	*s;
-	texture_t	*t;
-	qboolean	bound;
-    
-	for (i=0 ; i<model->numtextures ; i++)
-	{
-		t = model->textures[i];
-        
-		if (!t || !t->texturechains[chain] || t->texturechains[chain]->alpha < 1.0 || t->texturechains[chain]->flags & (SURF_DRAWTURB | SURF_DRAWSKY))
-			continue;
-        
-		bound = false;
-        
-		for (s = t->texturechains[chain]; s; s = s->texturechain)
-        {
-            if (!bound) //only bind once we are sure we need this texture
-            {
-                GL_BindTexture ((R_TextureAnimation(t, ent != NULL ? ent->frame : 0))->gltexture);
-                
-                if (t->texturechains[chain]->flags & SURF_DRAWFENCE)
-                    glEnable (GL_ALPHA_TEST); // Flip alpha test back on
-                
-                bound = true;
-            }
-            R_DrawGLPoly34 (s->polys);
-            rs_c_brush_passes++;
-        }
-        
-		if (bound && t->texturechains[chain]->flags & SURF_DRAWFENCE)
-			glDisable (GL_ALPHA_TEST); // Flip alpha test back off
-	}
-}
+//void R_DrawTextureChains_TextureOnly (model_t *model, entity_t *ent, texchain_t chain)
+//{
+//	int			i;
+//	msurface_t	*s;
+//	texture_t	*t;
+//	qboolean	bound;
+//    
+//	for (i=0 ; i<model->numtextures ; i++)
+//	{
+//		t = model->textures[i];
+//        
+//		if (!t || !t->texturechains[chain] || t->texturechains[chain]->alpha < 1.0 || t->texturechains[chain]->flags & (SURF_DRAWTURB | SURF_DRAWSKY))
+//			continue;
+//        
+//		bound = false;
+//        
+//		for (s = t->texturechains[chain]; s; s = s->texturechain)
+//        {
+//            if (!bound) //only bind once we are sure we need this texture
+//            {
+//                GL_BindTexture ((R_TextureAnimation(t, ent != NULL ? ent->frame : 0))->gltexture);
+//                
+//                if (t->texturechains[chain]->flags & SURF_DRAWFENCE)
+//                    glEnable (GL_ALPHA_TEST); // Flip alpha test back on
+//                
+//                bound = true;
+//            }
+//            R_DrawGLPoly34 (s->polys);
+//            rs_c_brush_passes++;
+//        }
+//        
+//		if (bound && t->texturechains[chain]->flags & SURF_DRAWFENCE)
+//			glDisable (GL_ALPHA_TEST); // Flip alpha test back off
+//	}
+//}
 
 /*
 ================
@@ -1718,35 +1721,35 @@ R_DrawTextureChains_Glow -- johnfitz
 unused
 ================
 */
-void R_DrawTextureChains_Glow (model_t *model, entity_t *ent, texchain_t chain)
-{
-	int			i;
-	msurface_t	*s;
-	texture_t	*t;
-	gltexture_t	*glt;
-	qboolean	bound;
-    
-	for (i=0 ; i<model->numtextures ; i++)
-	{
-		t = model->textures[i];
-        
-		if (!t || !t->texturechains[chain] || t->texturechains[chain]->alpha < 1.0 || !(glt = R_TextureAnimation(t, ent != NULL ? ent->frame : 0)->fullbright))
-			continue;
-        
-		bound = false;
-        
-		for (s = t->texturechains[chain]; s; s = s->texturechain)
-        {
-            if (!bound) //only bind once we are sure we need this texture
-            {
-                GL_BindTexture (glt);
-                bound = true;
-            }
-            R_DrawGLPoly34 (s->polys);
-            rs_c_brush_passes++;
-        }
-	}
-}
+//void R_DrawTextureChains_Glow (model_t *model, entity_t *ent, texchain_t chain)
+//{
+//	int			i;
+//	msurface_t	*s;
+//	texture_t	*t;
+//	gltexture_t	*glt;
+//	qboolean	bound;
+//    
+//	for (i=0 ; i<model->numtextures ; i++)
+//	{
+//		t = model->textures[i];
+//        
+//		if (!t || !t->texturechains[chain] || t->texturechains[chain]->alpha < 1.0 || !(glt = R_TextureAnimation(t, ent != NULL ? ent->frame : 0)->fullbright))
+//			continue;
+//        
+//		bound = false;
+//        
+//		for (s = t->texturechains[chain]; s; s = s->texturechain)
+//        {
+//            if (!bound) //only bind once we are sure we need this texture
+//            {
+//                GL_BindTexture (glt);
+//                bound = true;
+//            }
+//            R_DrawGLPoly34 (s->polys);
+//            rs_c_brush_passes++;
+//        }
+//	}
+//}
 
 /*
 =============
