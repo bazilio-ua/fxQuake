@@ -721,14 +721,14 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, model_t *model, entity_t 
 		
 		// Binds world to texture env 0
 		GL_SelectTMU0 ();
+		GL_BindTexture (s->texinfo->texture->warpimage);
+		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+		
 		if (flatcolor) {
 			glColor4f (s->texinfo->texture->gltexture->colors.flatcolor[0],
 					   s->texinfo->texture->gltexture->colors.flatcolor[1],
 					   s->texinfo->texture->gltexture->colors.flatcolor[2], alpha);
 		}
-		else
-			GL_BindTexture (s->texinfo->texture->warpimage);
-		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		
 		if (litwater && !special) {
 			// Binds lightmap to texture env 1
@@ -887,14 +887,14 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, model_t *model, entity_t 
 		
 		// Binds world to texture env 0
 		GL_SelectTMU0 ();
+		GL_BindTexture (t->gltexture);
+		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+		
 		if (flatcolor) {
 			glColor4f (t->gltexture->colors.basecolor[0],
 					   t->gltexture->colors.basecolor[1],
 					   t->gltexture->colors.basecolor[2], alpha);
 		}
-		else
-			GL_BindTexture (t->gltexture);
-		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		
 		if (t->fullbright)
 		{
@@ -1464,10 +1464,10 @@ void R_DrawTextureChains_Water (model_t *model, entity_t *ent, texchain_t chain)
 			if (!bound) //only bind once we are sure we need this texture
 			{
 				GL_SelectTMU0 ();
+				GL_BindTexture (t->warpimage);
+				
 				if (flatcolor)
 					glColor3fv (t->gltexture->colors.flatcolor);
-				else
-					GL_BindTexture (t->warpimage);
 				
 				bound = true;
 			}
@@ -1571,11 +1571,11 @@ void R_DrawTextureChains_Multitexture (model_t *model, entity_t *ent, texchain_t
             {
 				tx = (R_TextureAnimation(t, ent != NULL ? ent->frame : 0))->gltexture;
 				GL_SelectTMU0 ();
+				GL_BindTexture (tx);
+				
 				if (flatcolor)
 					glColor3fv (tx->colors.basecolor);
-				else
-					GL_BindTexture (tx);
-                
+				
                 if (t->texturechains[chain]->flags & SURF_DRAWFENCE)
                     glEnable (GL_ALPHA_TEST); // Flip alpha test back on
 				

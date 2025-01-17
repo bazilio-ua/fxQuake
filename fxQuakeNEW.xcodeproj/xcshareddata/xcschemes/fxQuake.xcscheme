@@ -92,6 +92,10 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
+            argument = "-quoth"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
             argument = "-game p128rail"
             isEnabled = "NO">
          </CommandLineArgument>
@@ -176,6 +180,10 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
+            argument = "+load fb"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
             argument = "+r_bloom 0"
             isEnabled = "YES">
          </CommandLineArgument>
@@ -185,6 +193,10 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-mem 256"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-mem 128"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
@@ -237,6 +249,14 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-game dopa"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-game honey"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-game func_mapjam2"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument

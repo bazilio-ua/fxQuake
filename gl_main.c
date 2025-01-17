@@ -658,7 +658,7 @@ void R_DrawAliasModel (entity_t *e)
 	{
 		glDepthMask (GL_FALSE);
 		glEnable (GL_BLEND);
-		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 	else
 	if (alphatest)
@@ -756,15 +756,15 @@ void R_DrawAliasModel (entity_t *e)
 	aliasflat = flatcolor;
 	
 	GL_SelectTMU0 ();
-	if (flatcolor)
-		VectorCopy (tx->colors.basecolor, aliascolor);
-	else
-		GL_BindTexture (tx);
+	GL_BindTexture (tx);
 	glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_EXT);
 	glTexEnvf (GL_TEXTURE_ENV, GL_COMBINE_RGB_EXT, GL_MODULATE);
 	glTexEnvf (GL_TEXTURE_ENV, GL_SOURCE0_RGB_EXT, GL_TEXTURE);
 	glTexEnvf (GL_TEXTURE_ENV, GL_SOURCE1_RGB_EXT, GL_PRIMARY_COLOR_EXT);
 	glTexEnvf (GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, d_overbrightscale);
+	
+	if (flatcolor)
+		VectorCopy (tx->colors.basecolor, aliascolor);
 	
 	if (aliasglow)
 	{
