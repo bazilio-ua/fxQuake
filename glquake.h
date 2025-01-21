@@ -38,12 +38,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 
 extern unsigned int d_8to24table_original[256];
+extern unsigned int d_8to24table_opaque[256];
 extern unsigned int d_8to24table[256];
 extern unsigned int d_8to24table_fbright[256];
 extern unsigned int d_8to24table_fbright_fence[256];
 extern unsigned int d_8to24table_nobright[256];
 extern unsigned int d_8to24table_nobright_fence[256];
 extern unsigned int d_8to24table_conchars[256];
+
+extern unsigned int is_fullbright[256/32];
 
 // wgl uses APIENTRY
 #ifndef APIENTRY

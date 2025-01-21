@@ -400,14 +400,16 @@ Mod_HasFullbrights
 detect 8-bit textures containing fullbrights
 ==================
 */
-qboolean Mod_HasFullbrights (byte *pixels, int size)
+static qboolean Mod_HasFullbrights (byte *pixels, int size)
 {
 	int	i;
 
 	for (i=0 ; i<size ; i++)
-		if (*pixels++ > 223)
-//		if (pixels[i] > 223)
+		if (GetBit (is_fullbright, *pixels++))
 			return true;
+//		if (*pixels++ > 223)
+//		if (pixels[i] > 223)
+//			return true;
 
 	return false;
 } 

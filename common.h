@@ -77,6 +77,27 @@ void InsertLinkAfter (link_t *l, link_t *after);
 #define NULL ((void *)0)
 #endif
 
+//============================================================================
+
+static inline qboolean GetBit (const unsigned int *a, unsigned int i)
+{
+	return (a[i/32u] & (1u<<(i%32u))) != 0u;
+}
+
+static inline void SetBit (unsigned int *a, unsigned int i)
+{
+	a[i/32u] |= 1u<<(i%32u);
+}
+
+static inline void ClearBit (unsigned int *a, unsigned int i)
+{
+	a[i/32u] &= ~(1u<<(i%32u));
+}
+
+static inline void ToggleBit (unsigned int *a, unsigned int i)
+{
+	a[i/32u] ^= 1u<<(i%32u);
+}
 
 //============================================================================
 
