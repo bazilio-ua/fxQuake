@@ -1002,7 +1002,7 @@ void R_FastSkyColor (void)
 	unsigned	*rgba;
 	byte *rgb;
 	
-	if (r_fastskycolor.value)
+	if (r_fastskycolor.string[0] != 0)
 	{
 	// update skycolor
 		rgb = (byte *)(d_8to24table + ((int)r_fastskycolor.value & 0xFF));
