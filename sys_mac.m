@@ -625,6 +625,22 @@ int main (int argc, char *argv[])
     }
 }
 
+- (void)windowWillEnterFullScreen:(NSNotification *)notification {
+	block_drawing = true;
+}
+
+- (void)windowDidEnterFullScreen:(NSNotification *)notification {
+	block_drawing = false;
+}
+
+- (void)windowWillExitFullScreen:(NSNotification *)notification {
+	block_drawing = true;
+}
+
+- (void)windowDidExitFullScreen:(NSNotification *)notification {
+	block_drawing = false;
+}
+
 - (void)windowWillMiniaturize:(NSNotification *)notification {
     if (!vid_hiddenwindow) {
         vid_hiddenwindow = true;
