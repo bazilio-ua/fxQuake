@@ -257,7 +257,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-game honey"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-game func_mapjam2"
