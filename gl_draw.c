@@ -28,6 +28,7 @@ cvar_t		gl_picmip = {"gl_picmip", "0", CVAR_NONE};
 cvar_t		gl_swapinterval = {"gl_swapinterval", "1", CVAR_ARCHIVE};
 cvar_t		gl_warp_image_size = {"gl_warp_image_size", "256", CVAR_ARCHIVE}; // was 512, for water warp
 cvar_t		gl_compression = {"gl_compression", "1", CVAR_ARCHIVE};
+cvar_t		gl_npot = {"gl_npot", "1", CVAR_ARCHIVE};
 
 byte		*draw_chars;				// 8*8 graphic characters
 qpic_t		*draw_disc;
@@ -1241,6 +1242,7 @@ void Draw_Init (void)
 //	Cvar_RegisterVariable (&gl_texquality); // TODO: unused?
 	Cvar_RegisterVariableCallback (&gl_warp_image_size, TexMgr_UploadWarpImage);
 	Cvar_RegisterVariableCallback (&gl_compression, TexMgr_ReloadTextures);
+	Cvar_RegisterVariableCallback (&gl_npot, TexMgr_ReloadTextures);
 
 	Cmd_AddCommand ("gl_texturemode", &GL_TextureMode_f);
 	Cmd_AddCommand ("gl_texture_anisotropy", &GL_Texture_Anisotropy_f);
@@ -2534,13 +2536,17 @@ void TexMgr_Upload32 (gltexture_t *glt, unsigned *data)
 	int mip_memory_size;
 	int max_miplevel;
 	
-    if (!gl_texture_NPOT) {
+	if (gl_texture_NPOT && gl_npot.value) {
+		scaled = data;
+//    if (!gl_texture_NPOT) {
+	} else {
         // resample up
         scaled = TexMgr_ResampleTexture (glt->name, data, glt->width, glt->height, glt->flags & TEXPREF_ALPHA);
         glt->width = TexMgr_Pad(glt->width);
         glt->height = TexMgr_Pad(glt->height);
-    } else
-        scaled = data;
+    }
+	//else
+//        scaled = data;
     
 	// mipmap down
 	picmip = (glt->flags & TEXPREF_NOPICMIP) ? 0 : max ((int)gl_picmip.value, 0);
