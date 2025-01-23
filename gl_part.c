@@ -626,7 +626,7 @@ all the particle behavior, separated from R_DrawParticles
 */
 void R_UpdateParticles (void)
 {
-	particle_t		*p, *kill;
+	particle_t		*p, *particle;
 	float			time1, time2, time3;
 	float			grav, dvel;
 	float			frametime;
@@ -644,12 +644,12 @@ void R_UpdateParticles (void)
 
 	for ( ;; ) 
 	{
-		kill = active_particles;
-		if (kill && kill->die < cl.time)
+		particle = active_particles;
+		if (particle && particle->die < cl.time)
 		{
-			active_particles = kill->next;
-			kill->next = free_particles;
-			free_particles = kill;
+			active_particles = particle->next;
+			particle->next = free_particles;
+			free_particles = particle;
 			continue;
 		}
 		break;
@@ -659,12 +659,12 @@ void R_UpdateParticles (void)
 	{
 		for ( ;; )
 		{
-			kill = p->next;
-			if (kill && kill->die < cl.time)
+			particle = p->next;
+			if (particle && particle->die < cl.time)
 			{
-				p->next = kill->next;
-				kill->next = free_particles;
-				free_particles = kill;
+				p->next = particle->next;
+				particle->next = free_particles;
+				free_particles = particle;
 				continue;
 			}
 			break;
