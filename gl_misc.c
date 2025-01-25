@@ -222,8 +222,8 @@ void R_Init (void)
 	Cvar_RegisterVariable (&r_waterquality);
 	Cvar_RegisterVariable (&r_wateralpha);
 	Cvar_RegisterVariable (&r_lockalpha);
-	Cvar_RegisterVariable (&r_lavafog);
-	Cvar_RegisterVariable (&r_slimefog);
+//	Cvar_RegisterVariable (&r_lavafog);
+//	Cvar_RegisterVariable (&r_slimefog);
 	Cvar_RegisterVariable (&r_lavaalpha);
 	Cvar_RegisterVariable (&r_slimealpha);
 	Cvar_RegisterVariable (&r_teleportalpha);
