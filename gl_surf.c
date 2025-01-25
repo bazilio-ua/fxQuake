@@ -685,7 +685,7 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, model_t *model, entity_t 
 	glpoly_t	*p;
 	texture_t	*t;
 	float		*v;
-//	float		lfog = 0; // keep compiler happy
+	float		lfog = 0; // keep compiler happy
 	int			i;
     
 	//
@@ -745,6 +745,9 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, model_t *model, entity_t 
 		}
 		
 		
+		if (s->flags & (SURF_DRAWLAVA | SURF_DRAWSLIME))
+			R_FogDisableGFog ();
+		
 		glBegin (GL_POLYGON);
 		v = p->verts[0];
 		for (i=0 ; i<p->numverts ; i++, v+= VERTEXSIZE)
@@ -758,6 +761,40 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, model_t *model, entity_t 
 		glEnd ();
 		rs_c_brush_passes++; // r_speeds
 		
+		if (s->flags & (SURF_DRAWLAVA | SURF_DRAWSLIME))
+			R_FogEnableGFog ();
+		
+		if (s->flags & (SURF_DRAWLAVA | SURF_DRAWSLIME))
+		{
+			if (s->flags & SURF_DRAWLAVA)
+				lfog = CLAMP(0.0, r_lavafog.value, 1.0);
+			else if (s->flags & SURF_DRAWSLIME)
+				lfog = CLAMP(0.0, r_slimefog.value, 1.0);
+			
+			if (R_FogGetDensity() > 0 && lfog > 0)
+			{
+				float *c = R_FogGetColor();
+				
+				glEnable (GL_BLEND);
+				glColor4f (c[0],c[1],c[2], lfog);
+				
+				glBegin (GL_POLYGON);
+				v = p->verts[0];
+				for (i=0 ; i<p->numverts ; i++, v+= VERTEXSIZE)
+				{
+					qglMultiTexCoord2f (GL_TEXTURE0_ARB, v[3], v[4]);
+					if (litwater && !special)
+						qglMultiTexCoord2f (GL_TEXTURE1_ARB, v[5], v[6]);
+					
+					glVertex3fv (v);
+				}
+				glEnd ();
+				rs_c_brush_passes++; // r_speeds
+				
+				glColor3f (1, 1, 1);
+				glDisable (GL_BLEND);
+			}
+		}
 		
 		if (litwater && !special) {
 //			GL_SelectTMU1 ();
@@ -1445,7 +1482,8 @@ void R_DrawTextureChains_Water (model_t *model, entity_t *ent, texchain_t chain)
 	qboolean	flatcolor = r_flatturb.value;
 	qboolean	litwater = model->haslitwater && r_litwater.value;
 	qboolean	special;
-	
+	float		lfog = 0; // keep compiler happy
+
 	if (flatcolor)
 		glDisable (GL_TEXTURE_2D);
 	
@@ -1478,6 +1516,10 @@ void R_DrawTextureChains_Water (model_t *model, entity_t *ent, texchain_t chain)
 //				GL_BindTexture (lightmap_textures[s->lightmaptexture]);
 			}
 			
+			
+			if (s->flags & (SURF_DRAWLAVA | SURF_DRAWSLIME))
+				R_FogDisableGFog ();
+			
 			glBegin(GL_POLYGON);
 			v = s->polys->verts[0];
 			for (j=0 ; j<s->polys->numverts ; j++, v+= VERTEXSIZE)
@@ -1490,6 +1532,42 @@ void R_DrawTextureChains_Water (model_t *model, entity_t *ent, texchain_t chain)
 			}
 			glEnd ();
 			rs_c_brush_passes++;
+			
+			if (s->flags & (SURF_DRAWLAVA | SURF_DRAWSLIME))
+				R_FogEnableGFog ();
+			
+			if (s->flags & (SURF_DRAWLAVA | SURF_DRAWSLIME))
+			{
+				if (s->flags & SURF_DRAWLAVA)
+					lfog = CLAMP(0.0, r_lavafog.value, 1.0);
+				else if (s->flags & SURF_DRAWSLIME)
+					lfog = CLAMP(0.0, r_slimefog.value, 1.0);
+				
+				if (R_FogGetDensity() > 0 && lfog > 0)
+				{
+					float *c = R_FogGetColor();
+					
+					glEnable (GL_BLEND);
+					glColor4f (c[0],c[1],c[2], lfog);
+					
+					glBegin(GL_POLYGON);
+					v = s->polys->verts[0];
+					for (j=0 ; j<s->polys->numverts ; j++, v+= VERTEXSIZE)
+					{
+						qglMultiTexCoord2f (GL_TEXTURE0_ARB, v[3], v[4]);
+						if (litwater && !special)
+							qglMultiTexCoord2f (GL_TEXTURE1_ARB, v[5], v[6]);
+						
+						glVertex3fv (v);
+					}
+					glEnd ();
+					rs_c_brush_passes++; // r_speeds
+					
+					glColor3f (1, 1, 1);
+					glDisable (GL_BLEND);
+				}
+			}
+
 		}
 		
 		GL_SelectTMU0 ();
