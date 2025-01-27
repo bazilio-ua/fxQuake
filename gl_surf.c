@@ -1084,7 +1084,8 @@ void R_DrawBrushModel (entity_t *e)
 	qboolean	rotated = false;
 	float		alpha;
     qboolean	hasalpha = false;
-
+	float		scalefactor;
+	
 	if (R_CullModelForEntity(e))
 		return;
 	
@@ -1132,7 +1133,8 @@ void R_DrawBrushModel (entity_t *e)
 		glRotatef (e->angles[0],  0, 1, 0);
 		glRotatef (e->angles[2],  1, 0, 0);
 	}
-	float scalefactor = ENTSCALE_DECODE(e->scale);
+	
+	scalefactor = ENTSCALE_DECODE(e->scale);
 	if (scalefactor != 1.0f)
 		glScalef(scalefactor, scalefactor, scalefactor);
 	

@@ -77,7 +77,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-hipnotic"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-game bbelief"
@@ -205,7 +205,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-mem 512"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-mem 2000"
@@ -269,7 +269,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-game wicked +map wickedstart"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-window"
