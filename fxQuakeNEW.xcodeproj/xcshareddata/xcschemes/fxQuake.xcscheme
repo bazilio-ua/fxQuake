@@ -73,11 +73,11 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-rogue"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "+deathmatch 1 +teamplay 4 +map ctf1"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-hipnotic"

@@ -1502,7 +1502,7 @@ byte *COM_LoadFile (char *path, int usehunk, unsigned int *path_id)
 
 	((byte *)buf)[len] = 0;
 
-	if (!cls.demoplayback)
+//	if (!cls.demoplayback)
 		Draw_BeginDisc ();
 
 	if (Sys_FileRead (h, buf, len) != len)
@@ -1510,7 +1510,7 @@ byte *COM_LoadFile (char *path, int usehunk, unsigned int *path_id)
 
 	COM_CloseFile (h);
 
-	if (!cls.demoplayback)
+//	if (!cls.demoplayback)
 		Draw_EndDisc ();
 
 	return buf;

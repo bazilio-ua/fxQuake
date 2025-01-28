@@ -1688,12 +1688,13 @@ Call before beginning any disc IO.
 */
 void Draw_BeginDisc (void)
 {
-	if (!draw_disc || isIntel) // intel video workaround
+//	if (!draw_disc || isIntel) // intel video workaround
+	if (!draw_disc || block_drawing || isIntel) // intel video workaround
 		return;
 
-	glDrawBuffer (GL_FRONT);
+//	glDrawBuffer (GL_FRONT);
 	Draw_Pic (vid.width - 24, 0, draw_disc);
-	glDrawBuffer (GL_BACK);
+//	glDrawBuffer (GL_BACK);
 }
 
 
