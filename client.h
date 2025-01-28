@@ -102,7 +102,8 @@ typedef struct
 #define DL_COLOR_PENT		73, 6
 #define DL_COLOR_POWER		129, 6
 #define DL_COLOR_FLAME		236, 4
-#define DL_COLOR_FLAME2		253, 2
+//#define DL_COLOR_FLAME2		253, 2
+#define DL_COLOR_FLAME2		238, 2
 #define DL_COLOR_FLAME3		233, 6	// candle
 
 #define DL_COLOR_T_EXPLOSION	37, 8
