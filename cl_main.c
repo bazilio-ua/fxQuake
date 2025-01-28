@@ -319,7 +319,7 @@ void CL_WhiteDlight (dlight_t *dl)
 {
 	float average;
 	
-	// make average white/grey light value from all colors
+	// make average white/grey dlight value from all colors
 	average = (dl->color[0] + dl->color[1] + dl->color[2]) / 3.0;
 	dl->color[0] = average;
 	dl->color[1] = average;
