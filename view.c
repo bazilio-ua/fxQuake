@@ -659,7 +659,7 @@ static void SetColor (unsigned int *dst, byte r, byte g, byte b, byte a)
 
 void V_SetPalette (byte *palette)
 {
-	byte *pal, *src, *dst;
+	byte *pal, *src;//, *dst;
 	int i;
 
 	pal = palette;
@@ -744,48 +744,40 @@ void V_SetPalette (byte *palette)
  */
 	
 	//
-	//fill color tables
+	// fill color tables
 	//
 	src = pal;
 	for (i = 0; i < 256; i++, src += 3)
 	{
-		//
-		//standard palette with alpha 255 for all colors
-		//
+		// standard palette with alpha 255 for all colors
 		SetColor (&d_8to24table_opaque[i], src[0], src[1], src[2], 255);
 		if (GetBit (is_fullbright, i))
 		{
 			SetColor (&d_8to24table_fbright[i], src[0], src[1], src[2], 255);
+			// nobright palette, fullbright indices (224-255) are black (for additive blending)
 			SetColor (&d_8to24table_nobright[i], 0, 0, 0, 255);
 		}
 		else
 		{
+			// fullbright palette, nobright indices (0-223) are black (for additive blending)
 			SetColor (&d_8to24table_fbright[i], 0, 0, 0, 255);
 			SetColor (&d_8to24table_nobright[i], src[0], src[1], src[2], 255);
 		}
 	}
 	
-	//
-	//standard palette, 255 is transparent
-	//
+	// standard palette, 255 is transparent
 	memcpy (d_8to24table, d_8to24table_opaque, 256*4);
 	((byte *)&d_8to24table[255])[3] = 0;
 	
-	//
-	//fullbright palette, for fence textures
-	//
+	// fullbright palette, for fence textures
 	memcpy (d_8to24table_fbright_fence, d_8to24table_fbright, 256*4);
 	d_8to24table_fbright_fence[255] = 0; // Alpha of zero.
 	
-	//
-	//nobright palette, for fence textures
-	//
+	// nobright palette, for fence textures
 	memcpy (d_8to24table_nobright_fence, d_8to24table_nobright, 256*4);
 	d_8to24table_nobright_fence[255] = 0; // Alpha of zero.
 	
-	//
-	//conchars palette, 0 and 255 are transparent
-	//
+	// conchars palette, 0 and 255 are transparent
 	memcpy (d_8to24table_conchars, d_8to24table, 256*4);
 	((byte *)&d_8to24table_conchars[0])[3] = 0;
 	
@@ -793,7 +785,7 @@ void V_SetPalette (byte *palette)
 
 void V_SetOriginalPalette (byte *palette)
 {
-	byte *pal, *src, *dst;
+	byte *pal, *src;//, *dst;
 	int i;
 
 	pal = palette;
@@ -801,17 +793,27 @@ void V_SetOriginalPalette (byte *palette)
 	//
 	//standard palette - no transparency
 	//
-	dst = (byte *)d_8to24table_original;
-	src = pal;
-	for (i=0; i<256; i++)
-	{
-		dst[0] = *src++;
-		dst[1] = *src++;
-		dst[2] = *src++;
-		dst[3] = 255;
-		dst += 4;
-	}
+//	dst = (byte *)d_8to24table_original;
+//	src = pal;
+//	for (i=0; i<256; i++)
+//	{
+//		dst[0] = *src++;
+//		dst[1] = *src++;
+//		dst[2] = *src++;
+//		dst[3] = 255;
+//		dst += 4;
+//	}
 	
+	//
+	// fill color table
+	//
+	src = pal;
+	for (i = 0; i < 256; i++, src += 3)
+	{
+		// standard palette - no transparency
+		SetColor (&d_8to24table_original[i], src[0], src[1], src[2], 255);
+	}
+
 	// keep original table untouched from palette shifting by gamma changes
 	// used in flood fill skin routine to detect black pixels
 }
@@ -832,7 +834,7 @@ void V_FindFullbrightColors (byte *palette, byte *colormap)
 	pal = palette;
 	
 	//
-	//find fullbright colors
+	// find fullbright colors
 	//
 	memset (is_fullbright, 0, sizeof (is_fullbright));
 	numfb = 0;
