@@ -1232,8 +1232,8 @@ void Draw_Init (void)
 	numgltextures = 0;
 
 	// palette
-	V_FindFullbrightColors (host_basepal, host_colormap);
-	V_SetOriginalPalette (host_basepal);
+	V_FindFullbrightColors ();
+	V_SetOriginalPalette ();
 	V_SetPalette (host_basepal);
 
 	Cvar_RegisterVariable (&scr_conalpha);

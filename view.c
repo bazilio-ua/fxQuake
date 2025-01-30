@@ -783,12 +783,14 @@ void V_SetPalette (byte *palette)
 	
 }
 
-void V_SetOriginalPalette (byte *palette)
+//void V_SetOriginalPalette (byte *palette)
+void V_SetOriginalPalette (void)
 {
 	byte *pal, *src;//, *dst;
 	int i;
 
-	pal = palette;
+//	pal = palette;
+	pal = host_basepal;
 
 	//
 	//standard palette - no transparency
@@ -826,12 +828,16 @@ Use colormap to determine which colors are fullbright
 instead of using a hardcoded index threshold of 224
 ==================
 */
-void V_FindFullbrightColors (byte *palette, byte *colormap)
+//void V_FindFullbrightColors (byte *palette, byte *colormap)
+void V_FindFullbrightColors (void)
 {
 	byte *pal, *src;
+	byte *colormap;
 	int i, j, numfb;
 	
-	pal = palette;
+//	pal = palette;
+	pal = host_basepal;
+	colormap = host_colormap;
 	
 	//
 	// find fullbright colors
