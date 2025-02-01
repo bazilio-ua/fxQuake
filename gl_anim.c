@@ -1344,6 +1344,9 @@ void R_SkyClipPoly (int nump, vec3_t vecs, int stage)
 		if (IsTimeout (&lastmsg, 2))
 			Con_DWarning ("R_SkyClipPoly: nump exceeds standard limit (%d, normal max = %d)\n", nump, 64-2); // was Host_Error
 	
+	if (nump > MAX_CLIP_VERTS-2)
+		Host_Error ("R_SkyClipPoly: MAX_CLIP_VERTS");
+	
 	if (stage == 6) // fully clipped
 	{
 		R_SkyProjectPoly (nump, vecs);
