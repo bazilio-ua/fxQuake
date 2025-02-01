@@ -986,7 +986,7 @@ void R_SkyDrawSkyBox (void)
 
 gltexture_t		*solidskytexture, *alphaskytexture;
 
-#define	MAX_CLIP_VERTS 64
+#define	MAX_CLIP_VERTS 256 // was 64
 
 float	skyflatcolor[3];
 byte	*skydata;
@@ -1338,9 +1338,12 @@ void R_SkyClipPoly (int nump, vec3_t vecs, int stage)
 	vec3_t	newv[2][MAX_CLIP_VERTS];
 	int		newc[2];
 	int		i, j;
-
-	if (nump > MAX_CLIP_VERTS-2)
-		Host_Error ("R_SkyClipPoly: MAX_CLIP_VERTS");
+	static float lastmsg = 0;
+	
+	if (nump > 64-2) // old limit warning
+		if (IsTimeout (&lastmsg, 2))
+			Con_DWarning ("R_SkyClipPoly: nump exceeds standard limit (%d, normal max = %d)\n", nump, 64-2); // was Host_Error
+	
 	if (stage == 6) // fully clipped
 	{
 		R_SkyProjectPoly (nump, vecs);

@@ -209,7 +209,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-mem 512"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-mem 2000"
@@ -245,7 +245,11 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-game limjam"
-            isEnabled = "NO">
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "+map lim_daviddg"
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-game mj8"
