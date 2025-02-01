@@ -1333,21 +1333,14 @@ void R_SkyClipPoly (int nump, vec3_t vecs, int stage)
 	float	*v;
 	qboolean	front, back;
 	float	d, e;
-//	float	dists[MAX_CLIP_VERTS];
-//	int		sides[MAX_CLIP_VERTS];
-//	vec3_t	newv[2][MAX_CLIP_VERTS];
+	float	dists[MAX_CLIP_VERTS];
+	int		sides[MAX_CLIP_VERTS];
+	vec3_t	newv[2][MAX_CLIP_VERTS];
 	int		newc[2];
-	int		*sides;
-	float	*dists;
-	vec3_t	*newv_0;
-	vec3_t	*newv_1;
 	int		i, j;
-	int max_clip_verts = nump + 2;
-	int on_heap = max_clip_verts > MAX_CLIP_VERTS;
-	
+
 	if (nump > MAX_CLIP_VERTS-2)
-		Con_DWarning ("R_SkyClipPoly: nump exceeds standard limit (%d, normal max = %d)\n", nump, MAX_CLIP_VERTS-2); // was Host_Error
-	
+		Host_Error ("R_SkyClipPoly: MAX_CLIP_VERTS");
 	if (stage == 6) // fully clipped
 	{
 		R_SkyProjectPoly (nump, vecs);
@@ -1356,10 +1349,6 @@ void R_SkyClipPoly (int nump, vec3_t vecs, int stage)
 
 	front = back = false;
 	norm = skyclip[stage];
-	
-	sides = (int *) (on_heap ? malloc (max_clip_verts * sizeof(int)) : alloca (max_clip_verts * sizeof(int)));
-	dists = (float *) (on_heap ? malloc (max_clip_verts * sizeof(float)) : alloca (max_clip_verts * sizeof(float)));
-	
 	for (i=0, v = vecs ; i<nump ; i++, v+=3)
 	{
 		d = DotProduct (v, norm);
@@ -1381,11 +1370,6 @@ void R_SkyClipPoly (int nump, vec3_t vecs, int stage)
 	if (!front || !back)
 	{	// not clipped
 		R_SkyClipPoly (nump, vecs, stage+1);
-		if (on_heap)
-		{
-			free (dists);
-			free (sides);
-		}
 		return;
 	}
 
@@ -1394,31 +1378,23 @@ void R_SkyClipPoly (int nump, vec3_t vecs, int stage)
 	dists[i] = dists[0];
 	VectorCopy (vecs, (vecs+(i*3)) );
 	newc[0] = newc[1] = 0;
-	
-	// 2-dim vec3_t	 newv[2][MAX_CLIP_VERTS]; as 2 arrays
-	newv_0 = (vec3_t *) (on_heap ? malloc (max_clip_verts * sizeof(vec3_t)) : alloca (max_clip_verts * sizeof(vec3_t)));
-	newv_1 = (vec3_t *) (on_heap ? malloc (max_clip_verts * sizeof(vec3_t)) : alloca (max_clip_verts * sizeof(vec3_t)));
-	
+
 	for (i=0, v = vecs ; i<nump ; i++, v+=3)
 	{
 		switch (sides[i])
 		{
 		case SIDE_FRONT:
-			VectorCopy (v, newv_0[newc[0]]);
-//			VectorCopy (v, newv[0][newc[0]]);
+			VectorCopy (v, newv[0][newc[0]]);
 			newc[0]++;
 			break;
 		case SIDE_BACK:
-			VectorCopy (v, newv_1[newc[1]]);
-//			VectorCopy (v, newv[1][newc[1]]);
+			VectorCopy (v, newv[1][newc[1]]);
 			newc[1]++;
 			break;
 		case SIDE_ON:
-			VectorCopy (v, newv_0[newc[0]]);
-//			VectorCopy (v, newv[0][newc[0]]);
+			VectorCopy (v, newv[0][newc[0]]);
 			newc[0]++;
-			VectorCopy (v, newv_1[newc[1]]);
-//			VectorCopy (v, newv[1][newc[1]]);
+			VectorCopy (v, newv[1][newc[1]]);
 			newc[1]++;
 			break;
 		}
@@ -1430,28 +1406,16 @@ void R_SkyClipPoly (int nump, vec3_t vecs, int stage)
 		for (j=0 ; j<3 ; j++)
 		{
 			e = v[j] + d*(v[j+3] - v[j]);
-			newv_0[newc[0]][j] = e;
-			newv_1[newc[1]][j] = e;
-//			newv[0][newc[0]][j] = e;
-//			newv[1][newc[1]][j] = e;
+			newv[0][newc[0]][j] = e;
+			newv[1][newc[1]][j] = e;
 		}
 		newc[0]++;
 		newc[1]++;
 	}
 
 	// continue
-	R_SkyClipPoly (newc[0], newv_0[0], stage+1);
-	R_SkyClipPoly (newc[1], newv_1[0], stage+1);
-//	R_SkyClipPoly (newc[0], newv[0][0], stage+1);
-//	R_SkyClipPoly (newc[1], newv[1][0], stage+1);
-	
-	if (on_heap)
-	{
-		free (dists);
-		free (sides);
-		free (newv_0);
-		free (newv_1);
-	}
+	R_SkyClipPoly (newc[0], newv[0][0], stage+1);
+	R_SkyClipPoly (newc[1], newv[1][0], stage+1);
 }
 
 /*
@@ -1462,11 +1426,8 @@ R_SkyProcessPoly
 void R_SkyProcessPoly (glpoly_t *p)
 {
 	int			i;
-//	vec3_t		verts[MAX_CLIP_VERTS];
-	vec3_t		*verts;
-	int max_clip_verts = p->numverts + 2;
-	int on_heap = max_clip_verts > MAX_CLIP_VERTS;
-	
+	vec3_t		verts[MAX_CLIP_VERTS];
+
 	// draw it (just make it transparent)
 	R_DrawGLPoly34 (p);
 	rs_c_brush_passes++; // r_speeds
@@ -1474,14 +1435,9 @@ void R_SkyProcessPoly (glpoly_t *p)
 	// update sky bounds
 	if (!r_fastsky.value)
 	{
-		verts = (vec3_t *) (on_heap ? malloc (max_clip_verts * sizeof(vec3_t)) : alloca (max_clip_verts * sizeof(vec3_t)));
-		
 		for (i=0 ; i<p->numverts ; i++)
 			VectorSubtract (p->verts[i], r_origin, verts[i]);
 		R_SkyClipPoly (p->numverts, verts[0], 0);
-		
-		if (on_heap)
-			free (verts);
 	}
 }
 
