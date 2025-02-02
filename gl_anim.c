@@ -986,7 +986,7 @@ void R_SkyDrawSkyBox (void)
 
 gltexture_t		*solidskytexture, *alphaskytexture;
 
-#define	MAX_CLIP_VERTS 512 // was 64
+#define	MAX_CLIP_VERTS 256 // was 64
 
 float	skyflatcolor[3];
 byte	*skydata;
