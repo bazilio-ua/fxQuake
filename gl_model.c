@@ -2557,7 +2557,7 @@ void Mod_FloodFillSkin( byte *skin, int skinwidth, int skinheight, char *name )
 	// can't fill to filled color or to transparent color (used as visited marker)
 	if ((fillcolor == filledcolor) || (fillcolor == 255))
 	{
-		if (developer.value > 3)
+		if (developer.value > 4)
 			Con_DPrintf ("Mod_FloodFillSkin: not filling skin in '%s' from %d to %d\n", name, fillcolor, filledcolor);
 		return;
 	}
@@ -2626,7 +2626,7 @@ void *Mod_LoadAllSkins (int numskins, daliasskintype_t *pskintype)
 	{
 		if (pskintype->type == ALIAS_SKIN_SINGLE) 
 		{
-			Mod_FloodFillSkin( (byte *)(pskintype + 1), pheader->skinwidth, pheader->skinheight, loadmodel->name );
+//			Mod_FloodFillSkin( (byte *)(pskintype + 1), pheader->skinwidth, pheader->skinheight, loadmodel->name );
 //			Mod_FloodFillSkin( skin, pheader->skinwidth, pheader->skinheight );
 			// save 8 bit texels for the player model to remap
 			//if (!strcmp(loadmodel->name,"progs/player.mdl"))
@@ -2679,7 +2679,7 @@ void *Mod_LoadAllSkins (int numskins, daliasskintype_t *pskintype)
 
 			for (j=0 ; j<groupskins ; j++)
 			{
-				Mod_FloodFillSkin( (byte *)(pskintype), pheader->skinwidth, pheader->skinheight, loadmodel->name );
+//				Mod_FloodFillSkin( (byte *)(pskintype), pheader->skinwidth, pheader->skinheight, loadmodel->name );
 //				Mod_FloodFillSkin( skin, pheader->skinwidth, pheader->skinheight ); // Is 'skin' really correct here?
 				if (j == 0) 
 				{

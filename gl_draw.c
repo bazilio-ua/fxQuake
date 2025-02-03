@@ -2774,6 +2774,10 @@ void TexMgr_Upload8 (gltexture_t *glt, byte *data)
 	// allocate dynamic memory
 //	trans = Hunk_Alloc (size * sizeof(unsigned)); // 4
 	
+//	if (glt->source_format == SRC_INDEXED)
+	if (glt->owner && glt->owner->type == mod_alias)
+		Mod_FloodFillSkin (data, glt->width, glt->height, glt->owner->name);
+
 	// calculate flat colors
 	TexMgr_CalculateFlatColors (glt, data, size);
 	
@@ -3155,9 +3159,9 @@ void TexMgr_ReloadTextureTranslation (gltexture_t *glt, int top, int bottom)
 	glt->width = glt->source_width;
 	glt->height = glt->source_height;
 	
-	if (glt->source_format == SRC_INDEXED)
-		if (glt->owner && glt->owner->type == mod_alias)
-			Mod_FloodFillSkin(data, glt->width, glt->height, glt->owner->name);
+//	if (glt->source_format == SRC_INDEXED)
+//		if (glt->owner && glt->owner->type == mod_alias)
+//			Mod_FloodFillSkin(data, glt->width, glt->height, glt->owner->name);
 
 //
 // apply top and bottom colors
