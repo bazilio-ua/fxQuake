@@ -755,7 +755,7 @@ void CL_RelinkEntities (void)
 				else if (quoth && cl.stats[STAT_ACTIVEWEAPON] == HIT_LASER_CANNON) // quoth plasma gun uses the same bit as hipnotic laser cannon, so check it first
 					CL_ColorDlightPaletteLength (dl, DL_COLOR_LIGHTNING);
 				else if (hipnotic && cl.stats[STAT_ACTIVEWEAPON] == HIT_LASER_CANNON)
-					CL_ColorDlightPaletteLength (dl, DL_COLOR_LASER2);
+					CL_ColorDlightPaletteLength (dl, DL_COLOR_LASER_SHOT);
 				else
 					CL_ColorDlightPaletteLength (dl, DL_COLOR_SHOT);
 			}

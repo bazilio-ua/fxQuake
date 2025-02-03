@@ -90,6 +90,7 @@ typedef struct
 // keep dlight colours in the one place so that if i need to change them i only need to do it once
 
 #define DL_COLOR_SHOT		236, 4
+#define DL_COLOR_LASER_SHOT	228, 8	// hipnotic
 #define DL_COLOR_LASER		231, 5	// id laser
 #define DL_COLOR_LASER2		247, 5	// hipnotic red laser
 #define DL_COLOR_LASER3		252, 3	// rogue yellow laser
