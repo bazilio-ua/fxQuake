@@ -102,6 +102,7 @@ qboolean isIntel = false; // intel video workaround
 qboolean gl_mtexable = false;
 qboolean gl_texture_env_combine = false;
 qboolean gl_texture_env_add = false;
+
 qboolean gl_texture_NPOT = false; //ericw
 qboolean gl_texture_compression = false; // EER1
 

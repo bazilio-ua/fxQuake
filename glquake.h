@@ -143,6 +143,7 @@ extern qboolean isIntel; // intel video workaround
 extern qboolean gl_mtexable;
 extern qboolean gl_texture_env_combine;
 extern qboolean gl_texture_env_add;
+extern qboolean gl_texture_NPOT;
 extern qboolean gl_texture_compression;
 extern int		gl_stencilbits;
 
