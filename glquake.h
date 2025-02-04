@@ -128,7 +128,7 @@ void (GLAPIENTRY *qglClientActiveTexture) (GLenum);
 #define GL_SOURCE2_ALPHA_EXT			0x858A
 
 // Multitexture
-extern qboolean mtexenabled;
+//extern qboolean mtexenabled;
 
 extern const char *gl_vendor;
 extern const char *gl_renderer;

@@ -78,7 +78,7 @@ int			numgltextures;
 
 static GLuint currenttexture[3] = {GL_UNUSED_TEXTURE, GL_UNUSED_TEXTURE, GL_UNUSED_TEXTURE}; // to avoid unnecessary texture sets
 static GLenum currenttarget = GL_TEXTURE0_ARB;
-qboolean mtexenabled = false;
+//qboolean mtexenabled = false;
 
 unsigned int d_8to24table_original[256];		//standard unmodifyed palette
 unsigned int d_8to24table_opaque[256];			//standard palette with alpha 255 for all colors
@@ -810,15 +810,15 @@ GL_DisableMultitexture
 selects texture unit 0
 ================
 */
-void GL_DisableMultitexture (void) 
-{
-	if (mtexenabled) 
-	{
-		glDisable (GL_TEXTURE_2D);
-		GL_SelectTexture (GL_TEXTURE0_ARB);
-		mtexenabled = false;
-	}
-}
+//void GL_DisableMultitexture (void) 
+//{
+//	if (mtexenabled) 
+//	{
+//		glDisable (GL_TEXTURE_2D);
+//		GL_SelectTexture (GL_TEXTURE0_ARB);
+//		mtexenabled = false;
+//	}
+//}
 
 /*
 ================
@@ -827,15 +827,15 @@ GL_EnableMultitexture
 selects texture unit 1
 ================
 */
-void GL_EnableMultitexture (void) 
-{
-	if (gl_mtexable) 
-	{
-		GL_SelectTexture (GL_TEXTURE1_ARB);
-		glEnable (GL_TEXTURE_2D);
-		mtexenabled = true;
-	}
-}
+//void GL_EnableMultitexture (void) 
+//{
+//	if (gl_mtexable) 
+//	{
+//		GL_SelectTexture (GL_TEXTURE1_ARB);
+//		glEnable (GL_TEXTURE_2D);
+//		mtexenabled = true;
+//	}
+//}
 
 
 void GL_SelectTMU0 (void)
