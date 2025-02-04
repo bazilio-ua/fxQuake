@@ -41,11 +41,29 @@ static int sv_protocol = PROTOCOL_MARKV;
 static void SV_Protocol_f (void)
 {
 	int i;
+	const char	*p;
 
 	switch (Cmd_Argc())
 	{
 	case 1:
-		Con_Printf ("sv_protocol is %d\n", sv_protocol);
+		switch (sv_protocol)
+		{
+			case PROTOCOL_NETQUAKE:
+				p = "NetQuake";
+				break;
+			case PROTOCOL_FITZQUAKE:
+				p = "FitzQuake";
+				break;
+			case PROTOCOL_MARKV:
+				p = "MarkV";
+				break;
+			case PROTOCOL_RMQ:
+				p = "RMQ";
+				break;
+			default:
+				return;
+		}
+		Con_Printf ("sv_protocol is %d (%s)\n", sv_protocol, p);
 		break;
 	case 2:
 		i = atoi(Cmd_Argv(1));
