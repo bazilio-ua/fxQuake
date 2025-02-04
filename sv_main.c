@@ -1652,6 +1652,7 @@ void SV_SpawnServer (char *server)
 
 	sv.state = ss_loading;
 	sv.paused = false;
+	sv.nomonsters = (nomonsters.value != 0.f);
 
 	sv.time = 1.0;
 

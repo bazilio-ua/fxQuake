@@ -929,6 +929,12 @@ void Host_Savegame_f (void)
 		return;
 	}
 
+	if (sv.nomonsters)
+	{
+		Con_Printf ("Can't save when using \"nomonsters\".\n");
+		return;
+	}
+
 	if (cl.intermission)
 	{
 		Con_Printf ("Can't save in intermission.\n");
@@ -1029,6 +1035,12 @@ void Host_Loadgame_f (void)
 	{
 		Con_Printf ("load <savename> : load a game\n");
 		return;
+	}
+
+	if (nomonsters.value)
+	{
+		Con_Warning ("\"nomonsters\" disabled automatically.\n");
+		Cvar_SetValue ("nomonsters", 0.f);
 	}
 
 	cls.demonum = -1;		// stop demo loop in case this fails

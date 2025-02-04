@@ -955,6 +955,7 @@ void ED_LoadFromFile (char *data)
 	edict_t		*ent;
 	int		inhibit;
 	dfunction_t	*func;
+	const char	*classname;
 
 	ent = NULL;
 	inhibit = 0;
@@ -1000,18 +1001,27 @@ void ED_LoadFromFile (char *data)
 //
 		if (!ent->v.classname)
 		{
-			Con_SafePrintf ("No classname for:\n"); // was Con_Printf
+			Con_SafePrintf ("No classname for:\n"); //johnfitz -- was Con_Printf
 			ED_Print (ent);
 			ED_Free (ent);
 			continue;
 		}
 
+		classname = PR_GetString (ent->v.classname);
+		if (sv.nomonsters && !strncmp (classname, "monster_", 8))
+		{
+			ED_Free (ent);
+			inhibit++;
+			continue;
+		}
+
 	// look for the spawn function
-		func = ED_FindFunction (PR_GetString(ent->v.classname));
+//		func = ED_FindFunction (PR_GetString(ent->v.classname));
+		func = ED_FindFunction (classname);
 
 		if (!func)
 		{
-			Con_SafePrintf ("No spawn function for:\n"); // was Con_Printf
+			Con_SafePrintf ("No spawn function for:\n"); //johnfitz -- was Con_Printf
 			ED_Print (ent);
 			ED_Free (ent);
 			continue;
@@ -1127,6 +1137,17 @@ void PR_LoadProgs (void)
 
 /*
 ===============
+ED_Nomonsters
+===============
+*/
+void ED_Nomonsters (void)
+{
+	if (nomonsters.value)
+		Con_Warning ("\"nomonsters\" can break gameplay.\n");
+}
+
+/*
+===============
 PR_Init
 ===============
 */
@@ -1137,7 +1158,7 @@ void PR_Init (void)
 	Cmd_AddCommand ("edictcount", ED_Count);
 	Cmd_AddCommand ("profile", PR_Profile_f);
 
-	Cvar_RegisterVariable (&nomonsters);
+	Cvar_RegisterVariableCallback (&nomonsters, ED_Nomonsters);
 	Cvar_RegisterVariable (&gamecfg);
 	Cvar_RegisterVariable (&scratch1);
 	Cvar_RegisterVariable (&scratch2);

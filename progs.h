@@ -70,6 +70,8 @@ extern	int		pr_edict_size;	// in bytes
 extern	qboolean	pr_alpha_supported; // alpha
 extern	qboolean	pr_fullbright_supported; // fullbright
 
+extern	cvar_t	nomonsters;
+
 //============================================================================
 
 void PR_Init (void);
