@@ -649,7 +649,7 @@ void V_ShiftPalette (byte *palette)
 	R_FastSkyColor ();
 }
 
-static void SetColor (unsigned int *dst, byte r, byte g, byte b, byte a)
+static void SetPaletteColor (unsigned int *dst, byte r, byte g, byte b, byte a)
 {
 	((byte *)dst)[0] = r;
 	((byte *)dst)[1] = g;
@@ -750,18 +750,18 @@ void V_SetPalette (byte *palette)
 	for (i = 0; i < 256; i++, src += 3)
 	{
 		// standard palette with alpha 255 for all colors
-		SetColor (&d_8to24table_opaque[i], src[0], src[1], src[2], 255);
+		SetPaletteColor (&d_8to24table_opaque[i], src[0], src[1], src[2], 255);
 		if (GetBit (is_fullbright, i))
 		{
-			SetColor (&d_8to24table_fbright[i], src[0], src[1], src[2], 255);
+			SetPaletteColor (&d_8to24table_fbright[i], src[0], src[1], src[2], 255);
 			// nobright palette, fullbright indices (224-255) are black (for additive blending)
-			SetColor (&d_8to24table_nobright[i], 0, 0, 0, 255);
+			SetPaletteColor (&d_8to24table_nobright[i], 0, 0, 0, 255);
 		}
 		else
 		{
 			// fullbright palette, nobright indices (0-223) are black (for additive blending)
-			SetColor (&d_8to24table_fbright[i], 0, 0, 0, 255);
-			SetColor (&d_8to24table_nobright[i], src[0], src[1], src[2], 255);
+			SetPaletteColor (&d_8to24table_fbright[i], 0, 0, 0, 255);
+			SetPaletteColor (&d_8to24table_nobright[i], src[0], src[1], src[2], 255);
 		}
 	}
 	
@@ -813,7 +813,7 @@ void V_SetOriginalPalette (void)
 	for (i = 0; i < 256; i++, src += 3)
 	{
 		// standard palette - no transparency
-		SetColor (&d_8to24table_original[i], src[0], src[1], src[2], 255);
+		SetPaletteColor (&d_8to24table_original[i], src[0], src[1], src[2], 255);
 	}
 
 	// keep original table untouched from palette shifting by gamma changes
