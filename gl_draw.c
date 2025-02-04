@@ -99,9 +99,9 @@ const char *gl_extensions;
 qboolean fullsbardraw = false;
 qboolean isIntel = false; // intel video workaround
 
-qboolean gl_mtexable = false;
-qboolean gl_texture_env_combine = false;
-qboolean gl_texture_env_add = false;
+//qboolean gl_mtexable = false;
+//qboolean gl_texture_env_combine = false;
+//qboolean gl_texture_env_add = false;
 
 qboolean gl_texture_NPOT = false; //ericw
 qboolean gl_texture_compression = false; // EER1
@@ -216,11 +216,12 @@ void GL_CheckExtension_Multitexture (void)
 	//
 	ARBmultitexture = strstr (gl_extensions, "GL_ARB_multitexture") != NULL;
 	
-	if (COM_CheckParm("-nomtex"))
-	{
-		Con_Warning ("Multitexture disabled at command line\n");
-	}
-	else if (ARBmultitexture)
+//	if (COM_CheckParm("-nomtex"))
+//	{
+//		Con_Warning ("Multitexture disabled at command line\n");
+//	}
+//	else
+	if (ARBmultitexture)
 	{
 		// Check how many texture units there actually are
 		glGetIntegerv (GL_MAX_TEXTURE_UNITS_ARB, &units);
@@ -229,25 +230,28 @@ void GL_CheckExtension_Multitexture (void)
 		qglActiveTexture = (void *) qglGetProcAddress ("glActiveTextureARB");
 		qglClientActiveTexture = (void *) qglGetProcAddress ("glClientActiveTextureARB");
 		
-		if (units < 2)
+		if (units < 3)
 		{
-			Con_Warning ("Only %i TMU available, multitexture not supported\n", units);
+//			Con_Warning ("Only %i TMU available, multitexture not supported\n", units);
+			Sys_Error ("Only %i TMU available, but this engine requires minimum 3 TMUs", units);
 		}
 		else if (!qglMultiTexCoord2f || !qglActiveTexture || !qglClientActiveTexture)
 		{
-			Con_Warning ("Multitexture not supported (qglGetProcAddress failed)\n");
+//			Con_Warning ("Multitexture not supported (qglGetProcAddress failed)\n");
+			Sys_Error ("Multitexture not supported (qglGetProcAddress failed)");
 		}
 		else
 		{
 			Con_Printf ("Found GL_ARB_multitexture\n");
 			Con_Printf ("   %i TMUs on hardware\n", units);
 			
-			gl_mtexable = true;
+//			gl_mtexable = true;
 		}
 	}
 	else
 	{
-		Con_Warning ("Multitexture not supported (extension not found)\n");
+//		Con_Warning ("Multitexture not supported (extension not found)\n");
+		Sys_Error ("Multitexture not supported (extension not found)");
 	}
 }
 
@@ -261,18 +265,20 @@ void GL_CheckExtension_EnvCombine (void)
 	ARBcombine = strstr (gl_extensions, "GL_ARB_texture_env_combine") != NULL;
 	EXTcombine = strstr (gl_extensions, "GL_EXT_texture_env_combine") != NULL;
 	
-	if (COM_CheckParm("-nocombine"))
-	{
-		Con_Warning ("Texture combine environment disabled at command line\n");
-	}
-	else if (ARBcombine || EXTcombine)
+//	if (COM_CheckParm("-nocombine"))
+//	{
+//		Con_Warning ("Texture combine environment disabled at command line\n");
+//	}
+//	else
+	if (ARBcombine || EXTcombine)
 	{
 		Con_Printf ("Found GL_%s_texture_env_combine\n", ARBcombine ? "ARB" : "EXT");
-		gl_texture_env_combine = true;
+//		gl_texture_env_combine = true;
 	}
 	else
 	{
-		Con_Warning ("Texture combine environment not supported (extension not found)\n");
+//		Con_Warning ("Texture combine environment not supported (extension not found)\n");
+		Sys_Error ("Texture combine environment not supported (extension not found)");
 	}
 }
 
@@ -286,18 +292,20 @@ void GL_CheckExtension_EnvAdd (void)
 	ARBadd = strstr (gl_extensions, "GL_ARB_texture_env_add") != NULL;
 	EXTadd = strstr (gl_extensions, "GL_EXT_texture_env_add") != NULL;
 	
-	if (COM_CheckParm("-noadd"))
-	{
-		Con_Warning ("Texture add environment disabled at command line\n");
-	}
-	else if (ARBadd || EXTadd)
+//	if (COM_CheckParm("-noadd"))
+//	{
+//		Con_Warning ("Texture add environment disabled at command line\n");
+//	}
+//	else
+	if (ARBadd || EXTadd)
 	{
 		Con_Printf ("Found GL_%s_texture_env_add\n", ARBadd ? "ARB" : "EXT");
-		gl_texture_env_add = true;
+//		gl_texture_env_add = true;
 	}
 	else
 	{
-		Con_Warning ("Texture add environment not supported (extension not found)\n");
+//		Con_Warning ("Texture add environment not supported (extension not found)\n");
+		Sys_Error ("Texture add environment not supported (extension not found)");
 	}
 }
 

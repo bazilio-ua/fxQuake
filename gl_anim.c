@@ -1099,7 +1099,8 @@ void R_SkyDrawFaceQuad (glpoly_t *p)
 	float		skyalpha;
 
 	skyalpha = CLAMP(0.0, r_skyalpha.value, 1.0);
-	if (gl_mtexable && skyalpha >= 1.0)
+//	if (gl_mtexable && skyalpha >= 1.0)
+	if (skyalpha >= 1.0)
 	{
 		GL_BindTexture (solidskytexture);
 //		GL_EnableMultitexture (); // selects TEXTURE1
