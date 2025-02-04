@@ -280,7 +280,7 @@ void TexMgr_FreeTexturesForOwner (model_t *owner);
 void TexMgr_ReloadTexture (gltexture_t *glt);
 void TexMgr_ReloadTextureTranslation (gltexture_t *glt, int top, int bottom);
 void TexMgr_ReloadTextures (void);
-void GL_ReloadTextures_f (void);
+//void GL_ReloadTextures_f (void);
 gltexture_t *TexMgr_LoadTexture (model_t *owner, char *name, int width, int height, enum srcformat format, byte *data, char *source_file, uintptr_t source_offset, unsigned flags);
 gltexture_t *TexMgr_FindTexture (model_t *owner, char *name);
 gltexture_t *TexMgr_NewTexture (void);

@@ -718,7 +718,7 @@ void GL_Init (void)
 	Cvar_RegisterVariableCallback (&gl_swapinterval, GL_SwapInterval);
 
 	Cmd_AddCommand ("gl_info", GL_Info_f);
-	Cmd_AddCommand ("gl_reloadtextures", GL_ReloadTextures_f);
+//	Cmd_AddCommand ("gl_reloadtextures", GL_ReloadTextures_f);
 
 	if (!strcmp(gl_vendor, "Intel")) // intel video workaround
 	{
@@ -3245,11 +3245,11 @@ void TexMgr_ReloadTextureTranslation (gltexture_t *glt, int top, int bottom)
 GL_ReloadTextures_f
 ================
 */
-void GL_ReloadTextures_f (void)
-{
-	TexMgr_ReloadTextures ();
-	Con_SafePrintf ("reloaded\n");
-}
+//void GL_ReloadTextures_f (void)
+//{
+//	TexMgr_ReloadTextures ();
+//	Con_SafePrintf ("reloaded\n");
+//}
 
 /*
 ================
