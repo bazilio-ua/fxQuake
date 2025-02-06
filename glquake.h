@@ -188,6 +188,14 @@ extern float gl_texture_anisotropy;
 qboolean gl_texture_compression;
 void (GLAPIENTRY *qglCompressedTexImage2D) (GLenum target, GLint level, GLenum internalformat, GLsizei width, GLsizei height, GLint border, GLsizei imageSize, const void *data);
 
+// GL_EXT_texture_compression_s3tc
+#ifndef GL_EXT_texture_compression_s3tc
+#define GL_COMPRESSED_RGB_S3TC_DXT1_EXT                      0x83F0
+#define GL_COMPRESSED_RGBA_S3TC_DXT1_EXT                     0x83F1
+#define GL_COMPRESSED_RGBA_S3TC_DXT3_EXT                     0x83F2
+#define GL_COMPRESSED_RGBA_S3TC_DXT5_EXT                     0x83F3
+#endif
+
 //====================================================
 
 #define TEXPREF_NONE			0x0000
