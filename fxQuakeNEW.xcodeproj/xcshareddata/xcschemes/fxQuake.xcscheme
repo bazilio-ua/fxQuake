@@ -113,7 +113,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-game ritual"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-width 960 -height 600"
