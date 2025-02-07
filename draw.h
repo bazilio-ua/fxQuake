@@ -27,7 +27,6 @@ void Draw_AlphaPic (int x, int y, qpic_t *pic, float alpha);
 void Draw_Pic (int x, int y, qpic_t *pic);
 void Draw_SubPic (int x, int y, qpic_t *pic, int srcx, int srcy, int width, int height);
 void Draw_TransPic (int x, int y, qpic_t *pic);
-//void Draw_TransPicTranslate (int x, int y, qpic_t *pic, byte *translation);
 void Draw_TransPicTranslate (int x, int y, qpic_t *pic, int top, int bottom); //johnfitz -- more parameters
 void Draw_ConsoleBackground (int lines);
 void Draw_BeginDisc (void);

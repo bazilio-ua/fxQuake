@@ -452,7 +452,6 @@ void R_UpdateWarpTextures (void)
 
 		// render warp
 		glViewport (glx, gly + glheight - gl_warpimage_size, gl_warpimage_size, gl_warpimage_size);
-//		glViewport (glx, gly, gl_warpimage_size, gl_warpimage_size);
 
 		glMatrixMode (GL_PROJECTION);
 		glLoadIdentity ();
@@ -484,7 +483,6 @@ void R_UpdateWarpTextures (void)
 		// copy to texture
 		GL_BindTexture (tx->warpimage);
 		glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, glx, gly + glheight - gl_warpimage_size, gl_warpimage_size, gl_warpimage_size);
-//		glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, glx, gly, gl_warpimage_size, gl_warpimage_size);
 
 		tx->update_warp = false;
 	}
@@ -1099,11 +1097,9 @@ void R_SkyDrawFaceQuad (glpoly_t *p)
 	float		skyalpha;
 
 	skyalpha = CLAMP(0.0, r_skyalpha.value, 1.0);
-//	if (gl_mtexable && skyalpha >= 1.0)
 	if (skyalpha == 1.0)
 	{
 		GL_BindTexture (solidskytexture);
-//		GL_EnableMultitexture (); // selects TEXTURE1
 		GL_SelectTMU1 ();
 		GL_BindTexture (alphaskytexture);
 		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
@@ -1119,7 +1115,6 @@ void R_SkyDrawFaceQuad (glpoly_t *p)
 		}
 		glEnd ();
 
-//		GL_DisableMultitexture (); // selects TEXTURE0
 		GL_SelectTMU0 ();
 
 		// r_speeds
@@ -1908,7 +1903,6 @@ void R_Bloom_InitTextures (void)
 		;
 
 	// disable blooms if we can't handle a texture of that size
-//	if (screen_texture_width > gl_texture_max_size || screen_texture_height > gl_texture_max_size)
 	if (screen_texture_width > TexMgr_SafeTextureSize(screen_texture_width) || screen_texture_height > TexMgr_SafeTextureSize(screen_texture_height))
 	{
 		screen_texture_width = screen_texture_height = 0;
@@ -1920,11 +1914,11 @@ void R_Bloom_InitTextures (void)
 	mark = Hunk_LowMark ();
 
 	// init the screen texture
-	bloomscreendata = Hunk_Alloc (screen_texture_width * screen_texture_height * 4); //sizeof(int)
+	bloomscreendata = Hunk_Alloc (screen_texture_width * screen_texture_height * 4);
 	bloomscreentexture = TexMgr_LoadTexture (NULL, "bloomscreentexture", screen_texture_width, screen_texture_height, SRC_BLOOM, 
 										 bloomscreendata,
 										 "",
-										 (uintptr_t)bloomscreendata, TEXPREF_BLOOM | TEXPREF_LINEAR /* | TEXPREF_OVERWRITE */ );
+										 (uintptr_t)bloomscreendata, TEXPREF_BLOOM | TEXPREF_LINEAR);
 
 	// validate bloom size
 	if (r_bloom_sample_size.value < 32)
@@ -1941,11 +1935,11 @@ void R_Bloom_InitTextures (void)
 		Cvar_SetValue ("r_bloom_sample_size", bloom_size);
 
 	// init the bloom effect texture
-	bloomeffectdata = Hunk_Alloc (bloom_size * bloom_size * 4); //sizeof(int)
+	bloomeffectdata = Hunk_Alloc (bloom_size * bloom_size * 4);
 	bloomeffecttexture = TexMgr_LoadTexture (NULL, "bloomeffecttexture", bloom_size, bloom_size, SRC_BLOOM, 
 										 bloomeffectdata,
 										 "",
-										 (uintptr_t)bloomeffectdata, TEXPREF_BLOOM | TEXPREF_LINEAR /* | TEXPREF_OVERWRITE */ );
+										 (uintptr_t)bloomeffectdata, TEXPREF_BLOOM | TEXPREF_LINEAR);
 
 	// if screen size is more than 2x the bloom effect texture, set up for stepped downsampling
 	bloomdownsamplingtexture = NULL;
@@ -1954,11 +1948,11 @@ void R_Bloom_InitTextures (void)
 	if ( (glwidth > (bloom_size * 2) || glheight > (bloom_size * 2) ) && !r_bloom_fast_sample.value)
 	{
 		screen_downsampling_texture_size = (int)(bloom_size * 2);
-		bloomdownsamplingdata = Hunk_Alloc (screen_downsampling_texture_size * screen_downsampling_texture_size * 4); //sizeof(int)
+		bloomdownsamplingdata = Hunk_Alloc (screen_downsampling_texture_size * screen_downsampling_texture_size * 4);
 		bloomdownsamplingtexture = TexMgr_LoadTexture (NULL, "bloomdownsamplingtexture", screen_downsampling_texture_size, screen_downsampling_texture_size, SRC_BLOOM, 
 												   bloomdownsamplingdata,
 												   "",
-												   (uintptr_t)bloomdownsamplingdata, TEXPREF_BLOOM | TEXPREF_LINEAR /* | TEXPREF_OVERWRITE */ );
+												   (uintptr_t)bloomdownsamplingdata, TEXPREF_BLOOM | TEXPREF_LINEAR);
 	}
 
 	// init the screen backup texture
@@ -1973,11 +1967,11 @@ void R_Bloom_InitTextures (void)
 		screen_backup_texture_height = bloom_size;
 	}
 
-	bloombackupdata = Hunk_Alloc (screen_backup_texture_width * screen_backup_texture_height * 4); //sizeof(int)
+	bloombackupdata = Hunk_Alloc (screen_backup_texture_width * screen_backup_texture_height * 4);
 	bloombackuptexture = TexMgr_LoadTexture (NULL, "bloombackuptexture", screen_backup_texture_width, screen_backup_texture_height, SRC_BLOOM, 
 										 bloombackupdata,
 										 "",
-										 (uintptr_t)bloombackupdata, TEXPREF_BLOOM | TEXPREF_LINEAR /* | TEXPREF_OVERWRITE */ );
+										 (uintptr_t)bloombackupdata, TEXPREF_BLOOM | TEXPREF_LINEAR);
 
 	Hunk_FreeToLowMark (mark);
 }
@@ -2172,8 +2166,6 @@ void R_Bloom_DownsampleView (void)
 	sample_texture_width = ( bloom_size * sample_texture_coord_width );
 	sample_texture_height = ( bloom_size * sample_texture_coord_height );
 
-//	glDisable (GL_BLEND);
-//	glColor4f (1.0f, 1.0f, 1.0f, 1.0f);
 
 	if (screen_downsampling_texture_size)
 	{
@@ -2250,9 +2242,6 @@ void R_BloomBlend (void)
 	// 
 	glDisable (GL_DEPTH_TEST);
 	glDisable (GL_CULL_FACE);
-//	glEnable (GL_TEXTURE_2D);
-//	glDisable (GL_BLEND);
-//	glColor4f (1.0f, 1.0f, 1.0f, 1.0f);
 
 	//
 	// copy the screen space we'll use to work into the backup texture
