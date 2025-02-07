@@ -87,7 +87,6 @@ char *svc_strings[] =
 
 
 extern vec3_t	v_punchangles[2];
-//extern int	stufftext_frame;
 
 qboolean warn_about_nehahra_protocol; //johnfitz
 
@@ -626,10 +625,8 @@ void CL_ParseUpdate (int bits)
 		else
 		{
 			ent->fullbright = 0;
-//			ent->alpha = ENTALPHA_DEFAULT;
 			ent->alpha = ent->baseline.alpha;
 		}
-//		ent->scale = ENTSCALE_DEFAULT;
 		ent->scale = ent->baseline.scale;
 	}
 	//johnfitz
@@ -1135,9 +1132,6 @@ void CL_ParseServerMessage (void)
 			break;
 			
 		case svc_stufftext:
-//			stufftext_frame = host_framecount; // Pa3PyX: allow full frame update on stuff messages.
-//			Cbuf_AddText (MSG_ReadString (net_message));
-			
 			// ericw -- hack - only wait for the full frame update if the stufftext
 			// contains "reconnect". some mods, e.g. honey, send stufftext every frame;
 			// if we were to set cls.stufftext_frame every frame, that would break

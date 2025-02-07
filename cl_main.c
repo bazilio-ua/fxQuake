@@ -206,8 +206,6 @@ An svc_signonnum has been received, perform a client side setup
 */
 void CL_SignonReply (void)
 {
-//	char 	str[100 + MAX_MAPSTRING];
-
 	Con_DPrintf ("CL_SignonReply: %i\n", cls.signon);
 
 	switch (cls.signon)
@@ -225,8 +223,6 @@ void CL_SignonReply (void)
 		MSG_WriteString (&cls.message, va("color %i %i\n", ((int)cl_color.value)>>4, ((int)cl_color.value)&15));
 	
 		MSG_WriteByte (&cls.message, clc_stringcmd);
-//		sprintf (str, "spawn %s", cls.spawnparms);
-//		MSG_WriteString (&cls.message, str);
 		MSG_WriteString (&cls.message, va("spawn %s", cls.spawnparms));
 		break;
 		
@@ -287,8 +283,6 @@ dlight_t *CL_AllocDlight (int key)
 			// reuse this light
 				memset (dl, 0, sizeof(*dl));
 				dl->key = key;
-//				dl->color[0] = dl->color[1] = dl->color[2] = 1.0; // lit support via lordhavoc
-//				dl->colored = false;
 				return dl;
 			}
 		}
@@ -301,8 +295,6 @@ dlight_t *CL_AllocDlight (int key)
 		{
 			memset (dl, 0, sizeof(*dl));
 			dl->key = key;
-//			dl->color[0] = dl->color[1] = dl->color[2] = 1.0; // lit support via lordhavoc
-//			dl->colored = false;
 			return dl;
 		}
 	}
@@ -311,8 +303,6 @@ dlight_t *CL_AllocDlight (int key)
 	dl = &cl_dlights[0];
 	memset (dl, 0, sizeof(*dl));
 	dl->key = key;
-//	dl->color[0] = dl->color[1] = dl->color[2] = 1.0; // lit support via lordhavoc
-//	dl->colored = false;
 	return dl;
 }
 
@@ -329,14 +319,9 @@ void CL_WhiteDlight (dlight_t *dl)
 
 void CL_ColorDlight (dlight_t *dl, float r, float g, float b)
 {
-// leave dlight with white value it had at allocation
-//	if (!cl_coloredlight.value)
-//		return;
-
 	dl->color[0] = r;
 	dl->color[1] = g;
 	dl->color[2] = b;
-//	dl->colored = true;
 
 	if (!cl_coloredlight.value)
 		CL_WhiteDlight (dl);
@@ -346,15 +331,10 @@ void CL_ColorDlightPalette (dlight_t *dl, int i)
 {
 	byte	*rgb;
 	
-// leave dlight with white value it had at allocation
-//	if (!cl_coloredlight.value)
-//		return;
-	
 	rgb = (byte *)&d_8to24table[i];
 	dl->color[0] = rgb[0] * (1.0 / 255.0);
 	dl->color[1] = rgb[1] * (1.0 / 255.0);
 	dl->color[2] = rgb[2] * (1.0 / 255.0);
-//	dl->colored = true;
 	
 	if (!cl_coloredlight.value)
 		CL_WhiteDlight (dl);
@@ -365,16 +345,11 @@ void CL_ColorDlightPaletteLength (dlight_t *dl, int start, int length)
 	int 	i;
 	byte	*rgb;
 	
-// leave dlight with white value it had at allocation
-//	if (!cl_coloredlight.value)
-//		return;
-	
 	i = (start + (rand() % length));
 	rgb = (byte *)&d_8to24table[i];
 	dl->color[0] = rgb[0] * (1.0 / 255.0);
 	dl->color[1] = rgb[1] * (1.0 / 255.0);
 	dl->color[2] = rgb[2] * (1.0 / 255.0);
-//	dl->colored = true;
 	
 	if (!cl_coloredlight.value)
 		CL_WhiteDlight (dl);
