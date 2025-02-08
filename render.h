@@ -123,7 +123,6 @@ extern	entity_t r_worldentity;
 
 void R_Init (void);
 void R_InitTextures (void);
-//void R_LoadPalette (void);
 void R_InitEfrags (void);
 void R_SndExtraUpdate (void);
 void R_RenderView (void);		// must set r_refdef first

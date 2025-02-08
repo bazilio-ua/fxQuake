@@ -291,7 +291,6 @@ void Host_ClearMemory (void);
 void Host_ServerFrame (void);
 void Host_InitFileList (void);
 void Host_InitCommands (void);
-//void Host_Init (quakeparms_t *parms);
 void Host_Init (void);
 void Host_Shutdown(void);
 void Host_Error (char *error, ...);

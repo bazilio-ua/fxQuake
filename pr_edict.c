@@ -1016,7 +1016,6 @@ void ED_LoadFromFile (char *data)
 		}
 
 	// look for the spawn function
-//		func = ED_FindFunction (PR_GetString(ent->v.classname));
 		func = ED_FindFunction (classname);
 
 		if (!func)

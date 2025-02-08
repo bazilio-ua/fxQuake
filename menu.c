@@ -126,37 +126,9 @@ void M_DrawPic (int x, int y, qpic_t *pic)
 	Draw_Pic (x + ((vid.width - 320)>>1), y, pic);
 }
 
-//byte identityTable[256];
-//byte translationTable[256];
-//
-//void M_BuildTranslationTable(int top, int bottom)
-//{
-//	int		j;
-//	byte	*dest, *source;
-//
-//	for (j = 0; j < 256; j++)
-//		identityTable[j] = j;
-//	dest = translationTable;
-//	source = identityTable;
-//	memcpy (dest, source, 256);
-//
-//	if (top < 128)	// the artists made some backwards ranges.  sigh.
-//		memcpy (dest + TOP_RANGE, source + top, 16);
-//	else
-//		for (j=0 ; j<16 ; j++)
-//			dest[TOP_RANGE+j] = source[top+15-j];
-//
-//	if (bottom < 128)
-//		memcpy (dest + BOTTOM_RANGE, source + bottom, 16);
-//	else
-//		for (j=0 ; j<16 ; j++)
-//			dest[BOTTOM_RANGE+j] = source[bottom+15-j];
-//}
-
 
 void M_DrawTransPicTranslate (int x, int y, qpic_t *pic, int top, int bottom) //johnfitz -- more parameters
 {
-//	Draw_TransPicTranslate (x + ((vid.width - 320)>>1), y, pic, translationTable);
 	Draw_TransPicTranslate (x + ((vid.width - 320)>>1), y, pic, top, bottom);
 }
 
@@ -255,7 +227,6 @@ void M_ToggleMenu_f (void)
 		{
 			M_Menu_Main_f ();
 		}
-//		M_Menu_Main_f ();
 	}
 }
 
@@ -725,7 +696,6 @@ void M_Setup_Draw (void)
 	p = Draw_CachePic ("gfx/bigbox.lmp");
 	M_DrawTransPic (160, 64, p);
 	p = Draw_CachePic ("gfx/menuplyr.lmp");
-//	M_BuildTranslationTable(setup_top*16, setup_bottom*16);
 	M_DrawTransPicTranslate (172, 72, p, setup_top, setup_bottom);
 
 	M_DrawCharacter (56, setup_cursor_table [setup_cursor], 12+((int)(realtime*4)&1));
@@ -836,16 +806,7 @@ forward:
 			}
 		}
 	}
-/*
-	if (setup_top > 13)
-		setup_top = 0;
-	if (setup_top < 0)
-		setup_top = 13;
-	if (setup_bottom > 13)
-		setup_bottom = 0;
-	if (setup_bottom < 0)
-		setup_bottom = 13;
-*/
+	
 	//use CLAMP
 	setup_top = CLAMP(0, setup_top, 13);
 	setup_bottom = CLAMP(0, setup_bottom, 13);
