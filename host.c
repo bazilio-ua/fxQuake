@@ -843,7 +843,6 @@ void Host_Frame (double time)
 Host_Init
 ====================
 */
-//void Host_Init (quakeparms_t *parms)
 void Host_Init (void)
 {
 	if (standard_quake)
@@ -853,8 +852,6 @@ void Host_Init (void)
 
 	if (COM_CheckParm ("-minmemory"))
 		host_parms->memsize = minimum_memory;
-
-//	host_parms = *parms;
 
 	if (host_parms->memsize < minimum_memory)
 		Sys_Error ("Only %4.1f megs of memory available, can't execute game", host_parms->memsize / (float)0x100000);
@@ -886,7 +883,6 @@ void Host_Init (void)
 	SV_Init ();
 
 	R_InitTextures ();		// needed even for dedicated servers
-//	R_LoadPalette ();
 	Host_LoadPalettes ();
  
 	if (cls.state != ca_dedicated)

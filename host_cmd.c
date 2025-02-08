@@ -115,25 +115,6 @@ test error shutdown procedures
 */
 void Host_Sys_Error_f (void)
 {
-//    if (cmd_source == src_command)
-//    {
-//        Cmd_ForwardToServer ();
-//        return;
-//    }
-    
-//    if (pr_global_struct->deathmatch || pr_global_struct->coop)
-//        return;
-//    
-//    if (!developer.value)
-//        return;
-    
-//    if (Cmd_Argc() == 1)
-//    {
-//        Con_Printf ("specify a message, please\n");
-//        Con_Printf ("error <\"message\">\n");
-//        return;
-//    }
-    
     Sys_Error (Cmd_Argv(1));
 }
 
@@ -1134,8 +1115,6 @@ void Host_Loadgame_f (void)
 		{	// parse an edict
 
 			ent = EDICT_NUM(entnum);
-//			memset (&ent->v, 0, progs->entityfields * 4);
-//			ent->free = false;
 			// TODO: make savestate load patch
 			ED_ClearEdict (ent);
 			ent->baseline.scale = ENTSCALE_DEFAULT;

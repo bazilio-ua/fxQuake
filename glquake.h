@@ -305,8 +305,6 @@ void GL_Set2D (void);
 void GL_SelectTexture (GLenum target);
 void GL_BindTexture (gltexture_t *texture);
 void GL_DeleteTexture (gltexture_t *texture);
-//void GL_DisableMultitexture (void);
-//void GL_EnableMultitexture (void);
 void GL_SelectTMU0 (void);
 void GL_SelectTMU1 (void);
 void GL_SelectTMU2 (void);
