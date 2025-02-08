@@ -64,10 +64,10 @@ static const byte scantokey[128] =
 };
 
 /*
- ===========
- IN_ActivateMouse
- ===========
- */
+===========
+IN_ActivateMouse
+===========
+*/
 void IN_ActivateMouse (void)
 {
 	if (mouse_available && !mouse_active)
@@ -102,10 +102,10 @@ void IN_ActivateMouse (void)
 }
 
 /*
- ===========
- IN_DeactivateMouse
- ===========
- */
+===========
+IN_DeactivateMouse
+===========
+*/
 void IN_DeactivateMouse (void)
 {
     if (mouse_available && mouse_active)
