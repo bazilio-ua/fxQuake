@@ -150,7 +150,6 @@ R_RenderDlight
 
 =============
 */
-//vec3_t	bubblecolor = {1.0, 0.5, 0.0};
 void R_RenderDlight (dlight_t *light)
 {
 	int		i, j;
@@ -161,9 +160,6 @@ void R_RenderDlight (dlight_t *light)
 	if (!gl_flashblend.value)
 		return;
 	
-	
-	
-//	VectorCopy (light->colored ? light->color : bubblecolor, color);
 	VectorCopy (light->color, color);
 	rad = light->radius * 0.1 * CLAMP(1.0, gl_flashblendscale.value, 16.0); // (orig. 0.35) reduce the bubble size so that it coexists more peacefully with proper light
 	
@@ -174,8 +170,6 @@ void R_RenderDlight (dlight_t *light)
 			V_AddLightBlend (color[0], color[1], color[2], light->radius * 0.0003);
 		return;
 	}
-	
-	
 	
 	glDepthMask (GL_FALSE); // don't bother writing Z	
 	glDisable (GL_TEXTURE_2D);
@@ -210,8 +204,6 @@ void R_RenderDlight (dlight_t *light)
 	glEnable (GL_TEXTURE_2D);
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glDepthMask (GL_TRUE); // back to normal Z buffering
-	
-	
 }
 
 /*

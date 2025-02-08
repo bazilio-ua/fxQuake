@@ -71,8 +71,6 @@ cvar_t	r_fullbright = {"r_fullbright","0", CVAR_NONE};
 cvar_t	r_ambient = { "r_ambient","0", CVAR_NONE};
 cvar_t	r_wateralpha = {"r_wateralpha","1", CVAR_ARCHIVE};
 cvar_t	r_lockalpha = {"r_lockalpha","0", CVAR_ARCHIVE};
-//cvar_t	r_lavafog = {"r_lavafog","0.5", CVAR_ARCHIVE};
-//cvar_t	r_slimefog = {"r_slimefog","0.8", CVAR_ARCHIVE};
 cvar_t	r_lavaalpha = {"r_lavaalpha","1", CVAR_ARCHIVE};
 cvar_t	r_slimealpha = {"r_slimealpha","1", CVAR_ARCHIVE};
 cvar_t	r_teleportalpha = {"r_teleportalpha","1", CVAR_ARCHIVE};
@@ -270,22 +268,16 @@ qboolean R_CullModelForEntity (entity_t *e)
 
 	if (e->angles[0] || e->angles[2]) // pitch or roll
 	{
-//		VectorAdd (e->origin, e->model->rmins, mins);
-//		VectorAdd (e->origin, e->model->rmaxs, maxs);
 		minbounds = e->model->rmins;
 		maxbounds = e->model->rmaxs;
 	}
 	else if (e->angles[1]) // yaw
 	{
-//		VectorAdd (e->origin, e->model->ymins, mins);
-//		VectorAdd (e->origin, e->model->ymaxs, maxs);
 		minbounds = e->model->ymins;
 		maxbounds = e->model->ymaxs;
 	}
 	else // no rotation
 	{
-//		VectorAdd (e->origin, e->model->mins, mins);
-//		VectorAdd (e->origin, e->model->maxs, maxs);
 		minbounds = e->model->mins;
 		maxbounds = e->model->maxs;
 	}
@@ -443,7 +435,6 @@ void R_DrawSpriteModel (entity_t *e)
 		return;
 	}
 
-//	GL_DisableMultitexture (); // selects TEXTURE0
 	GL_SelectTMU0 ();
 	GL_BindTexture (frame->gltexture);
 
@@ -472,29 +463,21 @@ void R_DrawSpriteModel (entity_t *e)
 	glBegin (GL_QUADS);
 
 	glTexCoord2f (0, 1);
-//	VectorMA (e->origin, frame->down, s_up, point);
-//	VectorMA (point, frame->left, s_right, point);
 	VectorMA (e->origin, frame->down * scale, s_up, point);
 	VectorMA (point, frame->left * scale, s_right, point);
 	glVertex3fv (point);
 
 	glTexCoord2f (0, 0);
-//	VectorMA (e->origin, frame->up, s_up, point);
-//	VectorMA (point, frame->left, s_right, point);
 	VectorMA (e->origin, frame->up * scale, s_up, point);
 	VectorMA (point, frame->left * scale, s_right, point);
 	glVertex3fv (point);
 
 	glTexCoord2f (1, 0);
-//	VectorMA (e->origin, frame->up, s_up, point);
-//	VectorMA (point, frame->right, s_right, point);
 	VectorMA (e->origin, frame->up * scale, s_up, point);
 	VectorMA (point, frame->right * scale, s_right, point);
 	glVertex3fv (point);
 
 	glTexCoord2f (1, 1);
-//	VectorMA (e->origin, frame->down, s_up, point);
-//	VectorMA (point, frame->right, s_right, point);
 	VectorMA (e->origin, frame->down * scale, s_up, point);
 	VectorMA (point, frame->right * scale, s_right, point);
 	glVertex3fv (point);
@@ -642,7 +625,6 @@ void R_DrawAliasModel (entity_t *e)
 	// set up for alpha blending
 	//
 	aliasalpha = ENTALPHA_DECODE(e->alpha);
-
 //	aliasalpha = 0.5f; // test
 	
     alphatest = !!(e->model->flags & MF_HOLEY);
@@ -658,20 +640,11 @@ void R_DrawAliasModel (entity_t *e)
 	{
 		glDepthMask (GL_FALSE);
 		glEnable (GL_BLEND);
-//		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 	else
 	if (alphatest)
 		glEnable (GL_ALPHA_TEST);
 	
-	
-//	if (aliasalpha < 1.0)
-//	{
-//		glDepthMask (GL_FALSE);
-//		glEnable (GL_BLEND);
-//	} else if (alphatest)
-//		glEnable (GL_ALPHA_TEST);
-
 	//
 	// set up lighting
 	//
@@ -787,103 +760,7 @@ void R_DrawAliasModel (entity_t *e)
 	glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 	
 	
-/*
-	if (gl_mtexable && gl_texture_env_combine && gl_texture_env_add && fb) // case 1: everything in one pass
-	{
-		// Binds normal skin to texture env 0
-		GL_DisableMultitexture (); // selects TEXTURE0
-		GL_BindTexture (tx);
-		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_EXT);
-		glTexEnvf (GL_TEXTURE_ENV, GL_COMBINE_RGB_EXT, GL_MODULATE);
-		glTexEnvf (GL_TEXTURE_ENV, GL_SOURCE0_RGB_EXT, GL_TEXTURE);
-		glTexEnvf (GL_TEXTURE_ENV, GL_SOURCE1_RGB_EXT, GL_PRIMARY_COLOR_EXT);
-		glTexEnvf (GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, d_overbrightscale);
-
-		// Binds fullbright skin to texture env 1
-		GL_EnableMultitexture (); // selects TEXTURE1
-		GL_BindTexture (fb);
-		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_ADD);
-		glEnable (GL_BLEND);
-		GL_DrawAliasFrame (paliashdr, lerpdata); // FX
-		glDisable (GL_BLEND);
-		GL_DisableMultitexture (); // selects TEXTURE0
-		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-	}
-	else if (gl_texture_env_combine) // case 2: overbright in one pass, then fullbright pass
-	{
-		// first pass
-		GL_BindTexture (tx);
-		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_EXT);
-		glTexEnvf (GL_TEXTURE_ENV, GL_COMBINE_RGB_EXT, GL_MODULATE);
-		glTexEnvf (GL_TEXTURE_ENV, GL_SOURCE0_RGB_EXT, GL_TEXTURE);
-		glTexEnvf (GL_TEXTURE_ENV, GL_SOURCE1_RGB_EXT, GL_PRIMARY_COLOR_EXT);
-		glTexEnvf (GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, d_overbrightscale);
-		GL_DrawAliasFrame (paliashdr, lerpdata); // FX
-		glTexEnvf (GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, 1.0f);
-		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-
-		// second pass
-		if (fb)
-		{
-			GL_BindTexture (fb);
-			glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-			glEnable (GL_BLEND);
-			glBlendFunc (GL_ONE, GL_ONE);
-			glDepthMask (GL_FALSE);
-			shading = false;
-			glColor3f (aliasalpha, aliasalpha, aliasalpha);
-			R_FogStartAdditive ();
-			GL_DrawAliasFrame (paliashdr, lerpdata); // FX
-			R_FogStopAdditive ();
-			glDepthMask (GL_TRUE);
-			glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-			glDisable (GL_BLEND);
-			glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-		}
-	}
-	else // case 3: overbright in two passes, then fullbright pass
-	{
-		// first pass
-		GL_BindTexture (tx);
-		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-		GL_DrawAliasFrame (paliashdr, lerpdata); // FX
-
-		// second pass -- additive with black fog, to double the object colors but not the fog color
-		glEnable (GL_BLEND);
-		glBlendFunc (GL_ONE, GL_ONE);
-		glDepthMask (GL_FALSE);
-		R_FogStartAdditive ();
-		GL_DrawAliasFrame (paliashdr, lerpdata); // FX
-		R_FogStopAdditive ();
-		glDepthMask (GL_TRUE);
-		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glDisable (GL_BLEND);
-
-		// third pass
-		if (fb)
-		{
-			GL_BindTexture (fb);
-			glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-			glEnable (GL_BLEND);
-			glBlendFunc (GL_ONE, GL_ONE);
-			glDepthMask (GL_FALSE);
-			shading = false;
-			glColor3f (aliasalpha, aliasalpha, aliasalpha);
-			R_FogStartAdditive ();
-			GL_DrawAliasFrame (paliashdr, lerpdata); // FX
-			R_FogStopAdditive ();
-			glDepthMask (GL_TRUE);
-			glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-			glDisable (GL_BLEND);
-			glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-		}
-	}
-*/
- 
- 
 cleanup:
-//	glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 	glHint (GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST); // gl_affinemodels
 	glShadeModel (GL_FLAT); // gl_smoothmodels
 	
@@ -903,11 +780,6 @@ cleanup:
 		glEnable (GL_TEXTURE_2D);
 	}
 	
-//	glDepthMask (GL_TRUE);
-//	glDisable (GL_BLEND);
-//	if (alphatest)
-//		glDisable (GL_ALPHA_TEST);
-//	glColor3f (1, 1, 1);
 	
 	glPopMatrix ();
 }
@@ -1015,15 +887,8 @@ void R_PolyBlend (void)
 {
 	float gamma = CLAMP(0.0, gl_gammablend.value, 1.0);
 	
-//	if (!gl_polyblend.value)
-//		return;
-//
-//	if (!v_blend[3])
-//		return;
-	
 	if ((gl_polyblend.value && v_blend[3]) || gamma < 1.0)
 	{
-//		GL_DisableMultitexture (); // selects TEXTURE0
 		GL_SelectTMU0 ();
 		
 //		glDisable (GL_ALPHA_TEST); //FX don't disable perform alpha test here, because bloom later
@@ -1063,15 +928,6 @@ void R_PolyBlend (void)
 			
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		}
-		
-//		glColor4fv (v_blend);
-//		
-//		glBegin (GL_QUADS);
-//		glVertex2f (0, 0);
-//		glVertex2f (1, 0);
-//		glVertex2f (1, 1);
-//		glVertex2f (0, 1);
-//		glEnd ();
 		
 		glDisable (GL_BLEND);
 		glEnable (GL_DEPTH_TEST);
@@ -1287,7 +1143,6 @@ void R_RenderView (void)
 
 	if (r_speeds.value)
 	{
-//		glFinish ();
 		time1 = Sys_DoubleTime ();
 	}
 
@@ -1335,7 +1190,6 @@ void R_RenderView (void)
 
 	if (r_speeds.value)
 	{
-//		glFinish ();
 		time2 = Sys_DoubleTime ();
 		ms = 1000 * (time2 - time1);
 
@@ -1369,10 +1223,12 @@ R_RotateForEntity renamed and modified to take lerpdata instead of pointer to en
 void GL_EntityTransform (lerpdata_t lerpdata, byte scale)
 {
 	float scalefactor = ENTSCALE_DECODE(scale);
+	
 	glTranslatef (lerpdata.origin[0], lerpdata.origin[1], lerpdata.origin[2]);
 	glRotatef (lerpdata.angles[1],  0, 0, 1);
 	glRotatef (stupidquakebugfix ? lerpdata.angles[0] : -lerpdata.angles[0],  0, 1, 0);
 	glRotatef (lerpdata.angles[2],  1, 0, 0);
+	
 	if (scalefactor != 1.0f)
 		glScalef(scalefactor, scalefactor, scalefactor);
 }
@@ -1440,18 +1296,11 @@ void GL_DrawAliasFrame (aliashdr_t *paliashdr, lerpdata_t lerpdata)
 			// texture coordinates come from the draw list
 			u = ((float *)commands)[0];
 			v = ((float *)commands)[1];
-
-//			if (mtexenabled)
-			{
-				qglMultiTexCoord2f (GL_TEXTURE0_ARB, u, v);
-				if (aliasglow)
-					qglMultiTexCoord2f (GL_TEXTURE2_ARB, u, v);
-			}
-//			else
-//			{
-//				glTexCoord2f (u, v);
-//			}
-
+			
+			qglMultiTexCoord2f (GL_TEXTURE0_ARB, u, v);
+			if (aliasglow)
+				qglMultiTexCoord2f (GL_TEXTURE2_ARB, u, v);
+			
 			commands += 2;
 
 			// normals and vertexes come from the frame list

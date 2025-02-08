@@ -343,7 +343,6 @@ void R_MakeAliasModelDisplayLists (model_t *m, aliashdr_t *hdr)
 	cmds = Hunk_AllocName (numcommands * 4, "cmds");
 	paliashdr->commands = (byte *)cmds - (byte *)paliashdr;
     
-//	memcpy (cmds, commands, numcommands * 4);
 
     //johnfitz -- precompute texcoords for padded skins
 	loadcmds = commands;

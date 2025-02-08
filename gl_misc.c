@@ -45,102 +45,6 @@ void R_InitTextures (void)
 	notexture_mip2->height = notexture_mip2->width = 16;
 }
 
-/*
-===============
-R_LoadPalette
-===============
-*/
-//void R_LoadPalette (void)
-//{
-//	byte *pal, *src, *dst;
-//	int i;
-//
-//	host_basepal = COM_LoadHunkFile ("gfx/palette.lmp", NULL);
-//	if (!host_basepal)
-//		Sys_Error ("R_LoadPalette: couldn't load gfx/palette.lmp");
-//    host_colormap = COM_LoadHunkFile ("gfx/colormap.lmp", NULL);
-//    if (!host_colormap)
-//        Sys_Error ("R_LoadPalette: couldn't load gfx/colormap.lmp");
-//
-//	pal = host_basepal;
-//
-//	//
-//	//standard palette, 255 is transparent
-//	//
-//	dst = (byte *)d_8to24table;
-//	src = pal;
-//	for (i=0; i<256; i++)
-//	{
-//		dst[0] = *src++;
-//		dst[1] = *src++;
-//		dst[2] = *src++;
-//		dst[3] = 255;
-//		dst += 4;
-//	}
-//	((byte *)&d_8to24table[255])[3] = 0;
-//
-//	//
-//	//fullbright palette, 0-223 are black (for additive blending)
-//	//
-//	src = pal + 224*3;
-//	dst = (byte *)&d_8to24table_fbright[224];
-//	for (i=224; i<256; i++)
-//	{
-//		dst[0] = *src++;
-//		dst[1] = *src++;
-//		dst[2] = *src++;
-//		dst[3] = 255;
-//		dst += 4;
-//	}
-//	for (i=0; i<224; i++)
-//	{
-//		dst = (byte *)&d_8to24table_fbright[i];
-//		dst[0] = 0;
-//		dst[1] = 0;
-//		dst[2] = 0;
-//		dst[3] = 255;
-//	}
-//
-//	//
-//	//nobright palette, 224-255 are black (for additive blending)
-//	//
-//	dst = (byte *)d_8to24table_nobright;
-//	src = pal;
-//	for (i=0; i<256; i++)
-//	{
-//		dst[0] = *src++;
-//		dst[1] = *src++;
-//		dst[2] = *src++;
-//		dst[3] = 255;
-//		dst += 4;
-//	}
-//	for (i=224; i<256; i++)
-//	{
-//		dst = (byte *)&d_8to24table_nobright[i];
-//		dst[0] = 0;
-//		dst[1] = 0;
-//		dst[2] = 0;
-//		dst[3] = 255;
-//	}
-//
-//	//
-//	//fullbright palette, for fence textures
-//	//
-//	memcpy(d_8to24table_fbright_fence, d_8to24table_fbright, 256*4);
-//	d_8to24table_fbright_fence[255] = 0; // alpha of zero
-//
-//	//
-//	//nobright palette, for fence textures
-//	//
-//	memcpy(d_8to24table_nobright_fence, d_8to24table_nobright, 256*4);
-//	d_8to24table_nobright_fence[255] = 0; // alpha of zero	
-//	
-//	//
-//	//conchars palette, 0 and 255 are transparent
-//	//
-//	memcpy(d_8to24table_conchars, d_8to24table, 256*4);
-//	((byte *)&d_8to24table_conchars[0])[3] = 0;
-//}
 
 /*
 ====================
@@ -185,14 +89,11 @@ GL_Overbright
 */
 void GL_Overbright (void)
 {
-//	if (gl_mtexable && gl_texture_env_combine && gl_texture_env_add)
-//	{
-		float m;
-		
-		d_overbright = CLAMP(0.0, gl_overbright.value, 2.0);
-		m = d_overbright > 0 ? d_overbright : 0.5f;
-		d_overbrightscale = OVERBRIGHT_SCALE * m;
-//	}
+	float m;
+	
+	d_overbright = CLAMP(0.0, gl_overbright.value, 2.0);
+	m = d_overbright > 0 ? d_overbright : 0.5f;
+	d_overbrightscale = OVERBRIGHT_SCALE * m;
 	
 	// Refresh lightmaps
 	R_RebuildAllLightmaps ();
@@ -222,8 +123,6 @@ void R_Init (void)
 	Cvar_RegisterVariable (&r_waterquality);
 	Cvar_RegisterVariable (&r_wateralpha);
 	Cvar_RegisterVariable (&r_lockalpha);
-//	Cvar_RegisterVariable (&r_lavafog);
-//	Cvar_RegisterVariable (&r_slimefog);
 	Cvar_RegisterVariable (&r_lavaalpha);
 	Cvar_RegisterVariable (&r_slimealpha);
 	Cvar_RegisterVariable (&r_teleportalpha);
@@ -290,19 +189,12 @@ void R_Init (void)
 R_InitTranslatePlayerTextures
 ===============
 */
-//static int oldtop[MAX_SCOREBOARD]; 
-//static int oldbottom[MAX_SCOREBOARD];
-//static int oldskinnum[MAX_SCOREBOARD];
 void R_InitTranslatePlayerTextures (void)
 {
 	int i;
 
 	for (i = 0; i < MAX_SCOREBOARD; i++)
 	{
-//		oldtop[i] = -1;
-//		oldbottom[i] = -1;
-//		oldskinnum[i] = -1;
-
 		playertextures[i] = NULL; //clear playertexture pointers
 	}
 }
@@ -337,19 +229,12 @@ added bug fix from Bengt Jardrup
 */
 void R_TranslateNewPlayerSkin (int playernum)
 {
-//	int		top, bottom;
-//	byte	translate[256];
-//	int		i, size;
 	entity_t	*e;
 	model_t	*model;
 	aliashdr_t	*paliashdr;
 	int		skinnum;
-//	byte	*original;
-//	byte	*src, *dst; 
-//	byte	*pixels = NULL;
 	byte	*pixels;
 	char	name[64];
-//	int 	mark;
 
 	//
 	// locate the original skin pixels
@@ -364,46 +249,9 @@ void R_TranslateNewPlayerSkin (int playernum)
 
 	paliashdr = (aliashdr_t *)Mod_Extradata (model);
 
-//	top = cl.scores[playernum].colors & 0xf0;
-//	bottom = (cl.scores[playernum].colors &15)<<4;
-
-//	if (!strcmp (e->model->name, "progs/player.mdl"))
-//	{
-//		if (top == oldtop[playernum] && bottom == oldbottom[playernum] && e->skinnum == oldskinnum[playernum])
-//			return; // translate if only player change his color
-//	}
-//	else
-//	{
-//		oldtop[playernum] = -1;
-//		oldbottom[playernum] = -1;
-//		oldskinnum[playernum] = -1;
-//		goto skip;
-//	}
-//
-//	oldtop[playernum] = top;
-//	oldbottom[playernum] = bottom;
-//	oldskinnum[playernum] = e->skinnum;
-//
-//skip:
-//	for (i=0 ; i<256 ; i++)
-//		translate[i] = i;
-//
-//	for (i=0 ; i<16 ; i++)
-//	{
-//		if (top < 128)	// the artists made some backwards ranges.  sigh.
-//			translate[TOP_RANGE+i] = top+i;
-//		else
-//			translate[TOP_RANGE+i] = top+15-i;
-//
-//		if (bottom < 128)
-//			translate[BOTTOM_RANGE+i] = bottom+i;
-//		else
-//			translate[BOTTOM_RANGE+i] = bottom+15-i;
-//	}
 
 	skinnum = e->skinnum;
 	if (skinnum >= paliashdr->numskins || skinnum < 0)
-//	if (skinnum < 0 || skinnum >= paliashdr->numskins)
 	{
 		Con_DWarning ("R_TranslateNewPlayerSkin: (%d): Invalid player skin # %d (%d skins) in '%s'\n", playernum, skinnum, paliashdr->numskins, model->name);
 		skinnum = 0;
@@ -412,43 +260,11 @@ void R_TranslateNewPlayerSkin (int playernum)
 // get correct texture pixels
 	pixels = (byte *)paliashdr + paliashdr->texels[skinnum]; // This is not a persistent place!
 
-//	if (e->skinnum < 0 || e->skinnum >= paliashdr->numskins)
-//		original = (byte *)paliashdr + paliashdr->texels[0];
-//	else
-//		original = (byte *)paliashdr + paliashdr->texels[e->skinnum];
-//
-//	mark = Hunk_LowMark ();
-
-	//
-	// translate texture
-	//
-//	sprintf (name, "%s_%i_%i", e->model->name, e->skinnum, playernum);
-//	size = paliashdr->skinwidth * paliashdr->skinheight;
-
-	// allocate dynamic memory
-//	pixels = Hunk_Alloc (size);
-//
-//	dst = pixels;
-//	src = original;
-//
-//	for (i=0; i<size; i++)
-//		*dst++ = translate[*src++];
-//
-//	original = pixels;
-
 // upload new image
-//	playertextures[playernum] = TexMgr_LoadTexture (e->model, name, paliashdr->skinwidth, paliashdr->skinheight, SRC_INDEXED, original, "", (uintptr_t)original, TEXPREF_PAD | TEXPREF_OVERWRITE);
-
 	sprintf (name, "%s_%i_%i", e->model->name, skinnum, playernum);
 	playertextures[playernum] = TexMgr_LoadTexture (e->model, name, paliashdr->skinwidth, paliashdr->skinheight, SRC_INDEXED, pixels,
 												paliashdr->gltexture[skinnum][0]->source_file,
 												paliashdr->gltexture[skinnum][0]->source_offset, TEXPREF_PAD | TEXPREF_OVERWRITE);
-
-//	playertextures[playernum]->top_color = top;
-//	playertextures[playernum]->bottom_color = bottom;
-
-	// free allocated memory
-//	Hunk_FreeToLowMark (mark);
 
 // now recolor it
 	R_TranslatePlayerSkin (playernum);
@@ -510,7 +326,6 @@ void R_TimeRefresh_f (void)
 
 		r_refdef.viewangles[1] = i/128.0*360.0;
 		R_RenderView ();
-//		glFinish ();
 
 // workaround to avoid flickering uncovered by 3d refresh 2d areas when bloom enabled
 		GL_Set2D ();  

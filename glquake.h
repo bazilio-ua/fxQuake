@@ -22,9 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #if defined __APPLE__ && defined __MACH__
 #include <OpenGL/OpenGL.h>
 #include <OpenGL/gl.h>
-//#ifndef GL_EXT_abgr
 #include <OpenGL/glext.h>
-//#endif
 #include <dlfcn.h>
 #else
 
@@ -140,7 +138,6 @@ void (GLAPIENTRY *qglClientActiveTexture) (GLenum);
 #define GL_OPERAND2_ALPHA_ARB                                0x859A
 #endif
 
-//extern qboolean mtexenabled;
 
 extern const char *gl_vendor;
 extern const char *gl_renderer;
@@ -152,15 +149,12 @@ extern const char *glx_extensions;
 
 extern qboolean fullsbardraw;
 extern qboolean isIntel; // intel video workaround
-//extern qboolean gl_mtexable;
-//extern qboolean gl_texture_env_combine;
-//extern qboolean gl_texture_env_add;
+
 extern qboolean gl_texture_NPOT;
 extern qboolean gl_texture_compression;
 extern int		gl_stencilbits;
 
 extern GLint gl_hardware_max_size;
-//extern int gl_texture_max_size;
 
 extern int gl_warpimage_size;
 
@@ -303,7 +297,6 @@ void TexMgr_FreeTexturesForOwner (model_t *owner);
 void TexMgr_ReloadTexture (gltexture_t *glt);
 void TexMgr_ReloadTextureTranslation (gltexture_t *glt, int top, int bottom);
 void TexMgr_ReloadTextures (void);
-//void GL_ReloadTextures_f (void);
 gltexture_t *TexMgr_LoadTexture (model_t *owner, char *name, int width, int height, enum srcformat format, byte *data, char *source_file, uintptr_t source_offset, unsigned flags);
 gltexture_t *TexMgr_FindTexture (model_t *owner, char *name);
 gltexture_t *TexMgr_NewTexture (void);
@@ -523,8 +516,6 @@ extern	cvar_t	r_flatturb;
 extern	cvar_t	r_waterquality;
 extern	cvar_t	r_wateralpha;
 extern	cvar_t	r_lockalpha;
-//extern	cvar_t	r_lavafog;
-//extern	cvar_t	r_slimefog;
 extern	cvar_t	r_lavaalpha;
 extern	cvar_t	r_slimealpha;
 extern	cvar_t	r_teleportalpha;

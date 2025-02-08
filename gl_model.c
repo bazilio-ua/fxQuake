@@ -407,9 +407,6 @@ static qboolean Mod_HasFullbrights (byte *pixels, int size)
 	for (i=0 ; i<size ; i++)
 		if (GetBit (is_fullbright, *pixels++))
 			return true;
-//		if (*pixels++ > 223)
-//		if (pixels[i] > 223)
-//			return true;
 
 	return false;
 } 
@@ -543,7 +540,6 @@ void Mod_LoadTextures (lump_t *l)
 
 				offset = (uintptr_t)(mt+1) - (uintptr_t)mod_base;
 				if (Mod_HasFullbrights ((byte *)(tx+1), tx->width*tx->height))
-//				if (Mod_HasFullbrights ((byte *)(tx+1), pixels))
 				{
 					sprintf (texturename, "%s:%s", loadmodel->name, tx->name);
 					tx->gltexture = TexMgr_LoadTexture (loadmodel, texturename, tx->width, tx->height, SRC_INDEXED, (byte *)(tx+1), loadmodel->name, offset, TEXPREF_MIPMAP | TEXPREF_NOBRIGHT | extraflags);
@@ -1207,7 +1203,6 @@ TODO: merge this into R_BuildSurfaceDisplayList?
 */
 void Mod_PolyForUnlitSurface (msurface_t *s)
 {
-//	vec3_t		verts[64];
 	int			numverts, i, lindex;
 	float		*vec;
 	glpoly_t	*poly;
@@ -1221,22 +1216,6 @@ void Mod_PolyForUnlitSurface (msurface_t *s)
 	//
 	// convert edges back to a normal polygon
 	//
-//	numverts = 0;
-//	for (i=0 ; i<s->numedges ; i++)
-//	{
-//		lindex = loadmodel->surfedges[s->firstedge + i];
-//
-//		if (lindex > 0)
-//			vec = loadmodel->vertexes[loadmodel->edges[lindex].v[0]].position;
-//		else
-//			vec = loadmodel->vertexes[loadmodel->edges[-lindex].v[1]].position;
-//
-//		if (numverts >= 64)
-//			Host_Error ("Mod_PolyForUnlitSurface: excessive numverts %i", numverts);
-//
-//		VectorCopy (vec, verts[numverts]);
-//		numverts++;
-//	}
 
 	numverts = s->numedges;
 	
@@ -1249,7 +1228,6 @@ void Mod_PolyForUnlitSurface (msurface_t *s)
 	s->polys = poly;
 	poly->numverts = numverts;
 	for (i=0; i<numverts; i++)
-//	for (i=0, vec=(float *)verts; i<numverts; i++, vec+= 3)
 	{
 		lindex = loadmodel->surfedges[s->firstedge + i];
 
@@ -1328,7 +1306,6 @@ void Mod_SetDrawingFlags (msurface_t *out)
 	}
 	else if (out->texinfo->texture->name[0] == '*') // warp surface
 	{
-//		out->flags |= (SURF_DRAWTURB | SURF_DRAWTILED);
 		out->flags |= SURF_DRAWTURB;
 		if (out->texinfo->flags & TEX_SPECIAL)
 			out->flags |= SURF_DRAWTILED;
@@ -1351,8 +1328,6 @@ void Mod_SetDrawingFlags (msurface_t *out)
 		else
 			out->flags |= SURF_DRAWWATER; 
 
-//		Mod_PolyForUnlitSurface (out);
-		// no more subdivision
 		// polys are only created for unlit water here.
 		// lit water is handled in BuildSurfaceDisplayList
 		if (out->flags & SURF_DRAWTILED)
@@ -2539,7 +2514,7 @@ void Mod_FloodFillSkin( byte *skin, int skinwidth, int skinheight, char *name )
 	floodfill_t			fifo[FLOODFILL_FIFO_SIZE];
 	int					inpt = 0, outpt = 0;
 	int					filledcolor = -1;
-	int					i;//, size = skinwidth * skinheight, notfill;
+	int					i;
 
 	if (filledcolor == -1)
 	{
@@ -2547,7 +2522,6 @@ void Mod_FloodFillSkin( byte *skin, int skinwidth, int skinheight, char *name )
 		// attempt to find opaque black
 		for (i = 0; i < 256; ++i)
 			if (d_8to24table_original[i] == (unsigned int)LittleLong(255ul << 24)) // alpha 1.0
-//			if (d_8to24table_original[i] == (255 << 0)) // alpha 1.0
 			{
 				filledcolor = i;
 				break;
@@ -2557,24 +2531,11 @@ void Mod_FloodFillSkin( byte *skin, int skinwidth, int skinheight, char *name )
 	// can't fill to filled color or to transparent color (used as visited marker)
 	if ((fillcolor == filledcolor) || (fillcolor == 255))
 	{
-		if (developer.value > 4)
-			Con_DPrintf ("Mod_FloodFillSkin: not filling skin in '%s' from %d to %d\n", name, fillcolor, filledcolor);
+		//if (developer.value > 4)
+		//	Con_DPrintf ("Mod_FloodFillSkin: not filling skin in '%s' from %d to %d\n", name, fillcolor, filledcolor);
 		return;
 	}
 
-//	for (i = notfill = 0; i < size && notfill < 2; ++i)
-//	{
-//		if (skin[i] != fillcolor)
-//			++notfill;
-//	}
-//
-//	// don't fill almost mono-coloured texes
-//	if (notfill < 2)
-//	{
-//		if (developer.value > 2)
-//			Con_DPrintf ("Mod_FloodFillSkin: not filling skin in '%s'\n", name);
-//		return;
-//	}
 
 	fifo[inpt].x = 0, fifo[inpt].y = 0;
 	inpt = (inpt + 1) & FLOODFILL_FIFO_MASK;
@@ -2604,7 +2565,6 @@ void *Mod_LoadAllSkins (int numskins, daliasskintype_t *pskintype)
 {
 	int		i, j, k, size;
 	char	skinname[64];
-//	byte	*skin;
 	byte	*texels;
 	daliasskingroup_t		*pinskingroup;
 	int		groupskins;
@@ -2612,7 +2572,6 @@ void *Mod_LoadAllSkins (int numskins, daliasskintype_t *pskintype)
 	uintptr_t				offset; //johnfitz
 	unsigned int			texflags = TEXPREF_PAD;
 
-//	skin = (byte *)(pskintype + 1);
 
 	if (numskins < 1 || numskins > MAX_SKINS)
 		Host_Error ("Mod_LoadAllSkins: invalid # of skins (%d, max = %d) in %s", numskins, MAX_SKINS, loadmodel->name);
@@ -2626,8 +2585,6 @@ void *Mod_LoadAllSkins (int numskins, daliasskintype_t *pskintype)
 	{
 		if (pskintype->type == ALIAS_SKIN_SINGLE) 
 		{
-//			Mod_FloodFillSkin( (byte *)(pskintype + 1), pheader->skinwidth, pheader->skinheight, loadmodel->name );
-//			Mod_FloodFillSkin( skin, pheader->skinwidth, pheader->skinheight );
 			// save 8 bit texels for the player model to remap
 			//if (!strcmp(loadmodel->name,"progs/player.mdl"))
 			{
@@ -2679,8 +2636,6 @@ void *Mod_LoadAllSkins (int numskins, daliasskintype_t *pskintype)
 
 			for (j=0 ; j<groupskins ; j++)
 			{
-//				Mod_FloodFillSkin( (byte *)(pskintype), pheader->skinwidth, pheader->skinheight, loadmodel->name );
-//				Mod_FloodFillSkin( skin, pheader->skinwidth, pheader->skinheight ); // Is 'skin' really correct here?
 				if (j == 0) 
 				{
 					texels = Hunk_AllocName(size, loadname);
