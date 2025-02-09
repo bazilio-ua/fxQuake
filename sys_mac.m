@@ -443,7 +443,6 @@ int main (int argc, char *argv[])
 	Sys_Init();
     
 	Sys_Printf ("Host init started\n");
-//	Host_Init (&parms);
 	Host_Init ();
     
 	// Make stdin non-blocking
@@ -453,7 +452,6 @@ int main (int argc, char *argv[])
 		printf ("fxQuake %4.2f\n", (float)VERSION);
 	}
     
-//	oldtime = Sys_DoubleTime () - 0.1;
 	oldtime = Sys_DoubleTime();
 	// main message loop
 	while (1)
@@ -469,7 +467,6 @@ int main (int argc, char *argv[])
 				Sys_Sleep ();
 				continue; // not time to run a server only tic yet
 			}
-//			time = sys_ticrate.value;
 		}
 		else
 		{
@@ -478,10 +475,6 @@ int main (int argc, char *argv[])
 				Sys_Sleep (); // Prevent CPU hogging
 		}
         
-//		if (time > sys_ticrate.value * 2)
-//			oldtime = newtime;
-//		else
-//			oldtime += time;
         
 		Host_Frame (time);
         
@@ -510,29 +503,25 @@ int main (int argc, char *argv[])
     }
     else //if (!vidmode_fullscreen)
     {
-        // enable/disable sound, set/restore gamma and grab/ungrab keyb
+        // enable/disable sound and grab/ungrab keyboard
         // on focus gain/loss
         if (vid_activewindow && !vid_hiddenwindow)// && !active)
         {
             if (!active) {
-            CDAudio_Resume ();
-            S_UnblockSound ();
-            S_ClearBuffer ();
-//            VID_Gamma_Set ();
-//            NSLog(@"*** Active ***");
-            active = true;
+				CDAudio_Resume ();
+				S_UnblockSound ();
+				S_ClearBuffer ();
+				active = true;
             }
         }
         else //if (active)
         {
             if (active) {
-            CDAudio_Pause ();
-            S_BlockSound ();
-            S_ClearBuffer ();
-//            VID_Gamma_Restore ();
-            Key_ClearStates ();
-//            NSLog(@"*** Inactive ***");
-            active = false;
+				CDAudio_Pause ();
+				S_BlockSound ();
+				S_ClearBuffer ();
+				Key_ClearStates ();
+				active = false;
             }
         }
     }
@@ -588,15 +577,10 @@ int main (int argc, char *argv[])
 }
 
 - (void)windowDidChangeScreen:(NSNotification *)notification {
-//    VID_Gamma_Shutdown();
-    
     NSScreen *currentScreen = [[notification object] screen];
     CGDirectDisplayID currentDisplay = [[[currentScreen deviceDescription] objectForKey:@"NSScreenNumber"] unsignedIntValue];
     
     display = currentDisplay;
-    
-//    VID_Gamma_Init();
-//    VID_Gamma_Set();
 }
 
 - (BOOL)windowShouldClose:(id)sender {

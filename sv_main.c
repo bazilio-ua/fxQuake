@@ -707,7 +707,6 @@ void SV_WriteEntitiesToClient (edict_t	*clent, sizebuf_t *msg)
                 // this commonly happens with rotators, because they often have huge bboxes
                 // spanning the entire map, or really tall lifts, etc.
                 if (i == ent->num_leafs && ent->num_leafs < MAX_ENT_LEAFS)
-//				if (i == ent->num_leafs)
 					continue;	// not visible
 
 			}
