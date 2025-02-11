@@ -1941,8 +1941,8 @@ byte *TexMgr_PadImageH (char *name, byte *in, int width, int height, byte padbyt
 static void
 DXT_ExtractColorBlock(unsigned dst[16], unsigned *in, int inwidth, int inheight, int x, int y)
 {
-
 	const unsigned *src = in + y * inwidth + x;
+	
 	if (inheight - y >= 4 && inwidth - x >= 4) {
 		/* Fast path for a full block */
 		memcpy(dst +  0, src + inwidth * 0, 16);
@@ -1970,7 +1970,7 @@ DXT_ExtractColorBlock(unsigned dst[16], unsigned *in, int inwidth, int inheight,
 }
 
 static void
-QPic_CompressDxt1(unsigned *in, int inwidth, int inheight, byte *dst)
+TexMgr_CompressDXT1(unsigned *in, int inwidth, int inheight, byte *dst)
 {
 	unsigned colorblock[16];
 	const int width = inwidth;
@@ -1986,12 +1986,12 @@ QPic_CompressDxt1(unsigned *in, int inwidth, int inheight, byte *dst)
 }
 
 static void
-QPic_CompressDxt5(unsigned *in, int inwidth, int inheight, byte *dst)
+TexMgr_CompressDXT5(unsigned *in, int inwidth, int inheight, byte *dst)
 {
 	unsigned colorblock[16];
 	const int width = inwidth;
 	const int height = inheight;
-
+	
 	for (int y = 0; y < height; y += 4) {
 		for (int x = 0; x < width; x += 4) {
 			DXT_ExtractColorBlock(colorblock, in, inwidth, inheight, x, y);
@@ -2001,12 +2001,12 @@ QPic_CompressDxt5(unsigned *in, int inwidth, int inheight, byte *dst)
 	}
 }
 
-
 static int
-GL_GetMipMemorySize(int width, int height, GLint format)
+TexMgr_GetMipMemorySize(int width, int height, GLint format)
 {
 	int blocksize = 1;
 	int blockbytes = 4;
+	
 	switch (format) {
 		case GL_COMPRESSED_RGB_S3TC_DXT1_EXT:
 		case GL_COMPRESSED_RGBA_S3TC_DXT1_EXT:
@@ -2019,23 +2019,22 @@ GL_GetMipMemorySize(int width, int height, GLint format)
 			blockbytes = 16;
 			break;
 	}
-
+	
 	int blockwidth  = (width  + blocksize - 1) / blocksize;
 	int blockheight = (height + blocksize - 1) / blocksize;
-
+	
 	return blockwidth * blockheight * blockbytes;
 }
 
-
 static void
-GL_CompressMip(unsigned *in, int inwidth, int inheight, GLint format, byte *dst)
+TexMgr_CompressMip(unsigned *in, int inwidth, int inheight, GLint format, byte *dst)
 {
 	switch (format) {
 		case GL_COMPRESSED_RGB_S3TC_DXT1_EXT:
-			QPic_CompressDxt1(in, inwidth, inheight, dst);
+			TexMgr_CompressDXT1(in, inwidth, inheight, dst);
 			break;
 		case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT:
-			QPic_CompressDxt5(in, inwidth, inheight, dst);
+			TexMgr_CompressDXT5(in, inwidth, inheight, dst);
 			break;
 		default:
 			Sys_Error("Unsupported compressed format");
@@ -2043,9 +2042,10 @@ GL_CompressMip(unsigned *in, int inwidth, int inheight, GLint format, byte *dst)
 }
 
 static int
-GL_GetMaxMipLevel(int width, int height, GLint format)
+TexMgr_GetMaxMipLevel(int width, int height, GLint format)
 {
 	int blocksize = 1;
+	
 	switch (format) {
 		case GL_COMPRESSED_RGB_S3TC_DXT1_EXT:
 		case GL_COMPRESSED_RGBA_S3TC_DXT1_EXT:
@@ -2053,14 +2053,15 @@ GL_GetMaxMipLevel(int width, int height, GLint format)
 		case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT:
 			blocksize = 4;
 	}
-
+	
 	int max_level = 0;
+	
 	while (width > blocksize || height > blocksize) {
 		max_level++;
-	width  = width  > 1 ? width  >> 1 : 1;
-	height = height > 1 ? height >> 1 : 1;
+		width  = width  > 1 ? width  >> 1 : 1;
+		height = height > 1 ? height >> 1 : 1;
 	}
-
+	
 	return max_level;
 }
 
@@ -2115,7 +2116,7 @@ void TexMgr_Upload32 (gltexture_t *glt, unsigned *data)
 	internalformat = (glt->flags & TEXPREF_ALPHA) ? GL_RGBA : GL_RGB;
 	if (gl_texture_compression && gl_compression.value && !(glt->flags & TEXPREF_NOPICMIP)) {
 		internalformat = (glt->flags & TEXPREF_ALPHA) ? GL_COMPRESSED_RGBA_S3TC_DXT5_EXT : GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
-		mip_memory_size = GL_GetMipMemorySize(glt->width, glt->height, internalformat);
+		mip_memory_size = TexMgr_GetMipMemorySize(glt->width, glt->height, internalformat);
 		switch (internalformat) {
 			case GL_COMPRESSED_RGB_S3TC_DXT1_EXT:
 			case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT:
@@ -2125,7 +2126,7 @@ void TexMgr_Upload32 (gltexture_t *glt, unsigned *data)
 	}
 	
 	if (compressed) {
-		GL_CompressMip(scaled, glt->width, glt->height, internalformat, compressed);
+		TexMgr_CompressMip(scaled, glt->width, glt->height, internalformat, compressed);
 		qglCompressedTexImage2D(GL_TEXTURE_2D, 0, internalformat, glt->width, glt->height, 0, mip_memory_size, compressed);
 	} else {
 		glTexImage2D (GL_TEXTURE_2D, 0, internalformat, glt->width, glt->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, scaled);
@@ -2139,7 +2140,7 @@ void TexMgr_Upload32 (gltexture_t *glt, unsigned *data)
 		mipwidth = glt->width;
 		mipheight = glt->height;
 		
-		max_miplevel = GL_GetMaxMipLevel(mipwidth, mipheight, internalformat);
+		max_miplevel = TexMgr_GetMaxMipLevel(mipwidth, mipheight, internalformat);
 		miplevel = 1;
 		
 		glt->max_miplevel = max_miplevel;
@@ -2162,8 +2163,8 @@ void TexMgr_Upload32 (gltexture_t *glt, unsigned *data)
 			}
 			
 			if (compressed) {
-				mip_memory_size = GL_GetMipMemorySize(mipwidth, mipheight, internalformat);
-				GL_CompressMip(scaled, mipwidth, mipheight, internalformat, compressed);
+				mip_memory_size = TexMgr_GetMipMemorySize(mipwidth, mipheight, internalformat);
+				TexMgr_CompressMip(scaled, mipwidth, mipheight, internalformat, compressed);
 				qglCompressedTexImage2D(GL_TEXTURE_2D, miplevel, internalformat, mipwidth, mipheight, 0, mip_memory_size, compressed);
 			} else {
 				glTexImage2D (GL_TEXTURE_2D, miplevel, internalformat, mipwidth, mipheight, 0, GL_RGBA, GL_UNSIGNED_BYTE, scaled);
