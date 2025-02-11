@@ -552,7 +552,7 @@ void R_DrawAliasModel (entity_t *e)
 	int			anim;
 	qboolean	isclient = false;
 	int			skinnum, client_no;
-	gltexture_t	*tx, *fb;
+	gltexture_t	*base, *glow;
 	static float	lastmsg = 0;
 	lerpdata_t	lerpdata;
 	float		fovscale = 1.0f;
@@ -709,17 +709,17 @@ void R_DrawAliasModel (entity_t *e)
 	// set up textures
 	//
 	anim = (int)(cl.time*10) & 3;
-	tx = paliashdr->base[skinnum][anim];
-	fb = paliashdr->glow[skinnum][anim];
+	base = paliashdr->base[skinnum][anim];
+	glow = paliashdr->glow[skinnum][anim];
 
-	aliasglow = (fb != NULL);
+	aliasglow = (glow != NULL);
 	
 	// we can't dynamically colormap textures, so they are cached
 	// seperately for the players.  Heads are just uncolored.
 	if (e->colormap != vid.colormap && !gl_nocolors.value)
 	{
 		if (isclient)
-			tx = playertextures[client_no - 1];
+			base = playertextures[client_no - 1];
 	}
 
 	//
@@ -729,7 +729,7 @@ void R_DrawAliasModel (entity_t *e)
 	aliasflat = flatcolor;
 	
 	GL_SelectTMU0 ();
-	GL_BindTexture (tx);
+	GL_BindTexture (base);
 	glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_ARB);
 	glTexEnvf (GL_TEXTURE_ENV, GL_COMBINE_RGB_ARB, GL_MODULATE);
 	glTexEnvf (GL_TEXTURE_ENV, GL_SOURCE0_RGB_ARB, GL_TEXTURE);
@@ -737,12 +737,12 @@ void R_DrawAliasModel (entity_t *e)
 	glTexEnvf (GL_TEXTURE_ENV, GL_RGB_SCALE_ARB, d_overbrightscale);
 	
 	if (flatcolor)
-		VectorCopy (tx->colors.basecolor, aliascolor);
+		VectorCopy (base->colors.basecolor, aliascolor);
 	
 	if (aliasglow)
 	{
 		GL_SelectTMU2 ();
-		GL_BindTexture (fb);
+		GL_BindTexture (glow);
 		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_ADD);
 		glEnable (GL_BLEND);
 	}
