@@ -709,8 +709,8 @@ void R_DrawAliasModel (entity_t *e)
 	// set up textures
 	//
 	anim = (int)(cl.time*10) & 3;
-	tx = paliashdr->gltexture[skinnum][anim];
-	fb = paliashdr->fullbright[skinnum][anim];
+	tx = paliashdr->base[skinnum][anim];
+	fb = paliashdr->glow[skinnum][anim];
 
 	aliasglow = (fb != NULL);
 	

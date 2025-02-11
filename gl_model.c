@@ -2597,29 +2597,29 @@ void *Mod_LoadAllSkins (int numskins, daliasskintype_t *pskintype)
 			if (Mod_HasFullbrights ((byte *)(pskintype + 1), size))
 			{
 				sprintf (skinname, "%s:frame%i", loadmodel->name, i);
-				pheader->gltexture[i][0] =
-				pheader->gltexture[i][1] =
-				pheader->gltexture[i][2] =
-				pheader->gltexture[i][3] = TexMgr_LoadTexture (loadmodel, skinname, pheader->skinwidth, pheader->skinheight, SRC_INDEXED, (byte *)(pskintype + 1), loadmodel->name, offset, texflags | TEXPREF_NOBRIGHT);
+				pheader->base[i][0] =
+				pheader->base[i][1] =
+				pheader->base[i][2] =
+				pheader->base[i][3] = TexMgr_LoadTexture (loadmodel, skinname, pheader->skinwidth, pheader->skinheight, SRC_INDEXED, (byte *)(pskintype + 1), loadmodel->name, offset, texflags | TEXPREF_NOBRIGHT);
 
 				sprintf (skinname, "%s:frame%i_glow", loadmodel->name, i);
-				pheader->fullbright[i][0] =
-				pheader->fullbright[i][1] =
-				pheader->fullbright[i][2] =
-				pheader->fullbright[i][3] = TexMgr_LoadTexture (loadmodel, skinname, pheader->skinwidth, pheader->skinheight, SRC_INDEXED, (byte *)(pskintype + 1), loadmodel->name, offset, texflags | TEXPREF_FULLBRIGHT);
+				pheader->glow[i][0] =
+				pheader->glow[i][1] =
+				pheader->glow[i][2] =
+				pheader->glow[i][3] = TexMgr_LoadTexture (loadmodel, skinname, pheader->skinwidth, pheader->skinheight, SRC_INDEXED, (byte *)(pskintype + 1), loadmodel->name, offset, texflags | TEXPREF_FULLBRIGHT);
 			}
 			else
 			{
 				sprintf (skinname, "%s:frame%i", loadmodel->name, i);
-				pheader->gltexture[i][0] =
-				pheader->gltexture[i][1] =
-				pheader->gltexture[i][2] =
-				pheader->gltexture[i][3] = TexMgr_LoadTexture (loadmodel, skinname, pheader->skinwidth, pheader->skinheight, SRC_INDEXED, (byte *)(pskintype + 1), loadmodel->name, offset, texflags);
+				pheader->base[i][0] =
+				pheader->base[i][1] =
+				pheader->base[i][2] =
+				pheader->base[i][3] = TexMgr_LoadTexture (loadmodel, skinname, pheader->skinwidth, pheader->skinheight, SRC_INDEXED, (byte *)(pskintype + 1), loadmodel->name, offset, texflags);
 
-				pheader->fullbright[i][0] =
-				pheader->fullbright[i][1] =
-				pheader->fullbright[i][2] =
-				pheader->fullbright[i][3] = NULL;
+				pheader->glow[i][0] =
+				pheader->glow[i][1] =
+				pheader->glow[i][2] =
+				pheader->glow[i][3] = NULL;
 			}
 
 			pskintype = (daliasskintype_t *)((byte *)(pskintype + 1) + size);
@@ -2647,24 +2647,24 @@ void *Mod_LoadAllSkins (int numskins, daliasskintype_t *pskintype)
 				if (Mod_HasFullbrights ((byte *)(pskintype), size))
 				{
 					sprintf (skinname, "%s:frame%i_%i", loadmodel->name, i,j);
-					pheader->gltexture[i][j&3] = TexMgr_LoadTexture (loadmodel, skinname, pheader->skinwidth, pheader->skinheight, SRC_INDEXED, (byte *)(pskintype), loadmodel->name, offset, texflags | TEXPREF_NOBRIGHT);
+					pheader->base[i][j&3] = TexMgr_LoadTexture (loadmodel, skinname, pheader->skinwidth, pheader->skinheight, SRC_INDEXED, (byte *)(pskintype), loadmodel->name, offset, texflags | TEXPREF_NOBRIGHT);
 
 					sprintf (skinname, "%s:frame%i_%i_glow", loadmodel->name, i,j);
-					pheader->fullbright[i][j&3] = TexMgr_LoadTexture (loadmodel, skinname, pheader->skinwidth, pheader->skinheight, SRC_INDEXED, (byte *)(pskintype), loadmodel->name, offset, texflags | TEXPREF_FULLBRIGHT);
+					pheader->glow[i][j&3] = TexMgr_LoadTexture (loadmodel, skinname, pheader->skinwidth, pheader->skinheight, SRC_INDEXED, (byte *)(pskintype), loadmodel->name, offset, texflags | TEXPREF_FULLBRIGHT);
 				}
 				else
 				{
 					sprintf (skinname, "%s:frame%i_%i", loadmodel->name, i,j);
-					pheader->gltexture[i][j&3] = TexMgr_LoadTexture (loadmodel, skinname, pheader->skinwidth, pheader->skinheight, SRC_INDEXED, (byte *)(pskintype), loadmodel->name, offset, texflags);
+					pheader->base[i][j&3] = TexMgr_LoadTexture (loadmodel, skinname, pheader->skinwidth, pheader->skinheight, SRC_INDEXED, (byte *)(pskintype), loadmodel->name, offset, texflags);
 
-					pheader->fullbright[i][j&3] = NULL;
+					pheader->glow[i][j&3] = NULL;
 				}
 
 				pskintype = (daliasskintype_t *)((byte *)(pskintype) + size);
 			}
 			k = j;
 			for (/* */; j < 4; j++)
-				pheader->gltexture[i][j&3] = pheader->gltexture[i][j - k]; 
+				pheader->base[i][j&3] = pheader->base[i][j - k]; 
 		}
 	}
 

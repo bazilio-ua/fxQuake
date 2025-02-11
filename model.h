@@ -373,8 +373,8 @@ typedef struct {
 	int					posedata;	// numposes*poseverts trivert_t
 	int					commands;	// gl command list with embedded s/t
 
-	struct gltexture_s	*gltexture[MAX_SKINS][4];
-	struct gltexture_s	*fullbright[MAX_SKINS][4];
+	struct gltexture_s	*base[MAX_SKINS][4];
+	struct gltexture_s	*glow[MAX_SKINS][4];
 
 	int					texels[MAX_SKINS];	// only for player skins
 	maliasframedesc_t	frames[1];	// variable sized

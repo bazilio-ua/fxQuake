@@ -263,8 +263,8 @@ void R_TranslateNewPlayerSkin (int playernum)
 // upload new image
 	sprintf (name, "%s_%i_%i", e->model->name, skinnum, playernum);
 	playertextures[playernum] = TexMgr_LoadTexture (e->model, name, paliashdr->skinwidth, paliashdr->skinheight, SRC_INDEXED, pixels,
-												paliashdr->gltexture[skinnum][0]->source_file,
-												paliashdr->gltexture[skinnum][0]->source_offset, TEXPREF_PAD | TEXPREF_OVERWRITE);
+												paliashdr->base[skinnum][0]->source_file,
+												paliashdr->base[skinnum][0]->source_offset, TEXPREF_PAD | TEXPREF_OVERWRITE);
 
 // now recolor it
 	R_TranslatePlayerSkin (playernum);
