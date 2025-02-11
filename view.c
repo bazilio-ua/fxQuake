@@ -256,32 +256,12 @@ cvar_t		v_contrast = {"contrast", "1", CVAR_ARCHIVE}; // QuakeSpasm, MarkV
 
 byte		gammatable[256];	// palette is sent through this
 
-//byte		ramps[3][256];
 float		v_blend[4];		// rgba 0.0 - 1.0
 
-//johnfitz -- deleted BuildGammaTable(), V_CheckGamma(), gammatable[], and ramps[][]
-//EER1 -- restored BuildGammaTable(), V_CheckGamma(), gammatable[], and ramps[][]
 
 void BuildGammaTable (float gamma, float contrast)
 {
-	int		i;//, inf;
-	
-//	if (g == 1.0)
-//	{
-//		for (i=0 ; i<256 ; i++)
-//			gammatable[i] = i;
-//		return;
-//	}
-	
-//	for (i=0 ; i<256 ; i++)
-//	{
-//		inf = 255 * pow ( (i+0.5)/255.5 , g ) + 0.5;
-//		if (inf < 0)
-//			inf = 0;
-//		if (inf > 255)
-//			inf = 255;
-//		gammatable[i] = inf;
-//	}
+	int		i;
 
 	// Refresh gamma table
 	for (i=0 ; i<256 ; i++)
@@ -297,18 +277,12 @@ qboolean V_CheckGamma (void)
 {
 	static float oldgamma;
 	static float oldcontrast;
-
-//	static float oldgammavalue;
 	
 	if (v_gamma.value == oldgamma && v_contrast.value == oldcontrast)
 		return false;
 	
 	oldgamma = v_gamma.value;
 	oldcontrast = v_contrast.value;
-
-//	if (v_gamma.value == oldgammavalue)
-//		return false;
-//	oldgammavalue = v_gamma.value;
 	
 	BuildGammaTable (v_gamma.value, v_contrast.value);
 	vid.recalc_refdef = 1;				// force a surface cache flush
@@ -584,7 +558,6 @@ void V_UpdateGamma (void)
 	int		i;//, j;
 	byte	*basepal, *newpal;
 	byte	pal[768];
-//	float	r,g,b,a;
 	int		ir, ig, ib;
 	qboolean force;
 
@@ -592,29 +565,6 @@ void V_UpdateGamma (void)
 	
 	if (force)
 	{
-//		a = v_blend[3];
-//		r = 255*v_blend[0]*a;
-//		g = 255*v_blend[1]*a;
-//		b = 255*v_blend[2]*a;
-//
-//		a = 1-a;
-//		for (i=0 ; i<256 ; i++)
-//		{
-//			ir = i*a + r;
-//			ig = i*a + g;
-//			ib = i*a + b;
-//			if (ir > 255)
-//				ir = 255;
-//			if (ig > 255)
-//				ig = 255;
-//			if (ib > 255)
-//				ib = 255;
-//
-//			ramps[0][i] = gammatable[ir];
-//			ramps[1][i] = gammatable[ig];
-//			ramps[2][i] = gammatable[ib];
-//		}
-
 		basepal = host_basepal;
 		newpal = pal;
 		
@@ -625,9 +575,6 @@ void V_UpdateGamma (void)
 			ib = basepal[2];
 			basepal += 3;
 			
-//			newpal[0] = ramps[0][ir];
-//			newpal[1] = ramps[1][ig];
-//			newpal[2] = ramps[2][ib];
 			newpal[0] = gammatable[ir];
 			newpal[1] = gammatable[ig];
 			newpal[2] = gammatable[ib];
@@ -641,11 +588,8 @@ void V_UpdateGamma (void)
 
 void V_ShiftPalette (byte *palette)
 {
-	// set shifted palette
 	V_SetPalette (palette);
-	// do reload textures
 	TexMgr_ReloadTextures ();
-	// reload fast sky colors
 	R_FastSkyColor ();
 }
 
@@ -659,89 +603,10 @@ static void SetPaletteColor (unsigned int *dst, byte r, byte g, byte b, byte a)
 
 void V_SetPalette (byte *palette)
 {
-	byte *pal, *src;//, *dst;
+	byte *pal, *src;
 	int i;
 
 	pal = palette;
-
-/*
-	//
-	//standard palette, 255 is transparent
-	//
-	dst = (byte *)d_8to24table;
-	src = pal;
-	for (i=0; i<256; i++)
-	{
-		dst[0] = *src++;
-		dst[1] = *src++;
-		dst[2] = *src++;
-		dst[3] = 255;
-		dst += 4;
-	}
-	((byte *)&d_8to24table[255])[3] = 0;
-
-	//
-	//fullbright palette, 0-223 are black (for additive blending)
-	//
-	dst = (byte *)&d_8to24table_fbright[224];
-	src = pal + 224*3;
-	for (i=224; i<256; i++)
-	{
-		dst[0] = *src++;
-		dst[1] = *src++;
-		dst[2] = *src++;
-		dst[3] = 255;
-		dst += 4;
-	}
-	for (i=0; i<224; i++)
-	{
-		dst = (byte *)&d_8to24table_fbright[i];
-		dst[0] = 0;
-		dst[1] = 0;
-		dst[2] = 0;
-		dst[3] = 255;
-	}
-
-	//
-	//nobright palette, 224-255 are black (for additive blending)
-	//
-	dst = (byte *)d_8to24table_nobright;
-	src = pal;
-	for (i=0; i<256; i++)
-	{
-		dst[0] = *src++;
-		dst[1] = *src++;
-		dst[2] = *src++;
-		dst[3] = 255;
-		dst += 4;
-	}
-	for (i=224; i<256; i++)
-	{
-		dst = (byte *)&d_8to24table_nobright[i];
-		dst[0] = 0;
-		dst[1] = 0;
-		dst[2] = 0;
-		dst[3] = 255;
-	}
-
-	//
-	//fullbright palette, for fence textures
-	//
-	memcpy(d_8to24table_fbright_fence, d_8to24table_fbright, 256*4);
-	d_8to24table_fbright_fence[255] = 0; // alpha of zero
-
-	//
-	//nobright palette, for fence textures
-	//
-	memcpy(d_8to24table_nobright_fence, d_8to24table_nobright, 256*4);
-	d_8to24table_nobright_fence[255] = 0; // alpha of zero
-	
-	//
-	//conchars palette, 0 and 255 are transparent
-	//
-	memcpy(d_8to24table_conchars, d_8to24table, 256*4);
-	((byte *)&d_8to24table_conchars[0])[3] = 0;
- */
 	
 	//
 	// fill color tables
@@ -780,32 +645,15 @@ void V_SetPalette (byte *palette)
 	// conchars palette, 0 and 255 are transparent
 	memcpy (d_8to24table_conchars, d_8to24table, 256*4);
 	((byte *)&d_8to24table_conchars[0])[3] = 0;
-	
 }
 
-//void V_SetOriginalPalette (byte *palette)
 void V_SetOriginalPalette (void)
 {
-	byte *pal, *src;//, *dst;
+	byte *pal, *src;
 	int i;
 
-//	pal = palette;
 	pal = host_basepal;
 
-	//
-	//standard palette - no transparency
-	//
-//	dst = (byte *)d_8to24table_original;
-//	src = pal;
-//	for (i=0; i<256; i++)
-//	{
-//		dst[0] = *src++;
-//		dst[1] = *src++;
-//		dst[2] = *src++;
-//		dst[3] = 255;
-//		dst += 4;
-//	}
-	
 	//
 	// fill color table
 	//
@@ -828,14 +676,12 @@ Use colormap to determine which colors are fullbright
 instead of using a hardcoded index threshold of 224
 ==================
 */
-//void V_FindFullbrightColors (byte *palette, byte *colormap)
 void V_FindFullbrightColors (void)
 {
 	byte *pal, *src;
 	byte *colormap;
 	int i, j, numfb;
 	
-//	pal = palette;
 	pal = host_basepal;
 	colormap = host_colormap;
 	
