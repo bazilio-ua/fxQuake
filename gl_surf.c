@@ -1362,8 +1362,7 @@ void R_DrawTextureChains_Multitexture (model_t *model, entity_t *ent, texchain_t
 	texture_t	*tex;
 	float		*v;
 	qboolean	bound;
-	gltexture_t	*tx;
-	gltexture_t	*fb;
+	gltexture_t	*base, *glow;
 	qboolean	flatcolor = r_flatworld.value;
 	
 	if (flatcolor)
@@ -1384,20 +1383,20 @@ void R_DrawTextureChains_Multitexture (model_t *model, entity_t *ent, texchain_t
             {
 				tex = R_TextureAnimation (t, ent != NULL ? ent->frame : 0);
 				
-				tx = tex->base;
+				base = tex->base;
 				GL_SelectTMU0 ();
-				GL_BindTexture (tx);
+				GL_BindTexture (base);
 				
 				if (flatcolor)
-					glColor3fv (tx->colors.basecolor);
+					glColor3fv (base->colors.basecolor);
 				
                 if (t->texturechains[chain]->flags & SURF_DRAWFENCE)
                     glEnable (GL_ALPHA_TEST); // Flip alpha test back on
 				
-				if ((fb = tex->glow))
+				if ((glow = tex->glow))
 				{
 					GL_SelectTMU2 ();
-					GL_BindTexture (fb);
+					GL_BindTexture (glow);
 					
 					glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_ADD);
 					glEnable (GL_BLEND);
@@ -1415,7 +1414,7 @@ void R_DrawTextureChains_Multitexture (model_t *model, entity_t *ent, texchain_t
             {
                 qglMultiTexCoord2f (GL_TEXTURE0_ARB, v[3], v[4]);
                 qglMultiTexCoord2f (GL_TEXTURE1_ARB, v[5], v[6]);
-				if (fb)
+				if (glow)
 					qglMultiTexCoord2f (GL_TEXTURE2_ARB, v[3], v[4]);
 				
                 glVertex3fv (v);
@@ -1424,7 +1423,7 @@ void R_DrawTextureChains_Multitexture (model_t *model, entity_t *ent, texchain_t
             rs_c_brush_passes++;
         }
 		
-		if (fb) // assume our current selection is TMU2
+		if (glow) // assume our current selection is TMU2
 		{
 			glDisable (GL_TEXTURE_2D);
 			GL_SelectTMU2 ();
