@@ -96,6 +96,10 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
+            argument = "-quoth -game mfxsp17"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
             argument = "-quoth"
             isEnabled = "NO">
          </CommandLineArgument>

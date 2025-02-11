@@ -375,7 +375,7 @@ void VID_Init (void)
         if (bestModeIndex == 0xFFFFFFFF) {
 			Con_Warning ("No suitable display mode available for fullscreen\n");
 			Con_Warning ("Switch to window\n");
-			fullscreen = false;
+//			fullscreen = false;
 			goto skipfullscreen;
         }
         
@@ -419,7 +419,8 @@ skipfullscreen:
     
     pixelAttributes[13] = colorDepth;
     
-    if (fullscreen) {
+//    if (fullscreen) {
+	if (vidmode_fullscreen) {
         pixelAttributes[14] = NSOpenGLPFAFullScreen;
         pixelAttributes[15] = NSOpenGLPFAScreenMask;
         pixelAttributes[16] = CGDisplayIDToOpenGLDisplayMask(display);
