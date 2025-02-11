@@ -890,9 +890,9 @@ void R_DrawBrushModel (entity_t *e)
 {
 	int			k, i;
 	dlight_t	*l;
-	msurface_t	*psurf;
+	msurface_t	*surf;
 	float		dot;
-	mplane_t	*pplane;
+	mplane_t	*plane;
 	model_t		*clmodel;
 	qboolean	rotated = false;
 	float		alpha;
@@ -959,25 +959,25 @@ void R_DrawBrushModel (entity_t *e)
 	//
 	// draw it
 	//
-	psurf = &clmodel->surfaces[clmodel->firstmodelsurface];
+	surf = &clmodel->surfaces[clmodel->firstmodelsurface];
 	
-	for (i=0 ; i<clmodel->nummodelsurfaces ; i++, psurf++)
+	for (i=0 ; i<clmodel->nummodelsurfaces ; i++, surf++)
 	{
 		// find which side of the node we are on
-		pplane = psurf->plane;
-		dot = DotProduct (modelorg, pplane->normal) - pplane->dist;
+		plane = surf->plane;
+		dot = DotProduct (modelorg, plane->normal) - plane->dist;
 
 		// draw the polygon
-		if (((psurf->flags & SURF_PLANEBACK) && (dot < -BACKFACE_EPSILON)) ||
-			(!(psurf->flags & SURF_PLANEBACK) && (dot > BACKFACE_EPSILON)))
+		if (((surf->flags & SURF_PLANEBACK) && (dot < -BACKFACE_EPSILON)) ||
+			(!(surf->flags & SURF_PLANEBACK) && (dot > BACKFACE_EPSILON)))
 		{
             
-            if (psurf->texinfo->texture->warpimage)
-                psurf->texinfo->texture->update_warp = true; // FIXME: one frame too late!
+            if (surf->texinfo->texture->warpimage)
+                surf->texinfo->texture->update_warp = true; // FIXME: one frame too late!
             
-            hasalpha = R_SetAlphaSurface(psurf, alpha);
+            hasalpha = R_SetAlphaSurface(surf, alpha);
             
-            R_ChainSurface (psurf, chain_model);
+            R_ChainSurface (surf, chain_model);
 			
 			rs_c_brush_polys++; // r_speeds
 		}
