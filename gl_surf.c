@@ -1012,7 +1012,7 @@ void R_RecursiveWorldNode (mnode_t *node)
 	int			c, side;
 	mplane_t	*plane;
 	msurface_t	*surf, **mark;
-	mleaf_t		*pleaf;
+	mleaf_t		*leaf;
 	float		dot;
 //	float		alpha = 1.0;
 	
@@ -1029,9 +1029,9 @@ restart:
 // if a leaf node, draw stuff
 	if (node->contents < 0)
 	{
-		pleaf = (mleaf_t *)node;
-		mark = pleaf->firstmarksurface;
-		c = pleaf->nummarksurfaces;
+		leaf = (mleaf_t *)node;
+		mark = leaf->firstmarksurface;
+		c = leaf->nummarksurfaces;
 
 		if (c)
 		{
@@ -1043,8 +1043,8 @@ restart:
 		}
 
 // deal with model fragments in this leaf
-		if (pleaf->efrags)
-			R_StoreEfrags (&pleaf->efrags);
+		if (leaf->efrags)
+			R_StoreEfrags (&leaf->efrags);
 
 		return;
 	}
