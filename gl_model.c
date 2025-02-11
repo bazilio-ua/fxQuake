@@ -504,7 +504,7 @@ void Mod_LoadTextures (lump_t *l)
 
 		tx->update_warp = false;
 		tx->warpimage = NULL;
-		tx->fullbright = NULL;
+		tx->glow = NULL;
 
 		if (cls.state != ca_dedicated) // no texture uploading for dedicated server
 		{
@@ -518,7 +518,7 @@ void Mod_LoadTextures (lump_t *l)
 
 				sprintf (texturename, "%s:%s", loadmodel->name, tx->name);
 				offset = (uintptr_t)(mt+1) - (uintptr_t)mod_base;
-				tx->gltexture = TexMgr_LoadTexture (loadmodel, texturename, tx->width, tx->height, SRC_INDEXED, (byte *)(tx+1), loadmodel->name, offset, TEXPREF_WARP);
+				tx->base = TexMgr_LoadTexture (loadmodel, texturename, tx->width, tx->height, SRC_INDEXED, (byte *)(tx+1), loadmodel->name, offset, TEXPREF_WARP);
 
 				//now create the warpimage, using dummy data from the hunk to create the initial image
 				Hunk_Alloc (gl_warpimage_size*gl_warpimage_size*4); //make sure hunk is big enough so we don't reach an illegal address
@@ -542,14 +542,14 @@ void Mod_LoadTextures (lump_t *l)
 				if (Mod_HasFullbrights ((byte *)(tx+1), tx->width*tx->height))
 				{
 					sprintf (texturename, "%s:%s", loadmodel->name, tx->name);
-					tx->gltexture = TexMgr_LoadTexture (loadmodel, texturename, tx->width, tx->height, SRC_INDEXED, (byte *)(tx+1), loadmodel->name, offset, TEXPREF_MIPMAP | TEXPREF_NOBRIGHT | extraflags);
+					tx->base = TexMgr_LoadTexture (loadmodel, texturename, tx->width, tx->height, SRC_INDEXED, (byte *)(tx+1), loadmodel->name, offset, TEXPREF_MIPMAP | TEXPREF_NOBRIGHT | extraflags);
 					sprintf (texturename, "%s:%s_glow", loadmodel->name, tx->name);
-					tx->fullbright = TexMgr_LoadTexture (loadmodel, texturename, tx->width, tx->height, SRC_INDEXED, (byte *)(tx+1), loadmodel->name, offset, TEXPREF_MIPMAP | TEXPREF_FULLBRIGHT | extraflags);
+					tx->glow = TexMgr_LoadTexture (loadmodel, texturename, tx->width, tx->height, SRC_INDEXED, (byte *)(tx+1), loadmodel->name, offset, TEXPREF_MIPMAP | TEXPREF_FULLBRIGHT | extraflags);
 				}
 				else
 				{
 					sprintf (texturename, "%s:%s", loadmodel->name, tx->name);
-					tx->gltexture = TexMgr_LoadTexture (loadmodel, texturename, tx->width, tx->height, SRC_INDEXED, (byte *)(tx+1), loadmodel->name, offset, TEXPREF_MIPMAP | extraflags);
+					tx->base = TexMgr_LoadTexture (loadmodel, texturename, tx->width, tx->height, SRC_INDEXED, (byte *)(tx+1), loadmodel->name, offset, TEXPREF_MIPMAP | extraflags);
 				}
 				
 				Hunk_FreeToLowMark (mark);

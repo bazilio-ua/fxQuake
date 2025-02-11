@@ -100,11 +100,10 @@ typedef struct texture_s
 {
 	char		name[16];
 	unsigned	width, height;
-	struct gltexture_s	*gltexture; // pointer to gltexture
-	struct gltexture_s	*fullbright; // fullbright mask texture
-	struct gltexture_s	*warpimage; // for water animation
+	struct gltexture_s	*base;			// pointer to base texture
+	struct gltexture_s	*glow;			// fullbright mask texture
+	struct gltexture_s	*warpimage;		// for water animation
 	qboolean	update_warp;			// update warp this frame
-	struct msurface_s	*texturechain;	// for texture chains (OLD way)
 	struct msurface_s	*texturechains[2];	// for texture chains
 	int			anim_total;				// total tenths in sequence ( 0 = no)
 	int			anim_min, anim_max;		// time for this frame min <=time< max

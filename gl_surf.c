@@ -684,9 +684,9 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, model_t *model, entity_t 
 		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		
 		if (flatcolor) {
-			glColor4f (s->texinfo->texture->gltexture->colors.flatcolor[0],
-					   s->texinfo->texture->gltexture->colors.flatcolor[1],
-					   s->texinfo->texture->gltexture->colors.flatcolor[2], alpha);
+			glColor4f (s->texinfo->texture->base->colors.flatcolor[0],
+					   s->texinfo->texture->base->colors.flatcolor[1],
+					   s->texinfo->texture->base->colors.flatcolor[2], alpha);
 		}
 		
 		if (litwater && !special) {
@@ -758,7 +758,7 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, model_t *model, entity_t 
 			glColor4f(1, 1, 1, alpha);
 		}
 
-		GL_BindTexture (t->gltexture);
+		GL_BindTexture (t->base);
 		R_DrawGLPoly34 (p);
 		rs_c_brush_passes++; // r_speeds
 
@@ -800,20 +800,20 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, model_t *model, entity_t 
 		
 		// Binds world to texture env 0
 		GL_SelectTMU0 ();
-		GL_BindTexture (t->gltexture);
+		GL_BindTexture (t->base);
 		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		
 		if (flatcolor) {
-			glColor4f (t->gltexture->colors.basecolor[0],
-					   t->gltexture->colors.basecolor[1],
-					   t->gltexture->colors.basecolor[2], alpha);
+			glColor4f (t->base->colors.basecolor[0],
+					   t->base->colors.basecolor[1],
+					   t->base->colors.basecolor[2], alpha);
 		}
 		
-		if (t->fullbright)
+		if (t->glow)
 		{
 			// Binds fullbright to texture env 2
 			GL_SelectTMU2 ();
-			GL_BindTexture (t->fullbright);
+			GL_BindTexture (t->glow);
 			glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_ADD);
 			glEnable (GL_BLEND);
 		}
@@ -836,7 +836,7 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, model_t *model, entity_t 
 		{
 			qglMultiTexCoord2f (GL_TEXTURE0_ARB, v[3], v[4]);
 			qglMultiTexCoord2f (GL_TEXTURE1_ARB, v[5], v[6]);
-			if (t->fullbright)
+			if (t->glow)
 				qglMultiTexCoord2f (GL_TEXTURE2_ARB, v[3], v[4]);
 			
 			glVertex3fv (v);
@@ -849,7 +849,7 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, model_t *model, entity_t 
 		glTexEnvf (GL_TEXTURE_ENV, GL_RGB_SCALE_ARB, 1.0f);
 		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		
-		if (t->fullbright)
+		if (t->glow)
 		{
 			glDisable (GL_TEXTURE_2D);
 			GL_SelectTMU2 ();
@@ -1281,7 +1281,7 @@ void R_DrawTextureChains_Water (model_t *model, entity_t *ent, texchain_t chain)
 				GL_BindTexture (t->warpimage);
 				
 				if (flatcolor)
-					glColor3fv (t->gltexture->colors.flatcolor);
+					glColor3fv (t->base->colors.flatcolor);
 				
 				bound = true;
 			}
@@ -1340,7 +1340,7 @@ void R_DrawTextureChains_NoTexture (model_t *model, entity_t *ent, texchain_t ch
         {
             if (!bound) //only bind once we are sure we need this texture
             {
-                GL_BindTexture (t->gltexture);
+                GL_BindTexture (t->base);
                 bound = true;
             }
             R_DrawGLPoly34 (s->polys);
@@ -1384,7 +1384,7 @@ void R_DrawTextureChains_Multitexture (model_t *model, entity_t *ent, texchain_t
             {
 				tex = R_TextureAnimation (t, ent != NULL ? ent->frame : 0);
 				
-				tx = tex->gltexture;
+				tx = tex->base;
 				GL_SelectTMU0 ();
 				GL_BindTexture (tx);
 				
@@ -1394,7 +1394,7 @@ void R_DrawTextureChains_Multitexture (model_t *model, entity_t *ent, texchain_t
                 if (t->texturechains[chain]->flags & SURF_DRAWFENCE)
                     glEnable (GL_ALPHA_TEST); // Flip alpha test back on
 				
-				if ((fb = tex->fullbright))
+				if ((fb = tex->glow))
 				{
 					GL_SelectTMU2 ();
 					GL_BindTexture (fb);

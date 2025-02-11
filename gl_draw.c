@@ -1103,7 +1103,7 @@ void Draw_Init (void)
 	nulltexture = TexMgr_LoadTexture (NULL, "nulltexture", 2, 2, SRC_RGBA, nulltexture_data, "", (uintptr_t)nulltexture_data, TEXPREF_NEAREST | TEXPREF_PERSIST | TEXPREF_NOPICMIP);
 
 	// have to assign these here because R_InitTextures is called before Draw_Init
-	notexture_mip->gltexture = notexture_mip2->gltexture = notexture;
+	notexture_mip->base = notexture_mip2->base = notexture;
 
 	// upload warpimage
 	TexMgr_UploadWarpImage ();

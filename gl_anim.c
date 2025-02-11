@@ -463,7 +463,7 @@ void R_UpdateWarpTextures (void)
 
 		glDisable (GL_ALPHA_TEST); //FX new
 		glEnable (GL_BLEND); //FX
-		GL_BindTexture (tx->gltexture);
+		GL_BindTexture (tx->base);
 		for (x=0.0; x<128.0; x=x2)
 		{
 			x2 = x + warptess;
