@@ -32,124 +32,6 @@ CGDisplayModeRef    gameMode;
 
 viddef_t vid; // global video state
 
-//cvar_t		vid_gamma = {"gamma", "1", CVAR_ARCHIVE};
-//cvar_t		vid_contrast = {"contrast", "1", CVAR_ARCHIVE}; // QuakeSpasm, MarkV
-
-//==========================================================================
-//
-//  HARDWARE GAMMA
-//
-//==========================================================================
-
-//CGGammaValue	 vid_gammaramp[3][256];
-//CGGammaValue	 vid_systemgammaramp[3][256]; // to restore gamma
-//qboolean vid_gammaworks = false;
-
-/*
-================
-VID_Gamma_Set
-
-apply gamma correction
-================
-*/
-//void VID_Gamma_Set (void)
-//{
-//	if (!vid_gammaworks)
-//		return;
-//    
-//    CGError err = CGSetDisplayTransferByTable(display, 256, 
-//                                              vid_gammaramp[0], 
-//                                              vid_gammaramp[1], 
-//                                              vid_gammaramp[2]);
-//    if (err != kCGErrorSuccess)
-//        Con_Printf ("VID_Gamma_Set: Failed to set gamma table ramp\n");
-//}
-
-/*
-================
-VID_Gamma_Restore
-
-restore system gamma
-================
-*/
-//void VID_Gamma_Restore (void)
-//{
-//	if (!vid_gammaworks)
-//		return;
-//
-//	CGError err = CGSetDisplayTransferByTable(display, 256, 
-//                                              vid_systemgammaramp[0], 
-//                                              vid_systemgammaramp[1], 
-//                                              vid_systemgammaramp[2]);
-//    if (err != kCGErrorSuccess)
-//        Con_Printf ("VID_Gamma_Restore: Failed to set gamma table ramp\n");
-//}
-
-/*
-================
-VID_Gamma_Shutdown
-
-called on exit
-================
-*/
-//void VID_Gamma_Shutdown (void)
-//{
-//	VID_Gamma_Restore ();
-//}
-
-/*
-================
-VID_Gamma
-
-callback when the cvar changes
-================
-*/
-//void VID_Gamma (void)
-//{
-	// TODO: V_CheckGamma
-//    int i;
-//	static float oldgamma;
-//	static float oldcontrast;
-//    
-//	if (vid_gamma.value == oldgamma && vid_contrast.value == oldcontrast)
-//		return;
-//    
-//	oldgamma = vid_gamma.value;
-//    oldcontrast = vid_contrast.value;
-//    
-//	// Refresh gamma
-//    for (i=0; i<256; i++)
-//        vid_gammaramp[0][i] = vid_gammaramp[1][i] = vid_gammaramp[2][i] =
-//            CLAMP(0, (int)((255 * pow ((i+0.5)/255.5, vid_gamma.value) + 0.5) * vid_contrast.value), 255) / 255.0;
-//    
-//	VID_Gamma_Set ();
-//}
-
-/*
-================
-VID_Gamma_Init
-
-call on init
-================
-*/
-//void VID_Gamma_Init (void)
-//{
-//    uint32_t capacity = CGDisplayGammaTableCapacity(display);
-//    uint32_t sampleCount;
-//    
-//    if (capacity >= 256) {
-//        CGError err = CGGetDisplayTransferByTable(display, 256,
-//                                                  vid_systemgammaramp[0], 
-//                                                  vid_systemgammaramp[1], 
-//                                                  vid_systemgammaramp[2], &sampleCount);
-//        if (err == kCGErrorSuccess)
-//            vid_gammaworks = true;
-//        else
-//            Con_Printf ("VID_Gamma_Init: Failed to get gamma table ramp\n");
-//    } else {
-//		Con_Printf ("Hardware gamma unavailable\n");
-//    }
-//}
 
 //====================================
 
@@ -183,30 +65,6 @@ void GL_EndRendering (void)
 
 //====================================
 
-//qboolean CGL_GetSwapInterval (void)
-//{
-//	GLint state;
-//	
-//	// CGLGetCurrentContext()
-//	CGLError glerr = CGLGetParameter([glcontext CGLContextObj], kCGLCPSwapInterval, &state);
-//	if (glerr == kCGLNoError) {
-//		return true;
-//	}
-//	
-//	return false;
-//}
-
-//void CGL_SetSwapInterval (const GLint state)
-//{
-////    [glcontext makeCurrentContext];
-//    
-//    CGLError glerr = CGLSetParameter([glcontext CGLContextObj], kCGLCPSwapInterval, &state);
-//    if (glerr == kCGLNoError) {
-//        Con_Printf ("%s CGL swap interval\n", (state == 1) ? "Enabled" : "Disabled");
-//    } else {
-//        Con_Warning ("Unable to set CGL swap interval\n");
-//    }
-//}
 
 #define MAX_DISPLAYS 128
 
@@ -375,7 +233,6 @@ void VID_Init (void)
         if (bestModeIndex == 0xFFFFFFFF) {
 			Con_Warning ("No suitable display mode available for fullscreen\n");
 			Con_Warning ("Switch to window\n");
-//			fullscreen = false;
 			goto skipfullscreen;
         }
         
@@ -419,7 +276,6 @@ skipfullscreen:
     
     pixelAttributes[13] = colorDepth;
     
-//    if (fullscreen) {
 	if (vidmode_fullscreen) {
         pixelAttributes[14] = NSOpenGLPFAFullScreen;
         pixelAttributes[15] = NSOpenGLPFAScreenMask;
@@ -475,10 +331,6 @@ skipfullscreen:
         if (glerr) {
             Sys_Error("Cannot set fullscreen");
         }
-        
-//        do {
-//            [NSThread sleepForTimeInterval:2.0]; // wait for fade transition can reset gamma
-//        } while (CGDisplayFadeOperationInProgress());
     }
     
     vid_activewindow = true;
@@ -487,11 +339,6 @@ skipfullscreen:
     
     vid.conwidth = vid.width;
 	vid.conheight = vid.height;
-    
-//	VID_Gamma_Init ();
-    
-//	Cvar_RegisterVariableCallback (&vid_gamma, VID_Gamma);
-//	Cvar_RegisterVariableCallback (&vid_contrast, VID_Gamma);
     
     vid.recalc_refdef = true; // force a surface cache flush
     
@@ -503,13 +350,6 @@ skipfullscreen:
 	GL_Init();
 	
 	GL_SwapInterval(); // TODO: sync cvars
-	
-//	if (has_smp) {
-//		CGLError glerr = CGLEnable([glcontext CGLContextObj], kCGLCEMPEngine);
-//		if (glerr == kCGLNoError) {
-//			Con_Printf("Enabled multi-threaded GL engine\n");
-//		}
-//	}
 }
 
 /*
@@ -522,8 +362,6 @@ called at shutdown
 void VID_Shutdown (void)
 {
     if (display) {
-        
-//        VID_Gamma_Shutdown ();
         
         if (glcontext) {
             [NSOpenGLContext clearCurrentContext];
