@@ -1359,7 +1359,7 @@ void R_DrawTextureChains_Multitexture (model_t *model, entity_t *ent, texchain_t
 	int			i, j;
 	msurface_t	*s;
 	texture_t	*t;
-	texture_t	*tex;
+	texture_t	*tx;
 	float		*v;
 	qboolean	bound;
 	gltexture_t	*base, *glow;
@@ -1381,9 +1381,9 @@ void R_DrawTextureChains_Multitexture (model_t *model, entity_t *ent, texchain_t
         {
             if (!bound) //only bind once we are sure we need this texture
             {
-				tex = R_TextureAnimation (t, ent != NULL ? ent->frame : 0);
+				tx = R_TextureAnimation (t, ent != NULL ? ent->frame : 0);
 				
-				base = tex->base;
+				base = tx->base;
 				GL_SelectTMU0 ();
 				GL_BindTexture (base);
 				
@@ -1393,7 +1393,7 @@ void R_DrawTextureChains_Multitexture (model_t *model, entity_t *ent, texchain_t
                 if (t->texturechains[chain]->flags & SURF_DRAWFENCE)
                     glEnable (GL_ALPHA_TEST); // Flip alpha test back on
 				
-				if ((glow = tex->glow))
+				if ((glow = tx->glow))
 				{
 					GL_SelectTMU2 ();
 					GL_BindTexture (glow);
