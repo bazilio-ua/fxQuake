@@ -375,6 +375,7 @@ void R_LoadSkyBox (char *skybox);
 void R_FastSkyColor (void);
 
 // gl_fog.c
+void R_FogUpdate (float density, float red, float green, float blue, float time);
 void R_FogParseServerMessage (void);
 void R_FogParseServerMessage2 (void);
 float *R_FogGetColor (void);
@@ -500,7 +501,9 @@ extern	gltexture_t *particletexture2;
 extern	gltexture_t	*playertextures[MAX_SCOREBOARD];
 extern	gltexture_t	*skyboxtextures[6];
 
-extern	float globalwateralpha;
+extern	qboolean	oldsky;
+extern	char	skybox_name[MAX_QPATH];
+extern	float	globalwateralpha;
 
 #define	OVERBRIGHT_SCALE	2.0
 extern	int		d_overbright;
