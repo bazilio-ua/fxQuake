@@ -827,7 +827,7 @@ int			menu_numcachepics;
 qpic_t *Draw_PicFromWad (char *name)
 {
 	qpic_t	*p;
-	glpic_t	gl;
+	glpic_t	glp;
 	uintptr_t offset; //johnfitz
 	char texturename[64]; //johnfitz
 
@@ -854,25 +854,25 @@ qpic_t *Draw_PicFromWad (char *name)
 			for (j=0 ; j<p->width ; j++, k++)
 				scrap_texels[texnum][(y+i)*SCRAP_WIDTH + x + j] = p->data[k];
 
-		gl.gltexture = scrap_textures[texnum]; // changed to an array
+		glp.gltexture = scrap_textures[texnum]; // changed to an array
 		// no longer go from 0.01 to 0.99
-		gl.sl = x/(float)SCRAP_WIDTH;
-		gl.sh = (x+p->width)/(float)SCRAP_WIDTH;
-		gl.tl = y/(float)SCRAP_HEIGHT;
-		gl.th = (y+p->height)/(float)SCRAP_HEIGHT;
+		glp.sl = x/(float)SCRAP_WIDTH;
+		glp.sh = (x+p->width)/(float)SCRAP_WIDTH;
+		glp.tl = y/(float)SCRAP_HEIGHT;
+		glp.th = (y+p->height)/(float)SCRAP_HEIGHT;
 	}
 	else
 	{
 		sprintf (texturename, "%s:%s", WADFILE, name); //johnfitz
 		offset = (uintptr_t)p - (uintptr_t)wad_base + sizeof(int)*2; //johnfitz
-		gl.gltexture = TexMgr_LoadTexture (NULL, texturename, p->width, p->height, SRC_INDEXED, p->data, WADFILE, offset, TEXPREF_ALPHA | TEXPREF_PAD | TEXPREF_NOPICMIP);
-		gl.sl = 0;
-        gl.sh = (float)p->width/(float)TexMgr_PadConditional(p->width); //johnfitz
-		gl.tl = 0;
-		gl.th = (float)p->height/(float)TexMgr_PadConditional(p->height); //johnfitz
+		glp.gltexture = TexMgr_LoadTexture (NULL, texturename, p->width, p->height, SRC_INDEXED, p->data, WADFILE, offset, TEXPREF_ALPHA | TEXPREF_PAD | TEXPREF_NOPICMIP);
+		glp.sl = 0;
+        glp.sh = (float)p->width/(float)TexMgr_PadConditional(p->width); //johnfitz
+		glp.tl = 0;
+		glp.th = (float)p->height/(float)TexMgr_PadConditional(p->height); //johnfitz
 	}
     
-    memcpy (p->data, &gl, sizeof(glpic_t));
+    memcpy (p->data, &glp, sizeof(glpic_t));
     
 	return p;
 }
@@ -888,7 +888,7 @@ qpic_t *Draw_CachePic (char *path)
 	cachepic_t	*cpic;
 	int			i;
 	qpic_t		*p;
-	glpic_t		gl;
+	glpic_t		glp;
 
 	for (cpic=menu_cachepics, i=0 ; i<menu_numcachepics ; cpic++, i++)
 		if (!strcmp (path, cpic->name))
@@ -912,13 +912,13 @@ qpic_t *Draw_CachePic (char *path)
 	cpic->pic.height = p->height;
 
 	// fix gcc warnings
-	gl.gltexture = TexMgr_LoadTexture (NULL, path, p->width, p->height, SRC_INDEXED, p->data, path, sizeof(int)*2, TEXPREF_ALPHA | TEXPREF_PAD | TEXPREF_NOPICMIP);
-	gl.sl = 0;
-	gl.sh = (float)p->width/(float)TexMgr_PadConditional(p->width); //johnfitz
-	gl.tl = 0;
-	gl.th = (float)p->height/(float)TexMgr_PadConditional(p->height); //johnfitz
+	glp.gltexture = TexMgr_LoadTexture (NULL, path, p->width, p->height, SRC_INDEXED, p->data, path, sizeof(int)*2, TEXPREF_ALPHA | TEXPREF_PAD | TEXPREF_NOPICMIP);
+	glp.sl = 0;
+	glp.sh = (float)p->width/(float)TexMgr_PadConditional(p->width); //johnfitz
+	glp.tl = 0;
+	glp.th = (float)p->height/(float)TexMgr_PadConditional(p->height); //johnfitz
     
-	memcpy (cpic->pic.data, &gl, sizeof(glpic_t));
+	memcpy (cpic->pic.data, &glp, sizeof(glpic_t));
 
 	return &cpic->pic;
 }
@@ -1222,25 +1222,25 @@ Draw_AlphaPic
 */
 void Draw_AlphaPic (int x, int y, qpic_t *pic, float alpha)
 {
-	glpic_t			*gl;
+	glpic_t			*glp;
 
 	if (scrap_dirty)
 		Scrap_Upload ();
 
-	gl = (glpic_t *)pic->data;
+	glp = (glpic_t *)pic->data;
 
 	glDisable (GL_ALPHA_TEST);
 	glEnable (GL_BLEND);
 	glColor4f (1,1,1,alpha);
-	GL_BindTexture (gl->gltexture);
+	GL_BindTexture (glp->gltexture);
 	glBegin (GL_QUADS);
-	glTexCoord2f (gl->sl, gl->tl);
+	glTexCoord2f (glp->sl, glp->tl);
 	glVertex2f (x, y);
-	glTexCoord2f (gl->sh, gl->tl);
+	glTexCoord2f (glp->sh, glp->tl);
 	glVertex2f (x+pic->width, y);
-	glTexCoord2f (gl->sh, gl->th);
+	glTexCoord2f (glp->sh, glp->th);
 	glVertex2f (x+pic->width, y+pic->height);
-	glTexCoord2f (gl->sl, gl->th);
+	glTexCoord2f (glp->sl, glp->th);
 	glVertex2f (x, y+pic->height);
 	glEnd ();
 	glColor4f (1,1,1,1);
@@ -1256,25 +1256,25 @@ Draw_Pic
 */
 void Draw_Pic (int x, int y, qpic_t *pic)
 {
-	glpic_t			*gl;
+	glpic_t			*glp;
 
 	if (scrap_dirty)
 		Scrap_Upload ();
 
-	gl = (glpic_t *)pic->data;
+	glp = (glpic_t *)pic->data;
 
 	glDisable (GL_ALPHA_TEST); //FX new
 	glEnable (GL_BLEND); //FX
 	glColor4f (1,1,1,1);
-	GL_BindTexture (gl->gltexture);
+	GL_BindTexture (glp->gltexture);
 	glBegin (GL_QUADS);
-	glTexCoord2f (gl->sl, gl->tl);
+	glTexCoord2f (glp->sl, glp->tl);
 	glVertex2f (x, y);
-	glTexCoord2f (gl->sh, gl->tl);
+	glTexCoord2f (glp->sh, glp->tl);
 	glVertex2f (x+pic->width, y);
-	glTexCoord2f (gl->sh, gl->th);
+	glTexCoord2f (glp->sh, glp->th);
 	glVertex2f (x+pic->width, y+pic->height);
-	glTexCoord2f (gl->sl, gl->th);
+	glTexCoord2f (glp->sl, glp->th);
 	glVertex2f (x, y+pic->height);
 	glEnd ();
 	glEnable (GL_ALPHA_TEST); //FX new
@@ -1290,26 +1290,26 @@ Draw_SubPic
 void Draw_SubPic (int x, int y, qpic_t *pic, int srcx, int srcy, int width, int height)
 {
 	float			newsl, newtl, newsh, newth, oldglwidth, oldglheight; 
-	glpic_t			*gl;
+	glpic_t			*glp;
 
 	if (scrap_dirty)
 		Scrap_Upload ();
 
-	gl = (glpic_t *)pic->data;
+	glp = (glpic_t *)pic->data;
 
-	oldglwidth = gl->sh - gl->sl;
-	oldglheight = gl->th - gl->tl;
+	oldglwidth = glp->sh - glp->sl;
+	oldglheight = glp->th - glp->tl;
 
-	newsl = gl->sl + (srcx * oldglwidth) / pic->width;
+	newsl = glp->sl + (srcx * oldglwidth) / pic->width;
 	newsh = newsl + (width * oldglwidth) / pic->width;
 
-	newtl = gl->tl + (srcy * oldglheight) / pic->height;
+	newtl = glp->tl + (srcy * oldglheight) / pic->height;
 	newth = newtl + (height * oldglheight) / pic->height; 
 
 	glDisable (GL_ALPHA_TEST); //FX new
 	glEnable (GL_BLEND); //FX
 	glColor4f (1,1,1,1);
-	GL_BindTexture (gl->gltexture);
+	GL_BindTexture (glp->gltexture);
 	glBegin (GL_QUADS);
 	glTexCoord2f (newsl, newtl);
 	glVertex2f (x, y);
@@ -1355,8 +1355,8 @@ void Draw_TransPicTranslate (int x, int y, qpic_t *pic, int top, int bottom)
 	
 	if (top != oldtop || bottom != oldbottom)
 	{
-		glpic_t *p = (glpic_t *)pic->data;
-		gltexture_t *glt = p->gltexture;
+		glpic_t *glp = (glpic_t *)pic->data;
+		gltexture_t *glt = glp->gltexture;
 		oldtop = top;
 		oldbottom = bottom;
 		TexMgr_ReloadTextureTranslation (glt, top, bottom);
@@ -1403,14 +1403,14 @@ refresh window.
 */
 void Draw_TileClear (int x, int y, int w, int h)
 {
-	glpic_t	*gl;
+	glpic_t	*glp;
 
-	gl = (glpic_t *)draw_backtile->data;
+	glp = (glpic_t *)draw_backtile->data;
 
 	glDisable (GL_ALPHA_TEST); //FX new
 	glEnable (GL_BLEND); //FX
 	glColor4f (1,1,1,1); //FX new
-	GL_BindTexture (gl->gltexture);
+	GL_BindTexture (glp->gltexture);
 	glBegin (GL_QUADS);
 	glTexCoord2f (x/64.0, y/64.0);
 	glVertex2f (x, y);
