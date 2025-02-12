@@ -921,6 +921,7 @@ qpic_t *Draw_CachePic (char *path)
 	return &cpic->pic;
 }
 
+// -- //
 
 /*
 ===============
@@ -1514,6 +1515,8 @@ void Draw_EndDisc (void)
 {
 	
 }
+
+// -- //
 
 /*
 ================
