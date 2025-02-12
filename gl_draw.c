@@ -885,42 +885,42 @@ Draw_CachePic
 */
 qpic_t *Draw_CachePic (char *path)
 {
-	cachepic_t	*pic;
+	cachepic_t	*cpic;
 	int			i;
-	qpic_t		*dat;
+	qpic_t		*p;
 	glpic_t		gl;
 
-	for (pic=menu_cachepics, i=0 ; i<menu_numcachepics ; pic++, i++)
-		if (!strcmp (path, pic->name))
-			return &pic->pic;
+	for (cpic=menu_cachepics, i=0 ; i<menu_numcachepics ; cpic++, i++)
+		if (!strcmp (path, cpic->name))
+			return &cpic->pic;
 
 	if (menu_numcachepics == MAX_CACHED_PICS)
 		Sys_Error ("Draw_CachePic: menu_numcachepics == MAX_CACHED_PICS (%d)", MAX_CACHED_PICS);
 	menu_numcachepics++;
-	strcpy (pic->name, path);
+	strcpy (cpic->name, path);
 
 //
 // load the pic from disk
 //
-	dat = (qpic_t *)COM_LoadTempFile (path, NULL);
-	if (!dat)
+	p = (qpic_t *)COM_LoadTempFile (path, NULL);
+	if (!p)
 		Sys_Error ("Draw_CachePic: failed to load %s", path);
-	SwapPic (dat);
+	SwapPic (p);
 
 
-	pic->pic.width = dat->width;
-	pic->pic.height = dat->height;
+	cpic->pic.width = p->width;
+	cpic->pic.height = p->height;
 
 	// fix gcc warnings
-	gl.gltexture = TexMgr_LoadTexture (NULL, path, dat->width, dat->height, SRC_INDEXED, dat->data, path, sizeof(int)*2, TEXPREF_ALPHA | TEXPREF_PAD | TEXPREF_NOPICMIP);
+	gl.gltexture = TexMgr_LoadTexture (NULL, path, p->width, p->height, SRC_INDEXED, p->data, path, sizeof(int)*2, TEXPREF_ALPHA | TEXPREF_PAD | TEXPREF_NOPICMIP);
 	gl.sl = 0;
-	gl.sh = (float)dat->width/(float)TexMgr_PadConditional(dat->width); //johnfitz
+	gl.sh = (float)p->width/(float)TexMgr_PadConditional(p->width); //johnfitz
 	gl.tl = 0;
-	gl.th = (float)dat->height/(float)TexMgr_PadConditional(dat->height); //johnfitz
+	gl.th = (float)p->height/(float)TexMgr_PadConditional(p->height); //johnfitz
     
-	memcpy (pic->pic.data, &gl, sizeof(glpic_t));
+	memcpy (cpic->pic.data, &gl, sizeof(glpic_t));
 
-	return &pic->pic;
+	return &cpic->pic;
 }
 
 
