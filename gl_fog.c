@@ -226,31 +226,3 @@ void R_FogDisableGFog (void)
 		glDisable(GL_FOG);
 }
 
-/*
-=============
-R_FogStartAdditive
-
-called before drawing stuff that is additive blended -- sets fog color to black
-=============
-*/
-//void R_FogStartAdditive (void)
-//{
-//	vec3_t color = {0,0,0};
-//
-//	if (R_FogGetDensity() > 0)
-//		glFogfv(GL_FOG_COLOR, color);
-//}
-
-/*
-=============
-R_FogStopAdditive
-
-called after drawing stuff that is additive blended -- restores fog color
-=============
-*/
-//void R_FogStopAdditive (void)
-//{
-//	if (R_FogGetDensity() > 0)
-//		glFogfv(GL_FOG_COLOR, R_FogGetColor());
-//}
-

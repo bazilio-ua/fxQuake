@@ -382,8 +382,6 @@ float *R_FogGetColor (void);
 float R_FogGetDensity (void);
 void R_FogEnableGFog (void);
 void R_FogDisableGFog (void);
-//void R_FogStartAdditive (void);
-//void R_FogStopAdditive (void);
 void R_FogSetupFrame (void);
 
 // gl_bloom.c
