@@ -358,26 +358,34 @@ void R_RebuildAllLightmaps (void);
 // gl_screen.c
 void SCR_TileClear (void);
 
-// gl_anim.c
+// gl_anim.c -- old, renamed
+// gl_warp.c
 void R_UpdateWarpTextures (void);
+
+// image.c
 byte *GL_LoadImage (char *name, int *width, int *height);
 
+// gl_misc.c
 void R_InitMapGlobals (void);
 void R_ParseWorldspawn (void);
+
+// gl_sky.c
 void R_DrawSky (void);
 void R_LoadSkyBox (char *skybox);
 void R_FastSkyColor (void);
 
+// gl_fog.c
 void R_FogParseServerMessage (void);
 void R_FogParseServerMessage2 (void);
 float *R_FogGetColor (void);
 float R_FogGetDensity (void);
 void R_FogEnableGFog (void);
 void R_FogDisableGFog (void);
-void R_FogStartAdditive (void);
-void R_FogStopAdditive (void);
+//void R_FogStartAdditive (void);
+//void R_FogStopAdditive (void);
 void R_FogSetupFrame (void);
 
+// gl_bloom.c
 void R_InitBloomTextures (void);
 void R_BloomBlend (void);
 
