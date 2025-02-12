@@ -42,7 +42,7 @@ typedef struct
 {
 	int			width, height;
 	byte		data[4];			// variably sized
-} qpic_t;
+} qpic_t; 							// (aka '.lmp')
 
 typedef struct
 {
