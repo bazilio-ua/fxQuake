@@ -364,6 +364,7 @@ void R_UpdateWarpTextures (void);
 
 // image.c
 byte *Image_LoadImage (char *name, int *width, int *height);
+qboolean Image_WriteTGA (char *name, byte *data, int width, int height, int bpp, qboolean upsidedown);
 
 // gl_misc.c
 void R_InitMapGlobals (void);

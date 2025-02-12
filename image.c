@@ -388,3 +388,66 @@ byte *Image_LoadImage (char *name, int *width, int *height)
 	return NULL;
 }
 
+/*
+=================================================================
+
+	IMAGE SAVING
+
+=================================================================
+*/
+
+//==============================================================================
+//
+//  Write TARGA
+//
+//==============================================================================
+
+//#define TARGAHEADERSIZE 18 // size on disk
+
+/*
+============
+Image_WriteTGA -- writes RGB or RGBA data to a TGA file
+
+returns true if successful
+
+TODO: support BGRA and BGR formats (since opengl can return them, and we don't have to swap)
+============
+*/
+qboolean Image_WriteTGA (char *name, byte *data, int width, int height, int bpp, qboolean upsidedown)
+{
+	int		handle, i, temp, size, bytes;
+	char	pathname[MAX_OSPATH];
+	byte	header[TARGAHEADERSIZE];
+
+	sprintf (pathname, "%s/%s", com_gamedir, name);
+	handle = Sys_FileOpenWrite (pathname);
+	if (handle == -1)
+		return false;
+
+	memset (&header, 0, TARGAHEADERSIZE);
+	header[2] = 2; // uncompressed type
+	header[12] = width&255;
+	header[13] = width>>8;
+	header[14] = height&255;
+	header[15] = height>>8;
+	header[16] = bpp; // pixel size
+	if (upsidedown)
+		header[17] = 0x20; // upside-down attribute
+
+	bytes = bpp/8;
+	size = width*height*bytes;
+	// swap red and blue bytes
+	for (i=0; i<size; i+=bytes)
+	{
+		temp = data[i];
+		data[i] = data[i+2];
+		data[i+2] = temp;
+	}
+
+	Sys_FileWrite (handle, &header, TARGAHEADERSIZE);
+	Sys_FileWrite (handle, data, size);
+	Sys_FileClose (handle);
+
+	return true;
+}
+
