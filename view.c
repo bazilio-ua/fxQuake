@@ -555,7 +555,7 @@ callback when the gamma/contrast cvar changes
 */
 void V_UpdateGamma (void)
 {
-	int		i;//, j;
+	int		i;
 	byte	*basepal, *newpal;
 	byte	pal[768];
 	int		ir, ig, ib;
@@ -618,14 +618,14 @@ void V_SetPalette (byte *palette)
 		SetPaletteColor (&d_8to24table_opaque[i], src[0], src[1], src[2], 255);
 		if (GetBit (is_fullbright, i))
 		{
-			SetPaletteColor (&d_8to24table_fbright[i], src[0], src[1], src[2], 255);
+			SetPaletteColor (&d_8to24table_fullbright[i], src[0], src[1], src[2], 255);
 			// nobright palette, fullbright indices (224-255) are black (for additive blending)
 			SetPaletteColor (&d_8to24table_nobright[i], 0, 0, 0, 255);
 		}
 		else
 		{
 			// fullbright palette, nobright indices (0-223) are black (for additive blending)
-			SetPaletteColor (&d_8to24table_fbright[i], 0, 0, 0, 255);
+			SetPaletteColor (&d_8to24table_fullbright[i], 0, 0, 0, 255);
 			SetPaletteColor (&d_8to24table_nobright[i], src[0], src[1], src[2], 255);
 		}
 	}
@@ -635,8 +635,8 @@ void V_SetPalette (byte *palette)
 	((byte *)&d_8to24table[255])[3] = 0;
 	
 	// fullbright palette, for fence textures
-	memcpy (d_8to24table_fbright_fence, d_8to24table_fbright, 256*4);
-	d_8to24table_fbright_fence[255] = 0; // Alpha of zero.
+	memcpy (d_8to24table_fullbright_fence, d_8to24table_fullbright, 256*4);
+	d_8to24table_fullbright_fence[255] = 0; // Alpha of zero.
 	
 	// nobright palette, for fence textures
 	memcpy (d_8to24table_nobright_fence, d_8to24table_nobright, 256*4);

@@ -80,8 +80,8 @@ static GLenum currenttarget = GL_TEXTURE0_ARB;
 unsigned int d_8to24table_original[256];		//standard unmodifyed palette
 unsigned int d_8to24table_opaque[256];			//standard palette with alpha 255 for all colors
 unsigned int d_8to24table[256];					//standard palette, 255 is transparent
-unsigned int d_8to24table_fbright[256];			//fullbright palette, 0-223 are black (for additive blending)
-unsigned int d_8to24table_fbright_fence[256];	//fullbright palette, for fence textures
+unsigned int d_8to24table_fullbright[256];			//fullbright palette, 0-223 are black (for additive blending)
+unsigned int d_8to24table_fullbright_fence[256];	//fullbright palette, for fence textures
 unsigned int d_8to24table_nobright[256];		//nobright palette, 224-255 are black (for additive blending)
 unsigned int d_8to24table_nobright_fence[256];	//nobright palette, for fence textures
 unsigned int d_8to24table_conchars[256];		//conchars palette, 0 and 255 are transparent
@@ -2335,9 +2335,9 @@ void TexMgr_Upload8 (gltexture_t *glt, byte *data)
 	if (glt->flags & TEXPREF_FULLBRIGHT)
 	{
 		if (glt->flags & TEXPREF_ALPHA)
-			pal = d_8to24table_fbright_fence;
+			pal = d_8to24table_fullbright_fence;
 		else
-			pal = d_8to24table_fbright;
+			pal = d_8to24table_fullbright;
 		padbyte = 0;
 	}
 	else if (glt->flags & TEXPREF_NOBRIGHT)
