@@ -38,6 +38,8 @@ char loadfilename[MAX_OSPATH]; // file scope so that error messages can use it
 //
 //==============================================================================
 
+#define TARGAHEADERSIZE 18 // size on disk
+
 typedef struct targaheader_s {
 	byte 	id_length, colormap_type, image_type;
 	unsigned short	colormap_index, colormap_length;
@@ -45,8 +47,6 @@ typedef struct targaheader_s {
 	unsigned short	x_origin, y_origin, width, height;
 	byte	pixel_size, attributes;
 } targaheader_t;
-
-#define TARGAHEADERSIZE 18 // size on disk
 
 int fgetLittleShort (FILE *f)
 {
@@ -75,73 +75,73 @@ int fgetLittleLong (FILE *f)
 Image_LoadTGA
 =============
 */
-byte *Image_LoadTGA (FILE *fin, int *width, int *height)
+byte *Image_LoadTGA (FILE *f, int *width, int *height)
 {
 	int				columns, rows, numPixels;
 	byte			*pixbuf;
 	int				row, column;
-	byte			*targa_rgba;
+	byte			*rgba_data;
 	int				realrow; //johnfitz -- fix for upside-down targas
 	qboolean		upside_down; //johnfitz -- fix for upside-down targas
-	targaheader_t targa_header;
+	targaheader_t header;
 
-	targa_header.id_length = fgetc(fin);
-	targa_header.colormap_type = fgetc(fin);
-	targa_header.image_type = fgetc(fin);
+	header.id_length = fgetc(f);
+	header.colormap_type = fgetc(f);
+	header.image_type = fgetc(f);
 
-	targa_header.colormap_index = fgetLittleShort(fin);
-	targa_header.colormap_length = fgetLittleShort(fin);
-	targa_header.colormap_size = fgetc(fin);
-	targa_header.x_origin = fgetLittleShort(fin);
-	targa_header.y_origin = fgetLittleShort(fin);
-	targa_header.width = fgetLittleShort(fin);
-	targa_header.height = fgetLittleShort(fin);
-	targa_header.pixel_size = fgetc(fin);
-	targa_header.attributes = fgetc(fin);
+	header.colormap_index = fgetLittleShort(f);
+	header.colormap_length = fgetLittleShort(f);
+	header.colormap_size = fgetc(f);
+	header.x_origin = fgetLittleShort(f);
+	header.y_origin = fgetLittleShort(f);
+	header.width = fgetLittleShort(f);
+	header.height = fgetLittleShort(f);
+	header.pixel_size = fgetc(f);
+	header.attributes = fgetc(f);
 
-	if (targa_header.image_type!=2 && targa_header.image_type!=10)
+	if (header.image_type!=2 && header.image_type!=10)
 		Sys_Error ("Image_LoadTGA: %s is not a type 2 or type 10 targa", loadfilename);
 
-	if (targa_header.colormap_type !=0 || (targa_header.pixel_size!=32 && targa_header.pixel_size!=24))
+	if (header.colormap_type !=0 || (header.pixel_size!=32 && header.pixel_size!=24))
 		Sys_Error ("Image_LoadTGA: %s is not a 24bit or 32bit targa", loadfilename);
 
-	columns = targa_header.width;
-	rows = targa_header.height;
+	columns = header.width;
+	rows = header.height;
 	numPixels = columns * rows;
-	upside_down = !(targa_header.attributes & 0x20); //johnfitz -- fix for upside-down targas
+	upside_down = !(header.attributes & 0x20); //johnfitz -- fix for upside-down targas
 
-	targa_rgba = Hunk_Alloc (numPixels*4);
+	rgba_data = Hunk_Alloc (numPixels*4);
 
-	if (targa_header.id_length != 0)
-		fseek(fin, targa_header.id_length, SEEK_CUR);  // skip TARGA image comment
+	if (header.id_length != 0)
+		fseek(f, header.id_length, SEEK_CUR);  // skip TARGA image comment
 
-	if (targa_header.image_type==2) // Uncompressed, RGB images
+	if (header.image_type==2) // Uncompressed, RGB images
 	{
 		for(row=rows-1; row>=0; row--)
 		{
 			//johnfitz -- fix for upside-down targas
 			realrow = upside_down ? row : rows - 1 - row;
-			pixbuf = targa_rgba + realrow*columns*4;
+			pixbuf = rgba_data + realrow*columns*4;
 			//johnfitz
 			for(column=0; column<columns; column++)
 			{
 				byte red,green,blue,alphabyte;
-				switch (targa_header.pixel_size)
+				switch (header.pixel_size)
 				{
 				case 24:
-					blue = getc(fin);
-					green = getc(fin);
-					red = getc(fin);
+					blue = getc(f);
+					green = getc(f);
+					red = getc(f);
 					*pixbuf++ = red;
 					*pixbuf++ = green;
 					*pixbuf++ = blue;
 					*pixbuf++ = 255;
 					break;
 				case 32:
-					blue = getc(fin);
-					green = getc(fin);
-					red = getc(fin);
-					alphabyte = getc(fin);
+					blue = getc(f);
+					green = getc(f);
+					red = getc(f);
+					alphabyte = getc(f);
 					*pixbuf++ = red;
 					*pixbuf++ = green;
 					*pixbuf++ = blue;
@@ -151,34 +151,34 @@ byte *Image_LoadTGA (FILE *fin, int *width, int *height)
 			}
 		}
 	}
-	else if (targa_header.image_type==10) // Runlength encoded RGB images
+	else if (header.image_type==10) // Runlength encoded RGB images
 	{
 		byte red,green,blue,alphabyte,packetHeader,packetSize,j;
 		for(row=rows-1; row>=0; row--)
 		{
 			//johnfitz -- fix for upside-down targas
 			realrow = upside_down ? row : rows - 1 - row;
-			pixbuf = targa_rgba + realrow*columns*4;
+			pixbuf = rgba_data + realrow*columns*4;
 			//johnfitz
 			for(column=0; column<columns; )
 			{
-				packetHeader=getc(fin);
+				packetHeader=getc(f);
 				packetSize = 1 + (packetHeader & 0x7f);
 				if (packetHeader & 0x80) // run-length packet
 				{
-					switch (targa_header.pixel_size)
+					switch (header.pixel_size)
 					{
 					case 24:
-						blue = getc(fin);
-						green = getc(fin);
-						red = getc(fin);
+						blue = getc(f);
+						green = getc(f);
+						red = getc(f);
 						alphabyte = 255;
 						break;
 					case 32:
-						blue = getc(fin);
-						green = getc(fin);
-						red = getc(fin);
-						alphabyte = getc(fin);
+						blue = getc(f);
+						green = getc(f);
+						red = getc(f);
+						alphabyte = getc(f);
 						break;
 					default: /* avoid compiler warnings */
 						blue = green = red = alphabyte = 0;
@@ -200,7 +200,7 @@ byte *Image_LoadTGA (FILE *fin, int *width, int *height)
 								goto breakOut;
 							//johnfitz -- fix for upside-down targas
 							realrow = upside_down ? row : rows - 1 - row;
-							pixbuf = targa_rgba + realrow*columns*4;
+							pixbuf = rgba_data + realrow*columns*4;
 							//johnfitz
 						}
 					}
@@ -209,22 +209,22 @@ byte *Image_LoadTGA (FILE *fin, int *width, int *height)
 				{
 					for(j=0;j<packetSize;j++)
 					{
-						switch (targa_header.pixel_size)
+						switch (header.pixel_size)
 						{
 						case 24:
-							blue = getc(fin);
-							green = getc(fin);
-							red = getc(fin);
+							blue = getc(f);
+							green = getc(f);
+							red = getc(f);
 							*pixbuf++ = red;
 							*pixbuf++ = green;
 							*pixbuf++ = blue;
 							*pixbuf++ = 255;
 							break;
 						case 32:
-							blue = getc(fin);
-							green = getc(fin);
-							red = getc(fin);
-							alphabyte = getc(fin);
+							blue = getc(f);
+							green = getc(f);
+							red = getc(f);
+							alphabyte = getc(f);
 							*pixbuf++ = red;
 							*pixbuf++ = green;
 							*pixbuf++ = blue;
@@ -243,7 +243,7 @@ byte *Image_LoadTGA (FILE *fin, int *width, int *height)
 								goto breakOut;
 							//johnfitz -- fix for upside-down targas
 							realrow = upside_down ? row : rows - 1 - row;
-							pixbuf = targa_rgba + realrow*columns*4;
+							pixbuf = rgba_data + realrow*columns*4;
 							//johnfitz
 						}
 					}
@@ -253,12 +253,12 @@ byte *Image_LoadTGA (FILE *fin, int *width, int *height)
 		}
 	}
 
-	fclose(fin);
+	fclose(f);
 
-	*width = (int)(targa_header.width);
-	*height = (int)(targa_header.height);
+	*width = (int)(header.width);
+	*height = (int)(header.height);
 
-	return targa_rgba;
+	return rgba_data;
 }
 
 //==============================================================================
@@ -290,46 +290,46 @@ Image_LoadPCX
 */
 byte *Image_LoadPCX (FILE *f, int *width, int *height)
 {
-	pcxheader_t	pcx;
+	pcxheader_t	header;
 	int			x, y, w, h, readbyte, runlength, start;
-	byte		*p, *pcx_rgb;
+	byte		*p, *rgb_data;
 	byte		palette[768];
 
 	start = ftell (f); // save start of file (since we might be inside a pak file, SEEK_SET might not be the start of the pcx)
 
-	fread(&pcx, sizeof(pcx), 1, f);
-	pcx.xmin = (unsigned short)LittleShort (pcx.xmin);
-	pcx.ymin = (unsigned short)LittleShort (pcx.ymin);
-	pcx.xmax = (unsigned short)LittleShort (pcx.xmax);
-	pcx.ymax = (unsigned short)LittleShort (pcx.ymax);
-	pcx.bytes_per_line = (unsigned short)LittleShort (pcx.bytes_per_line);
+	fread(&header, sizeof(header), 1, f);
+	header.xmin = (unsigned short)LittleShort (header.xmin);
+	header.ymin = (unsigned short)LittleShort (header.ymin);
+	header.xmax = (unsigned short)LittleShort (header.xmax);
+	header.ymax = (unsigned short)LittleShort (header.ymax);
+	header.bytes_per_line = (unsigned short)LittleShort (header.bytes_per_line);
 
-	if (pcx.signature != 0x0A)
+	if (header.signature != 0x0A)
 		Sys_Error ("Image_LoadPCX: '%s' is not a valid PCX file", loadfilename);
 
-	if (pcx.version != 5)
-		Sys_Error ("Image_LoadPCX: '%s' is version %i, should be 5", loadfilename, pcx.version);
+	if (header.version != 5)
+		Sys_Error ("Image_LoadPCX: '%s' is version %i, should be 5", loadfilename, header.version);
 
-	if (pcx.encoding != 1 || pcx.bits_per_pixel != 8 || pcx.color_planes != 1)
+	if (header.encoding != 1 || header.bits_per_pixel != 8 || header.color_planes != 1)
 		Sys_Error ("Image_LoadPCX: '%s' has wrong encoding or bit depth", loadfilename);
 
-	w = pcx.xmax - pcx.xmin + 1;
-	h = pcx.ymax - pcx.ymin + 1;
+	w = header.xmax - header.xmin + 1;
+	h = header.ymax - header.ymin + 1;
 
-	pcx_rgb = Hunk_Alloc ((w*h+1)*4); // +1 to allow reading padding byte on last line
+	rgb_data = Hunk_Alloc ((w*h+1)*4); // +1 to allow reading padding byte on last line
 
 	// load palette
 	fseek (f, start + com_filesize - 768, SEEK_SET);
 	fread (palette, 1, 768, f);
 
 	// back to start of image data
-	fseek (f, start + sizeof(pcx), SEEK_SET);
+	fseek (f, start + sizeof(header), SEEK_SET);
 
 	for (y=0; y<h; y++)
 	{
-		p = pcx_rgb + y * w * 4;
+		p = rgb_data + y * w * 4;
 
-		for (x=0; x<(pcx.bytes_per_line); ) // read the extra padding byte if necessary
+		for (x=0; x<(header.bytes_per_line); ) // read the extra padding byte if necessary
 		{
 			readbyte = fgetc(f);
 
@@ -358,7 +358,7 @@ byte *Image_LoadPCX (FILE *f, int *width, int *height)
 	*width = w;
 	*height = h;
 
-	return pcx_rgb;
+	return rgb_data;
 }
 
 
@@ -402,7 +402,6 @@ byte *Image_LoadImage (char *name, int *width, int *height)
 //
 //==============================================================================
 
-//#define TARGAHEADERSIZE 18 // size on disk
 
 /*
 ============
