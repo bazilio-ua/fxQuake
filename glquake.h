@@ -363,7 +363,7 @@ void SCR_TileClear (void);
 void R_UpdateWarpTextures (void);
 
 // image.c
-byte *GL_LoadImage (char *name, int *width, int *height);
+byte *Image_LoadImage (char *name, int *width, int *height);
 
 // gl_misc.c
 void R_InitMapGlobals (void);

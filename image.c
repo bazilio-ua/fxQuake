@@ -364,14 +364,14 @@ byte *Image_LoadPCX (FILE *f, int *width, int *height)
 
 /*
 ============
-GL_LoadImage
+Image_LoadImage
 
 returns a pointer to hunk allocated RGBA data
 
 TODO: search order: tga png jpg pcx lmp
 ============
 */
-byte *GL_LoadImage (char *name, int *width, int *height)
+byte *Image_LoadImage (char *name, int *width, int *height)
 {
 	FILE	*f;
 

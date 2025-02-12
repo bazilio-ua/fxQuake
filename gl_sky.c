@@ -127,7 +127,7 @@ void R_LoadSkyBox (char *skybox)
 		mark = Hunk_LowMark ();
 		
 		sprintf (name, "gfx/env/%s%s", skybox, suf[i]);
-		data = GL_LoadImage (name, &width, &height);
+		data = Image_LoadImage (name, &width, &height);
 		if (data)
 		{
 			skyboxtextures[i] = TexMgr_LoadTexture (cl.worldmodel, name, width, height, SRC_RGBA, data, name, 0, TEXPREF_SKY);

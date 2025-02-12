@@ -2669,7 +2669,7 @@ void TexMgr_ReloadTextureTranslation (gltexture_t *glt, int top, int bottom)
 		}
 	}
 	else if (glt->source_file[0] && !glt->source_offset)
-		data = GL_LoadImage (glt->source_file, (int *)&glt->source_width, (int *)&glt->source_height); // simple file
+		data = Image_LoadImage (glt->source_file, (int *)&glt->source_width, (int *)&glt->source_height); // simple file
 	else if (!glt->source_file[0] && glt->source_offset)
 		data = (byte *)glt->source_offset; // image in memory
 
