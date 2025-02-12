@@ -81,9 +81,9 @@ unsigned int d_8to24table_original[256];		//standard unmodifyed palette
 unsigned int d_8to24table_opaque[256];			//standard palette with alpha 255 for all colors
 unsigned int d_8to24table[256];					//standard palette, 255 is transparent
 unsigned int d_8to24table_fullbright[256];			//fullbright palette, 0-223 are black (for additive blending)
-unsigned int d_8to24table_fullbright_fence[256];	//fullbright palette, for fence textures
+unsigned int d_8to24table_fullbright_holey[256];	//fullbright palette, for holey textures (fence)
 unsigned int d_8to24table_nobright[256];		//nobright palette, 224-255 are black (for additive blending)
-unsigned int d_8to24table_nobright_fence[256];	//nobright palette, for fence textures
+unsigned int d_8to24table_nobright_holey[256];	//nobright palette, for holey textures (fence)
 unsigned int d_8to24table_conchars[256];		//conchars palette, 0 and 255 are transparent
 
 unsigned int is_fullbright[256/32];
@@ -2335,7 +2335,7 @@ void TexMgr_Upload8 (gltexture_t *glt, byte *data)
 	if (glt->flags & TEXPREF_FULLBRIGHT)
 	{
 		if (glt->flags & TEXPREF_ALPHA)
-			pal = d_8to24table_fullbright_fence;
+			pal = d_8to24table_fullbright_holey;
 		else
 			pal = d_8to24table_fullbright;
 		padbyte = 0;
@@ -2343,7 +2343,7 @@ void TexMgr_Upload8 (gltexture_t *glt, byte *data)
 	else if (glt->flags & TEXPREF_NOBRIGHT)
 	{
 		if (glt->flags & TEXPREF_ALPHA)
-			pal = d_8to24table_nobright_fence;
+			pal = d_8to24table_nobright_holey;
 		else
 			pal = d_8to24table_nobright;
 		padbyte = 0;

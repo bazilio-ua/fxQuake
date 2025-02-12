@@ -127,7 +127,7 @@ typedef struct texture_s
 #define SURF_DRAWSLIME		0x2000
 #define SURF_DRAWTELEPORT	0x4000
 #define SURF_DRAWWATER		0x8000
-#define SURF_DRAWFENCE		0x10000 // EER1
+#define SURF_DRAWHOLEY		0x10000 // EER1 (fence)
 
 typedef struct
 {

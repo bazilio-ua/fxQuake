@@ -793,7 +793,7 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, model_t *model, entity_t 
 		else
 			glColor3f (1, 1, 1);
 
-		if (s->flags & SURF_DRAWFENCE)
+		if (s->flags & SURF_DRAWHOLEY)
 			glEnable (GL_ALPHA_TEST); // Flip on alpha test
 		
 		
@@ -869,7 +869,7 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, model_t *model, entity_t 
 			glColor3f (1, 1, 1);
 		}
 
-		if (s->flags & SURF_DRAWFENCE)
+		if (s->flags & SURF_DRAWHOLEY)
 			glDisable (GL_ALPHA_TEST); // Flip alpha test back off
 		
 		if (flatcolor) {
@@ -1390,7 +1390,7 @@ void R_DrawTextureChains_Multitexture (model_t *model, entity_t *ent, texchain_t
 				if (flatcolor)
 					glColor3fv (base->colors.basecolor);
 				
-                if (t->texturechains[chain]->flags & SURF_DRAWFENCE)
+                if (t->texturechains[chain]->flags & SURF_DRAWHOLEY)
                     glEnable (GL_ALPHA_TEST); // Flip alpha test back on
 				
 				if ((glow = tx->glow))
@@ -1433,7 +1433,7 @@ void R_DrawTextureChains_Multitexture (model_t *model, entity_t *ent, texchain_t
 		
 		GL_SelectTMU0 ();
         
-		if (bound && t->texturechains[chain]->flags & SURF_DRAWFENCE)
+		if (bound && t->texturechains[chain]->flags & SURF_DRAWHOLEY)
 			glDisable (GL_ALPHA_TEST); // Flip alpha test back off
 	}
 	

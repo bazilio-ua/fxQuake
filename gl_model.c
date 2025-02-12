@@ -535,7 +535,7 @@ void Mod_LoadTextures (lump_t *l)
 				
 				mark = Hunk_LowMark ();
 				
-				if (tx->name[0] == '{') // fence texture
+				if (tx->name[0] == '{') // holey texture (fence)
 					extraflags |= TEXPREF_ALPHA;
 
 				offset = (uintptr_t)(mt+1) - (uintptr_t)mod_base;
@@ -1337,9 +1337,9 @@ void Mod_SetDrawingFlags (msurface_t *out)
 		}
 
 	}
-	else if (out->texinfo->texture->name[0] == '{') // surface with fence texture
+	else if (out->texinfo->texture->name[0] == '{') // surface with holey texture (fence)
 	{
-		out->flags |= SURF_DRAWFENCE;
+		out->flags |= SURF_DRAWHOLEY;
 	}
 	else if (out->texinfo->flags & TEX_MISSING) // texture is missing from bsp
 	{
