@@ -331,7 +331,7 @@ void R_DrawParticle (particle_t *p);
 void R_ClearParticles (void);
 
 // gl_efrag.c
-void R_StoreEfrags (efrag_t **ppefrag);
+void R_StoreEfrags (efrag_t **efrags);
  
 // gl_light.c
 void R_AnimateLight (void);

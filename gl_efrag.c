@@ -178,33 +178,33 @@ R_StoreEfrags
 johnfitz -- pointless switch statement removed.
 ================
 */
-void R_StoreEfrags (efrag_t **ppefrag)
+void R_StoreEfrags (efrag_t **efrags)
 {
-	entity_t	*pent;
-	efrag_t		*pefrag;
+	entity_t	*ent;
+	efrag_t		*efrag;
 
-    while ((pefrag = *ppefrag) != NULL)
+    while ((efrag = *efrags) != NULL)
 	{
-		pent = pefrag->entity;
+		ent = efrag->entity;
         
-        if (!pent)
-            Host_Error ("R_StoreEfrags: pent is NULL");
+        if (!ent)
+            Host_Error ("R_StoreEfrags: ent is NULL");
 
         // some progs might try to send static ents with no model through here...
-		if (!pent->model) 
+		if (!ent->model) 
             continue;
         
 		// prevent adding twice in this render frame (or if an entity is in more than one leaf)
-		if ((pent->visframe != r_framecount) && (cl_numvisedicts < MAX_VISEDICTS))
+		if ((ent->visframe != r_framecount) && (cl_numvisedicts < MAX_VISEDICTS))
 		{
 			// add it to the visible edicts list
-			cl_visedicts[cl_numvisedicts++] = pent;
+			cl_visedicts[cl_numvisedicts++] = ent;
             
             // mark that we've recorded this entity for this frame
-			pent->visframe = r_framecount;
+			ent->visframe = r_framecount;
 		}
         
-		ppefrag = &pefrag->leafnext;
+		efrags = &efrag->leafnext;
 	}
 }
 
