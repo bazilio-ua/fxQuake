@@ -17,6 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
+// gl_warp.c -- warping animation support
 // gl_anim.c -- handle warping sky/water animation, fog and bloom
 
 #include "quakedef.h"

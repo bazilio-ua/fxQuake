@@ -22,7 +22,7 @@
 		42B718401EA2C0E400BD51E1 /* console.c in Sources */ = {isa = PBXBuildFile; fileRef = 4273FAC01DFF2EDA005DC9A7 /* console.c */; };
 		42B718411EA2C0E400BD51E1 /* crc.c in Sources */ = {isa = PBXBuildFile; fileRef = 4273FAC21DFF2EDA005DC9A7 /* crc.c */; };
 		42B718421EA2C0E400BD51E1 /* cvar.c in Sources */ = {isa = PBXBuildFile; fileRef = 4273FAC41DFF2EDA005DC9A7 /* cvar.c */; };
-		42B718431EA2C0E400BD51E1 /* gl_anim.c in Sources */ = {isa = PBXBuildFile; fileRef = 4273FAC71DFF2EDA005DC9A7 /* gl_anim.c */; };
+		42B718431EA2C0E400BD51E1 /* gl_warp.c in Sources */ = {isa = PBXBuildFile; fileRef = 4273FAC71DFF2EDA005DC9A7 /* gl_warp.c */; };
 		42B718441EA2C0E400BD51E1 /* gl_draw.c in Sources */ = {isa = PBXBuildFile; fileRef = 4273FAC81DFF2EDA005DC9A7 /* gl_draw.c */; };
 		42B718451EA2C0E400BD51E1 /* gl_efrag.c in Sources */ = {isa = PBXBuildFile; fileRef = 4273FAC91DFF2EDA005DC9A7 /* gl_efrag.c */; };
 		42B718461EA2C0E400BD51E1 /* gl_light.c in Sources */ = {isa = PBXBuildFile; fileRef = 4273FACA1DFF2EDA005DC9A7 /* gl_light.c */; };
@@ -95,7 +95,7 @@
 		4273FAC41DFF2EDA005DC9A7 /* cvar.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cvar.c; sourceTree = SOURCE_ROOT; };
 		4273FAC51DFF2EDA005DC9A7 /* cvar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cvar.h; sourceTree = SOURCE_ROOT; };
 		4273FAC61DFF2EDA005DC9A7 /* draw.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = draw.h; sourceTree = SOURCE_ROOT; };
-		4273FAC71DFF2EDA005DC9A7 /* gl_anim.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gl_anim.c; sourceTree = SOURCE_ROOT; };
+		4273FAC71DFF2EDA005DC9A7 /* gl_warp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gl_warp.c; sourceTree = SOURCE_ROOT; };
 		4273FAC81DFF2EDA005DC9A7 /* gl_draw.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gl_draw.c; sourceTree = SOURCE_ROOT; };
 		4273FAC91DFF2EDA005DC9A7 /* gl_efrag.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gl_efrag.c; sourceTree = SOURCE_ROOT; };
 		4273FACA1DFF2EDA005DC9A7 /* gl_light.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gl_light.c; sourceTree = SOURCE_ROOT; };
@@ -270,7 +270,6 @@
 				4273FAC41DFF2EDA005DC9A7 /* cvar.c */,
 				4273FAC51DFF2EDA005DC9A7 /* cvar.h */,
 				4273FAC61DFF2EDA005DC9A7 /* draw.h */,
-				4273FAC71DFF2EDA005DC9A7 /* gl_anim.c */,
 				4273FAC81DFF2EDA005DC9A7 /* gl_draw.c */,
 				4273FAC91DFF2EDA005DC9A7 /* gl_efrag.c */,
 				4273FACA1DFF2EDA005DC9A7 /* gl_light.c */,
@@ -281,6 +280,7 @@
 				4273FACF1DFF2EDA005DC9A7 /* gl_part.c */,
 				4273FAD01DFF2EDA005DC9A7 /* gl_screen.c */,
 				4273FAD11DFF2EDA005DC9A7 /* gl_surf.c */,
+				4273FAC71DFF2EDA005DC9A7 /* gl_warp.c */,
 				4273FAD21DFF2EDA005DC9A7 /* gl_warp_sin.h */,
 				4273FAD31DFF2EDA005DC9A7 /* glquake.h */,
 				4273FAD41DFF2EDA005DC9A7 /* host_cmd.c */,
@@ -455,7 +455,7 @@
 				42B718401EA2C0E400BD51E1 /* console.c in Sources */,
 				42B718411EA2C0E400BD51E1 /* crc.c in Sources */,
 				42B718421EA2C0E400BD51E1 /* cvar.c in Sources */,
-				42B718431EA2C0E400BD51E1 /* gl_anim.c in Sources */,
+				42B718431EA2C0E400BD51E1 /* gl_warp.c in Sources */,
 				42B718441EA2C0E400BD51E1 /* gl_draw.c in Sources */,
 				42B718451EA2C0E400BD51E1 /* gl_efrag.c in Sources */,
 				42B718461EA2C0E400BD51E1 /* gl_light.c in Sources */,
