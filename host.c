@@ -259,27 +259,27 @@ void Host_InitLocal (void)
 
 	Cmd_AddCommand ("saveconfig", Host_SaveConfig_f);
 
-	Cvar_RegisterVariable (&host_framerate);
-	Cvar_RegisterVariable (&host_timescale);
-	Cvar_RegisterVariable (&host_speeds);
-	Cvar_RegisterVariableCallback (&host_maxfps, Host_MaxFPS);
+	Cvar_Register (&host_framerate);
+	Cvar_Register (&host_timescale);
+	Cvar_Register (&host_speeds);
+	Cvar_RegisterCallback (&host_maxfps, Host_MaxFPS);
 
-	Cvar_RegisterVariable (&sys_ticrate);
-	Cvar_RegisterVariable (&sys_throttle);
-	Cvar_RegisterVariable (&serverprofile);
+	Cvar_Register (&sys_ticrate);
+	Cvar_Register (&sys_throttle);
+	Cvar_Register (&serverprofile);
 
-	Cvar_RegisterVariable (&fraglimit);
-	Cvar_RegisterVariable (&timelimit);
-	Cvar_RegisterVariable (&teamplay);
-	Cvar_RegisterVariable (&samelevel);
-	Cvar_RegisterVariable (&noexit);
-	Cvar_RegisterVariable (&skill);
-	Cvar_RegisterVariable (&deathmatch);
-	Cvar_RegisterVariable (&coop);
+	Cvar_Register (&fraglimit);
+	Cvar_Register (&timelimit);
+	Cvar_Register (&teamplay);
+	Cvar_Register (&samelevel);
+	Cvar_Register (&noexit);
+	Cvar_Register (&skill);
+	Cvar_Register (&deathmatch);
+	Cvar_Register (&coop);
 
-	Cvar_RegisterVariable (&pausable);
+	Cvar_Register (&pausable);
 
-	Cvar_RegisterVariable (&developer);
+	Cvar_Register (&developer);
 	i = COM_CheckParm ("-developer");
 	if (i)
 	{
@@ -289,13 +289,13 @@ void Host_InitLocal (void)
 			Cvar_SetValue ("developer", 1);
 	}
 
-	Cvar_RegisterVariable (&temp1);
+	Cvar_Register (&temp1);
 
-	Cvar_RegisterVariable (&cutscene); // Nehahra
+	Cvar_Register (&cutscene); // Nehahra
 
-	Cvar_RegisterVariable (&campaign); // 2021 rerelease
-	Cvar_RegisterVariable (&horde); // 2021 rerelease
-	Cvar_RegisterVariable (&sv_cheats); // 2021 rerelease
+	Cvar_Register (&campaign); // 2021 rerelease
+	Cvar_Register (&horde); // 2021 rerelease
+	Cvar_Register (&sv_cheats); // 2021 rerelease
 
 	Host_FindMaxClients ();
 

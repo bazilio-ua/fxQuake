@@ -778,12 +778,12 @@ void NET_Init (void)
 	// allocate space for network message buffer
 	SZ_Alloc (&_net_message_message, NET_MAXMESSAGE);
 
-	Cvar_RegisterVariable (&net_messagetimeout);
-	Cvar_RegisterVariable (&net_connecttimeout); // qkick/qflood protection
-	Cvar_RegisterVariable (&hostname);
-	Cvar_RegisterVariable (&pq_password); // password protection for server
-	Cvar_RegisterVariable (&rcon_password); // rcon password
-	Cvar_RegisterVariable (&rcon_server); // rcon server
+	Cvar_Register (&net_messagetimeout);
+	Cvar_Register (&net_connecttimeout); // qkick/qflood protection
+	Cvar_Register (&hostname);
+	Cvar_Register (&pq_password); // password protection for server
+	Cvar_Register (&rcon_password); // rcon password
+	Cvar_Register (&rcon_server); // rcon server
 
 	Cmd_AddCommand ("slist", NET_Slist_f);
 	Cmd_AddCommand ("listen", NET_Listen_f);

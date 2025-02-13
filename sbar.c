@@ -193,10 +193,10 @@ void Sbar_Init (void)
 	sb_face_invis_invuln = Draw_PicFromWad ("face_inv2");
 	sb_face_quad = Draw_PicFromWad ("face_quad");
 
-	Cvar_RegisterVariable (&scr_sbar);
-	Cvar_RegisterVariable (&scr_centersbar);
-	Cvar_RegisterVariable (&scr_overdrawsbar);
-	Cvar_RegisterVariable (&scr_sbaralpha);
+	Cvar_Register (&scr_sbar);
+	Cvar_Register (&scr_centersbar);
+	Cvar_Register (&scr_overdrawsbar);
+	Cvar_Register (&scr_sbaralpha);
 
 	Cmd_AddCommand ("+showscores", Sbar_ShowScores);
 	Cmd_AddCommand ("-showscores", Sbar_DontShowScores);

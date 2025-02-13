@@ -1008,34 +1008,34 @@ void CL_Init (void)
 //
 // register our commands
 //
-	Cvar_RegisterVariable (&cl_name);
-	Cvar_RegisterVariable (&cl_color);
-	Cvar_RegisterVariable (&cl_upspeed);
-	Cvar_RegisterVariable (&cl_forwardspeed);
-	Cvar_RegisterVariable (&cl_backspeed);
-	Cvar_RegisterVariable (&cl_sidespeed);
-	Cvar_RegisterVariable (&cl_movespeedkey);
-	Cvar_RegisterVariable (&cl_yawspeed);
-	Cvar_RegisterVariable (&cl_pitchspeed);
-	Cvar_RegisterVariable (&cl_maxpitch); // variable pitch clamping
-	Cvar_RegisterVariable (&cl_minpitch); // variable pitch clamping
-	Cvar_RegisterVariable (&cl_anglespeedkey);
-	Cvar_RegisterVariable (&cl_shownet);
-	Cvar_RegisterVariable (&cl_nolerp);
-	Cvar_RegisterVariable (&cl_lerpmuzzleflash);
+	Cvar_Register (&cl_name);
+	Cvar_Register (&cl_color);
+	Cvar_Register (&cl_upspeed);
+	Cvar_Register (&cl_forwardspeed);
+	Cvar_Register (&cl_backspeed);
+	Cvar_Register (&cl_sidespeed);
+	Cvar_Register (&cl_movespeedkey);
+	Cvar_Register (&cl_yawspeed);
+	Cvar_Register (&cl_pitchspeed);
+	Cvar_Register (&cl_maxpitch); // variable pitch clamping
+	Cvar_Register (&cl_minpitch); // variable pitch clamping
+	Cvar_Register (&cl_anglespeedkey);
+	Cvar_Register (&cl_shownet);
+	Cvar_Register (&cl_nolerp);
+	Cvar_Register (&cl_lerpmuzzleflash);
 
-	Cvar_RegisterVariable (&cl_coloredlight);
-	Cvar_RegisterVariable (&cl_extradlight);
-	Cvar_RegisterVariable (&cl_extradlightstatic);
+	Cvar_Register (&cl_coloredlight);
+	Cvar_Register (&cl_extradlight);
+	Cvar_Register (&cl_extradlightstatic);
 
-	Cvar_RegisterVariable (&lookspring);
-	Cvar_RegisterVariable (&lookstrafe);
-	Cvar_RegisterVariable (&sensitivity);
+	Cvar_Register (&lookspring);
+	Cvar_Register (&lookstrafe);
+	Cvar_Register (&sensitivity);
 
-	Cvar_RegisterVariable (&m_pitch);
-	Cvar_RegisterVariable (&m_yaw);
-	Cvar_RegisterVariable (&m_forward);
-	Cvar_RegisterVariable (&m_side);
+	Cvar_Register (&m_pitch);
+	Cvar_Register (&m_yaw);
+	Cvar_Register (&m_forward);
+	Cvar_Register (&m_side);
 
 	Cmd_AddCommand ("entities", CL_PrintEntities_f);
 	Cmd_AddCommand ("record", CL_Record_f);

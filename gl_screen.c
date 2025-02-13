@@ -437,18 +437,18 @@ SCR_Init
 */
 void SCR_Init (void)
 {
-	Cvar_RegisterVariable (&scr_fov);
-	Cvar_RegisterVariable (&scr_viewsize);
-	Cvar_RegisterVariable (&scr_weaponsize);
-	Cvar_RegisterVariable (&scr_weaponfov);
-	Cvar_RegisterVariable (&scr_conspeed);
-	Cvar_RegisterVariable (&scr_showfps); 
-	Cvar_RegisterVariable (&scr_showstats); 
-	Cvar_RegisterVariable (&scr_showturtle);
-	Cvar_RegisterVariable (&scr_showpause);
-	Cvar_RegisterVariable (&scr_centertime);
-	Cvar_RegisterVariable (&scr_printspeed);
-	Cvar_RegisterVariable (&gl_triplebuffer);
+	Cvar_Register (&scr_fov);
+	Cvar_Register (&scr_viewsize);
+	Cvar_Register (&scr_weaponsize);
+	Cvar_Register (&scr_weaponfov);
+	Cvar_Register (&scr_conspeed);
+	Cvar_Register (&scr_showfps); 
+	Cvar_Register (&scr_showstats); 
+	Cvar_Register (&scr_showturtle);
+	Cvar_Register (&scr_showpause);
+	Cvar_Register (&scr_centertime);
+	Cvar_Register (&scr_printspeed);
+	Cvar_Register (&gl_triplebuffer);
 
 	scr_initialized = true;
 	Con_Printf ("Screen initialized\n");

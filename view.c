@@ -1075,38 +1075,38 @@ void V_Init (void)
 	Cmd_AddCommand ("bf", V_BonusFlash_f);
 	Cmd_AddCommand ("centerview", V_StartPitchDrift);
 
-	Cvar_RegisterVariable (&v_centermove);
-	Cvar_RegisterVariable (&v_centerspeed);
+	Cvar_Register (&v_centermove);
+	Cvar_Register (&v_centerspeed);
 
-	Cvar_RegisterVariable (&v_iyaw_cycle);
-	Cvar_RegisterVariable (&v_iroll_cycle);
-	Cvar_RegisterVariable (&v_ipitch_cycle);
-	Cvar_RegisterVariable (&v_iyaw_level);
-	Cvar_RegisterVariable (&v_iroll_level);
-	Cvar_RegisterVariable (&v_ipitch_level);
+	Cvar_Register (&v_iyaw_cycle);
+	Cvar_Register (&v_iroll_cycle);
+	Cvar_Register (&v_ipitch_cycle);
+	Cvar_Register (&v_iyaw_level);
+	Cvar_Register (&v_iroll_level);
+	Cvar_Register (&v_ipitch_level);
 
-	Cvar_RegisterVariable (&v_idlescale);
-	Cvar_RegisterVariable (&crosshair);
-	Cvar_RegisterVariable (&cl_crossx);
-	Cvar_RegisterVariable (&cl_crossy);
-	Cvar_RegisterVariable (&gl_cshiftpercent);
+	Cvar_Register (&v_idlescale);
+	Cvar_Register (&crosshair);
+	Cvar_Register (&cl_crossx);
+	Cvar_Register (&cl_crossy);
+	Cvar_Register (&gl_cshiftpercent);
 
-	Cvar_RegisterVariable (&scr_ofsx);
-	Cvar_RegisterVariable (&scr_ofsy);
-	Cvar_RegisterVariable (&scr_ofsz);
-	Cvar_RegisterVariable (&cl_rollspeed);
-	Cvar_RegisterVariable (&cl_rollangle);
-	Cvar_RegisterVariable (&cl_bob);
-	Cvar_RegisterVariable (&cl_bobcycle);
-	Cvar_RegisterVariable (&cl_bobup);
+	Cvar_Register (&scr_ofsx);
+	Cvar_Register (&scr_ofsy);
+	Cvar_Register (&scr_ofsz);
+	Cvar_Register (&cl_rollspeed);
+	Cvar_Register (&cl_rollangle);
+	Cvar_Register (&cl_bob);
+	Cvar_Register (&cl_bobcycle);
+	Cvar_Register (&cl_bobup);
 
-	Cvar_RegisterVariable (&v_kicktime);
-	Cvar_RegisterVariable (&v_kickroll);
-	Cvar_RegisterVariable (&v_kickpitch);
-	Cvar_RegisterVariable (&v_gunkick);	
+	Cvar_Register (&v_kicktime);
+	Cvar_Register (&v_kickroll);
+	Cvar_Register (&v_kickpitch);
+	Cvar_Register (&v_gunkick);	
 	
-	Cvar_RegisterVariableCallback (&v_gamma, V_UpdateGamma);
-	Cvar_RegisterVariableCallback (&v_contrast, V_UpdateGamma);
+	Cvar_RegisterCallback (&v_gamma, V_UpdateGamma);
+	Cvar_RegisterCallback (&v_contrast, V_UpdateGamma);
 }
 
 

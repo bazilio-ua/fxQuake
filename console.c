@@ -327,9 +327,9 @@ void Con_Init (void)
 //
 // register our commands
 //
-	Cvar_RegisterVariable (&con_notifytime);
-	Cvar_RegisterVariable (&con_logcenterprint);
-	Cvar_RegisterVariable (&con_removecr); // remove \r from console output
+	Cvar_Register (&con_notifytime);
+	Cvar_Register (&con_logcenterprint);
+	Cvar_Register (&con_removecr); // remove \r from console output
 
 	Cmd_AddCommand ("toggleconsole", Con_ToggleConsole_f);
 	Cmd_AddCommand ("messagemode", Con_MessageMode_f);

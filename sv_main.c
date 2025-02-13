@@ -93,28 +93,28 @@ void SV_Init (void)
 	int		i;
 	const char	*p;
 
-	Cvar_RegisterVariable (&sv_maxvelocity);
-	Cvar_RegisterVariable (&sv_gravity);
-	Cvar_RegisterVariable (&sv_friction);
-	Cvar_RegisterVariable (&sv_waterfriction);
-	Cvar_RegisterVariable (&sv_edgefriction);
-	Cvar_RegisterVariable (&sv_stopspeed);
-	Cvar_RegisterVariable (&sv_maxspeed);
-	Cvar_RegisterVariable (&sv_maxairspeed);
-	Cvar_RegisterVariable (&sv_accelerate);
-	Cvar_RegisterVariable (&sv_airaccelerate);
-	Cvar_RegisterVariable (&sv_q2airaccelerate);
-	Cvar_RegisterVariable (&sv_wateraccelerate);
-	Cvar_RegisterVariable (&sv_idealpitchscale);
-	Cvar_RegisterVariable (&sv_aim);
-	Cvar_RegisterVariable (&sv_nostep);
-	Cvar_RegisterVariable (&sv_altnoclip);
-	Cvar_RegisterVariable (&sv_touchnoclip);
-	Cvar_RegisterVariableCallback (&sv_stupidquakebugfix, SV_StupidQuakeBugFix);
+	Cvar_Register (&sv_maxvelocity);
+	Cvar_Register (&sv_gravity);
+	Cvar_Register (&sv_friction);
+	Cvar_Register (&sv_waterfriction);
+	Cvar_Register (&sv_edgefriction);
+	Cvar_Register (&sv_stopspeed);
+	Cvar_Register (&sv_maxspeed);
+	Cvar_Register (&sv_maxairspeed);
+	Cvar_Register (&sv_accelerate);
+	Cvar_Register (&sv_airaccelerate);
+	Cvar_Register (&sv_q2airaccelerate);
+	Cvar_Register (&sv_wateraccelerate);
+	Cvar_Register (&sv_idealpitchscale);
+	Cvar_Register (&sv_aim);
+	Cvar_Register (&sv_nostep);
+	Cvar_Register (&sv_altnoclip);
+	Cvar_Register (&sv_touchnoclip);
+	Cvar_RegisterCallback (&sv_stupidquakebugfix, SV_StupidQuakeBugFix);
 
-	Cvar_RegisterVariable (&sv_novis);
-	Cvar_RegisterVariable (&sv_bouncedownslopes);
-	Cvar_RegisterVariable (&sv_cullentities);
+	Cvar_Register (&sv_novis);
+	Cvar_Register (&sv_bouncedownslopes);
+	Cvar_Register (&sv_cullentities);
 
 	Cmd_AddCommand ("freezeall", &SV_Freezeall_f);
 

@@ -1157,17 +1157,17 @@ void PR_Init (void)
 	Cmd_AddCommand ("edictcount", ED_Count);
 	Cmd_AddCommand ("profile", PR_Profile_f);
 
-	Cvar_RegisterVariableCallback (&nomonsters, ED_Nomonsters);
-	Cvar_RegisterVariable (&gamecfg);
-	Cvar_RegisterVariable (&scratch1);
-	Cvar_RegisterVariable (&scratch2);
-	Cvar_RegisterVariable (&scratch3);
-	Cvar_RegisterVariable (&scratch4);
-	Cvar_RegisterVariable (&savedgamecfg);
-	Cvar_RegisterVariable (&saved1);
-	Cvar_RegisterVariable (&saved2);
-	Cvar_RegisterVariable (&saved3);
-	Cvar_RegisterVariable (&saved4);
+	Cvar_RegisterCallback (&nomonsters, ED_Nomonsters);
+	Cvar_Register (&gamecfg);
+	Cvar_Register (&scratch1);
+	Cvar_Register (&scratch2);
+	Cvar_Register (&scratch3);
+	Cvar_Register (&scratch4);
+	Cvar_Register (&savedgamecfg);
+	Cvar_Register (&saved1);
+	Cvar_Register (&saved2);
+	Cvar_Register (&saved3);
+	Cvar_Register (&saved4);
 }
 
 

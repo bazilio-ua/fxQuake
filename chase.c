@@ -28,10 +28,10 @@ cvar_t	chase_active = {"chase_active", "0", CVAR_NONE};
 
 void Chase_Init (void)
 {
-	Cvar_RegisterVariable (&chase_back);
-	Cvar_RegisterVariable (&chase_up);
-	Cvar_RegisterVariable (&chase_right);
-	Cvar_RegisterVariable (&chase_active);
+	Cvar_Register (&chase_back);
+	Cvar_Register (&chase_up);
+	Cvar_Register (&chase_right);
+	Cvar_Register (&chase_active);
 }
 
 void Chase_Reset (void)

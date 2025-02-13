@@ -140,8 +140,8 @@ void R_InitParticles (void)
 	particles = (particle_t *)
 			Hunk_AllocName (r_numparticles * sizeof(particle_t), "particles");
 
-	Cvar_RegisterVariableCallback (&r_particles, R_Particles);
-	Cvar_RegisterVariableCallback (&r_particlescale, R_Particles);
+	Cvar_RegisterCallback (&r_particles, R_Particles);
+	Cvar_RegisterCallback (&r_particlescale, R_Particles);
 
 	R_InitParticleTextures ();
 }

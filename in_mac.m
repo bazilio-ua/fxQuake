@@ -137,7 +137,7 @@ IN_Init
 */
 void IN_Init (void)
 {
-	Cvar_RegisterVariable (&m_filter);
+	Cvar_Register (&m_filter);
     
 	Cmd_AddCommand ("force_centerview", Force_CenterView_f);
     
