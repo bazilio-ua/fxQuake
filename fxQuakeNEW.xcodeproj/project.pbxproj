@@ -13,6 +13,7 @@
 		428DD5422D5D0FB1002D6049 /* gl_fog.c in Sources */ = {isa = PBXBuildFile; fileRef = 428DD5412D5D0FB1002D6049 /* gl_fog.c */; };
 		428DD5442D5D1432002D6049 /* gl_sky.c in Sources */ = {isa = PBXBuildFile; fileRef = 428DD5432D5D1432002D6049 /* gl_sky.c */; };
 		428DD5462D5D17DA002D6049 /* image.c in Sources */ = {isa = PBXBuildFile; fileRef = 428DD5452D5D17DA002D6049 /* image.c */; };
+		428DD5482D5D5813002D6049 /* gl_texmgr.c in Sources */ = {isa = PBXBuildFile; fileRef = 428DD5472D5D5813002D6049 /* gl_texmgr.c */; };
 		42A7FC6C1EA2BA88002A1C29 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 428D9ED51DFF2769000ACF30 /* Cocoa.framework */; };
 		42B718371EA2C0E400BD51E1 /* cd_mac.m in Sources */ = {isa = PBXBuildFile; fileRef = 42F16D141E01DC28001659BD /* cd_mac.m */; };
 		42B718381EA2C0E400BD51E1 /* chase.c in Sources */ = {isa = PBXBuildFile; fileRef = 4273FAB51DFF2EDA005DC9A7 /* chase.c */; };
@@ -175,6 +176,7 @@
 		428DD5412D5D0FB1002D6049 /* gl_fog.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gl_fog.c; sourceTree = "<group>"; };
 		428DD5432D5D1432002D6049 /* gl_sky.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gl_sky.c; sourceTree = "<group>"; };
 		428DD5452D5D17DA002D6049 /* image.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = image.c; sourceTree = "<group>"; };
+		428DD5472D5D5813002D6049 /* gl_texmgr.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gl_texmgr.c; sourceTree = "<group>"; };
 		42A7FC5B1EA2B730002A1C29 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = SOURCE_ROOT; };
 		42A7FC5D1EA2B730002A1C29 /* Credits.rtf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.rtf; path = Credits.rtf; sourceTree = SOURCE_ROOT; };
 		42A7FC5E1EA2B730002A1C29 /* fxQuake.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = fxQuake.xib; sourceTree = SOURCE_ROOT; };
@@ -291,6 +293,7 @@
 				4273FAD01DFF2EDA005DC9A7 /* gl_screen.c */,
 				428DD5432D5D1432002D6049 /* gl_sky.c */,
 				4273FAD11DFF2EDA005DC9A7 /* gl_surf.c */,
+				428DD5472D5D5813002D6049 /* gl_texmgr.c */,
 				4273FAC71DFF2EDA005DC9A7 /* gl_warp.c */,
 				4273FAD21DFF2EDA005DC9A7 /* gl_warp_sin.h */,
 				4273FAD31DFF2EDA005DC9A7 /* glquake.h */,
@@ -505,6 +508,7 @@
 				42B718641EA2C11D00BD51E1 /* sv_phys.c in Sources */,
 				42B718651EA2C11D00BD51E1 /* sv_user.c in Sources */,
 				42B718661EA2C11D00BD51E1 /* sys_mac.m in Sources */,
+				428DD5482D5D5813002D6049 /* gl_texmgr.c in Sources */,
 				42B718671EA2C11D00BD51E1 /* vid_cgl.m in Sources */,
 				428DD5462D5D17DA002D6049 /* image.c in Sources */,
 				42B718681EA2C11D00BD51E1 /* view.c in Sources */,

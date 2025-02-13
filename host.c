@@ -888,6 +888,7 @@ void Host_Init (void)
 	if (cls.state != ca_dedicated)
 	{
 		VID_Init ();
+		TexMgr_Init (); //johnfitz
 		Draw_Init ();
 		SCR_Init ();
 		R_Init ();

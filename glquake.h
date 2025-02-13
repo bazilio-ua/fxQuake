@@ -286,6 +286,9 @@ qboolean R_CullModelForEntity (entity_t *e);
 void R_DrawAliasModel (entity_t *e);
 void R_DrawSpriteModel (entity_t *e);
 
+// gl_texmgr.c
+void TexMgr_Init (void);
+
 // gl_draw.c
 void TexMgr_Upload8 (gltexture_t *glt, byte *data);
 void TexMgr_Upload32 (gltexture_t *glt, unsigned *data);
