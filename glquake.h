@@ -278,6 +278,35 @@ extern	model_t	*loadmodel;
 void GL_BeginRendering (int *x, int *y, int *width, int *height);
 void GL_EndRendering (void);
 
+// image.c
+byte *Image_LoadImage (char *name, int *width, int *height);
+qboolean Image_WriteTGA (char *name, byte *data, int width, int height, int bpp, qboolean upsidedown);
+
+// gl_bloom.c
+void R_InitBloomTextures (void);
+void R_BloomBlend (void);
+
+// gl_efrag.c
+void R_StoreEfrags (efrag_t **efrags);
+
+// gl_fog.c
+void R_FogUpdate (float density, float red, float green, float blue, float time);
+void R_FogParseServerMessage (void);
+void R_FogParseServerMessage2 (void);
+float *R_FogGetColor (void);
+float R_FogGetDensity (void);
+void R_FogEnableGFog (void);
+void R_FogDisableGFog (void);
+void R_FogSetupFrame (void);
+void R_Fog_f (void);
+
+// gl_light.c
+void R_AnimateLight (void);
+void R_LightPoint (vec3_t p, vec3_t color);
+void R_MarkLights (dlight_t *light, int num, mnode_t *node);
+void R_SetupDlights (void);
+void R_RenderDlight (dlight_t *light);
+
 // gl_main.c
 int BoxOnPlaneSide (vec3_t emins, vec3_t emaxs, mplane_t *p);
 qboolean R_CullBox (vec3_t emins, vec3_t emaxs);
@@ -285,6 +314,49 @@ qboolean R_CullSphere (vec3_t origin, float radius);
 qboolean R_CullModelForEntity (entity_t *e);
 void R_DrawAliasModel (entity_t *e);
 void R_DrawSpriteModel (entity_t *e);
+
+// gl_mesh.c
+void R_MakeAliasModelDisplayLists (model_t *m, aliashdr_t *hdr);
+
+// gl_misc.c
+void R_InitTranslatePlayerTextures (void);
+void R_TranslatePlayerSkin (int playernum);
+void R_TranslateNewPlayerSkin (int playernum); //johnfitz -- this handles cases when the actual texture changes
+void R_InitMapGlobals (void);
+void R_ParseWorldspawn (void);
+void R_TimeRefresh_f (void);
+
+// gl_part.c
+void R_InitParticles (void);
+void R_SetupParticles (void);
+void R_DrawParticle (particle_t *p);
+void R_ClearParticles (void);
+void R_ReadPointFile_f (void);
+
+// gl_screen.c
+void SCR_TileClear (void);
+
+// gl_sky.c
+void R_DrawSky (void);
+void R_LoadSkyBox (char *skybox);
+void R_FastSkyColor (void);
+void R_Sky_f (void);
+
+// gl_surf.c
+void R_MarkLeaves (void);
+void R_SetupSurfaces (void);
+void R_ClearTextureChains (model_t *model, texchain_t chain);
+void R_ChainSurface (msurface_t *surf, texchain_t chain);
+void R_DrawTextureChains (model_t *model, entity_t *ent, texchain_t chain);
+void R_DrawBrushModel (entity_t *e);
+void R_DrawWorld (void);
+void R_DrawGLPoly34 (glpoly_t *p);
+void R_DrawGLPoly56 (glpoly_t *p);
+void R_DrawSequentialPoly (msurface_t *s, float alpha, model_t *model, entity_t *ent);
+void R_BuildLightmaps (void);
+void R_UploadLightmaps (void);
+void R_RebuildAllLightmaps (void);
+texture_t *R_TextureAnimation (texture_t *base, int frame);
 
 // gl_texmgr.c
 void TexMgr_UploadWarpImage (void);
@@ -317,77 +389,8 @@ void GL_Init (void);
 void GL_SetupState (void);
 void GL_SwapInterval (void);
 
-// gl_mesh.c
-void R_MakeAliasModelDisplayLists (model_t *m, aliashdr_t *hdr);
-
-// gl_misc.c
-void R_InitTranslatePlayerTextures (void);
-void R_TranslatePlayerSkin (int playernum);
-void R_TranslateNewPlayerSkin (int playernum); //johnfitz -- this handles cases when the actual texture changes
-
-// gl_part.c
-void R_InitParticles (void);
-void R_SetupParticles (void);
-void R_DrawParticle (particle_t *p);
-void R_ClearParticles (void);
-
-// gl_efrag.c
-void R_StoreEfrags (efrag_t **efrags);
- 
-// gl_light.c
-void R_AnimateLight (void);
-void R_LightPoint (vec3_t p, vec3_t color);
-void R_MarkLights (dlight_t *light, int num, mnode_t *node);
-void R_SetupDlights (void);
-void R_RenderDlight (dlight_t *light);
-
-// gl_surf.c
-void R_MarkLeaves (void);
-void R_SetupSurfaces (void);
-void R_ClearTextureChains (model_t *model, texchain_t chain);
-void R_ChainSurface (msurface_t *surf, texchain_t chain);
-void R_DrawTextureChains (model_t *model, entity_t *ent, texchain_t chain);
-void R_DrawBrushModel (entity_t *e);
-void R_DrawWorld (void);
-void R_DrawGLPoly34 (glpoly_t *p);
-void R_DrawGLPoly56 (glpoly_t *p);
-void R_DrawSequentialPoly (msurface_t *s, float alpha, model_t *model, entity_t *ent);
-void R_BuildLightmaps (void);
-void R_UploadLightmaps (void);
-void R_RebuildAllLightmaps (void);
-
-// gl_screen.c
-void SCR_TileClear (void);
-
 // gl_warp.c
 void R_UpdateWarpTextures (void);
-
-// image.c
-byte *Image_LoadImage (char *name, int *width, int *height);
-qboolean Image_WriteTGA (char *name, byte *data, int width, int height, int bpp, qboolean upsidedown);
-
-// gl_misc.c
-void R_InitMapGlobals (void);
-void R_ParseWorldspawn (void);
-
-// gl_sky.c
-void R_DrawSky (void);
-void R_LoadSkyBox (char *skybox);
-void R_FastSkyColor (void);
-
-// gl_fog.c
-void R_FogUpdate (float density, float red, float green, float blue, float time);
-void R_FogParseServerMessage (void);
-void R_FogParseServerMessage2 (void);
-float *R_FogGetColor (void);
-float R_FogGetDensity (void);
-void R_FogEnableGFog (void);
-void R_FogDisableGFog (void);
-void R_FogSetupFrame (void);
-
-// gl_bloom.c
-void R_InitBloomTextures (void);
-void R_BloomBlend (void);
 
 
 extern float turbsin[];
@@ -413,14 +416,6 @@ extern	int glx, gly, glwidth, glheight;
 
 #define FARCLIP			16384 // orig. 4096
 #define NEARCLIP		4
-
-void R_TimeRefresh_f (void);
-void R_ReadPointFile_f (void);
-
-void R_Sky_f (void);
-void R_Fog_f (void);
-
-texture_t *R_TextureAnimation (texture_t *base, int frame);
 
 
 //====================================================
