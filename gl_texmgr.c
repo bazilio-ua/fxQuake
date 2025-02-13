@@ -600,7 +600,7 @@ void GL_Init (void)
 
 	GL_CheckExtensions ();
 
-	Cvar_RegisterCallback (&gl_swapinterval, GL_SwapInterval);
+	Cvar_RegisterVariableCallback (&gl_swapinterval, GL_SwapInterval);
 
 	Cmd_AddCommand ("gl_info", GL_Info_f);
 
@@ -899,11 +899,11 @@ void TexMgr_Init (void)
 	V_SetOriginalPalette ();
 	V_SetPalette (host_basepal);
 
-	Cvar_RegisterCallback (&gl_max_size, TexMgr_ReloadTextures);
-	Cvar_RegisterCallback (&gl_picmip, TexMgr_ReloadTextures);
-	Cvar_RegisterCallback (&gl_warp_image_size, TexMgr_UploadWarpImage);
-	Cvar_RegisterCallback (&gl_compression, TexMgr_ReloadTextures);
-	Cvar_RegisterCallback (&gl_npot, TexMgr_ReloadTextures);
+	Cvar_RegisterVariableCallback (&gl_max_size, TexMgr_ReloadTextures);
+	Cvar_RegisterVariableCallback (&gl_picmip, TexMgr_ReloadTextures);
+	Cvar_RegisterVariableCallback (&gl_warp_image_size, TexMgr_UploadWarpImage);
+	Cvar_RegisterVariableCallback (&gl_compression, TexMgr_ReloadTextures);
+	Cvar_RegisterVariableCallback (&gl_npot, TexMgr_ReloadTextures);
 
 	Cmd_AddCommand ("gl_texturemode", &GL_TextureMode_f);
 	Cmd_AddCommand ("gl_texture_anisotropy", &GL_Texture_Anisotropy_f);

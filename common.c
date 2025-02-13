@@ -984,8 +984,8 @@ void COM_Init (void)
 		LittleFloat = FloatSwap;
 	}
 
-	Cvar_Register (&registered);
-	Cvar_Register (&cmdline);
+	Cvar_RegisterVariable (&registered);
+	Cvar_RegisterVariable (&cmdline);
 	Cmd_AddCommand ("path", COM_Path_f);
 
 	COM_InitFilesystem ();

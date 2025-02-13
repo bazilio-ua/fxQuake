@@ -63,9 +63,9 @@ Mod_Init
 */
 void Mod_Init (void)
 {
-	Cvar_RegisterCallback (&external_lit, Mod_External);
-	Cvar_RegisterCallback (&external_vis, Mod_External);
-	Cvar_RegisterCallback (&external_ent, Mod_External);
+	Cvar_RegisterVariableCallback (&external_lit, Mod_External);
+	Cvar_RegisterVariableCallback (&external_vis, Mod_External);
+	Cvar_RegisterVariableCallback (&external_ent, Mod_External);
 }
 
 /*

@@ -502,17 +502,17 @@ void Cvar_SetValueROM (char *var_name, float value)
 
 /*
 ============
-Cvar_Register
+Cvar_RegisterVariable
 
 Adds a freestanding variable to the variable list.
 ============
 */
-void Cvar_Register (cvar_t *variable)
+void Cvar_RegisterVariable (cvar_t *variable) 
 {
-	Cvar_RegisterCallback (variable, NULL);
+	Cvar_RegisterVariableCallback (variable, NULL);
 }
 
-void Cvar_RegisterCallback (cvar_t *variable, void *function)
+void Cvar_RegisterVariableCallback (cvar_t *variable, void *function)
 {
 	cvar_t	*cursor,*prev; //johnfitz -- sorted list insert
 

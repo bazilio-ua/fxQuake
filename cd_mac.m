@@ -567,8 +567,8 @@ int CDAudio_Init(void)
     
     Cmd_AddCommand ("cd", CD_f);
     
-    Cvar_Register (&bgmvolume);
-	Cvar_Register (&bgmtype);
+    Cvar_RegisterVariable(&bgmvolume);
+	Cvar_RegisterVariable(&bgmtype);
     
     Boolean audioGraphIsRunning = NO;
     status = AUGraphIsRunning(audioGraph, &audioGraphIsRunning);

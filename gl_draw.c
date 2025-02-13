@@ -258,7 +258,7 @@ rewritten
 */
 void Draw_Init (void)
 {
-	Cvar_Register (&scr_conalpha);
+	Cvar_RegisterVariable (&scr_conalpha);
 
 	// clear scrap and allocate gltextures
 	memset(&scrap_allocated, 0, sizeof(scrap_allocated));
