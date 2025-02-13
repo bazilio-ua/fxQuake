@@ -107,66 +107,6 @@ int gl_stencilbits;
 
 /*
 ===============
-TexMgr_UploadWarpImage
-
-called during init,
-choose correct warpimage size and reload existing warpimage textures if needed
-===============
-*/
-void TexMgr_UploadWarpImage (void)
-{
-	int mark;
-	gltexture_t *glt;
-	byte *dummy;
-
-	//
-	// find the new correct size
-	//
-	if ((int)gl_warp_image_size.value < 32)
-		Cvar_SetValue ("gl_warp_image_size", 32);
-
-	//
-	// make sure warpimage size is a power of two
-	//
-	gl_warpimage_size = TexMgr_SafeTextureSize((int)gl_warp_image_size.value);
-
-	while (gl_warpimage_size > vid.width)
-		gl_warpimage_size >>= 1;
-	while (gl_warpimage_size > vid.height)
-		gl_warpimage_size >>= 1;
-
-	if (gl_warpimage_size != gl_warp_image_size.value)
-		Cvar_SetValue ("gl_warp_image_size", gl_warpimage_size);
-
-    // ericw -- removed early exit if (gl_warpimage_size == oldsize).
-	// after reloads textures to source width/height, which might not match oldsize.
-    
-	//
-	// resize the textures in opengl
-	//
-	mark = Hunk_LowMark ();
-	
-	dummy = Hunk_Alloc (gl_warpimage_size*gl_warpimage_size*4);
-
-	for (glt=active_gltextures; glt; glt=glt->next)
-	{
-		if (glt->flags & TEXPREF_WARPIMAGE)
-		{
-			GL_BindTexture (glt);
-			glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, gl_warpimage_size, gl_warpimage_size, 0, GL_RGBA, GL_UNSIGNED_BYTE, dummy);
-			glt->width = glt->height = gl_warpimage_size;
-            
-            // set filter modes
-            GL_SetFilterModes (glt);
-		}
-	}
-
-	Hunk_FreeToLowMark (mark);
-}
-
-
-/*
-===============
 GL_CheckExtension
 ===============
 */
@@ -568,6 +508,42 @@ void GL_SwapInterval (void)
 	}
 }
 
+
+//=============================================================================
+
+/*
+================
+GL_Set2D
+
+Setup as if the screen was 320*200
+================
+*/
+void GL_Set2D (void)
+{
+	//
+	// set up viewpoint
+	//
+	glViewport (glx, gly, glwidth, glheight);
+
+	glMatrixMode (GL_PROJECTION);
+	glLoadIdentity ();
+
+	glOrtho (0, glwidth, glheight, 0, -99999, 99999);
+
+	glMatrixMode (GL_MODELVIEW);
+	glLoadIdentity ();
+
+	//
+	// set drawing parms
+	//
+	glDisable (GL_DEPTH_TEST);
+	glDisable (GL_CULL_FACE);
+	glDisable (GL_BLEND);
+	glEnable (GL_ALPHA_TEST);
+
+	glColor4f (1,1,1,1);
+}
+
 /*
 ===============
 GL_SetupState
@@ -728,19 +704,7 @@ void GL_SelectTMU3 (void)
 	glEnable (GL_TEXTURE_2D);
 }
 
-
-
-
-
-
 //=============================================================================
-
-
-
-
-
-
-// -- //
 
 /*
 ===============
@@ -847,7 +811,66 @@ void GL_Texture_Anisotropy_f (void)
     }
 }
 
+//=============================================================================
 
+/*
+===============
+TexMgr_UploadWarpImage
+
+called during init,
+choose correct warpimage size and reload existing warpimage textures if needed
+===============
+*/
+void TexMgr_UploadWarpImage (void)
+{
+	int mark;
+	gltexture_t *glt;
+	byte *dummy;
+
+	//
+	// find the new correct size
+	//
+	if ((int)gl_warp_image_size.value < 32)
+		Cvar_SetValue ("gl_warp_image_size", 32);
+
+	//
+	// make sure warpimage size is a power of two
+	//
+	gl_warpimage_size = TexMgr_SafeTextureSize((int)gl_warp_image_size.value);
+
+	while (gl_warpimage_size > vid.width)
+		gl_warpimage_size >>= 1;
+	while (gl_warpimage_size > vid.height)
+		gl_warpimage_size >>= 1;
+
+	if (gl_warpimage_size != gl_warp_image_size.value)
+		Cvar_SetValue ("gl_warp_image_size", gl_warpimage_size);
+
+	// ericw -- removed early exit if (gl_warpimage_size == oldsize).
+	// after reloads textures to source width/height, which might not match oldsize.
+	
+	//
+	// resize the textures in opengl
+	//
+	mark = Hunk_LowMark ();
+	
+	dummy = Hunk_Alloc (gl_warpimage_size*gl_warpimage_size*4);
+
+	for (glt=active_gltextures; glt; glt=glt->next)
+	{
+		if (glt->flags & TEXPREF_WARPIMAGE)
+		{
+			GL_BindTexture (glt);
+			glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, gl_warpimage_size, gl_warpimage_size, 0, GL_RGBA, GL_UNSIGNED_BYTE, dummy);
+			glt->width = glt->height = gl_warpimage_size;
+			
+			// set filter modes
+			GL_SetFilterModes (glt);
+		}
+	}
+
+	Hunk_FreeToLowMark (mark);
+}
 
 
 /*
@@ -895,49 +918,6 @@ void TexMgr_Init (void)
 	// upload warpimage
 	TexMgr_UploadWarpImage ();
 }
-
-//=============================================================================
-
-
-//=============================================================================
-
-
-// -- //
-
-/*
-================
-GL_Set2D
-
-Setup as if the screen was 320*200
-================
-*/
-void GL_Set2D (void)
-{
-	//
-	// set up viewpoint
-	//
-	glViewport (glx, gly, glwidth, glheight);
-
-	glMatrixMode (GL_PROJECTION);
-	glLoadIdentity ();
-
-	glOrtho (0, glwidth, glheight, 0, -99999, 99999);
-
-	glMatrixMode (GL_MODELVIEW);
-	glLoadIdentity ();
-
-	//
-	// set drawing parms
-	//
-	glDisable (GL_DEPTH_TEST);
-	glDisable (GL_CULL_FACE);
-	glDisable (GL_BLEND);
-	glEnable (GL_ALPHA_TEST);
-
-	glColor4f (1,1,1,1);
-}
-
-//====================================================================
 
 
 /*
