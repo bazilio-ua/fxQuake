@@ -287,9 +287,10 @@ void R_DrawAliasModel (entity_t *e);
 void R_DrawSpriteModel (entity_t *e);
 
 // gl_texmgr.c
+void TexMgr_UploadWarpImage (void);
 void TexMgr_Init (void);
-
-// gl_draw.c
+int TexMgr_PadConditional (int s);
+int TexMgr_SafeTextureSize (int s);
 void TexMgr_Upload8 (gltexture_t *glt, byte *data);
 void TexMgr_Upload32 (gltexture_t *glt, unsigned *data);
 void TexMgr_UploadBloom (gltexture_t *glt, unsigned *data);
@@ -315,9 +316,6 @@ void GL_SelectTMU3 (void);
 void GL_Init (void);
 void GL_SetupState (void);
 void GL_SwapInterval (void);
-void TexMgr_UploadWarpImage (void);
-int TexMgr_PadConditional (int s);
-int TexMgr_SafeTextureSize (int s);
 
 // gl_mesh.c
 void R_MakeAliasModelDisplayLists (model_t *m, aliashdr_t *hdr);
@@ -361,7 +359,6 @@ void R_RebuildAllLightmaps (void);
 // gl_screen.c
 void SCR_TileClear (void);
 
-// gl_anim.c -- old, renamed
 // gl_warp.c
 void R_UpdateWarpTextures (void);
 
