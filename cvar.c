@@ -37,7 +37,7 @@ Cvar_List_f
 */
 void Cvar_List_f (void)
 {
-	cvar_t	*cvar;
+	cvar_t	*var;
 	char 	*partial;
 	int		len, count;
 
@@ -53,18 +53,18 @@ void Cvar_List_f (void)
 	}
 
 	count=0;
-	for (cvar=cvar_vars ; cvar ; cvar=cvar->next)
+	for (var=cvar_vars ; var ; var=var->next)
 	{
-		if (partial && strncmp (partial,cvar->name, len))
+		if (partial && strncmp (partial,var->name, len))
 		{
 			continue;
 		}
 		Con_SafePrintf ("%c%c%c %s \"%s\"\n",
-			cvar->flags & CVAR_ARCHIVE ? '*' : ' ',
-			cvar->flags & CVAR_SERVER ? 's' : ' ',
-			cvar->flags & CVAR_ROM ? 'r' : ' ',
-			cvar->name,
-			cvar->string);
+			var->flags & CVAR_ARCHIVE ? '*' : ' ',
+			var->flags & CVAR_SERVER ? 's' : ' ',
+			var->flags & CVAR_ROM ? 'r' : ' ',
+			var->name,
+			var->string);
 		count++;
 	}
 
@@ -351,7 +351,7 @@ Cvar_CompleteVariable
 */
 char *Cvar_CompleteVariable (char *partial)
 {
-	cvar_t		*cvar;
+	cvar_t		*var;
 	int			len;
 
 	len = strlen(partial);
@@ -360,9 +360,9 @@ char *Cvar_CompleteVariable (char *partial)
 		return NULL;
 
 // check functions
-	for (cvar=cvar_vars ; cvar ; cvar=cvar->next)
-		if (!strncmp (partial,cvar->name, len))
-			return cvar->name;
+	for (var=cvar_vars ; var ; var=var->next)
+		if (!strncmp (partial,var->name, len))
+			return var->name;
 
 	return NULL;
 }
@@ -507,59 +507,59 @@ Cvar_RegisterVariable
 Adds a freestanding variable to the variable list.
 ============
 */
-void Cvar_RegisterVariable (cvar_t *variable) 
+void Cvar_RegisterVariable (cvar_t *var)
 {
-	Cvar_RegisterVariableCallback (variable, NULL);
+	Cvar_RegisterVariableCallback (var, NULL);
 }
 
-void Cvar_RegisterVariableCallback (cvar_t *variable, void *function)
+void Cvar_RegisterVariableCallback (cvar_t *var, void *function)
 {
 	cvar_t	*cursor,*prev; //johnfitz -- sorted list insert
 
 // first check to see if it has already been defined
-	if (Cvar_FindVar (variable->name))
+	if (Cvar_FindVar (var->name))
 	{
-		Con_Printf ("Can't register variable %s, already defined\n", variable->name);
+		Con_Printf ("Can't register variable %s, already defined\n", var->name);
 		return;
 	}
 	
 // check for overlap with a command
-	if (Cmd_Exists (variable->name))
+	if (Cmd_Exists (var->name))
 	{
-		Con_Printf ("   %s is a command\n", variable->name);
+		Con_Printf ("   %s is a command\n", var->name);
 		return;
 	}
 		
 // copy the value off, because future sets will Z_Free it
-	variable->string = Z_Strdup (variable->string);	
-	variable->value = atof (variable->string);
+	var->string = Z_Strdup (var->string);	
+	var->value = atof (var->string);
 
 	//johnfitz -- save initial value for "reset" command
-	variable->default_string = Z_Strdup (variable->string);
+	var->default_string = Z_Strdup (var->string);
 	//johnfitz
 
 // link the variable in
 	//johnfitz -- insert each entry in alphabetical order
-	if (cvar_vars == NULL || strcmp(variable->name, cvar_vars->name) < 0) // insert at front
+	if (cvar_vars == NULL || strcmp(var->name, cvar_vars->name) < 0) // insert at front
 	{
-		variable->next = cvar_vars;
-		cvar_vars = variable;
+		var->next = cvar_vars;
+		cvar_vars = var;
 	}
 	else //insert later
 	{
 		prev = cvar_vars;
 		cursor = cvar_vars->next;
-		while (cursor && (strcmp(variable->name, cursor->name) > 0))
+		while (cursor && (strcmp(var->name, cursor->name) > 0))
 		{
 			prev = cursor;
 			cursor = cursor->next;
 		}
-		variable->next = prev->next;
-		prev->next = variable;
+		var->next = prev->next;
+		prev->next = var;
 	}
 	//johnfitz
 
-	variable->callback = function; //johnfitz
+	var->callback = function; //johnfitz
 }
 
 /*
@@ -571,21 +571,21 @@ Handles variable inspection and changing from the console
 */
 qboolean	Cvar_Command (void)
 {
-	cvar_t			*v;
+	cvar_t			*var;
 
 // check variables
-	v = Cvar_FindVar (Cmd_Argv(0));
-	if (!v)
+	var = Cvar_FindVar (Cmd_Argv(0));
+	if (!var)
 		return false;
 		
 // perform a variable print or set
 	if (Cmd_Argc() == 1)
 	{
-		Con_Printf ("\"%s\" is \"%s\"\n", v->name, v->string);
+		Con_Printf ("\"%s\" is \"%s\"\n", var->name, var->string);
 		return true;
 	}
 
-	Cvar_Set (v->name, Cmd_Argv(1));
+	Cvar_Set (var->name, Cmd_Argv(1));
 	return true;
 }
 

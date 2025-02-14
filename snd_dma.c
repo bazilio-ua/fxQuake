@@ -149,22 +149,22 @@ void S_Init (void)
 	if (COM_CheckParm("-simsound"))
 		fakedma = true;
 
-	Cmd_AddCommand("play", S_Play);
-	Cmd_AddCommand("play2", S_Play); // Nehahra
-	Cmd_AddCommand("playvol", S_PlayVol);
-	Cmd_AddCommand("stopsound", S_StopAllSoundsC);
-	Cmd_AddCommand("soundlist", S_SoundList);
-	Cmd_AddCommand("soundinfo", S_SoundInfo_f);
+	Cmd_AddCommand ("play", S_Play);
+	Cmd_AddCommand ("play2", S_Play); // Nehahra
+	Cmd_AddCommand ("playvol", S_PlayVol);
+	Cmd_AddCommand ("stopsound", S_StopAllSoundsC);
+	Cmd_AddCommand ("soundlist", S_SoundList);
+	Cmd_AddCommand ("soundinfo", S_SoundInfo_f);
 
-	Cvar_RegisterVariable(&nosound);
-	Cvar_RegisterVariable(&volume);
-	Cvar_RegisterVariable(&precache);
-	Cvar_RegisterVariable(&loadas8bit);
-	Cvar_RegisterVariable(&ambient_level);
-	Cvar_RegisterVariable(&ambient_fade);
-	Cvar_RegisterVariable(&snd_noextraupdate);
-	Cvar_RegisterVariable(&snd_show);
-	Cvar_RegisterVariable(&snd_mixahead);
+	Cvar_RegisterVariable (&nosound);
+	Cvar_RegisterVariable (&volume);
+	Cvar_RegisterVariable (&precache);
+	Cvar_RegisterVariable (&loadas8bit);
+	Cvar_RegisterVariable (&ambient_level);
+	Cvar_RegisterVariable (&ambient_fade);
+	Cvar_RegisterVariable (&snd_noextraupdate);
+	Cvar_RegisterVariable (&snd_show);
+	Cvar_RegisterVariable (&snd_mixahead);
 
 	if (host_parms->memsize < 0x800000)
 	{
