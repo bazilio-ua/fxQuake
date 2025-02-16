@@ -2135,8 +2135,6 @@ DEMO LOOP CONTROL
 /*
 ==================
 Host_Startdemos_f
-
-cleanup previous demo loop, and play new demo queue
 ==================
 */
 void Host_Startdemos_f (void)
@@ -2153,9 +2151,6 @@ void Host_Startdemos_f (void)
 		c = MAX_DEMOS;
 	}
 	Con_Printf ("%i demo(s) in loop\n", c);
-
-	for (i=0 ; i<MAX_DEMOS ; i++)	// cleanup previous demo loop queue
-		cls.demos[i][0] = 0;
 
 	for (i=1 ; i<c+1 ; i++)
 		strncpy (cls.demos[i-1], Cmd_Argv(i), sizeof(cls.demos[0])-1);

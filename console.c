@@ -906,8 +906,9 @@ static arg_completion_type_t arg_completion_types[] =
 	{ "record ", &demolist },
 	{ "playdemo ", &demolist },
 	{ "timedemo ", &demolist },
+	{ "startdemos ", &demolist },
 	{ "exec ", &configlist },
-	{ "saveconfig", &configlist }
+	{ "saveconfig ", &configlist }
 };
 
 static int num_arg_completion_types =
