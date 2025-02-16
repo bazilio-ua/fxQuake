@@ -161,10 +161,10 @@ void Host_MapListRebuild (void) // for new game
 
 /*
 ==================
-Host_Maplist_f
+Host_Maps_f
 ==================
 */
-void Host_Maplist_f (void)
+void Host_Maps_f (void)
 {
 	int i;
 	filelist_t	*level;
@@ -213,10 +213,10 @@ void Host_DemoListRebuild (void) // for new game
 
 /*
 ==================
-Host_Demolist_f
+Host_Demonames_f
 ==================
 */
-void Host_Demolist_f (void)
+void Host_Demonames_f (void)
 {
 	int i;
 	filelist_t	*demo;
@@ -265,10 +265,10 @@ void Host_SaveListRebuild (void) // for new game
 
 /*
 ==================
-Host_Savelist_f
+Host_Saves_f
 ==================
 */
-void Host_Savelist_f (void)
+void Host_Saves_f (void)
 {
 	int i;
 	filelist_t	*save;
@@ -323,10 +323,10 @@ void Host_ConfigListRebuild (void) // for new game
 
 /*
 ==================
-Host_Configlist_f
+Host_Configs_f
 ==================
 */
-void Host_Configlist_f (void)
+void Host_Configs_f (void)
 {
 	int i;
 	filelist_t	*config;
@@ -2221,10 +2221,10 @@ Host_InitCommands
 */
 void Host_InitCommands (void)
 {
-	Cmd_AddCommand ("maplist", Host_Maplist_f); //johnfitz (maplist)
-	Cmd_AddCommand ("demolist", Host_Demolist_f); // EER1
-	Cmd_AddCommand ("savelist", Host_Savelist_f); // EER1
-	Cmd_AddCommand ("configlist", Host_Configlist_f); // EER1
+	Cmd_AddCommand ("maps", Host_Maps_f); //johnfitz (maplist)
+	Cmd_AddCommand ("demonames", Host_Demonames_f); // EER1
+	Cmd_AddCommand ("saves", Host_Saves_f); // EER1
+	Cmd_AddCommand ("configs", Host_Configs_f); // EER1
 	
 	Cmd_AddCommand ("mapname", Host_Mapname_f);
 	Cmd_AddCommand ("status", Host_Status_f);
