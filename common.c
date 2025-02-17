@@ -664,18 +664,20 @@ COM_FileExtension
 */
 char *COM_FileExtension (char *in)
 {
-	static char exten[8];
-	int             i;
-
-	while (*in && *in != '.')
-		in++;
-	if (!*in)
+	char	*src;
+	size_t	len;
+	
+	len = strlen(in);
+	if (len < 2)	// nothing meaningful
 		return "";
-	in++;
-	for (i=0 ; i<7 && *in ; i++,in++)
-		exten[i] = *in;
-	exten[i] = 0;
-	return exten;
+	
+	src = in + len - 1;
+	while (src != in && src[-1] != '.')
+		src--;
+	if (src == in || strchr(src, '/') != NULL || strchr(src, '\\') != NULL)
+		return "";	// no extension, or parent directory has a dot
+	
+	return src;
 }
 
 /*
@@ -952,6 +954,7 @@ void COM_InitArgv (int argc, char **argv)
 		nehahra = true;
 }
 
+void COM_Game_f (void);
 
 /*
 ================
@@ -987,6 +990,7 @@ void COM_Init (void)
 	Cvar_RegisterVariable (&registered);
 	Cvar_RegisterVariable (&cmdline);
 	Cmd_AddCommand ("path", COM_Path_f);
+	Cmd_AddCommand ("game", COM_Game_f); //johnfitz
 
 	COM_InitFilesystem ();
 	COM_CheckRegistered ();
@@ -1717,6 +1721,24 @@ void COM_AddUserDirectory (char *home, char *dir)
 	Sys_mkdir (com_gamedir);
 }
 
+
+/*
+============
+COM_Game_f
+
+johnfitz -- dynamic gamedir stuff
+modified by QuakeSpasm team.
+============
+*/
+void COM_Game_f (void)
+{
+	if (Cmd_Argc() > 1)
+	{
+		
+	}
+}
+
+
 /*
 ================
 COM_InitFilesystem
@@ -1915,6 +1937,16 @@ void COM_FileListClear (filelist_t **list)
 		Z_Free (*list);
 		*list = item;
 	}
+}
+
+/*
+==================
+COM_ScanDirList
+==================
+*/
+void COM_ScanDirList(char *path, filelist_t **list)
+{
+	Sys_ScanDirList(path, list);
 }
 
 /*

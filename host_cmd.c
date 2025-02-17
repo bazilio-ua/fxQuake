@@ -128,6 +128,49 @@ void Host_Sys_Error_f (void)
 
 /*
 ==============================================================================
+	johnfitz -- game list management
+==============================================================================
+*/
+filelist_t	*gamelist;
+
+void Host_GameListInit (void)
+{
+	COM_ScanDirList(com_basedir, &gamelist);
+}
+
+void Host_GameListClear (void)
+{
+	COM_FileListClear(&gamelist);
+}
+
+void Host_GameListRebuild (void) // for new game
+{
+	Host_GameListClear ();
+	Host_GameListInit ();
+}
+
+/*
+==================
+Host_Games_f
+==================
+*/
+void Host_Games_f (void)
+{
+	int i;
+	filelist_t	*game;
+	
+	for (game = gamelist, i = 0; game; game = game->next, i++)
+		Con_SafePrintf ("   %s\n", game->name);
+
+	if (i)
+		Con_SafePrintf ("%i game(s)\n", i);
+	else
+		Con_SafePrintf ("no games found\n");
+
+}
+
+/*
+==============================================================================
 	johnfitz -- map list management
 ==============================================================================
 */
@@ -2213,6 +2256,7 @@ Host_InitFileList
 */
 void Host_InitFileList (void)
 {
+	Host_GameListInit ();
 	Host_MapListInit ();
 	Host_DemoListInit ();
 	Host_SaveListInit ();
@@ -2226,6 +2270,8 @@ Host_InitCommands
 */
 void Host_InitCommands (void)
 {
+	Cmd_AddCommand ("games", Host_Games_f); //johnfitz
+	Cmd_AddCommand ("mods", Host_Games_f); //johnfitz (alias for games)
 	Cmd_AddCommand ("maps", Host_Maps_f); //johnfitz (maplist)
 	Cmd_AddCommand ("demonames", Host_Demonames_f); // EER1
 	Cmd_AddCommand ("saves", Host_Saves_f); // EER1

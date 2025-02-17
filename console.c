@@ -899,6 +899,7 @@ typedef struct arg_completion_type_s
 
 static arg_completion_type_t arg_completion_types[] =
 {
+	{ "game ", &gamelist },
 	{ "map ", &maplist },
 	{ "changelevel ", &maplist },
 	{ "save ", &savelist },
