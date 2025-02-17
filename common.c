@@ -642,7 +642,6 @@ char *COM_SkipPath (char *path)
 			last = path+1;
 		path++;
 	}
-	
 	return last;
 }
 
@@ -653,9 +652,14 @@ COM_StripExtension
 */
 void COM_StripExtension (char *in, char *out)
 {
-	while (*in && *in != '.')
-		*out++ = *in++;
-	*out = 0;
+	char	*ext;
+	
+	if (out != in)
+		strcpy (out, in);
+	
+	ext = strrchr(in, '.');
+	if (ext)
+		out[ext - in] = 0;
 }
 
 /*
@@ -668,10 +672,7 @@ char *COM_FileExtension (char *in)
 	char	*ext;
 	
 	ext = strrchr(in, '.');
-	if (!ext || ext == in)
-		return "";
-	
-	return ext + 1;
+	return ext ? ++ext : "";
 }
 
 /*
