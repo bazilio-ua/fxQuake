@@ -638,7 +638,7 @@ char *COM_SkipPath (char *path)
 	last = path;
 	while (*path)
 	{
-		if (*path=='/')
+		if (*path == '/')
 			last = path+1;
 		path++;
 	}
@@ -682,25 +682,22 @@ COM_FileBase
 */
 void COM_FileBase (char *in, char *out)
 {
-	char *s, *s2;
+	char	*base;
+	char	*ext;
+	size_t	len;
 	
-	s = in + strlen(in) - 1;
-	while (s != in && *s != '.')
-		s--;
+	base = COM_SkipPath(in);
+	ext = strrchr(in, '.');
+	len = ext ? ext - base : strlen(base);
 	
-	for (s2 = s ; s2 != in && *s2 != '/' && *s2 != '\\'; s2--)
-		;
-	
-	if (s-s2 < 2)
+	if (len < 2)
 		strcpy (out,"?model?");
 	else
 	{
-		if (*s2 == '/' || *s2 == '\\')
-			++s2;
-		if (s - s2 >= MAX_QPATH)
-			s = s2 + MAX_QPATH - 1;
-		strncpy (out,s2, s-s2);
-		out[s-s2] = 0;
+		if (len >= MAX_QPATH)
+			len = MAX_QPATH - 1;
+		strncpy (out,base, len);
+		out[len] = 0;
 	}
 }
 
