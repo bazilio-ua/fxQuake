@@ -631,17 +631,18 @@ void SZ_Print (sizebuf_t *buf, char *data)
 COM_SkipPath
 ============
 */
-char *COM_SkipPath (char *pathname)
+char *COM_SkipPath (char *path)
 {
 	char    *last;
 	
-	last = pathname;
-	while (*pathname)
+	last = path;
+	while (*path)
 	{
-		if (*pathname=='/')
-			last = pathname+1;
-		pathname++;
+		if (*path=='/')
+			last = path+1;
+		path++;
 	}
+	
 	return last;
 }
 
@@ -664,20 +665,13 @@ COM_FileExtension
 */
 char *COM_FileExtension (char *in)
 {
-	char	*src;
-	size_t	len;
+	char	*ext;
 	
-	len = strlen(in);
-	if (len < 2)	// nothing meaningful
+	ext = strrchr(in, '.');
+	if (!ext || ext == in)
 		return "";
 	
-	src = in + len - 1;
-	while (src != in && src[-1] != '.')
-		src--;
-	if (src == in || strchr(src, '/') != NULL || strchr(src, '\\') != NULL)
-		return "";	// no extension, or parent directory has a dot
-	
-	return src;
+	return ext + 1;
 }
 
 /*
@@ -690,12 +684,11 @@ void COM_FileBase (char *in, char *out)
 	char *s, *s2;
 	
 	s = in + strlen(in) - 1;
-	
 	while (s != in && *s != '.')
 		s--;
 	
 	for (s2 = s ; s2 != in && *s2 != '/' && *s2 != '\\'; s2--)
-	;
+		;
 	
 	if (s-s2 < 2)
 		strcpy (out,"?model?");
@@ -703,8 +696,8 @@ void COM_FileBase (char *in, char *out)
 	{
 		if (*s2 == '/' || *s2 == '\\')
 			++s2;
-		if (s - s2 >= 32)
-			s = s2 + 32 - 1;
+		if (s - s2 >= MAX_QPATH)
+			s = s2 + MAX_QPATH - 1;
 		strncpy (out,s2, s-s2);
 		out[s-s2] = 0;
 	}
@@ -716,23 +709,23 @@ void COM_FileBase (char *in, char *out)
 COM_DefaultExtension
 ==================
 */
-void COM_DefaultExtension (char *path, char *extension)
+void COM_DefaultExtension (char *path, char *ext)
 {
 	char    *src;
+	
 //
 // if path doesn't have a .EXT, append extension
 // (extension should include the .)
 //
 	src = path + strlen(path) - 1;
-
 	while (*src != '/' && src != path)
 	{
 		if (*src == '.')
 			return;                 // it has an extension
 		src--;
 	}
-
-	strcat (path, extension);
+	
+	strcat (path, ext);
 }
 
 
@@ -1862,7 +1855,7 @@ void COM_InitFilesystem (void)
 			if (!com_argv[i] || com_argv[i][0] == '+' || com_argv[i][0] == '-')
 				break;
 			search = Hunk_AllocName (sizeof(searchpath_t), "searchpath");
-			if ( !strcmp(COM_FileExtension(com_argv[i]), "pak") )
+			if ( !strcasecmp(COM_FileExtension(com_argv[i]), "pak") )
 			{
 				search->pack = COM_LoadPackFile (com_argv[i]);
 				if (!search->pack)
@@ -1970,8 +1963,8 @@ void COM_ScanPakFileList(pack_t *pack, char *subdir, char *ext, qboolean stripex
 {
 	int			i;
 	pack_t		*pak;
-	char		*pathname;
-	char		filename[32];
+	char		*path;
+	char		filename[MAX_QPATH];
 	
 	for (i=0, pak = pack ; i<pak->numfiles ; i++)
 	{
@@ -1983,11 +1976,11 @@ void COM_ScanPakFileList(pack_t *pack, char *subdir, char *ext, qboolean stripex
 		
 		if (!strcasecmp(COM_FileExtension(pak->files[i].name), ext))
 		{
-			pathname = COM_SkipPath(pak->files[i].name);
+			path = COM_SkipPath(pak->files[i].name);
 			if (stripext)
-				COM_StripExtension(pathname, filename);
+				COM_StripExtension(path, filename);
 			else
-				strcpy(filename, pathname);
+				strcpy(filename, path);
 			
 			COM_FileListAdd (filename, list);
 		}

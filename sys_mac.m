@@ -102,7 +102,7 @@ void Sys_ScanDirFileList (char *path, char *subdir, char *ext, qboolean stripext
 {
 	DIR		*dir_p;
 	struct dirent	*dir_t;
-	char		filename[32];
+	char		filename[MAX_QPATH];
 	char		filestring[MAX_OSPATH];
 	
 	snprintf (filestring, sizeof(filestring), "%s/%s", path, subdir);

@@ -415,11 +415,11 @@ TODO: support BGRA and BGR formats (since opengl can return them, and we don't h
 qboolean Image_WriteTGA (char *name, byte *data, int width, int height, int bpp, qboolean upsidedown)
 {
 	int		handle, i, temp, size, bytes;
-	char	pathname[MAX_OSPATH];
+	char	path[MAX_OSPATH];
 	byte	header[TARGAHEADERSIZE];
 
-	sprintf (pathname, "%s/%s", com_gamedir, name);
-	handle = Sys_FileOpenWrite (pathname);
+	sprintf (path, "%s/%s", com_gamedir, name);
+	handle = Sys_FileOpenWrite (path);
 	if (handle == -1)
 		return false;
 
