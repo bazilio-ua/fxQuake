@@ -687,7 +687,7 @@ void COM_FileBase (char *in, char *out)
 	size_t	len;
 	
 	base = COM_SkipPath(in);
-	ext = strrchr(in, '.');
+	ext = strrchr(base, '.');
 	len = ext ? ext - base : strlen(base);
 	
 	if (len < 2)
