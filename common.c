@@ -1736,6 +1736,8 @@ void COM_Game_f (void)
 	{
 		
 	}
+	else // Diplay the current gamedir
+		Con_Printf ("\"game\" is \"%s\"\n", COM_SkipPath(com_gamedir));
 }
 
 
