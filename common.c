@@ -705,23 +705,18 @@ void COM_FileBase (char *in, char *out)
 /*
 ==================
 COM_DefaultExtension
+
+if path doesn't have a .EXT, append extension
+(extension should include the .)
 ==================
 */
 void COM_DefaultExtension (char *path, char *ext)
 {
-	char    *src;
+	char	*ext2;
 	
-//
-// if path doesn't have a .EXT, append extension
-// (extension should include the .)
-//
-	src = path + strlen(path) - 1;
-	while (*src != '/' && src != path)
-	{
-		if (*src == '.')
-			return;                 // it has an extension
-		src--;
-	}
+	ext2 = strrchr(path, '.');
+	if (ext2)
+		return;                 // it has an extension
 	
 	strcat (path, ext);
 }
