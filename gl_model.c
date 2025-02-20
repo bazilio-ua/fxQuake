@@ -731,7 +731,7 @@ void Mod_LoadLighting (lump_t *l)
 	{
 		return;
 	}
-	loadmodel->lightdata = Hunk_AllocName ( l->filelen*3, litfilename);
+	loadmodel->lightdata = Hunk_AllocName ( l->filelen*3, loadname);
 	in = loadmodel->lightdata + l->filelen*2; // place the file at the end, so it will not be overwritten until the very last write
 	out = loadmodel->lightdata;
 	memcpy (in, mod_base + l->fileofs, l->filelen);
