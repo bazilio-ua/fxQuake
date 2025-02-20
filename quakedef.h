@@ -300,6 +300,12 @@ void Host_Quit_f (void);
 void Host_ClientCommands (char *fmt, ...);
 void Host_ShutdownServer (qboolean crash);
 void Host_LoadPalettes (void);
+void Host_WriteConfiguration (char *configname);
+void Host_Resetdemos (void);
+void Host_MapListRebuild (void);
+void Host_DemoListRebuild (void);
+void Host_SaveListRebuild (void);
+void Host_ConfigListRebuild (void);
 
 extern int			current_skill;		// skill level for currently loaded level (in case
 										//  the user changes the cvar while the level is

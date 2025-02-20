@@ -177,7 +177,7 @@ void R_Init (void)
 
 	R_InitParticles ();
 
-	R_InitTranslatePlayerTextures ();
+	R_InitPlayerTextures ();
 
 	R_InitMapGlobals ();
 
@@ -186,17 +186,18 @@ void R_Init (void)
 
 /*
 ===============
-R_InitTranslatePlayerTextures
+R_InitPlayerTextures
+
+johnfitz -- handle a game switch
 ===============
 */
-void R_InitTranslatePlayerTextures (void)
+void R_InitPlayerTextures (void)
 {
 	int i;
-
+	
+	// clear playertexture pointers (the textures themselves were freed by texmgr_newgame)
 	for (i = 0; i < MAX_SCOREBOARD; i++)
-	{
-		playertextures[i] = NULL; //clear playertexture pointers
-	}
+		playertextures[i] = NULL;
 }
 
 /*

@@ -256,6 +256,7 @@ typedef struct searchpath_s
 } searchpath_t;
 
 extern	searchpath_t    *com_searchpaths;
+extern	searchpath_t	*com_base_searchpaths;
 
 void COM_WriteFile (char *filename, void *data, int len);
 int COM_OpenFile (char *filename, int *handle, unsigned int *path_id);

@@ -319,7 +319,7 @@ void R_DrawSpriteModel (entity_t *e);
 void R_MakeAliasModelDisplayLists (model_t *m, aliashdr_t *hdr);
 
 // gl_misc.c
-void R_InitTranslatePlayerTextures (void);
+void R_InitPlayerTextures (void);
 void R_TranslatePlayerSkin (int playernum);
 void R_TranslateNewPlayerSkin (int playernum); //johnfitz -- this handles cases when the actual texture changes
 void R_InitMapGlobals (void);
@@ -341,6 +341,7 @@ void R_DrawSky (void);
 void R_LoadSkyBox (char *skybox);
 void R_FastSkyColor (void);
 void R_Sky_f (void);
+void Sky_ClearAll (void);
 
 // gl_surf.c
 void R_MarkLeaves (void);
@@ -359,7 +360,9 @@ void R_RebuildAllLightmaps (void);
 texture_t *R_TextureAnimation (texture_t *base, int frame);
 
 // gl_texmgr.c
+void TexMgr_NewGame (void);
 void TexMgr_UploadWarpImage (void);
+void TexMgr_LoadPalette (void);
 void TexMgr_Init (void);
 int TexMgr_PadConditional (int s);
 int TexMgr_SafeTextureSize (int s);
@@ -368,7 +371,7 @@ void TexMgr_Upload32 (gltexture_t *glt, unsigned *data);
 void TexMgr_UploadBloom (gltexture_t *glt, unsigned *data);
 void TexMgr_UploadLightmap (gltexture_t *glt, byte *data);
 void TexMgr_FreeTexture (gltexture_t *texture);
-void TexMgr_FreeTextures (int flags, int mask);
+void TexMgr_FreeTextures (unsigned int flags, unsigned int mask);
 void TexMgr_FreeTexturesForOwner (model_t *owner);
 void TexMgr_ReloadTexture (gltexture_t *glt);
 void TexMgr_ReloadTextureTranslation (gltexture_t *glt, int top, int bottom);

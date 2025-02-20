@@ -1158,9 +1158,10 @@ int     com_filesize;
 char    com_cachedir[MAX_OSPATH];
 char    com_gamedir[MAX_OSPATH];
 char    com_basedir[MAX_OSPATH];
-char    *home = NULL;
+char    *homedir = NULL;
 
 searchpath_t    *com_searchpaths;
+searchpath_t	*com_base_searchpaths;
 
 /*
 ============
@@ -1558,7 +1559,7 @@ byte *COM_LoadMallocFile (char *path, void *buffer, unsigned int *path_id)
 
 /*
 =================
-COM_LoadPackFile
+COM_LoadPackFile -- johnfitz -- modified based on topaz's tutorial
 
 Takes an explicit (not game tree related) path to a pak file.
 
@@ -1591,10 +1592,23 @@ pack_t *COM_LoadPackFile (char *packfilename)
 
 	numpackfiles = header.dirlen / sizeof(dpackfile_t);
 
+	if (header.dirlen < 0 || header.dirofs < 0)
+		Sys_Error ("COM_LoadPackFile: invalid packfile %s (dirlen: %i, dirofs: %i)", packfilename, header.dirlen, header.dirofs);
+	
+	if (!numpackfiles)
+	{
+		Sys_Printf ("WARNING: %s has no files\n", packfilename);
+//		Sys_Printf ("WARNING: %s has no files, ignored\n", packfilename);
+//		Sys_FileClose (packhandle);
+//		return NULL;
+	}
+
 	if (numpackfiles > MAX_FILES_IN_PACK)
 		Sys_Error ("COM_LoadPackFile: packfile %s has too many files (%i, max = %i)", packfilename, numpackfiles, MAX_FILES_IN_PACK);
 
-	newfiles = Hunk_AllocName (numpackfiles * sizeof(packfile_t), "packfile");
+	//johnfitz -- dynamic gamedir loading
+//	newfiles = Hunk_AllocName (numpackfiles * sizeof(packfile_t), "packfile");
+	newfiles = (packfile_t *) Z_Malloc (numpackfiles * sizeof(packfile_t));
 
 	Sys_FileSeek (packhandle, header.dirofs);
 	if (Sys_FileRead (packhandle, (void *)info, header.dirlen) != header.dirlen)
@@ -1616,7 +1630,9 @@ pack_t *COM_LoadPackFile (char *packfilename)
 		newfiles[i].filelen = LittleLong(info[i].filelen);
 	}
 
-	pack = Hunk_AllocName (sizeof(pack_t), "pack");
+	//johnfitz -- dynamic gamedir loading
+//	pack = Hunk_AllocName (sizeof(pack_t), "pack");
+	pack = (pack_t *) Z_Malloc (sizeof (pack_t));
 
 	strcpy (pack->filename, packfilename);
 	pack->handle = packhandle;
@@ -1630,7 +1646,7 @@ pack_t *COM_LoadPackFile (char *packfilename)
 
 /*
 ================
-COM_AddDirectory
+COM_AddDirectory -- johnfitz -- modified based on topaz's tutorial
 
 adds the directory to the head of the path,
 then loads and adds pak1.pak pak2.pak ...
@@ -1655,7 +1671,9 @@ void COM_AddDirectory (char *dir)
 //
 // add the directory to the search path
 //
-	search = Hunk_AllocName (sizeof(searchpath_t), "searchpath");
+	//johnfitz -- dynamic gamedir loading
+//	search = Hunk_AllocName (sizeof(searchpath_t), "searchpath");
+	search = (searchpath_t *) Z_Malloc (sizeof(searchpath_t));
 	search->path_id = path_id;
 	strcpy (search->filename, dir);
 	search->next = com_searchpaths;
@@ -1670,7 +1688,9 @@ void COM_AddDirectory (char *dir)
 		pak = COM_LoadPackFile (pakfile);
 		if (!pak)
 			break;
-		search = Hunk_AllocName (sizeof(searchpath_t), "searchpath");
+		//johnfitz -- dynamic gamedir loading
+//		search = Hunk_AllocName (sizeof(searchpath_t), "searchpath");
+		search = (searchpath_t *) Z_Malloc (sizeof(searchpath_t));
 		search->path_id = path_id;
 		search->pack = pak;
 		search->next = com_searchpaths;
@@ -1695,6 +1715,25 @@ void COM_AddGameDirectory (char *base, char *dir)
 
 /*
 ================
+COM_SetGamedirToHomeDirectory
+
+sets gamedir to home dir
+================
+*/
+void COM_SetGamedirToHomeDirectory (char *home, char *dir)
+{
+	if (!home)
+		return;
+
+#if defined __APPLE__ && defined __MACH__
+	strcpy (com_gamedir, va("%s/Library/Application Support/fxQuake/%s", home, dir));
+#else
+	strcpy (com_gamedir, va("%s/.fxQuake/%s", home, dir));
+#endif
+}
+
+/*
+================
 COM_AddUserDirectory
 
 Sets com_gamedir, adds the user directory to the head of the path,
@@ -1705,11 +1744,13 @@ void COM_AddUserDirectory (char *home, char *dir)
 	if (!home)
 		return;
 
-#if defined __APPLE__ && defined __MACH__
-	strcpy (com_gamedir, va("%s/Library/Application Support/fxQuake/%s", home, dir));
-#else
-	strcpy (com_gamedir, va("%s/.fxQuake/%s", home, dir));
-#endif
+//#if defined __APPLE__ && defined __MACH__
+//	strcpy (com_gamedir, va("%s/Library/Application Support/fxQuake/%s", home, dir));
+//#else
+//	strcpy (com_gamedir, va("%s/.fxQuake/%s", home, dir));
+//#endif
+	
+	COM_SetGamedirToHomeDirectory (home, dir);
 
 	COM_AddDirectory(com_gamedir);
 	
@@ -1729,8 +1770,170 @@ modified by QuakeSpasm team.
 */
 void COM_Game_f (void)
 {
+	char *p = Cmd_Argv(1);
+	char *p2 = Cmd_Argv(2);
+	searchpath_t *search;
+
 	if (Cmd_Argc() > 1)
 	{
+		if (!registered.value) // disable shareware quake
+		{
+			Con_Printf ("You must have the registered version to use modified games\n");
+			return;
+		}
+		
+		if (!*p || !strcmp(p, ".") || strstr(p, "..") || strstr(p, "/") || strstr(p, "\\") || strstr(p, ":"))
+		{
+			Con_Printf ("Relative pathnames are not allowed\n");
+			Con_Printf ("game directory should be a single directory name, not a path\n");
+			return;
+		}
+		
+		if (*p2)
+		{
+			if (strcmp(p2,"-hipnotic") && strcmp(p2,"-rogue") && strcmp(p2,"-quoth")) {
+				Con_Printf ("Invalid mission pack argument to \"game\"\n");
+				return;
+			}
+			if (!strcasecmp(p, GAMENAME)) {
+				Con_Printf ("No mission pack arguments to %s game\n", GAMENAME);
+				return;
+			}
+		}
+		
+		if (Sys_FileTime(va("%s/%s", com_basedir, p)) == -1)
+		{
+			Con_Printf ("No such game directory \"%s\"\n", p);
+			return;
+		}
+		
+		if (!strcasecmp(p, COM_SkipPath(com_gamedir))) // no change
+		{
+			if (com_searchpaths->path_id > 1)
+			{
+				// current game not id1
+				if (*p2 && com_searchpaths->path_id == 2)
+				{
+					// QS: rely on treating '-game missionpack'
+					// as '-missionpack', otherwise would be a mess
+					if (!strcasecmp(p, &p2[1]))
+						goto _same;
+					Con_Printf ("reloading game \"%s\" with \"%s\" support\n", p, &p2[1]);
+				}
+				else if (!*p2 && com_searchpaths->path_id > 2)
+					Con_Printf ("reloading game \"%s\" without mission pack support\n", p);
+				else
+					goto _same;
+			}
+			else
+			{	_same:
+				Con_Printf ("\"game\" is already \"%s\"\n", COM_SkipPath(com_gamedir));
+				return;
+			}
+		}
+		
+//		com_modified = true; //TODO: FIX if we switch back to "id1"
+		
+		// Shutdown the server
+		CL_Disconnect ();
+		Host_ShutdownServer (true);
+		
+		// Write config file
+		Host_WriteConfiguration ("config.cfg");
+		
+		// Close the extra game if it is loaded
+		while (com_searchpaths != com_base_searchpaths)
+		{
+			if (com_searchpaths->pack)
+			{
+				Sys_FileClose (com_searchpaths->pack->handle);
+				Z_Free (com_searchpaths->pack->files);
+				Z_Free (com_searchpaths->pack);
+			}
+			search = com_searchpaths->next;
+			Z_Free (com_searchpaths);
+			com_searchpaths = search;
+		}
+		
+		hipnotic = false;
+		rogue = false;
+		standard_quake = true;
+
+		if (strcasecmp(p, GAMENAME)) // game is not "id1"
+		{
+			com_modified = true;
+			
+			if (*p2)
+			{
+				COM_AddGameDirectory (com_basedir, &p2[1]);
+				COM_AddUserDirectory (homedir, &p2[1]);
+				standard_quake = false;
+				if (!strcmp(p2,"-hipnotic") || !strcmp(p2,"-quoth"))
+					hipnotic = true;
+				else if (!strcmp(p2,"-rogue"))
+					rogue = true;
+				if (strcasecmp(p, &p2[1])) // don't load twice
+				{
+					COM_AddGameDirectory (com_basedir, p);
+					COM_AddUserDirectory (homedir, p);
+				}
+			}
+			else
+			{
+				COM_AddGameDirectory (com_basedir, p);
+				COM_AddUserDirectory (homedir, p);
+				// QS: treat '-game missionpack' as '-missionpack'
+				if (!strcasecmp(p,"hipnotic") || !strcasecmp(p,"quoth"))
+				{
+					hipnotic = true;
+					standard_quake = false;
+				}
+				else if (!strcasecmp(p,"rogue"))
+				{
+					rogue = true;
+					standard_quake = false;
+				}
+			}
+		}
+		else // just update com_gamedir, game is "id1"
+		{
+			com_modified = false;
+
+//			snprintf (com_gamedir, sizeof(com_gamedir), "%s/%s", com_basedir, GAMENAME);
+			
+			strcpy (com_gamedir, va("%s/%s", com_basedir, GAMENAME));
+			COM_SetGamedirToHomeDirectory (homedir, GAMENAME);
+		}
+
+		// clear out and reload appropriate data
+		Cache_Flush ();
+		Mod_ResetAll ();
+		Sky_ClearAll();
+		
+		Host_LoadPalettes ();
+		
+		if (cls.state != ca_dedicated)
+		{
+			TexMgr_NewGame ();
+			Draw_NewGame ();
+			R_InitPlayerTextures ();
+		}
+		
+		Host_MapListRebuild ();
+		Host_Resetdemos ();
+		Host_DemoListRebuild ();
+		Host_SaveListRebuild ();
+		Host_ConfigListRebuild ();
+		
+		Con_Printf("\"game\" changed to \"%s\"\n", COM_SkipPath(com_gamedir));
+
+//		VID_Lock ();
+//		block_drawing = true;
+		
+		Cbuf_AddText ("exec quake.rc\n");
+		
+//		Cbuf_AddText ("vid_unlock\n");
+//		block_drawing = false;
 		
 	}
 	else // Diplay the current gamedir
@@ -1741,6 +1944,8 @@ void COM_Game_f (void)
 /*
 ================
 COM_InitFilesystem
+
+johnfitz -- modified based on topaz's tutorial
 ================
 */
 void COM_InitFilesystem (void)
@@ -1749,7 +1954,7 @@ void COM_InitFilesystem (void)
 	searchpath_t	*search;
 
 #ifdef DO_USERDIRS
-	home = getenv("HOME");
+	homedir = getenv("HOME");
 #endif
 
 //
@@ -1791,30 +1996,36 @@ void COM_InitFilesystem (void)
 // start up with GAMENAME by default (id1)
 //
 	COM_AddGameDirectory (com_basedir, GAMENAME);
-	COM_AddUserDirectory (home, GAMENAME);
+	COM_AddUserDirectory (homedir, GAMENAME);
+
+	/* this is the end of our base searchpath:
+	 * any set gamedirs, such as those from -game command line
+	 * arguments or by the 'game' console command will be freed
+	 * up to here upon a new game command. */
+	com_base_searchpaths = com_searchpaths;
 
 	if (COM_CheckParm ("-rogue"))
 	{
 		COM_AddGameDirectory (com_basedir, "rogue");
-		COM_AddUserDirectory (home, "rogue");
+		COM_AddUserDirectory (homedir, "rogue");
 	}
 
 	if (COM_CheckParm ("-hipnotic"))
 	{
 		COM_AddGameDirectory (com_basedir, "hipnotic");
-		COM_AddUserDirectory (home, "hipnotic");
+		COM_AddUserDirectory (homedir, "hipnotic");
 	}
 
 	if (COM_CheckParm ("-quoth"))
 	{
 		COM_AddGameDirectory (com_basedir, "quoth");
-		COM_AddUserDirectory (home, "quoth");
+		COM_AddUserDirectory (homedir, "quoth");
 	}
 
 	if (COM_CheckParm ("-nehahra"))
 	{
 		COM_AddGameDirectory (com_basedir, "nehahra");
-		COM_AddUserDirectory (home, "nehahra");
+		COM_AddUserDirectory (homedir, "nehahra");
 	}
 
 //
@@ -1829,7 +2040,7 @@ void COM_InitFilesystem (void)
 		com_modified = true;
 		
 		COM_AddGameDirectory (com_basedir, com_argv[i+1]);
-		COM_AddUserDirectory (home, com_argv[i+1]);
+		COM_AddUserDirectory (homedir, com_argv[i+1]);
 	}
 
 //
@@ -1842,7 +2053,7 @@ void COM_InitFilesystem (void)
 		com_modified = true;
 		
 		COM_AddGameDirectory (com_basedir, com_argv[i+1]);
-		COM_AddUserDirectory (home, com_argv[i+1]);
+		COM_AddUserDirectory (homedir, com_argv[i+1]);
 	}
 
 //
@@ -1858,7 +2069,8 @@ void COM_InitFilesystem (void)
 		{
 			if (!com_argv[i] || com_argv[i][0] == '+' || com_argv[i][0] == '-')
 				break;
-			search = Hunk_AllocName (sizeof(searchpath_t), "searchpath");
+//			search = Hunk_AllocName (sizeof(searchpath_t), "searchpath");
+			search = (searchpath_t *) Z_Malloc (sizeof(searchpath_t));
 			if ( !strcasecmp(COM_FileExtension(com_argv[i]), "pak") )
 			{
 				search->pack = COM_LoadPackFile (com_argv[i]);

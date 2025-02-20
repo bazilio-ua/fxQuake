@@ -219,10 +219,10 @@ qpic_t *Draw_CachePic (char *path)
 
 /*
 ===============
-Pics_Upload
+Draw_LoadPics
 ===============
 */
-void Pics_Upload (void)
+void Draw_LoadPics (void)
 {
 	uintptr_t	offset; // johnfitz
 	char		texturename[64]; //johnfitz
@@ -234,7 +234,7 @@ void Pics_Upload (void)
 	draw_chars = W_GetLumpName ("conchars");
 
 	if (!draw_chars)
-		Sys_Error ("Pics_Upload: couldn't load conchars");
+		Sys_Error ("Draw_LoadPics: couldn't load conchars");
 
 	// now turn them into textures
 	sprintf (texturename, "%s:%s", WADFILE, "conchars"); // johnfitz
@@ -246,6 +246,35 @@ void Pics_Upload (void)
 	//
 	draw_disc = Draw_PicFromWad ("disc");
 	draw_backtile = Draw_PicFromWad ("backtile");
+}
+
+
+/*
+===============
+Draw_NewGame -- johnfitz
+===============
+*/
+void Draw_NewGame (void)
+{
+	cachepic_t	*pic;
+	int			i;
+
+	// empty scrap and reallocate gltextures
+	memset(scrap_allocated, 0, sizeof(scrap_allocated));
+	memset(scrap_texels, 255, sizeof(scrap_texels));
+
+	Scrap_Upload (); //creates 2 empty gltextures
+
+	// reload wad pics
+	W_LoadWadFile (); //johnfitz -- filename is now hard-coded for honesty
+	Draw_LoadPics ();
+	SCR_LoadPics ();
+	Sbar_LoadPics ();
+
+	// empty lmp cache
+	for (pic = menu_cachepics, i = 0; i < menu_numcachepics; pic++, i++)
+		pic->name[0] = 0;
+	menu_numcachepics = 0;
 }
 
 
@@ -266,7 +295,7 @@ void Draw_Init (void)
 	Scrap_Upload (); // creates 2 empty textures
 
 	// load pics
-	Pics_Upload ();
+	Draw_LoadPics ();
 }
 
 /*

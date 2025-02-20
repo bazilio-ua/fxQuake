@@ -814,6 +814,17 @@ void GL_Texture_Anisotropy_f (void)
 //=============================================================================
 
 /*
+================
+TexMgr_NewGame
+================
+*/
+void TexMgr_NewGame (void)
+{
+	TexMgr_FreeTextures (0, TEXPREF_PERSIST); // deletes all textures where TEXPREF_PERSIST is unset
+	TexMgr_LoadPalette ();
+}
+
+/*
 ===============
 TexMgr_UploadWarpImage
 
@@ -874,6 +885,18 @@ void TexMgr_UploadWarpImage (void)
 
 
 /*
+=================
+TexMgr_LoadPalette
+=================
+*/
+void TexMgr_LoadPalette (void)
+{
+	V_FindFullbrightColors ();
+	V_SetOriginalPalette ();
+	V_SetPalette (host_basepal);
+}
+
+/*
 ===============
 TexMgr_Init
 
@@ -895,10 +918,11 @@ void TexMgr_Init (void)
 	numgltextures = 0;
 
 	// palette
-	V_FindFullbrightColors ();
-	V_SetOriginalPalette ();
-	V_SetPalette (host_basepal);
-
+//	V_FindFullbrightColors ();
+//	V_SetOriginalPalette ();
+//	V_SetPalette (host_basepal);
+	TexMgr_LoadPalette ();
+	
 	Cvar_RegisterVariableCallback (&gl_max_size, TexMgr_ReloadTextures);
 	Cvar_RegisterVariableCallback (&gl_picmip, TexMgr_ReloadTextures);
 	Cvar_RegisterVariableCallback (&gl_warp_image_size, TexMgr_UploadWarpImage);
@@ -1857,7 +1881,7 @@ TexMgr_FreeTextures
 compares each bit in "flags" to the one in glt->flags only if that bit is active in "mask"
 ================
 */
-void TexMgr_FreeTextures (int flags, int mask)
+void TexMgr_FreeTextures (unsigned int flags, unsigned int mask)
 {
 	gltexture_t *glt, *next;
 

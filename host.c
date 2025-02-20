@@ -32,8 +32,6 @@ Memory is cleared / released when a server or client begins, not when they end.
 
 */
 
-void Host_WriteConfiguration (char *configname);
-
 quakeparms_t *host_parms;
 
 qboolean	host_initialized;		// true if into command execution
@@ -332,6 +330,8 @@ void Host_WriteConfiguration (char *configname)
 			fprintf (f, "+mlook\n");
 
 		fclose (f);
+		
+		Host_ConfigListRebuild (); // EER1 -- update
 	}
 }
 

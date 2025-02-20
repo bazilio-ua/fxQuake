@@ -1031,6 +1031,8 @@ void Host_Savegame_f (void)
 	}
 	fclose (f);
 	Con_SafePrintf ("done.\n");
+	
+	Host_SaveListRebuild (); // EER1 -- update
 }
 
 
@@ -2245,6 +2247,19 @@ void Host_Stopdemo_f (void)
 		return;
 	CL_StopPlayback ();
 	CL_Disconnect ();
+}
+
+/*
+==================
+Host_Resetdemos
+
+Clear looping demo list (called on game change)
+==================
+*/
+void Host_Resetdemos (void)
+{
+	memset (cls.demos, 0, sizeof (cls.demos));
+	cls.demonum = 0;
 }
 
 //=============================================================================

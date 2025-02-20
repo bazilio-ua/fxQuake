@@ -110,10 +110,10 @@ void Sbar_Changed (void)
 
 /*
 ===============
-Sbar_Init
+Sbar_LoadPics -- johnfitz -- load all the sbar pics
 ===============
 */
-void Sbar_Init (void)
+void Sbar_LoadPics (void)
 {
 	int		i;
 
@@ -193,14 +193,6 @@ void Sbar_Init (void)
 	sb_face_invis_invuln = Draw_PicFromWad ("face_inv2");
 	sb_face_quad = Draw_PicFromWad ("face_quad");
 
-	Cvar_RegisterVariable (&scr_sbar);
-	Cvar_RegisterVariable (&scr_centersbar);
-	Cvar_RegisterVariable (&scr_overdrawsbar);
-	Cvar_RegisterVariable (&scr_sbaralpha);
-
-	Cmd_AddCommand ("+showscores", Sbar_ShowScores);
-	Cmd_AddCommand ("-showscores", Sbar_DontShowScores);
-
 	sb_sbar = Draw_PicFromWad ("sbar");
 	sb_ibar = Draw_PicFromWad ("ibar");
 	sb_scorebar = Draw_PicFromWad ("scorebar");
@@ -255,6 +247,26 @@ void Sbar_Init (void)
 		rsb_ammo[1] = Draw_PicFromWad ("r_ammomulti");
 		rsb_ammo[2] = Draw_PicFromWad ("r_ammoplasma");
 	}
+}
+
+
+/*
+===============
+Sbar_Init
+===============
+*/
+void Sbar_Init (void)
+{
+
+	Cvar_RegisterVariable (&scr_sbar);
+	Cvar_RegisterVariable (&scr_centersbar);
+	Cvar_RegisterVariable (&scr_overdrawsbar);
+	Cvar_RegisterVariable (&scr_sbaralpha);
+
+	Cmd_AddCommand ("+showscores", Sbar_ShowScores);
+	Cmd_AddCommand ("-showscores", Sbar_DontShowScores);
+
+	Sbar_LoadPics ();
 }
 
 

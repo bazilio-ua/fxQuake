@@ -953,6 +953,25 @@ void R_DrawSky (void)
 }
 
 /*
+=================
+Sky_ClearAll
+
+Called on map unload/game change to avoid keeping pointers to freed data
+=================
+*/
+void Sky_ClearAll (void)
+{
+	int i;
+	
+	skybox_name[0] = 0;
+	for (i=0; i<6; i++)
+		skyboxtextures[i] = NULL;
+	solidskytexture = NULL;
+	alphaskytexture = NULL;
+	Cvar_Set ("r_skyfog", r_skyfog.default_string);
+}
+
+/*
 =============
 R_InitSky
 

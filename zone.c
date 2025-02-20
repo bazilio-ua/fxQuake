@@ -21,7 +21,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "quakedef.h"
 
-#define	DYNAMIC_SIZE	0x200000	// 2 Mb, was 0x50000 (320 kb), orig. 0xc000 (48 kb)
+//#define	DYNAMIC_SIZE	0x200000	// 2 Mb, was 0x50000 (320 kb), orig. 0xc000 (48 kb)
+#define	DYNAMIC_SIZE	(4 * 1024 * 1024) // ericw -- was 512KB (64-bit) / 384KB (32-bit)
 
 #define	ZONEID	0x1d4a11
 #define MINFRAGMENT	64
@@ -31,8 +32,8 @@ typedef struct memblock_s
 	int		size;           // including the header and possibly tiny fragments
 	int     tag;            // a tag of 0 is a free block
 	int     id;        		// should be ZONEID
-	struct memblock_s       *next, *prev;
 	int		pad;			// pad to 64 bit boundary
+	struct memblock_s       *next, *prev;
 } memblock_t;
 
 typedef struct

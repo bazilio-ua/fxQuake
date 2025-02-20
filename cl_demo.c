@@ -272,6 +272,9 @@ void CL_Stop_f (void)
 
 	cls.demorecording = false;
 	Con_Printf ("Completed demo\n");
+	
+	// ericw -- update demo tab-completion list
+	Host_DemoListRebuild ();
 }
 
 /*

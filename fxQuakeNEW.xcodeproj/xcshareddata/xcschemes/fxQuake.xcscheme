@@ -60,6 +60,10 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
+            argument = "-consize 1024"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
             argument = "+gl_texquality 0"
             isEnabled = "NO">
          </CommandLineArgument>
