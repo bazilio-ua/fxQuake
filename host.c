@@ -967,10 +967,15 @@ Host_LoadPalettes
 */
 void Host_LoadPalettes (void)
 {
-	host_basepal = COM_LoadHunkFile ("gfx/palette.lmp", NULL);
+	//johnfitz -- dynamic gamedir loading
+	//johnfitz -- modified to use malloc
+	//TODO: use cache_alloc
+//	host_basepal = COM_LoadHunkFile ("gfx/palette.lmp", NULL);
+	host_basepal = COM_LoadMallocFile ("gfx/palette.lmp", host_basepal, NULL);
 	if (!host_basepal)
 		Sys_Error ("Host_LoadPalettes: couldn't load gfx/palette.lmp");
-	host_colormap = COM_LoadHunkFile ("gfx/colormap.lmp", NULL);
+//	host_colormap = COM_LoadHunkFile ("gfx/colormap.lmp", NULL);
+	host_colormap = COM_LoadMallocFile ("gfx/colormap.lmp", host_colormap, NULL);
 	if (!host_colormap)
 		Sys_Error ("Host_LoadPalettes: couldn't load gfx/colormap.lmp");
 }

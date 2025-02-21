@@ -1590,11 +1590,11 @@ pack_t *COM_LoadPackFile (char *packfilename)
 	header.dirofs = LittleLong (header.dirofs);
 	header.dirlen = LittleLong (header.dirlen);
 
-	numpackfiles = header.dirlen / sizeof(dpackfile_t);
-
 	if (header.dirlen < 0 || header.dirofs < 0)
 		Sys_Error ("COM_LoadPackFile: invalid packfile %s (dirlen: %i, dirofs: %i)", packfilename, header.dirlen, header.dirofs);
 	
+	numpackfiles = header.dirlen / sizeof(dpackfile_t);
+
 	if (!numpackfiles)
 	{
 		Sys_Printf ("WARNING: %s has no files\n", packfilename);
