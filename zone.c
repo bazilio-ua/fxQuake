@@ -300,6 +300,18 @@ void Z_Print (memzone_t *zone)
 
 
 /*
+===================
+Zone_Print_f
+
+console command to call Z_Print
+===================
+*/
+void Zone_Print_f (void)
+{
+	Z_Print (mainzone);
+}
+
+/*
 ========================
 Z_CheckHeap
 ========================
@@ -1028,17 +1040,29 @@ void Memory_Init (void *buf, int size)
 	hunk_high_used = 0;
 	
 	Cache_Init ();
-	p = COM_CheckParm ("-zone");
-	if (p)
+//	p = COM_CheckParm ("-zone");
+//	if (p)
+	if (COM_CheckParm ("-zone"))
 	{
+		p = COM_CheckParm ("-zone");
 		if (p < com_argc-1)
 			zonesize = atoi (com_argv[p+1]) * 1024;
 		else
 			Sys_Error ("Memory_Init: you must specify a size in KB after -zone");
 	}
+	else if (COM_CheckParm ("-zmem"))
+	{
+		p = COM_CheckParm ("-zmem");
+		if (p < com_argc-1)
+			zonesize = atoi (com_argv[p+1]) * 1024 * 1024;
+		else
+			Sys_Error ("Memory_Init: you must specify a size in MB after -zmem");
+	}
+	
 	mainzone = Hunk_AllocName (zonesize, "zone" );
 	Z_ClearZone (mainzone, zonesize);
 
 	Cmd_AddCommand ("hunk_print", Hunk_Print_f);
+	Cmd_AddCommand ("zone_print", Zone_Print_f);
 }
 
