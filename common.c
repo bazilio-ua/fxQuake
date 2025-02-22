@@ -943,9 +943,9 @@ void COM_InitArgv (int argc, char **argv)
 	{
 		hipnotic = true;
 		standard_quake = false;
+		if (COM_CheckParm ("-quoth"))
+			quoth = true;
 	}
-	if (COM_CheckParm ("-quoth"))
-		quoth = true;
 
 	if (COM_CheckParm ("-nehahra"))
 		nehahra = true;
@@ -1791,7 +1791,7 @@ void COM_Game_f (void)
 		
 		if (*p2)
 		{
-			if (strcmp(p2,"-hipnotic") && strcmp(p2,"-rogue") && strcmp(p2,"-quoth")) {
+			if (strcmp(p2,"-hipnotic") && strcmp(p2,"-rogue") && strcmp(p2,"-quoth") && strcmp(p2,"-nehahra")) {
 				Con_Printf ("Invalid mission pack argument to \"game\"\n");
 				return;
 			}
@@ -1832,8 +1832,6 @@ void COM_Game_f (void)
 			}
 		}
 		
-//		com_modified = true; //TODO: FIX if we switch back to "id1"
-		
 		// Shutdown the server
 		CL_Disconnect ();
 		Host_ShutdownServer (true);
@@ -1855,23 +1853,37 @@ void COM_Game_f (void)
 			com_searchpaths = search;
 		}
 		
+		com_modified = true;
+		
 		hipnotic = false;
 		rogue = false;
 		standard_quake = true;
 
 		if (strcasecmp(p, GAMENAME)) // game is not "id1"
 		{
-			com_modified = true;
-			
 			if (*p2)
 			{
 				COM_AddGameDirectory (com_basedir, &p2[1]);
 				COM_AddUserDirectory (homedir, &p2[1]);
-				standard_quake = false;
+				
 				if (!strcmp(p2,"-hipnotic") || !strcmp(p2,"-quoth"))
+				{
 					hipnotic = true;
+					standard_quake = false;
+					if (!strcmp(p2,"-quoth"))
+						quoth = true;
+				}
 				else if (!strcmp(p2,"-rogue"))
+				{
 					rogue = true;
+					standard_quake = false;
+				}
+				else if (!strcmp(p2,"-nehahra"))
+				{
+					nehahra = true;
+					standard_quake = true;
+				}
+				
 				if (strcasecmp(p, &p2[1])) // don't load twice
 				{
 					COM_AddGameDirectory (com_basedir, p);
@@ -1887,18 +1899,23 @@ void COM_Game_f (void)
 				{
 					hipnotic = true;
 					standard_quake = false;
+					if (!strcasecmp(p,"quoth"))
+						quoth = true;
 				}
 				else if (!strcasecmp(p,"rogue"))
 				{
 					rogue = true;
 					standard_quake = false;
 				}
+				else if (!strcasecmp(p,"nehahra"))
+				{
+					nehahra = true;
+					standard_quake = true;
+				}
 			}
 		}
 		else // just update com_gamedir, game is "id1"
 		{
-			com_modified = false;
-
 //			snprintf (com_gamedir, sizeof(com_gamedir), "%s/%s", com_basedir, GAMENAME);
 			
 			strcpy (com_gamedir, va("%s/%s", com_basedir, GAMENAME));
@@ -1927,12 +1944,12 @@ void COM_Game_f (void)
 		
 		Con_Printf("\"game\" changed to \"%s\"\n", COM_SkipPath(com_gamedir));
 
-//		VID_Lock ();
+//		TODO: vid lock
 //		block_drawing = true;
 		
 		Cbuf_AddText ("exec quake.rc\n");
 		
-//		Cbuf_AddText ("vid_unlock\n");
+//		TODO: vid unlock
 //		block_drawing = false;
 		
 	}
