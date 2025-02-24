@@ -702,8 +702,12 @@ const char *PR_GetString(int num)
     else if (num < 0 && num >= -num_prstr)
         return pr_strtbl[-num - 1];
     else
-        Host_Error("PR_GetString: invalid string offset %d (%d to %d valid)", num, -num_prstr, pr_strings_size - 2);
-    
+	{
+		Con_Error ("PR_GetString: invalid string offset %d (%d to %d valid)\n", num, -num_prstr, pr_strings_size - 2);
+		return pr_strings;
+//		Host_Error ("PR_GetString: invalid string offset %d (%d to %d valid)", num, -num_prstr, pr_strings_size - 2);
+	}
+	
     return "";
 }
 

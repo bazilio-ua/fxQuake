@@ -1859,6 +1859,9 @@ void COM_Game_f (void)
 		rogue = false;
 		standard_quake = true;
 
+		quoth = false;
+		nehahra = false;
+		
 		if (strcasecmp(p, GAMENAME)) // game is not "id1"
 		{
 			if (*p2)
