@@ -82,10 +82,10 @@ unsigned int d_8to24table_conchars[256];		//conchars palette, 0 and 255 are tran
 
 unsigned int is_fullbright[256/32];
 
-const char *gl_vendor;
-const char *gl_renderer;
-const char *gl_version;
-const char *gl_extensions;
+char *gl_vendor;
+char *gl_renderer;
+char *gl_version;
+char *gl_extensions;
 
 qboolean fullsbardraw = false;
 qboolean isIntel = false; // intel video workaround
@@ -424,7 +424,7 @@ void GL_CheckExtensions (void)
 GL_MakeNiceExtensionsList -- johnfitz
 ===============
 */
-char *GL_MakeNiceExtensionsList (const char *in)
+char *GL_MakeNiceExtensionsList (char *in)
 {
 	char *copy, *token, *out;
 	int i, count;
@@ -589,10 +589,10 @@ GL_Init
 void GL_Init (void)
 {
 	// gl_info
-	gl_vendor = (const char *)glGetString (GL_VENDOR);
-	gl_renderer = (const char *)glGetString (GL_RENDERER);
-	gl_version = (const char *)glGetString (GL_VERSION);
-	gl_extensions = (const char *)glGetString (GL_EXTENSIONS);
+	gl_vendor = (char *)glGetString (GL_VENDOR);
+	gl_renderer = (char *)glGetString (GL_RENDERER);
+	gl_version = (char *)glGetString (GL_VERSION);
+	gl_extensions = (char *)glGetString (GL_EXTENSIONS);
 
 	Con_SafePrintf ("GL_VENDOR: %s\n", gl_vendor);
 	Con_SafePrintf ("GL_RENDERER: %s\n", gl_renderer);

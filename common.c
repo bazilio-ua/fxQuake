@@ -2118,7 +2118,7 @@ void COM_InitFilesystem (void)
 COM_FileListAdd
 ==================
 */
-void COM_FileListAdd (const char *name, filelist_t **list)
+void COM_FileListAdd (char *name, filelist_t **list)
 {
 	filelist_t	*item, *cursor, *prev;
 

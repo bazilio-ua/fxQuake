@@ -195,7 +195,7 @@ ddef_t *ED_FindField (char *name)
 {
 	ddef_t	*def;
 	int	i;
-
+	
 	for (i=0 ; i<progs->numfielddefs ; i++)
 	{
 		def = &pr_fielddefs[i];
@@ -203,7 +203,7 @@ ddef_t *ED_FindField (char *name)
 			return def;
 	}
 	return NULL;
-	}
+}
 
 
 /*
@@ -231,7 +231,7 @@ ddef_t *ED_FindGlobal (char *name)
 ED_FindFunction
 ============
 */
-dfunction_t *ED_FindFunction (const char *name)
+dfunction_t *ED_FindFunction (char *name)
 {
 	dfunction_t	*func;
 	int		i;
@@ -455,7 +455,7 @@ void ED_Print (edict_t *ed)
 	ddef_t	    *d;
 	int	    *v;
 	int	    i, j;
-	const char	*name;
+	char	*name;
 	int	    type;
 
 	if (ed->free)
@@ -504,7 +504,7 @@ void ED_Write (FILE *f, edict_t *ed)
 	ddef_t	*d;
 	int	*v;
 	int	i, j;
-	const char	*name;
+	char	*name;
 	int	type;
 
 	fprintf (f, "{\n");
@@ -645,7 +645,7 @@ void ED_WriteGlobals (FILE *f)
 {
 	ddef_t		*def;
 	int			i;
-	const char	*name;
+	char	*name;
 	int			type;
 
 	fprintf (f,"{\n");
@@ -955,7 +955,7 @@ void ED_LoadFromFile (char *data)
 	edict_t		*ent;
 	int		inhibit;
 	dfunction_t	*func;
-	const char	*classname;
+	char	*classname;
 
 	ent = NULL;
 	inhibit = 0;

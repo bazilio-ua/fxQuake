@@ -79,7 +79,7 @@ void InsertLinkAfter (link_t *l, link_t *after);
 
 //============================================================================
 
-static inline qboolean GetBit (const unsigned int *a, unsigned int i)
+static inline qboolean GetBit (unsigned int *a, unsigned int i)
 {
 	return (a[i/32u] & (1u<<(i%32u))) != 0u;
 }
@@ -288,7 +288,7 @@ typedef struct filelist_s
 	struct filelist_s	*next;
 } filelist_t;
 
-void COM_FileListAdd (const char *name, filelist_t **list);
+void COM_FileListAdd (char *name, filelist_t **list);
 void COM_FileListClear (filelist_t **list);
 void COM_ScanDirList (char *path, filelist_t **list);
 void COM_ScanDirFileList(char *path, char *subdir, char *ext, qboolean stripext, filelist_t **list);

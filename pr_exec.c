@@ -681,7 +681,7 @@ while (1)
 /*----------------------*/
 
 #define PR_STRTBL_CHUNK 256
-const char **pr_strtbl = NULL;
+char **pr_strtbl = NULL;
 int pr_strtbl_size;
 int num_prstr;
 
@@ -695,7 +695,7 @@ void PR_InitStringTable(void)
     num_prstr = 0;
 }
 
-const char *PR_GetString(int num)
+char *PR_GetString(int num)
 {
     if (num >= 0 && num < pr_strings_size - 1)
         return pr_strings + num;
@@ -711,7 +711,7 @@ const char *PR_GetString(int num)
     return "";
 }
 
-int PR_SetString(const char *s)
+int PR_SetString(char *s)
 {
     int i;
     

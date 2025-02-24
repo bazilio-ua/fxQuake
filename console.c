@@ -830,7 +830,7 @@ void Con_AddToTabList (char *name, char *type)
 {
 	tab_t	*t, *insert;
 	char	*i_bash;
-	const char *i_name;
+	char	*i_name;
 
 	if (!*bash_partial)
 	{

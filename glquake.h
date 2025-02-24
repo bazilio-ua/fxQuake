@@ -139,12 +139,12 @@ void (GLAPIENTRY *qglClientActiveTexture) (GLenum);
 #endif
 
 
-extern const char *gl_vendor;
-extern const char *gl_renderer;
-extern const char *gl_version;
-extern const char *gl_extensions;
+extern char *gl_vendor;
+extern char *gl_renderer;
+extern char *gl_version;
+extern char *gl_extensions;
 #ifdef GLX_GLXEXT_PROTOTYPES
-extern const char *glx_extensions;
+extern char *glx_extensions;
 #endif
 
 extern qboolean fullsbardraw;

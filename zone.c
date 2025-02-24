@@ -261,7 +261,7 @@ void *Z_Realloc (void *ptr, int size)
 Z_Strdup
 ========================
 */
-char *Z_Strdup (const char *s)
+char *Z_Strdup (char *s)
 {
 	int size = strlen(s) + 1;
 	char *ptr = Z_Malloc (size);

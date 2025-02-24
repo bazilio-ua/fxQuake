@@ -41,7 +41,7 @@ static int sv_protocol = PROTOCOL_MARKV;
 static void SV_Protocol_f (void)
 {
 	int i;
-	const char	*p;
+	char	*p;
 
 	switch (Cmd_Argc())
 	{
@@ -91,7 +91,7 @@ SV_Init
 void SV_Init (void)
 {
 	int		i;
-	const char	*p;
+	char	*p;
 
 	Cvar_RegisterVariable (&sv_maxvelocity);
 	Cvar_RegisterVariable (&sv_gravity);
@@ -1352,7 +1352,7 @@ SV_ModelIndex
 
 ================
 */
-int SV_ModelIndex (const char *name)
+int SV_ModelIndex (char *name)
 {
 	int		i;
 	

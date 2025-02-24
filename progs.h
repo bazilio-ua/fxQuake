@@ -142,14 +142,14 @@ void ED_PrintEdicts (void);
 void ED_PrintNum (int ent);
 
 eval_t *GetEdictFieldValue(edict_t *ed, char *field);
-dfunction_t *ED_FindFunction (const char *name);
+dfunction_t *ED_FindFunction (char *name);
 
 //
 // PR Strings stuff
 //
 void PR_InitStringTable(void);
-const char *PR_GetString(int num);
-int PR_SetString(const char *s);
+char *PR_GetString(int num);
+int PR_SetString(char *s);
 
 //
 // tyr: Somehow, I don't think this should be exposed - but better to have it here than have hidden exports between .c files.
