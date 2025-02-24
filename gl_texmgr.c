@@ -1332,7 +1332,7 @@ byte *TexMgr_PadImageH (char *name, byte *in, int width, int height, byte padbyt
 static void
 DXT_ExtractColorBlock(unsigned dst[16], unsigned *in, int inwidth, int inheight, int x, int y)
 {
-	const unsigned *src = in + y * inwidth + x;
+	unsigned *src = in + y * inwidth + x;
 	
 	if (inheight - y >= 4 && inwidth - x >= 4) {
 		/* Fast path for a full block */
@@ -1342,9 +1342,9 @@ DXT_ExtractColorBlock(unsigned dst[16], unsigned *in, int inwidth, int inheight,
 		memcpy(dst + 12, src + inwidth * 3, 16);
 	} else {
 		/* Partial block, pad with black and alpha 1.0 */
-		const unsigned black = (unsigned)LittleLong(255ul << 24);
-		const int width  = min(inwidth  - x, 4);
-		const int height = min(inheight - y, 4);
+		unsigned black = (unsigned)LittleLong(255ul << 24);
+		int width  = min(inwidth  - x, 4);
+		int height = min(inheight - y, 4);
 		int y = 0;
 		for ( ; y < height; y++) {
 			int x = 0;
@@ -1364,8 +1364,8 @@ static void
 TexMgr_CompressDXT1(unsigned *in, int inwidth, int inheight, byte *dst)
 {
 	unsigned colorblock[16];
-	const int width = inwidth;
-	const int height = inheight;
+	int width = inwidth;
+	int height = inheight;
 
 	for (int y = 0; y < height; y += 4) {
 		for (int x = 0; x < width; x += 4) {
@@ -1380,8 +1380,8 @@ static void
 TexMgr_CompressDXT5(unsigned *in, int inwidth, int inheight, byte *dst)
 {
 	unsigned colorblock[16];
-	const int width = inwidth;
-	const int height = inheight;
+	int width = inwidth;
+	int height = inheight;
 	
 	for (int y = 0; y < height; y += 4) {
 		for (int x = 0; x < width; x += 4) {
@@ -1783,8 +1783,6 @@ void TexMgr_Upload8 (gltexture_t *glt, byte *data)
     
 	// upload it
 	TexMgr_Upload32 (glt, trans);
-    
-	// free allocated memory
 }
 
 
