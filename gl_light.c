@@ -449,8 +449,9 @@ restart:
 
 			tex = surf->texinfo;
 			
-			ds = DotProduct (mid, tex->vecs[0]) + tex->vecs[0][3];
-			dt = DotProduct (mid, tex->vecs[1]) + tex->vecs[1][3];
+			// add casts to double to force 64-bit precision on SSE builds.
+			ds = (int)((double)PreciseDotProduct (mid, tex->vecs[0]) + tex->vecs[0][3]);
+			dt = (int)((double)PreciseDotProduct (mid, tex->vecs[1]) + tex->vecs[1][3]);
 
 			if (ds < surf->texturemins[0] || dt < surf->texturemins[1])
 				continue;	// out of range

@@ -351,21 +351,22 @@ void PF_normalize (void)
 {
 	float	*value1;
 	vec3_t	newvalue;
-	float	new;
+	double	val;
 
 	value1 = G_VECTOR(OFS_PARM0);
 
-	new = value1[0] * value1[0] + value1[1] * value1[1] + value1[2]*value1[2];
-	new = sqrt(new);
+	// add casts to double to force 64-bit precision on SSE builds.
+	val = (double)value1[0] * value1[0] + (double)value1[1] * value1[1] + (double)value1[2] * value1[2];
+	val = sqrt(val);
 
-	if (new == 0)
+	if (val == 0)
 		newvalue[0] = newvalue[1] = newvalue[2] = 0;
 	else
 	{
-		new = 1/new;
-		newvalue[0] = value1[0] * new;
-		newvalue[1] = value1[1] * new;
-		newvalue[2] = value1[2] * new;
+		val = 1/val;
+		newvalue[0] = value1[0] * val;
+		newvalue[1] = value1[1] * val;
+		newvalue[2] = value1[2] * val;
 	}
 
 	VectorCopy (newvalue, G_VECTOR(OFS_RETURN));
@@ -381,14 +382,15 @@ scalar vlen(vector)
 void PF_vlen (void)
 {
 	float	*value1;
-	double	new;
+	double	val;
 
 	value1 = G_VECTOR(OFS_PARM0);
 
-	new = (double)value1[0] * value1[0] + (double)value1[1] * value1[1] + (double)value1[2] * value1[2];
-	new = sqrt(new);
+	// add casts to double to force 64-bit precision on SSE builds.
+	val = (double)value1[0] * value1[0] + (double)value1[1] * value1[1] + (double)value1[2] * value1[2];
+	val = sqrt(val);
 
-	G_FLOAT(OFS_RETURN) = new;
+	G_FLOAT(OFS_RETURN) = val;
 }
 
 /*
