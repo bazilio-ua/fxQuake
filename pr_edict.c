@@ -1049,7 +1049,11 @@ void PR_LoadProgs (void)
 
 	CRC_Init (&pr_crc);
 
-	progs = (dprograms_t *)COM_LoadHunkFile ("progs.dat", NULL);
+	//johnfitz -- dynamic gamedir loading
+	//johnfitz -- modified to use malloc
+	//TODO: use cache_alloc
+//	progs = (dprograms_t *)COM_LoadHunkFile ("progs.dat", NULL);
+	progs = (dprograms_t *)COM_LoadMallocFile ("progs.dat", progs, NULL);
 	if (!progs)
 		Host_Error ("PR_LoadProgs: couldn't load progs.dat");
 
@@ -1067,12 +1071,14 @@ void PR_LoadProgs (void)
 	if (progs->crc != PROGHEADER_CRC)
 		Host_Error ("progs.dat system vars have been modified, progdefs.h is out of date");
 
+	if (progs->ofs_strings + progs->numstrings >= com_filesize)
+		Host_Error ("progs.dat strings go past end of file");
+
 	pr_functions = (dfunction_t *)((byte *)progs + progs->ofs_functions);
 	pr_strings = (char *)progs + progs->ofs_strings;
     pr_strings_size = progs->numstrings;
-    if (progs->ofs_strings + pr_strings_size >= com_filesize)
-        Host_Error("progs.dat strings extend past end of file\n");
-    
+
+// initialize the strings
     PR_InitStringTable();
 
 	pr_globaldefs = (ddef_t *)((byte *)progs + progs->ofs_globaldefs);
