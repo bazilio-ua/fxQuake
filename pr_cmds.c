@@ -976,32 +976,44 @@ void PF_dprint (void)
 	Con_DPrintf ("%s", str);
 }
 
-char	pr_string_temp[128];
+#define	STRINGTEMP_BUFFERS		16
+#define	STRINGTEMP_LENGTH		1024
+char	pr_string_temp[STRINGTEMP_BUFFERS][STRINGTEMP_LENGTH];
+byte	pr_string_tempindex = 0;
+
+char *PR_GetTempString (void)
+{
+	return pr_string_temp[(STRINGTEMP_BUFFERS-1) & ++pr_string_tempindex];
+}
+
 
 void PF_ftos (void)
 {
 	float	v;
+	char	*s;
+	
+	s = PR_GetTempString();
+	
 	v = G_FLOAT(OFS_PARM0);
-
 	if (v == (int)v)
-		sprintf (pr_string_temp, "%d",(int)v);
+		sprintf (s, "%d",(int)v);
 	else
 	{
 		if ((int)(v * 100) % 10 == 0)
-			sprintf (pr_string_temp, "%5.1f",v);
+			sprintf (s, "%5.1f",v);
 		else
 		{
 			int i;
-
+			
 			// Higher precision than 1/10
-			sprintf (pr_string_temp, "%f", v);
-
-			for (i = (int)strlen(pr_string_temp) - 1; i > 0 && pr_string_temp[i] == '0'; i--)
-				pr_string_temp[i] = 0;
+			sprintf (s, "%f", v);
+			
+			for (i = (int)strlen(s) - 1; i > 0 && s[i] == '0'; i--)
+				s[i] = 0;
 		}
 	}
-
-	G_INT(OFS_RETURN) = PR_SetString(pr_string_temp);
+	
+	G_INT(OFS_RETURN) = PR_SetString(s);
 }
 
 void PF_fabs (void)
@@ -1013,14 +1025,20 @@ void PF_fabs (void)
 
 void PF_vtos (void)
 {
-	sprintf (pr_string_temp, "'%5.1f %5.1f %5.1f'", G_VECTOR(OFS_PARM0)[0], G_VECTOR(OFS_PARM0)[1], G_VECTOR(OFS_PARM0)[2]);
-	G_INT(OFS_RETURN) = PR_SetString(pr_string_temp);
+	char	*s;
+	
+	s = PR_GetTempString();
+	sprintf (s, "'%5.1f %5.1f %5.1f'", G_VECTOR(OFS_PARM0)[0], G_VECTOR(OFS_PARM0)[1], G_VECTOR(OFS_PARM0)[2]);
+	G_INT(OFS_RETURN) = PR_SetString(s);
 }
 
 void PF_etos (void)
 {
-	sprintf (pr_string_temp, "entity %i", G_EDICTNUM(OFS_PARM0));
-	G_INT(OFS_RETURN) = PR_SetString(pr_string_temp);
+	char	*s;
+	
+	s = PR_GetTempString();
+	sprintf (s, "entity %i", G_EDICTNUM(OFS_PARM0));
+	G_INT(OFS_RETURN) = PR_SetString(s);
 }
 
 void PF_Spawn (void)
