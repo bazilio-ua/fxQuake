@@ -256,14 +256,13 @@ Draw_NewGame -- johnfitz
 */
 void Draw_NewGame (void)
 {
-	cachepic_t	*pic;
+	cachepic_t	*cpic;
 	int			i;
 
 	// empty scrap and reallocate gltextures
-	memset(scrap_allocated, 0, sizeof(scrap_allocated));
-	memset(scrap_texels, 255, sizeof(scrap_texels));
-
-	Scrap_Upload (); //creates 2 empty gltextures
+	memset(&scrap_allocated, 0, sizeof(scrap_allocated));
+	memset(&scrap_texels, 255, sizeof(scrap_texels));
+	Scrap_Upload (); // creates 2 empty gltextures
 
 	// reload wad pics
 	W_LoadWadFile (); //johnfitz -- filename is now hard-coded for honesty
@@ -272,8 +271,8 @@ void Draw_NewGame (void)
 	Sbar_LoadPics ();
 
 	// empty lmp cache
-	for (pic = menu_cachepics, i = 0; i < menu_numcachepics; pic++, i++)
-		pic->name[0] = 0;
+	for (cpic=menu_cachepics, i=0 ; i<menu_numcachepics ; cpic++, i++)
+		cpic->name[0] = 0;
 	menu_numcachepics = 0;
 }
 
