@@ -2056,10 +2056,42 @@ void COM_InitFilesystem (void)
 	i = COM_CheckParm ("-mod");
 	if (i && i < com_argc-1)
 	{
+		p = com_argv[i + 1];
+		if (!*p || !strcmp(p, ".") || strstr(p, "..") || strstr(p, "/") || strstr(p, "\\") || strstr(p, ":"))
+			Sys_Error ("moddir should be a single directory name, not a path\n");
+
 		com_modified = true;
 		
-		COM_AddGameDirectory (com_basedir, com_argv[i+1]);
-		COM_AddUserDirectory (homedir, com_argv[i+1]);
+		// don't load mission packs twice
+		if (COM_CheckParm ("-rogue") && !strcasecmp(p, "rogue")) p = NULL;
+		if (p && COM_CheckParm ("-hipnotic") && !strcasecmp(p, "hipnotic")) p = NULL;
+		if (p && COM_CheckParm ("-quoth") && !strcasecmp(p, "quoth")) p = NULL;
+		if (p && COM_CheckParm ("-nehahra") && !strcasecmp(p, "nehahra")) p = NULL;
+
+		if (p != NULL)
+		{
+			COM_AddGameDirectory (com_basedir, com_argv[i+1]);
+			COM_AddUserDirectory (homedir, com_argv[i+1]);
+			
+			// QS: treat '-mod missionpack' as '-missionpack'
+			if (!strcasecmp(p,"rogue"))
+			{
+				rogue = true;
+				standard_quake = false;
+			}
+			if (!strcasecmp(p,"hipnotic") || !strcasecmp(p,"quoth"))
+			{
+				hipnotic = true;
+				standard_quake = false;
+				if (!strcasecmp(p,"quoth"))
+					quoth = true;
+			}
+			if (!strcasecmp(p,"nehahra"))
+			{
+				nehahra = true;
+				standard_quake = true;
+			}
+		}
 	}
 
 //
