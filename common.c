@@ -1772,6 +1772,8 @@ void COM_Game_f (void)
 {
 	char *p = Cmd_Argv(1);
 	char *p2 = Cmd_Argv(2);
+	char *p3 = Cmd_Argv(3);
+	char *p4 = Cmd_Argv(4);
 	searchpath_t *search;
 
 	if (Cmd_Argc() > 1)
@@ -1797,6 +1799,25 @@ void COM_Game_f (void)
 			}
 			if (!strcasecmp(p, GAMENAME)) {
 				Con_Printf ("No mission pack arguments to %s game\n", GAMENAME);
+				return;
+			}
+		}
+		
+		if (*p3)
+		{
+			if (strcmp(p3, "-mod")) {
+				Con_Printf ("Invalid mod argument to \"game\"\n");
+				return;
+			}
+			if (!*p4 || !strcmp(p4, ".") || strstr(p4, "..") || strstr(p4, "/") || strstr(p4, "\\") || strstr(p4, ":"))
+			{
+				Con_Printf ("Relative pathnames are not allowed\n");
+				Con_Printf ("mod directory should be a single directory name, not a path\n");
+				return;
+			}
+			if (Sys_FileTime(va("%s/%s", com_basedir, p4)) == -1)
+			{
+				Con_Printf ("No such mod directory \"%s\"\n", p4);
 				return;
 			}
 		}
@@ -1887,6 +1908,41 @@ void COM_Game_f (void)
 					standard_quake = true;
 				}
 				
+				// "-mod"
+				if (*p3)
+				{
+					if (strcasecmp(p4, &p2[1])) // don't load twice
+					{
+						COM_AddGameDirectory (com_basedir, p4);
+						COM_AddUserDirectory (homedir, p4);
+					}
+					
+					// QS: treat '-mod missionpack' as '-missionpack'
+					if (!strcasecmp(p4,"hipnotic") || !strcasecmp(p4,"quoth"))
+					{
+						hipnotic = true;
+						standard_quake = false;
+						if (!strcasecmp(p4,"quoth"))
+							quoth = true;
+					}
+					else if (!strcasecmp(p4,"rogue"))
+					{
+						rogue = true;
+						standard_quake = false;
+					}
+					else if (!strcasecmp(p4,"nehahra"))
+					{
+						nehahra = true;
+						standard_quake = true;
+					}
+					
+					if (strcasecmp(p, p4) && strcasecmp(p, &p2[1])) // don't load twice
+					{
+						COM_AddGameDirectory (com_basedir, p);
+						COM_AddUserDirectory (homedir, p);
+					}
+				}
+				else
 				if (strcasecmp(p, &p2[1])) // don't load twice
 				{
 					COM_AddGameDirectory (com_basedir, p);
