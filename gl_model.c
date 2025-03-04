@@ -2280,8 +2280,9 @@ void Mod_LoadBrushModel (model_t *mod, void *buffer)
 	float		radius;
 	qboolean	servermatch, clientmatch;
 	
-	loadmodel->type = mod_brush;
-	
+//	loadmodel->type = mod_brush;
+	mod->type = mod_brush;
+
 // isworldmodel check
 	servermatch = sv.modelname[0] && !strcasecmp (loadname, sv.name);
 	clientmatch = cl.worldname[0] && !strcasecmp (loadname, cl.worldname);
@@ -2290,8 +2291,9 @@ void Mod_LoadBrushModel (model_t *mod, void *buffer)
 		Con_DPrintf ("sv.modelname: %s\n", sv.modelname);
 	if (clientmatch)
 		Con_DPrintf ("cl.modelname: %s\n", cl.worldname);
-	loadmodel->isworldmodel = servermatch || clientmatch;
-	
+//	loadmodel->isworldmodel = servermatch || clientmatch;
+	mod->isworldmodel = servermatch || clientmatch;
+
 	header = (dheader_t *)buffer;
 	mod->bspversion = LittleLong (header->version);
 	Con_DPrintf ("bspversion: %i ", mod->bspversion);
@@ -2762,6 +2764,8 @@ void Mod_LoadAliasModel (model_t *mod, void *buffer)
 	daliasskintype_t	*pskintype;
 	int					startmark, endmark, total;
 
+	mod->type = mod_alias;
+
 	startmark = Hunk_LowMark ();
 
 	pinmodel = (mdl_t *)buffer;
@@ -2897,7 +2901,7 @@ void Mod_LoadAliasModel (model_t *mod, void *buffer)
 
 	pheader->numposes = posenum;
 
-	mod->type = mod_alias;
+//	mod->type = mod_alias;
 	
     // set up extra flags that aren't in the mdl
     mod->flags &= (0xFF | MF_HOLEY); // only preserve first byte, plus MF_HOLEY
@@ -3049,6 +3053,8 @@ void Mod_LoadSpriteModel (model_t *mod, void *buffer)
 	dspriteframetype_t	*pframetype;
 	int			bytes;
 
+	mod->type = mod_sprite;
+
 	pin = (dsprite_t *)buffer;
 	mod_base = (byte *)buffer;
 
@@ -3111,7 +3117,7 @@ void Mod_LoadSpriteModel (model_t *mod, void *buffer)
 		}
 	}
 
-	mod->type = mod_sprite;
+//	mod->type = mod_sprite;
 }
 
 //=============================================================================
