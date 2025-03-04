@@ -103,6 +103,7 @@ typedef struct texture_s
 	struct gltexture_s	*base;			// pointer to base texture
 	struct gltexture_s	*glow;			// fullbright mask texture
 	struct gltexture_s	*warpimage;		// for water animation
+	struct gltexture_s	*warpimagefb;	// for water animation
 	qboolean	update_warp;			// update warp this frame
 	struct msurface_s	*texturechains[2];	// for texture chains
 	int			anim_total;				// total tenths in sequence ( 0 = no)

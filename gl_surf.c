@@ -689,6 +689,15 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, model_t *model, entity_t 
 					   s->texinfo->texture->base->colors.flatcolor[2], alpha);
 		}
 		
+		if (s->texinfo->texture->warpimagefb)
+		{
+			// Binds fullbright to texture env 2
+			GL_SelectTMU2 ();
+			GL_BindTexture (s->texinfo->texture->warpimagefb);
+			glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_ADD);
+			glEnable (GL_BLEND);
+		}
+
 		if (litwater && !special) {
 			// Binds lightmap to texture env 1
 			GL_SelectTMU1 ();
@@ -710,7 +719,9 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, model_t *model, entity_t 
 			qglMultiTexCoord2f (GL_TEXTURE0_ARB, v[3], v[4]);
 			if (litwater && !special)
 				qglMultiTexCoord2f (GL_TEXTURE1_ARB, v[5], v[6]);
-			
+			if (s->texinfo->texture->warpimagefb)
+				qglMultiTexCoord2f (GL_TEXTURE2_ARB, v[3], v[4]);
+
 			glVertex3fv (v);
 		}
 		glEnd ();
@@ -721,6 +732,14 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, model_t *model, entity_t 
 //			GL_SelectTMU1 ();
 			glTexEnvf (GL_TEXTURE_ENV, GL_RGB_SCALE_ARB, 1.0f);
 			glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+		}
+		
+		if (s->texinfo->texture->warpimagefb)
+		{
+			glDisable (GL_TEXTURE_2D);
+			GL_SelectTMU2 ();
+			glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+			glDisable (GL_BLEND);
 		}
 		
 		GL_SelectTMU0 ();
@@ -795,7 +814,6 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, model_t *model, entity_t 
 
 		if (s->flags & SURF_DRAWHOLEY)
 			glEnable (GL_ALPHA_TEST); // Flip on alpha test
-		
 		
 		
 		// Binds world to texture env 0
@@ -1256,6 +1274,7 @@ void R_DrawTextureChains_Water (model_t *model, entity_t *ent, texchain_t chain)
 	texture_t	*t;
 	float		*v;
 	qboolean	bound;
+	gltexture_t	*base, *glow;
 	qboolean	flatcolor = r_flatturb.value;
 	qboolean	litwater = model->haslitwater && r_litwater.value;
 	qboolean	special;
@@ -1283,6 +1302,15 @@ void R_DrawTextureChains_Water (model_t *model, entity_t *ent, texchain_t chain)
 				if (flatcolor)
 					glColor3fv (t->base->colors.flatcolor);
 				
+				if ((glow = t->warpimagefb))
+				{
+					GL_SelectTMU2 ();
+					GL_BindTexture (glow);
+					
+					glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_ADD);
+					glEnable (GL_BLEND);
+				}
+
 				bound = true;
 			}
 			
@@ -1298,13 +1326,23 @@ void R_DrawTextureChains_Water (model_t *model, entity_t *ent, texchain_t chain)
 				qglMultiTexCoord2f (GL_TEXTURE0_ARB, v[3], v[4]);
 				if (litwater && !special)
 					qglMultiTexCoord2f (GL_TEXTURE1_ARB, v[5], v[6]);
-				
+				if (glow)
+					qglMultiTexCoord2f (GL_TEXTURE2_ARB, v[3], v[4]);
+
 				glVertex3fv (v);
 			}
 			glEnd ();
 			rs_c_brush_passes++;
 		}
 		
+		if (glow) // assume our current selection is TMU2
+		{
+			glDisable (GL_TEXTURE_2D);
+			GL_SelectTMU2 ();
+			glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+			glDisable (GL_BLEND);
+		}
+
 		GL_SelectTMU0 ();
 	}
 	

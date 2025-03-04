@@ -66,12 +66,13 @@ void R_UpdateWarpTextures (void)
 			continue;
 
 		// render warp
-		glViewport (glx, gly + glheight - gl_warpimage_size, gl_warpimage_size, gl_warpimage_size);
+		glViewport (glx, gly + glheight - gl_warpimage_size, gl_warpimage_size * (tx->glow ? 2 : 1), gl_warpimage_size);
 
 		glMatrixMode (GL_PROJECTION);
 		glLoadIdentity ();
 
-		glOrtho (0, 128, 0, 128, -99999, 99999);
+		glOrtho (0, 128 * (tx->glow ? 2 : 1), 0, 128, -99999, 99999);
+//		glOrtho (0, 128, 0, 128, -99999, 99999);
 
 		glMatrixMode (GL_MODELVIEW);
 		glLoadIdentity ();
@@ -92,6 +93,25 @@ void R_UpdateWarpTextures (void)
 			}
 			glEnd ();
 		}
+		
+		if (tx->glow)
+		{
+			GL_BindTexture (tx->glow);
+			for (x=128.0; x<256.0; x=x2)
+			{
+				x2 = x + warptess;
+				glBegin (GL_TRIANGLE_STRIP);
+				for (y=0.0; y<128.01; y+=warptess) // .01 for rounding errors
+				{
+					glTexCoord2f (WARPCALC(x,y), WARPCALC(y,x));
+					glVertex2f (x,y);
+					glTexCoord2f (WARPCALC(x2,y), WARPCALC(y,x2));
+					glVertex2f (x2,y);
+				}
+				glEnd ();
+			}
+		}
+		
 		glEnable (GL_ALPHA_TEST); //FX new
 		glDisable (GL_BLEND); //FX
 
@@ -99,6 +119,12 @@ void R_UpdateWarpTextures (void)
 		GL_BindTexture (tx->warpimage);
 		glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, glx, gly + glheight - gl_warpimage_size, gl_warpimage_size, gl_warpimage_size);
 
+		if (tx->glow)
+		{
+			GL_BindTexture (tx->warpimagefb);
+			glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, glx + gl_warpimage_size, gly + glheight - gl_warpimage_size, gl_warpimage_size, gl_warpimage_size);
+		}
+		
 		tx->update_warp = false;
 	}
 

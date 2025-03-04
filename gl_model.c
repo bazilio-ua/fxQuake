@@ -518,6 +518,7 @@ void Mod_LoadTextures (lump_t *l)
 
 		tx->update_warp = false;
 		tx->warpimage = NULL;
+		tx->warpimagefb = NULL;
 		tx->glow = NULL;
 
 		if (cls.state != ca_dedicated) // no texture uploading for dedicated server
@@ -530,17 +531,34 @@ void Mod_LoadTextures (lump_t *l)
 			{
 				mark = Hunk_LowMark ();
 
-				sprintf (texturename, "%s:%s", loadmodel->name, tx->name);
 				offset = (uintptr_t)(mt+1) - (uintptr_t)mod_base;
-				tx->base = TexMgr_LoadTexture (loadmodel, texturename, tx->width, tx->height, SRC_INDEXED, (byte *)(tx+1), loadmodel->name, offset, TEXPREF_WARP);
-
+				if (Mod_HasFullbrights ((byte *)(tx+1), tx->width*tx->height))
+				{
+					sprintf (texturename, "%s:%s", loadmodel->name, tx->name);
+					tx->base = TexMgr_LoadTexture (loadmodel, texturename, tx->width, tx->height, SRC_INDEXED, (byte *)(tx+1), loadmodel->name, offset, TEXPREF_WARP | TEXPREF_NOBRIGHT);
+					sprintf (texturename, "%s:%s_glow", loadmodel->name, tx->name);
+					tx->glow = TexMgr_LoadTexture (loadmodel, texturename, tx->width, tx->height, SRC_INDEXED, (byte *)(tx+1), loadmodel->name, offset, TEXPREF_WARP | TEXPREF_FULLBRIGHT);
+				}
+				else
+				{
+					sprintf (texturename, "%s:%s", loadmodel->name, tx->name);
+					tx->base = TexMgr_LoadTexture (loadmodel, texturename, tx->width, tx->height, SRC_INDEXED, (byte *)(tx+1), loadmodel->name, offset, TEXPREF_WARP);
+				}
+				
 				//now create the warpimage, using dummy data from the hunk to create the initial image
-				Hunk_Alloc (gl_warpimage_size*gl_warpimage_size*4); //make sure hunk is big enough so we don't reach an illegal address
+				Hunk_Alloc (gl_warpimage_size*gl_warpimage_size*4 * (tx->glow ? 2 : 1)); //make sure hunk is big enough so we don't reach an illegal address
 				
 				Hunk_FreeToLowMark (mark);
 				
 				sprintf (texturename, "%s_warp", texturename);
 				tx->warpimage = TexMgr_LoadTexture (loadmodel, texturename, gl_warpimage_size, gl_warpimage_size, SRC_RGBA, hunk_base, "", (uintptr_t)hunk_base, TEXPREF_NOPICMIP | TEXPREF_WARPIMAGE);
+				
+				if (tx->glow)
+				{
+					sprintf (texturename, "%s_warp_fb", texturename);
+					tx->warpimagefb = TexMgr_LoadTexture (loadmodel, texturename, gl_warpimage_size, gl_warpimage_size, SRC_RGBA, hunk_base, "", (uintptr_t)hunk_base, TEXPREF_NOPICMIP | TEXPREF_WARPIMAGE);
+				}
+				
 				tx->update_warp = true;
 			}
 			else // regular texture
