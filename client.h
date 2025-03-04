@@ -125,6 +125,10 @@ typedef struct
 #define DL_COLOR_111		111		// light sprite
 #define DL_COLOR_246		246		// lantern
 
+#define DL_COLOR_253		253
+#define DL_COLOR_245		245
+#define DL_COLOR_250		250
+
 #define	MAX_BEAMS	256 //was 32 //johnfitz -- was 24
 typedef struct
 {

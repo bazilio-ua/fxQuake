@@ -528,6 +528,42 @@ void CL_UpdateStatic (void)
 			
 			CL_ColorDlightPaletteLength (dl, DL_COLOR_FLAME2);
 		}
+		else if (!strcmp (ent->model->name, "progs/lightpost.mdl")) // quoth
+		{
+			dl = CL_AllocDlight (key);
+			VectorCopy (ent->origin, dl->origin);
+			dl->radius = 65;
+			dl->die = cl.time + 0.1;
+			
+			// skin0 yellow	(DL_COLOR_253)
+			// skin1 blue	(DL_COLOR_245)
+			// skin2 red	(DL_COLOR_250)
+			// skin3 gray	(off)
+			if (ent->skinnum == 0)
+				CL_ColorDlightPalette (dl, DL_COLOR_253);
+			else if (ent->skinnum == 1)
+				CL_ColorDlightPalette (dl, DL_COLOR_245);
+			else if (ent->skinnum == 2)
+				CL_ColorDlightPalette (dl, DL_COLOR_250);
+		}
+		else if (!strcmp (ent->model->name, "progs/lighttube.mdl")) // quoth
+		{
+			dl = CL_AllocDlight (key);
+			VectorCopy (ent->origin, dl->origin);
+			dl->radius = 85;
+			dl->die = cl.time + 0.1;
+			
+			// skin0 yellow	(DL_COLOR_253)
+			// skin1 blue	(DL_COLOR_245)
+			// skin2 red	(DL_COLOR_250)
+			// skin3 off	(off)
+			if (ent->skinnum == 0)
+				CL_ColorDlightPalette (dl, DL_COLOR_253);
+			else if (ent->skinnum == 1)
+				CL_ColorDlightPalette (dl, DL_COLOR_245);
+			else if (ent->skinnum == 2)
+				CL_ColorDlightPalette (dl, DL_COLOR_250);
+		}
 	}
 }
 
