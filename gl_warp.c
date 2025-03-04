@@ -93,7 +93,6 @@ void R_UpdateWarpTextures (void)
 			}
 			glEnd ();
 		}
-		
 		if (tx->glow)
 		{
 			GL_BindTexture (tx->glow);
@@ -111,17 +110,15 @@ void R_UpdateWarpTextures (void)
 				glEnd ();
 			}
 		}
-		
 		glEnable (GL_ALPHA_TEST); //FX new
 		glDisable (GL_BLEND); //FX
 
 		// copy to texture
-		GL_BindTexture (tx->warpimage);
+		GL_BindTexture (tx->warpbase);
 		glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, glx, gly + glheight - gl_warpimage_size, gl_warpimage_size, gl_warpimage_size);
-
 		if (tx->glow)
 		{
-			GL_BindTexture (tx->warpimagefb);
+			GL_BindTexture (tx->warpglow);
 			glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, glx + gl_warpimage_size, gly + glheight - gl_warpimage_size, gl_warpimage_size, gl_warpimage_size);
 		}
 		

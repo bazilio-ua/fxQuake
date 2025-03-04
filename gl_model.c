@@ -517,8 +517,8 @@ void Mod_LoadTextures (lump_t *l)
 		memcpy ( tx+1, mt+1, pixels);
 
 		tx->update_warp = false;
-		tx->warpimage = NULL;
-		tx->warpimagefb = NULL;
+		tx->warpbase = NULL;
+		tx->warpglow = NULL;
 		tx->glow = NULL;
 
 		if (cls.state != ca_dedicated) // no texture uploading for dedicated server
@@ -551,12 +551,11 @@ void Mod_LoadTextures (lump_t *l)
 				Hunk_FreeToLowMark (mark);
 				
 				sprintf (texturename, "%s_warp", texturename);
-				tx->warpimage = TexMgr_LoadTexture (loadmodel, texturename, gl_warpimage_size, gl_warpimage_size, SRC_RGBA, hunk_base, "", (uintptr_t)hunk_base, TEXPREF_NOPICMIP | TEXPREF_WARPIMAGE);
-				
+				tx->warpbase = TexMgr_LoadTexture (loadmodel, texturename, gl_warpimage_size, gl_warpimage_size, SRC_RGBA, hunk_base, "", (uintptr_t)hunk_base, TEXPREF_NOPICMIP | TEXPREF_WARPIMAGE);
 				if (tx->glow)
 				{
-					sprintf (texturename, "%s_warp_fb", texturename);
-					tx->warpimagefb = TexMgr_LoadTexture (loadmodel, texturename, gl_warpimage_size, gl_warpimage_size, SRC_RGBA, hunk_base, "", (uintptr_t)hunk_base, TEXPREF_NOPICMIP | TEXPREF_WARPIMAGE);
+					sprintf (texturename, "%s_warp_glow", texturename);
+					tx->warpglow = TexMgr_LoadTexture (loadmodel, texturename, gl_warpimage_size, gl_warpimage_size, SRC_RGBA, hunk_base, "", (uintptr_t)hunk_base, TEXPREF_NOPICMIP | TEXPREF_WARPIMAGE);
 				}
 				
 				tx->update_warp = true;

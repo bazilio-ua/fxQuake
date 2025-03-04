@@ -680,7 +680,7 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, model_t *model, entity_t 
 		
 		// Binds world to texture env 0
 		GL_SelectTMU0 ();
-		GL_BindTexture (s->texinfo->texture->warpimage);
+		GL_BindTexture (s->texinfo->texture->warpbase);
 		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		
 		if (flatcolor) {
@@ -689,11 +689,11 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, model_t *model, entity_t 
 					   s->texinfo->texture->base->colors.flatcolor[2], alpha);
 		}
 		
-		if (s->texinfo->texture->warpimagefb)
+		if (s->texinfo->texture->warpglow)
 		{
 			// Binds fullbright to texture env 2
 			GL_SelectTMU2 ();
-			GL_BindTexture (s->texinfo->texture->warpimagefb);
+			GL_BindTexture (s->texinfo->texture->warpglow);
 			glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_ADD);
 			glEnable (GL_BLEND);
 		}
@@ -719,7 +719,7 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, model_t *model, entity_t 
 			qglMultiTexCoord2f (GL_TEXTURE0_ARB, v[3], v[4]);
 			if (litwater && !special)
 				qglMultiTexCoord2f (GL_TEXTURE1_ARB, v[5], v[6]);
-			if (s->texinfo->texture->warpimagefb)
+			if (s->texinfo->texture->warpglow)
 				qglMultiTexCoord2f (GL_TEXTURE2_ARB, v[3], v[4]);
 
 			glVertex3fv (v);
@@ -734,7 +734,7 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, model_t *model, entity_t 
 			glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		}
 		
-		if (s->texinfo->texture->warpimagefb)
+		if (s->texinfo->texture->warpglow)
 		{
 			glDisable (GL_TEXTURE_2D);
 			GL_SelectTMU2 ();
@@ -990,7 +990,7 @@ void R_DrawBrushModel (entity_t *e)
 			(!(surf->flags & SURF_PLANEBACK) && (dot > BACKFACE_EPSILON)))
 		{
             
-            if (surf->texinfo->texture->warpimage)
+            if (surf->texinfo->texture->warpbase)
                 surf->texinfo->texture->update_warp = true; // FIXME: one frame too late!
             
             hasalpha = R_SetAlphaSurface(surf, alpha);
@@ -1118,7 +1118,7 @@ restart:
 			if ((dot < 0) ^ !!(surf->flags & SURF_PLANEBACK))
 				continue;		// wrong side
 
-            if (surf->texinfo->texture->warpimage)
+            if (surf->texinfo->texture->warpbase)
                 surf->texinfo->texture->update_warp = true;
             
             R_SetAlphaSurface(surf, 1.0); // alpha
@@ -1274,7 +1274,6 @@ void R_DrawTextureChains_Water (model_t *model, entity_t *ent, texchain_t chain)
 	texture_t	*t;
 	float		*v;
 	qboolean	bound;
-	gltexture_t	*base, *glow;
 	qboolean	flatcolor = r_flatturb.value;
 	qboolean	litwater = model->haslitwater && r_litwater.value;
 	qboolean	special;
@@ -1297,15 +1296,15 @@ void R_DrawTextureChains_Water (model_t *model, entity_t *ent, texchain_t chain)
 			if (!bound) //only bind once we are sure we need this texture
 			{
 				GL_SelectTMU0 ();
-				GL_BindTexture (t->warpimage);
+				GL_BindTexture (t->warpbase);
 				
 				if (flatcolor)
 					glColor3fv (t->base->colors.flatcolor);
 				
-				if ((glow = t->warpimagefb))
+				if (t->warpglow)
 				{
 					GL_SelectTMU2 ();
-					GL_BindTexture (glow);
+					GL_BindTexture (t->warpglow);
 					
 					glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_ADD);
 					glEnable (GL_BLEND);
@@ -1326,7 +1325,7 @@ void R_DrawTextureChains_Water (model_t *model, entity_t *ent, texchain_t chain)
 				qglMultiTexCoord2f (GL_TEXTURE0_ARB, v[3], v[4]);
 				if (litwater && !special)
 					qglMultiTexCoord2f (GL_TEXTURE1_ARB, v[5], v[6]);
-				if (glow)
+				if (t->warpglow)
 					qglMultiTexCoord2f (GL_TEXTURE2_ARB, v[3], v[4]);
 
 				glVertex3fv (v);
@@ -1335,7 +1334,7 @@ void R_DrawTextureChains_Water (model_t *model, entity_t *ent, texchain_t chain)
 			rs_c_brush_passes++;
 		}
 		
-		if (glow) // assume our current selection is TMU2
+		if (t->warpglow) // assume our current selection is TMU2
 		{
 			glDisable (GL_TEXTURE_2D);
 			GL_SelectTMU2 ();
