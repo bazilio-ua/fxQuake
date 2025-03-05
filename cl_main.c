@@ -530,6 +530,9 @@ void CL_UpdateStatic (void)
 		}
 		else if (!strcmp (ent->model->name, "progs/lightpost.mdl")) // quoth
 		{
+			if (ent->skinnum == 3)
+				continue;
+			
 			dl = CL_AllocDlight (key);
 			VectorCopy (ent->origin, dl->origin);
 			dl->radius = 65;
@@ -548,6 +551,9 @@ void CL_UpdateStatic (void)
 		}
 		else if (!strcmp (ent->model->name, "progs/lighttube.mdl")) // quoth
 		{
+			if (ent->skinnum == 3)
+				continue;
+			
 			dl = CL_AllocDlight (key);
 			VectorCopy (ent->origin, dl->origin);
 			dl->radius = 85;
