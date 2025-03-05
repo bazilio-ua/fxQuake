@@ -105,6 +105,7 @@ typedef struct
 #define DL_COLOR_FLAME2		238, 2
 #define DL_COLOR_FLAME3		233, 6	// candle
 #define DL_COLOR_FLAME4		234, 6	// candle nehahra
+#define DL_COLOR_PLASMA		43, 5	// quoth plasma
 
 #define DL_COLOR_T_EXPLOSION	37, 8
 #define DL_COLOR_K_SPIKE	104, 4
