@@ -61,7 +61,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-nehahra +map neh1m1"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-consize 1024"
@@ -113,7 +113,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-quoth"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-game p128rail"
@@ -225,7 +225,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-mem 256"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-mem 128"
