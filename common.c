@@ -1993,6 +1993,7 @@ void COM_Game_f (void)
 			TexMgr_NewGame ();
 			Draw_NewGame ();
 			R_InitPlayerTextures ();
+			R_InitBloomTextures ();
 		}
 		
 		Host_MapListRebuild ();

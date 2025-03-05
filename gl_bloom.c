@@ -95,6 +95,9 @@ void R_Bloom_InitTextures (void)
 	int limit;
 	int mark;
 
+	// purge old textures
+	TexMgr_FreeTextures (TEXPREF_BLOOM, TEXPREF_BLOOM);
+
 	// find closer power of 2 to screen size
 	for (screen_texture_width = 1; screen_texture_width < glwidth; screen_texture_width <<= 1)
 		;
@@ -114,17 +117,18 @@ void R_Bloom_InitTextures (void)
 
 	// init the screen texture
 	bloomscreendata = Hunk_Alloc (screen_texture_width * screen_texture_height * 4);
-	bloomscreentexture = TexMgr_LoadTexture (NULL, "bloomscreentexture", screen_texture_width, screen_texture_height, SRC_BLOOM, 
-										 bloomscreendata,
-										 "",
-										 (uintptr_t)bloomscreendata, TEXPREF_BLOOM | TEXPREF_LINEAR);
+	bloomscreentexture = TexMgr_LoadTexture (NULL, "bloomscreentexture", screen_texture_width, screen_texture_height, SRC_BLOOM,
+											 bloomscreendata,
+											 "",
+											 (uintptr_t)bloomscreendata, TEXPREF_BLOOM | TEXPREF_LINEAR);
 
 	// validate bloom size
 	if (r_bloom_sample_size.value < 32)
 		Cvar_SetValue ("r_bloom_sample_size", 32);
 
 	// make sure bloom size doesn't have funny values
-	limit = min( (int)r_bloom_sample_size.value, min( screen_texture_width, screen_texture_height ) );
+//	limit = min( (int)r_bloom_sample_size.value, min( screen_texture_width, screen_texture_height ) );
+	limit = min( (int)r_bloom_sample_size.value, min( min( screen_texture_width, screen_texture_height ), min( glwidth, glheight ) ) );
 
 	// make sure bloom size is a power of 2
 	for( bloom_size = 32; (bloom_size<<1) <= limit; bloom_size <<= 1 )
@@ -135,10 +139,10 @@ void R_Bloom_InitTextures (void)
 
 	// init the bloom effect texture
 	bloomeffectdata = Hunk_Alloc (bloom_size * bloom_size * 4);
-	bloomeffecttexture = TexMgr_LoadTexture (NULL, "bloomeffecttexture", bloom_size, bloom_size, SRC_BLOOM, 
-										 bloomeffectdata,
-										 "",
-										 (uintptr_t)bloomeffectdata, TEXPREF_BLOOM | TEXPREF_LINEAR);
+	bloomeffecttexture = TexMgr_LoadTexture (NULL, "bloomeffecttexture", bloom_size, bloom_size, SRC_BLOOM,
+											 bloomeffectdata,
+											 "",
+											 (uintptr_t)bloomeffectdata, TEXPREF_BLOOM | TEXPREF_LINEAR);
 
 	// if screen size is more than 2x the bloom effect texture, set up for stepped downsampling
 	bloomdownsamplingtexture = NULL;
@@ -148,10 +152,10 @@ void R_Bloom_InitTextures (void)
 	{
 		screen_downsampling_texture_size = (int)(bloom_size * 2);
 		bloomdownsamplingdata = Hunk_Alloc (screen_downsampling_texture_size * screen_downsampling_texture_size * 4);
-		bloomdownsamplingtexture = TexMgr_LoadTexture (NULL, "bloomdownsamplingtexture", screen_downsampling_texture_size, screen_downsampling_texture_size, SRC_BLOOM, 
-												   bloomdownsamplingdata,
-												   "",
-												   (uintptr_t)bloomdownsamplingdata, TEXPREF_BLOOM | TEXPREF_LINEAR);
+		bloomdownsamplingtexture = TexMgr_LoadTexture (NULL, "bloomdownsamplingtexture", screen_downsampling_texture_size, screen_downsampling_texture_size, SRC_BLOOM,
+													   bloomdownsamplingdata,
+													   "",
+													   (uintptr_t)bloomdownsamplingdata, TEXPREF_BLOOM | TEXPREF_LINEAR);
 	}
 
 	// init the screen backup texture
@@ -167,10 +171,10 @@ void R_Bloom_InitTextures (void)
 	}
 
 	bloombackupdata = Hunk_Alloc (screen_backup_texture_width * screen_backup_texture_height * 4);
-	bloombackuptexture = TexMgr_LoadTexture (NULL, "bloombackuptexture", screen_backup_texture_width, screen_backup_texture_height, SRC_BLOOM, 
-										 bloombackupdata,
-										 "",
-										 (uintptr_t)bloombackupdata, TEXPREF_BLOOM | TEXPREF_LINEAR);
+	bloombackuptexture = TexMgr_LoadTexture (NULL, "bloombackuptexture", screen_backup_texture_width, screen_backup_texture_height, SRC_BLOOM,
+											 bloombackupdata,
+											 "",
+											 (uintptr_t)bloombackupdata, TEXPREF_BLOOM | TEXPREF_LINEAR);
 
 	Hunk_FreeToLowMark (mark);
 }
@@ -414,6 +418,9 @@ void R_BloomBlend (void)
 		return;
 
 	if (!bloom_size || screen_texture_width < glwidth || screen_texture_height < glheight)
+		R_Bloom_InitTextures ();
+
+	if (glwidth < bloom_size || glheight < bloom_size)
 		R_Bloom_InitTextures ();
 
 	// previous function can unset this
