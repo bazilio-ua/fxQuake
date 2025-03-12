@@ -8,6 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		4215AFEB1FC76F8800064F60 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4215AFEA1FC76F8800064F60 /* AudioToolbox.framework */; };
+		421A5DC32D81AE4800168C38 /* gl_fog.c in Sources */ = {isa = PBXBuildFile; fileRef = 421A5DC22D81AE4800168C38 /* gl_fog.c */; };
+		421A5DC52D81AE6A00168C38 /* gl_sky.c in Sources */ = {isa = PBXBuildFile; fileRef = 421A5DC42D81AE6A00168C38 /* gl_sky.c */; };
+		421A5DC72D81AE8400168C38 /* gl_texmgr.c in Sources */ = {isa = PBXBuildFile; fileRef = 421A5DC62D81AE8300168C38 /* gl_texmgr.c */; };
+		421A5DC92D81AE9300168C38 /* gl_warp.c in Sources */ = {isa = PBXBuildFile; fileRef = 421A5DC82D81AE9300168C38 /* gl_warp.c */; };
+		421A5DCB2D81AEAB00168C38 /* image.c in Sources */ = {isa = PBXBuildFile; fileRef = 421A5DCA2D81AEAB00168C38 /* image.c */; };
 		428B32831FD48E7D00E5197A /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4215AFED1FC7736D00064F60 /* AudioUnit.framework */; };
 		42A7FC6C1EA2BA88002A1C29 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 428D9ED51DFF2769000ACF30 /* Cocoa.framework */; };
 		42B718371EA2C0E400BD51E1 /* cd_mac.m in Sources */ = {isa = PBXBuildFile; fileRef = 42F16D141E01DC28001659BD /* cd_mac.m */; };
@@ -22,7 +27,7 @@
 		42B718401EA2C0E400BD51E1 /* console.c in Sources */ = {isa = PBXBuildFile; fileRef = 4273FAC01DFF2EDA005DC9A7 /* console.c */; };
 		42B718411EA2C0E400BD51E1 /* crc.c in Sources */ = {isa = PBXBuildFile; fileRef = 4273FAC21DFF2EDA005DC9A7 /* crc.c */; };
 		42B718421EA2C0E400BD51E1 /* cvar.c in Sources */ = {isa = PBXBuildFile; fileRef = 4273FAC41DFF2EDA005DC9A7 /* cvar.c */; };
-		42B718431EA2C0E400BD51E1 /* gl_anim.c in Sources */ = {isa = PBXBuildFile; fileRef = 4273FAC71DFF2EDA005DC9A7 /* gl_anim.c */; };
+		42B718431EA2C0E400BD51E1 /* gl_bloom.c in Sources */ = {isa = PBXBuildFile; fileRef = 4273FAC71DFF2EDA005DC9A7 /* gl_bloom.c */; };
 		42B718441EA2C0E400BD51E1 /* gl_draw.c in Sources */ = {isa = PBXBuildFile; fileRef = 4273FAC81DFF2EDA005DC9A7 /* gl_draw.c */; };
 		42B718451EA2C0E400BD51E1 /* gl_efrag.c in Sources */ = {isa = PBXBuildFile; fileRef = 4273FAC91DFF2EDA005DC9A7 /* gl_efrag.c */; };
 		42B718461EA2C0E400BD51E1 /* gl_light.c in Sources */ = {isa = PBXBuildFile; fileRef = 4273FACA1DFF2EDA005DC9A7 /* gl_light.c */; };
@@ -73,6 +78,12 @@
 /* Begin PBXFileReference section */
 		4215AFEA1FC76F8800064F60 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		4215AFED1FC7736D00064F60 /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
+		421A5DC02D81AE0D00168C38 /* stb_dxt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stb_dxt.h; sourceTree = SOURCE_ROOT; };
+		421A5DC22D81AE4800168C38 /* gl_fog.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gl_fog.c; sourceTree = SOURCE_ROOT; };
+		421A5DC42D81AE6A00168C38 /* gl_sky.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gl_sky.c; sourceTree = SOURCE_ROOT; };
+		421A5DC62D81AE8300168C38 /* gl_texmgr.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gl_texmgr.c; sourceTree = SOURCE_ROOT; };
+		421A5DC82D81AE9300168C38 /* gl_warp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gl_warp.c; sourceTree = SOURCE_ROOT; };
+		421A5DCA2D81AEAB00168C38 /* image.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = image.c; sourceTree = SOURCE_ROOT; };
 		4273FAB01DFF2EDA005DC9A7 /* anorm_dots.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = anorm_dots.h; sourceTree = SOURCE_ROOT; };
 		4273FAB11DFF2EDA005DC9A7 /* anorms.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = anorms.h; sourceTree = SOURCE_ROOT; };
 		4273FAB21DFF2EDA005DC9A7 /* bspfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bspfile.h; sourceTree = SOURCE_ROOT; };
@@ -95,7 +106,7 @@
 		4273FAC41DFF2EDA005DC9A7 /* cvar.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cvar.c; sourceTree = SOURCE_ROOT; };
 		4273FAC51DFF2EDA005DC9A7 /* cvar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cvar.h; sourceTree = SOURCE_ROOT; };
 		4273FAC61DFF2EDA005DC9A7 /* draw.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = draw.h; sourceTree = SOURCE_ROOT; };
-		4273FAC71DFF2EDA005DC9A7 /* gl_anim.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gl_anim.c; sourceTree = SOURCE_ROOT; };
+		4273FAC71DFF2EDA005DC9A7 /* gl_bloom.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gl_bloom.c; sourceTree = SOURCE_ROOT; };
 		4273FAC81DFF2EDA005DC9A7 /* gl_draw.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gl_draw.c; sourceTree = SOURCE_ROOT; };
 		4273FAC91DFF2EDA005DC9A7 /* gl_efrag.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gl_efrag.c; sourceTree = SOURCE_ROOT; };
 		4273FACA1DFF2EDA005DC9A7 /* gl_light.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gl_light.c; sourceTree = SOURCE_ROOT; };
@@ -244,6 +255,7 @@
 		42A8359D1DFF2DA800DAF7F7 /* QuakeSrc */ = {
 			isa = PBXGroup;
 			children = (
+				421A5DC02D81AE0D00168C38 /* stb_dxt.h */,
 				4273FAB01DFF2EDA005DC9A7 /* anorm_dots.h */,
 				4273FAB11DFF2EDA005DC9A7 /* anorms.h */,
 				4273FAB21DFF2EDA005DC9A7 /* bspfile.h */,
@@ -267,9 +279,10 @@
 				4273FAC41DFF2EDA005DC9A7 /* cvar.c */,
 				4273FAC51DFF2EDA005DC9A7 /* cvar.h */,
 				4273FAC61DFF2EDA005DC9A7 /* draw.h */,
-				4273FAC71DFF2EDA005DC9A7 /* gl_anim.c */,
+				4273FAC71DFF2EDA005DC9A7 /* gl_bloom.c */,
 				4273FAC81DFF2EDA005DC9A7 /* gl_draw.c */,
 				4273FAC91DFF2EDA005DC9A7 /* gl_efrag.c */,
+				421A5DC22D81AE4800168C38 /* gl_fog.c */,
 				4273FACA1DFF2EDA005DC9A7 /* gl_light.c */,
 				4273FACB1DFF2EDA005DC9A7 /* gl_main.c */,
 				4273FACC1DFF2EDA005DC9A7 /* gl_mesh.c */,
@@ -277,11 +290,15 @@
 				4273FACE1DFF2EDA005DC9A7 /* gl_model.c */,
 				4273FACF1DFF2EDA005DC9A7 /* gl_part.c */,
 				4273FAD01DFF2EDA005DC9A7 /* gl_screen.c */,
+				421A5DC42D81AE6A00168C38 /* gl_sky.c */,
 				4273FAD11DFF2EDA005DC9A7 /* gl_surf.c */,
+				421A5DC62D81AE8300168C38 /* gl_texmgr.c */,
+				421A5DC82D81AE9300168C38 /* gl_warp.c */,
 				4273FAD21DFF2EDA005DC9A7 /* gl_warp_sin.h */,
 				4273FAD31DFF2EDA005DC9A7 /* glquake.h */,
 				4273FAD41DFF2EDA005DC9A7 /* host_cmd.c */,
 				4273FAD51DFF2EDA005DC9A7 /* host.c */,
+				421A5DCA2D81AEAB00168C38 /* image.c */,
 				42F16D151E01DC28001659BD /* in_mac.m */,
 				4273FAD71DFF2EDA005DC9A7 /* input.h */,
 				4273FAD81DFF2EDA005DC9A7 /* keys.c */,
@@ -430,7 +447,7 @@
 				42B718401EA2C0E400BD51E1 /* console.c in Sources */,
 				42B718411EA2C0E400BD51E1 /* crc.c in Sources */,
 				42B718421EA2C0E400BD51E1 /* cvar.c in Sources */,
-				42B718431EA2C0E400BD51E1 /* gl_anim.c in Sources */,
+				42B718431EA2C0E400BD51E1 /* gl_bloom.c in Sources */,
 				42B718441EA2C0E400BD51E1 /* gl_draw.c in Sources */,
 				42B718451EA2C0E400BD51E1 /* gl_efrag.c in Sources */,
 				42B718461EA2C0E400BD51E1 /* gl_light.c in Sources */,
@@ -470,6 +487,11 @@
 				42B718691EA2C12E00BD51E1 /* wad.c in Sources */,
 				42B7186A1EA2C12E00BD51E1 /* world.c in Sources */,
 				42B7186B1EA2C12E00BD51E1 /* zone.c in Sources */,
+				421A5DC32D81AE4800168C38 /* gl_fog.c in Sources */,
+				421A5DC52D81AE6A00168C38 /* gl_sky.c in Sources */,
+				421A5DC72D81AE8400168C38 /* gl_texmgr.c in Sources */,
+				421A5DC92D81AE9300168C38 /* gl_warp.c in Sources */,
+				421A5DCB2D81AEAB00168C38 /* image.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -528,7 +550,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				CONFIGURATION_BUILD_DIR = "/Volumes/Elements HD2B/games/quake";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Prefix.pch;
@@ -550,7 +571,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				CONFIGURATION_BUILD_DIR = "/Volumes/Elements HD2B/games/quake";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Prefix.pch;
