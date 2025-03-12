@@ -52,7 +52,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 // MS Visual Studio provides stdint.h only starting with version 2010
 #if defined(_MSC_VER) && (_MSC_VER < 1600)
-#include "stdint.h"
+#include "msstdint.h"
 #else
 #include <stdint.h>
 #endif
