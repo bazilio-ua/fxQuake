@@ -952,7 +952,7 @@ void SCR_UpdateScreen (void)
 	if (!scr_initialized || !con_initialized)
 		return;				// not initialized yet
 
-	vid.numpages = 2 + (gl_triplebuffer.value ? 1 : 0); // in case gl_triplebuffer is not 0 or 1
+	vid.numpages = (gl_triplebuffer.value) ? 3 : 2; // in case gl_triplebuffer is not 0 or 1
 
 	if (scr_disabled_for_loading)
 	{
