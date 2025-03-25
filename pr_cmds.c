@@ -46,7 +46,7 @@ char *PF_VarString (int	first)
 		strncat (out, s, sizeof(out) - 1);
 		if (l > sizeof(out) - 1)
 		{
-			Con_Printf ("\n");
+			Con_SafePrintf ("\n");
 			Con_Warning("PF_VarString: overflow (string truncated)\n");
 			return out;
 		}

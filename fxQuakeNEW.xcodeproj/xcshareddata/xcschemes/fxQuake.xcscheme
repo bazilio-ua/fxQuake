@@ -140,6 +140,18 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
+            argument = "-width 640 -height 480"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-width 720 -height 450"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-width 768 -height 480"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
             argument = "-width 960 -height 600"
             isEnabled = "NO">
          </CommandLineArgument>
@@ -161,6 +173,10 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-bpp 32"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-bpp 16"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
@@ -310,6 +326,10 @@
          <CommandLineArgument
             argument = "-window"
             isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-stretched"
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-dedicated"
