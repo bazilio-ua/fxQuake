@@ -33,6 +33,10 @@ typedef struct
     byte            *colormap;        // 256 * VID_GRADES size
 	int				width;		
 	int				height;
+	int				refreshrate;
+	int				bpp;
+	qboolean		fullscreen;
+	qboolean		stretched;
 	int				numpages;
 	qboolean		recalc_refdef;	// if true, recalc vid-based stuff
 	int				conwidth;
@@ -58,7 +62,7 @@ void	VID_Init (void);
 void	VID_Shutdown (void);
 // Called at shutdown
 
-int		VID_SetMode (int modenum);
+//int		VID_SetMode (int modenum);
 // sets the mode; only used by the Quake engine for resetting to mode 0 (the
 // base mode) on memory allocation failures
 

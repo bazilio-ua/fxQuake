@@ -28,10 +28,25 @@ NSOpenGLContext     *glcontext = nil;
 NSWindow            *window = nil;
 NSScreen            *screen = nil;
 CGDisplayModeRef    desktopMode;
-CGDisplayModeRef    gameMode;
+//CGDisplayModeRef    gameMode;
+CFArrayRef          displayModes;
+CFIndex             displayModesCount;
 
 viddef_t vid; // global video state
 
+qboolean vid_locked = false; //johnfitz
+qboolean vid_changed = false;
+
+//====================================
+
+//johnfitz -- new cvars
+cvar_t		vid_fullscreen = {"vid_fullscreen", "0", CVAR_ARCHIVE};	// QuakeSpasm, was "1"
+cvar_t		vid_width = {"vid_width", "640", CVAR_ARCHIVE};		// QuakeSpasm, was 800
+cvar_t		vid_height = {"vid_height", "480", CVAR_ARCHIVE};	// QuakeSpasm, was 600
+cvar_t		vid_bpp = {"vid_bpp", "32", CVAR_ARCHIVE};
+cvar_t		vid_refreshrate = {"vid_refreshrate", "60", CVAR_ARCHIVE};
+cvar_t		vid_stretched = {"vid_stretched", "0", CVAR_ARCHIVE};
+//johnfitz
 
 //====================================
 
@@ -65,8 +80,295 @@ void GL_EndRendering (void)
 
 //====================================
 
+//FIXME: -
+//#define CGDisplayModeGetBPP(mode) [[(NSDictionary *)*((long *)mode + 2) objectForKey:(id)kCGDisplayBitsPerPixel] intValue]
+
+/*
+================
+VID_GetMatchingDisplayMode
+================
+*/
+CGDisplayModeRef VID_GetMatchingDisplayMode (int width, int height, int refreshrate, int bpp, qboolean stretched)
+{
+//	// get video mode list
+//	CFArrayRef displayModes = CGDisplayCopyAllDisplayModes(display, NULL);
+//	if (!displayModes) {
+//		Sys_Error("Display available modes returned NULL");
+//	}
+	
+	CGDisplayModeRef mode;
+	CFIndex modeIndex, bestModeIndex;
+//	CFIndex modeCount = CFArrayGetCount(displayModes);
+	
+	// Default to the current desktop mode
+	bestModeIndex = 0xFFFFFFFF;
+	
+	for (modeIndex = 0; modeIndex < displayModesCount; modeIndex++) {
+		mode = (CGDisplayModeRef)CFArrayGetValueAtIndex(displayModes, modeIndex);
+		if (!mode) {
+			Sys_Error("Unable to find requested display mode");
+		}
+		
+		// Make sure we get the right mode
+		if ((int)CGDisplayModeGetWidth(mode) == width &&
+			(int)CGDisplayModeGetHeight(mode) == height &&
+			(int)CGDisplayModeGetRefreshRate(mode) == refreshrate &&
+			(int)CFStringGetLength(CGDisplayModeCopyPixelEncoding(mode)) == bpp &&
+//			(int)CGDisplayModeGetBPP(mode) == bpp &&
+			//                (int)[[(NSDictionary *)*((long *)mode + 2) objectForKey:(id)kCGDisplayBitsPerPixel] intValue] == colorDepth &&
+			((CGDisplayModeGetIOFlags(mode) & kDisplayModeStretchedFlag) == kDisplayModeStretchedFlag) == stretched)
+		{
+			bestModeIndex = modeIndex;
+			break; // we got it
+		}
+	}
+	
+	if (bestModeIndex == 0xFFFFFFFF) {
+		return NULL;
+	}
+	
+	return mode;
+}
+
+/*
+================
+VID_ValidMode
+================
+*/
+qboolean VID_ValidMode (int width, int height, int refreshrate, int bpp, qboolean fullscreen, qboolean stretched)
+{
+	if (width < 320)
+		return false;
+	
+	if (height < 200)
+		return false;
+	
+	if (!fullscreen && stretched)
+		return false;
+	
+	if (fullscreen && (width < 640 || height < 480))
+		return false;
+	
+	switch (bpp)
+	{
+		case 16:
+		case 24:
+		case 32:
+			break;
+		default:
+			return false;
+	}
+	
+	if (fullscreen && !VID_GetMatchingDisplayMode (width, height, refreshrate, bpp, stretched))
+		return false;
+	
+	return true;
+}
+
+/*
+================
+VID_SetMode
+================
+*/
+void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean fullscreen, qboolean stretched)
+{
+	int		temp;
+	
+	// so Con_Printfs don't mess us up by forcing vid and snd updates
+	temp = scr_disabled_for_loading;
+	scr_disabled_for_loading = true;
+	
+	
+	// Get the GL pixel format
+	NSOpenGLPixelFormatAttribute pixelAttributes[] = {
+		NSOpenGLPFANoRecovery,      //0
+		NSOpenGLPFAClosestPolicy,   //1
+		NSOpenGLPFAAccelerated,     //2
+		NSOpenGLPFADoubleBuffer,    //3
+		NSOpenGLPFADepthSize, 24,   //4 5
+		NSOpenGLPFAAlphaSize, 8,    //6 7
+		NSOpenGLPFAStencilSize, 8,  //8 9
+		NSOpenGLPFAAccumSize, 0,    //10 11
+		NSOpenGLPFAColorSize, 32,   //12 13
+		0, 0, 0, 0                  //14 15 16 17 - reserved
+	};
+	
+	if (bpp < 16)
+		bpp = 16;
+	else if (bpp > 16)
+		bpp = 32;
+	
+	pixelAttributes[13] = bpp;
+	
+	if (fullscreen) {
+		pixelAttributes[14] = NSOpenGLPFAFullScreen;
+		pixelAttributes[15] = NSOpenGLPFAScreenMask;
+		pixelAttributes[16] = CGDisplayIDToOpenGLDisplayMask(display);
+	} else {
+		pixelAttributes[14] = NSOpenGLPFAWindow;
+	}
+	
+	NSOpenGLPixelFormat *pixelFormat = [[NSOpenGLPixelFormat alloc] initWithAttributes:pixelAttributes];
+	if (!pixelFormat) {
+		Sys_Error("No pixel format found");
+	}
+	
+	// Create a context with the desired pixel attributes
+	glcontext = [[NSOpenGLContext alloc] initWithFormat:pixelFormat shareContext:nil];
+	if (!glcontext) {
+		Sys_Error("Cannot create OpenGL context");
+	}
+	[glcontext makeCurrentContext];
+	
+	if (!fullscreen) {
+		NSRect windowRect;
+		
+		// Create a window of the desired size
+		windowRect.origin.x = ([screen frame].size.width - width) / 2;
+		windowRect.origin.y = ([screen frame].size.height - height) / 2;
+		windowRect.size.width = width;
+		windowRect.size.height = height;
+		
+		window = [[NSWindow alloc] initWithContentRect:windowRect
+											 styleMask:NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask | NSResizableWindowMask
+											   backing:NSBackingStoreBuffered
+												 defer:NO
+												screen:screen];
+		[window setTitle:@"fxQuake"];
+		[window makeKeyAndOrderFront: nil];
+		
+		// Always get mouse moved events. If mouse support is turned off (rare) the event system will filter them out.
+		[window setAcceptsMouseMovedEvents:YES];
+		[window setDelegate:(id<NSWindowDelegate>)[NSApp delegate]];
+		
+		// Note: as of the macOS 10.15 SDK, this defaults to YES instead of NO when the NSHighResolutionCapable boolean is set in Info.plist.
+		NSView *contentView = [window contentView];
+		if ([contentView respondsToSelector:@selector(setWantsBestResolutionOpenGLSurface:)]) {
+			[contentView setWantsBestResolutionOpenGLSurface:NO];
+		}
+		
+		// Direct the context to draw in this window
+		[glcontext setView:contentView];
+	} else {
+		CGError err;
+
+		// Capture the main display
+		err = CGDisplayCapture(display);
+		if (err != kCGErrorSuccess)
+			Sys_Error("Unable to capture display");
+		
+		// Switch to the correct resolution
+		err = CGDisplaySetDisplayMode(display, VID_GetMatchingDisplayMode (width, height, refreshrate, bpp, stretched), NULL);
+		if (err != kCGErrorSuccess)
+			Sys_Error("Unable to set display mode");
+		
+		
+		
+		// Set the context to full screen
+		CGLError glerr = CGLSetFullScreenOnDisplay([glcontext CGLContextObj], CGDisplayIDToOpenGLDisplayMask(display));
+		if (glerr) {
+			Sys_Error("Cannot set fullscreen");
+		}
+	}
+
+	
+	
+	scr_disabled_for_loading = temp;
+	
+	
+	// set vid parameters
+	vid.width = width;
+	vid.height = height;
+	vid.refreshrate = refreshrate;
+	vid.bpp = bpp;
+	vid.fullscreen = fullscreen;
+	vid.stretched = stretched;
+	
+	
+	vid.numpages = 2;
+	vid.colormap = host_colormap;
+	
+	vid.conwidth = vid.width;
+	vid.conheight = vid.height;
+	
+	vid.recalc_refdef = true; // force a surface cache flush
+	
+	Con_SafePrintf ("Video mode %dx%dx%d %dHz %s%s initialized\n",
+					vid.width,
+					vid.height,
+					vid.bpp,
+					vid.refreshrate,
+					vid.stretched ? "(stretched) " : "",
+					vid.fullscreen ? "fullscreen" : "windowed");
+
+	
+	// no pending changes
+	vid_changed = false;
+	
+//	return true;
+}
+
+/*
+===================
+VID_Changed -- kristian -- notify us that a value has changed that requires a vid_restart
+===================
+*/
+void VID_Changed (void)
+{
+	vid_changed = true;
+}
+
+/*
+===================
+VID_Restart -- johnfitz -- change video modes on the fly
+===================
+*/
+void VID_Restart (void)
+{
+	
+}
+
+/*
+================
+VID_Test -- johnfitz -- like vid_restart, but asks for confirmation after switching modes
+================
+*/
+void VID_Test (void)
+{
+	
+}
+
+/*
+================
+VID_Lock -- ericw
+
+Subsequent changes to vid_* mode settings, and vid_restart commands, will
+be ignored until the "vid_unlock" command is run.
+
+Used when changing gamedirs so the current settings override what was saved
+in the config.cfg.
+================
+*/
+void VID_Lock (void)
+{
+	vid_locked = true;
+}
+
+/*
+================
+VID_Unlock -- johnfitz
+================
+*/
+void VID_Unlock (void)
+{
+	vid_locked = false;
+}
+
 
 #define MAX_DISPLAYS 128
+
+//FIXME: -
+//#define CGDisplayModeGetBPP(mode) [[(NSDictionary *)*((long *)mode + 2) objectForKey:(id)kCGDisplayBitsPerPixel] intValue]
 
 /*
 ===============
@@ -75,22 +377,48 @@ VID_Init
 */
 void VID_Init (void)
 {
-    int i;
-	qboolean fullscreen = true;
+    int		i;
+	int		width, height, refreshrate, bpp;
+	qboolean	fullscreen, stretched;
+
+//	qboolean fullscreen = true;
     
     CGError err;
     CGDirectDisplayID displays[MAX_DISPLAYS];
     uint32_t displayCount;
     uint32_t displayIndex = 0;
-    int colorDepth = 32, refreshRate = 0;
-    qboolean isStretched = false;
-    
+//    int colorDepth = 32, refreshRate = 0;
+//    qboolean isStretched = false;
+
+	
+	Cvar_RegisterVariableCallback (&vid_fullscreen, VID_Changed); //johnfitz
+	Cvar_RegisterVariableCallback (&vid_width, VID_Changed); //johnfitz
+	Cvar_RegisterVariableCallback (&vid_height, VID_Changed); //johnfitz
+	Cvar_RegisterVariableCallback (&vid_refreshrate, VID_Changed); //johnfitz
+	Cvar_RegisterVariableCallback (&vid_bpp, VID_Changed); //johnfitz
+	Cvar_RegisterVariableCallback (&vid_stretched, VID_Changed); //EER1
+	
+	Cmd_AddCommand ("vid_lock", VID_Lock); //EER1
+	Cmd_AddCommand ("vid_unlock", VID_Unlock); //johnfitz
+	Cmd_AddCommand ("vid_restart", VID_Restart); //johnfitz
+	Cmd_AddCommand ("vid_test", VID_Test); //johnfitz
+
+
+	width = (int)vid_width.value;
+	height = (int)vid_height.value;
+	refreshrate = (int)vid_refreshrate.value;
+	bpp = (int)vid_bpp.value;
+	fullscreen = (int)vid_fullscreen.value;
+	stretched = (int)vid_stretched.value;
+
+	
     // set vid parameters
-	vid.width = 640;
-	vid.height = 480;
-	vid.numpages = 2;
-    vid.colormap = host_colormap;
-    
+//	vid.width = 640;
+//	vid.height = 480;
+//	vid.numpages = 2;
+//    vid.colormap = host_colormap;
+	
+	
     // Get the active display list
     err = CGGetActiveDisplayList(MAX_DISPLAYS, displays, &displayCount);
     if (err != kCGErrorSuccess)
@@ -127,83 +455,162 @@ void VID_Init (void)
         Sys_Error("Could not get current graphics mode for display");
     }
     
-    // check for command-line size parameters
-	if ((i = COM_CheckParm("-width"))) 
-	{
-		if (i >= com_argc-1)
-			Sys_Error("VID_Init: -width <width>");
-        
-		vid.width = atoi(com_argv[i+1]);
-		if (!vid.width)
-			Sys_Error("VID_Init: Bad width");
-		if (vid.width < 320)
-			Sys_Error("VID_Init: width < 320 is not supported");
-	}
-	if ((i = COM_CheckParm("-height"))) 
-	{
-		if (i >= com_argc-1)
-			Sys_Error("VID_Init: -height <height>");
-        
-		vid.height = atoi(com_argv[i+1]);
-		if (!vid.height)
-			Sys_Error("VID_Init: Bad height");
-		if (vid.height < 200)
-			Sys_Error("VID_Init: height < 200 is not supported");
-	}
-    
-	if ((i = COM_CheckParm("-bpp"))) 
-    {
-		if (i >= com_argc-1)
-			Sys_Error("VID_Init: -bpp <bpp>");
-        
-        colorDepth = atoi(com_argv[i+1]);
-    } else {
-        colorDepth = (int)[[(NSDictionary *)*((long *)desktopMode + 2) objectForKey:(id)kCGDisplayBitsPerPixel] intValue];
-    }
-    
-	if ((i = COM_CheckParm("-refreshrate"))) 
-    {
-		if (i >= com_argc-1)
-			Sys_Error("VID_Init: -refreshrate <refreshrate>");
-        
-        refreshRate = atoi(com_argv[i+1]);
-    } else {
-        refreshRate = (int)CGDisplayModeGetRefreshRate(desktopMode);
-    }
-    
-	if ((i = COM_CheckParm("-stretched"))) 
-    {
-        isStretched = true;
-    } else {
-        isStretched = (CGDisplayModeGetIOFlags(desktopMode) & kDisplayModeStretchedFlag) == kDisplayModeStretchedFlag;
-    }
-    
-    // check for command-line video parameters
+	// check for command-line video parameters
 	if (COM_CheckParm("-current"))
 	{
-		vid.width = (int)CGDisplayModeGetWidth(desktopMode);
-		vid.height = (int)CGDisplayModeGetHeight(desktopMode);
-        colorDepth = (int)[[(NSDictionary *)*((long *)desktopMode + 2) objectForKey:(id)kCGDisplayBitsPerPixel] intValue];
-        refreshRate = (int)CGDisplayModeGetRefreshRate(desktopMode);
-        isStretched = (CGDisplayModeGetIOFlags(desktopMode) & kDisplayModeStretchedFlag) == kDisplayModeStretchedFlag;
+		width = (int)CGDisplayModeGetWidth(desktopMode);
+		height = (int)CGDisplayModeGetHeight(desktopMode);
+		refreshrate = (int)CGDisplayModeGetRefreshRate(desktopMode);
+		bpp = (int)CFStringGetLength(CGDisplayModeCopyPixelEncoding(desktopMode));
+//		bpp = (int)CGDisplayModeGetBPP(desktopMode);
+//		bpp = (int)[[(NSDictionary *)*((long *)desktopMode + 2) objectForKey:(id)kCGDisplayBitsPerPixel] intValue];
+		stretched = (qboolean)(CGDisplayModeGetIOFlags(desktopMode) & kDisplayModeStretchedFlag) == kDisplayModeStretchedFlag;
+		fullscreen = true;
 	}
-	else if (COM_CheckParm("-window"))
+	else
 	{
-		fullscreen = false;
+		if ((i = COM_CheckParm("-width")))
+		{
+			if (i >= com_argc-1)
+				Sys_Error("VID_Init: -width <width>");
+			
+			width = atoi(com_argv[i+1]);
+			if (!width)
+				Sys_Error("VID_Init: Bad width");
+			if (width < 320)
+				Sys_Error("VID_Init: width < 320 is not supported");
+		}
+		if ((i = COM_CheckParm("-height")))
+		{
+			if (i >= com_argc-1)
+				Sys_Error("VID_Init: -height <height>");
+			
+			height = atoi(com_argv[i+1]);
+			if (!height)
+				Sys_Error("VID_Init: Bad height");
+			if (height < 200)
+				Sys_Error("VID_Init: height < 200 is not supported");
+		}
+		
+		if ((i = COM_CheckParm("-refreshrate")))
+		{
+			if (i >= com_argc-1)
+				Sys_Error("VID_Init: -refreshrate <refreshrate>");
+			
+			refreshrate = atoi(com_argv[i+1]);
+		}
+		
+		if ((i = COM_CheckParm("-bpp")))
+		{
+			if (i >= com_argc-1)
+				Sys_Error("VID_Init: -bpp <bpp>");
+			
+			bpp = atoi(com_argv[i+1]);
+		}
+		
+		if (COM_CheckParm("-window") || COM_CheckParm("-w"))
+		{
+			fullscreen = false;
+		}
+		else if (COM_CheckParm("-fullscreen") || COM_CheckParm("-f"))
+		{
+			fullscreen = true;
+			
+			if (COM_CheckParm("-stretched"))
+				stretched = true;
+			
+			if (width < 640 || height < 480)
+			{
+				Con_Warning ("Fullscreen in low-res mode not available\n");
+				Con_Warning ("Forcing windowed mode\n");
+				fullscreen = false;
+				stretched = false;
+			}
+		}
 	}
+	
+	
+    // check for command-line size parameters
+//	if ((i = COM_CheckParm("-width"))) 
+//	{
+//		if (i >= com_argc-1)
+//			Sys_Error("VID_Init: -width <width>");
+//        
+//		vid.width = atoi(com_argv[i+1]);
+//		if (!vid.width)
+//			Sys_Error("VID_Init: Bad width");
+//		if (vid.width < 320)
+//			Sys_Error("VID_Init: width < 320 is not supported");
+//	}
+//	if ((i = COM_CheckParm("-height"))) 
+//	{
+//		if (i >= com_argc-1)
+//			Sys_Error("VID_Init: -height <height>");
+//        
+//		vid.height = atoi(com_argv[i+1]);
+//		if (!vid.height)
+//			Sys_Error("VID_Init: Bad height");
+//		if (vid.height < 200)
+//			Sys_Error("VID_Init: height < 200 is not supported");
+//	}
     
-    if (fullscreen && (vid.width < 640 || vid.height < 480))
-    {
-        Con_Warning ("Fullscreen in low-res mode not available\n");
-        fullscreen = false;
-    }
+//	if ((i = COM_CheckParm("-bpp"))) 
+//    {
+//		if (i >= com_argc-1)
+//			Sys_Error("VID_Init: -bpp <bpp>");
+//        
+//        colorDepth = atoi(com_argv[i+1]);
+//    } else {
+//        colorDepth = (int)[[(NSDictionary *)*((long *)desktopMode + 2) objectForKey:(id)kCGDisplayBitsPerPixel] intValue];
+//    }
+    
+//	if ((i = COM_CheckParm("-refreshrate"))) 
+//    {
+//		if (i >= com_argc-1)
+//			Sys_Error("VID_Init: -refreshrate <refreshrate>");
+//        
+//        refreshRate = atoi(com_argv[i+1]);
+//    } else {
+//        refreshRate = (int)CGDisplayModeGetRefreshRate(desktopMode);
+//    }
+    
+//	if ((i = COM_CheckParm("-stretched"))) 
+//    {
+//        isStretched = true;
+//    } else {
+//        isStretched = (CGDisplayModeGetIOFlags(desktopMode) & kDisplayModeStretchedFlag) == kDisplayModeStretchedFlag;
+//    }
+    
+    // check for command-line video parameters
+//	if (COM_CheckParm("-current"))
+//	{
+//		vid.width = (int)CGDisplayModeGetWidth(desktopMode);
+//		vid.height = (int)CGDisplayModeGetHeight(desktopMode);
+//        colorDepth = (int)[[(NSDictionary *)*((long *)desktopMode + 2) objectForKey:(id)kCGDisplayBitsPerPixel] intValue];
+//        refreshRate = (int)CGDisplayModeGetRefreshRate(desktopMode);
+//        isStretched = (CGDisplayModeGetIOFlags(desktopMode) & kDisplayModeStretchedFlag) == kDisplayModeStretchedFlag;
+//	}
+//	else if (COM_CheckParm("-window"))
+//	{
+//		fullscreen = false;
+//	}
+    
+//    if (fullscreen && (vid.width < 640 || vid.height < 480))
+//    {
+//        Con_Warning ("Fullscreen in low-res mode not available\n");
+//        fullscreen = false;
+//    }
+
 
     // get video mode list
-    CFArrayRef displayModes = CGDisplayCopyAllDisplayModes(display, NULL);
+    displayModes = CGDisplayCopyAllDisplayModes(display, NULL);
     if (!displayModes) {
         Sys_Error("Display available modes returned NULL");
     }
-    
+	displayModesCount = CFArrayGetCount(displayModes);
+	
+
+/*
     if (fullscreen) {
         CGDisplayModeRef mode;
         CFIndex modeCount, modeIndex, bestModeIndex;
@@ -221,8 +628,9 @@ void VID_Init (void)
             // Make sure we get the right mode
             if ((int)CGDisplayModeGetWidth(mode) == vid.width &&
                 (int)CGDisplayModeGetHeight(mode) == vid.height &&
-                (int)[[(NSDictionary *)*((long *)mode + 2) objectForKey:(id)kCGDisplayBitsPerPixel] intValue] == colorDepth &&
-                (int)CGDisplayModeGetRefreshRate(mode) == refreshRate &&
+				(int)CGDisplayModeGetRefreshRate(mode) == refreshRate &&
+				(int)CGDisplayModeGetBPP(mode) == colorDepth &&
+//                (int)[[(NSDictionary *)*((long *)mode + 2) objectForKey:(id)kCGDisplayBitsPerPixel] intValue] == colorDepth &&
                 ((CGDisplayModeGetIOFlags(mode) & kDisplayModeStretchedFlag) == kDisplayModeStretchedFlag) == isStretched)
             {
                 bestModeIndex = modeIndex;
@@ -232,7 +640,7 @@ void VID_Init (void)
         
         if (bestModeIndex == 0xFFFFFFFF) {
 			Con_Warning ("No suitable display mode available for fullscreen\n");
-			Con_Warning ("Switch to window\n");
+			Con_Warning ("Switching to windowed mode\n");
 			goto skipfullscreen;
         }
         
@@ -254,98 +662,141 @@ void VID_Init (void)
 skipfullscreen:
         gameMode = desktopMode;
     }
-    
-    // Get the GL pixel format
-    NSOpenGLPixelFormatAttribute pixelAttributes[] = {
-        NSOpenGLPFANoRecovery,      //0
-        NSOpenGLPFAClosestPolicy,   //1
-        NSOpenGLPFAAccelerated,     //2
-        NSOpenGLPFADoubleBuffer,    //3
-        NSOpenGLPFADepthSize, 24,   //4 5
-        NSOpenGLPFAAlphaSize, 8,    //6 7
-        NSOpenGLPFAStencilSize, 8,  //8 9
-        NSOpenGLPFAAccumSize, 0,    //10 11
-        NSOpenGLPFAColorSize, 32,   //12 13
-        0, 0, 0, 0                  //14 15 16 17 - reserved
-    };
-    
-    if (colorDepth < 16)
-        colorDepth = 16;
-    else if (colorDepth > 16)
-        colorDepth = 32;
-    
-    pixelAttributes[13] = colorDepth;
-    
-	if (vidmode_fullscreen) {
-        pixelAttributes[14] = NSOpenGLPFAFullScreen;
-        pixelAttributes[15] = NSOpenGLPFAScreenMask;
-        pixelAttributes[16] = CGDisplayIDToOpenGLDisplayMask(display);
-    } else {
-        pixelAttributes[14] = NSOpenGLPFAWindow;
-    }
-    
-    NSOpenGLPixelFormat *pixelFormat = [[NSOpenGLPixelFormat alloc] initWithAttributes:pixelAttributes];
-    if (!pixelFormat) {
-        Sys_Error("No pixel format found");
-    }
-    
-    // Create a context with the desired pixel attributes
-    glcontext = [[NSOpenGLContext alloc] initWithFormat:pixelFormat shareContext:nil];
-    if (!glcontext) {
-        Sys_Error("Cannot create OpenGL context");
-    }
-    [glcontext makeCurrentContext];
-    
-    if (!vidmode_fullscreen) {
-        NSRect windowRect;
-        
-        // Create a window of the desired size
-        windowRect.origin.x = ([screen frame].size.width - vid.width) / 2;
-        windowRect.origin.y = ([screen frame].size.height - vid.height) / 2;
-        windowRect.size.width = vid.width;
-        windowRect.size.height = vid.height;
-        
-        window = [[NSWindow alloc] initWithContentRect:windowRect 
-                                             styleMask:NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask | NSResizableWindowMask 
-                                               backing:NSBackingStoreBuffered 
-                                                 defer:NO 
-                                                screen:screen];
-        [window setTitle:@"fxQuake"];
-        [window makeKeyAndOrderFront: nil];
-        
-        // Always get mouse moved events. If mouse support is turned off (rare) the event system will filter them out.
-        [window setAcceptsMouseMovedEvents:YES];
-        [window setDelegate:(id<NSWindowDelegate>)[NSApp delegate]];
-        
-        // Note: as of the macOS 10.15 SDK, this defaults to YES instead of NO when the NSHighResolutionCapable boolean is set in Info.plist.
-        NSView *contentView = [window contentView];
-        if ([contentView respondsToSelector:@selector(setWantsBestResolutionOpenGLSurface:)]) {
-            [contentView setWantsBestResolutionOpenGLSurface:NO];
-        }
-        
-        // Direct the context to draw in this window
-        [glcontext setView:contentView];
-    } else {
-        // Set the context to full screen
-        CGLError glerr = CGLSetFullScreenOnDisplay([glcontext CGLContextObj], CGDisplayIDToOpenGLDisplayMask(display));
-        if (glerr) {
-            Sys_Error("Cannot set fullscreen");
-        }
-    }
+ */
+	
+	if (!VID_ValidMode(width, height, refreshrate, bpp, fullscreen, stretched))
+	{
+		width = (int)vid_width.value;
+		height = (int)vid_height.value;
+		refreshrate = (int)vid_refreshrate.value;
+		bpp = (int)vid_bpp.value;
+		fullscreen = (int)vid_fullscreen.value;
+		stretched = (int)vid_stretched.value;
+	}
+
+	if (!VID_ValidMode(width, height, refreshrate, bpp, fullscreen, stretched))
+	{
+		width = 640;
+		height = 480;
+//		refreshrate = display_refreshrate;
+//		bpp = display_bpp;
+		refreshrate = (int)CGDisplayModeGetRefreshRate(desktopMode);
+		bpp = (int)CFStringGetLength(CGDisplayModeCopyPixelEncoding(desktopMode));
+//		bpp = (int)CGDisplayModeGetBPP(desktopMode);
+//		bpp = (int)[[(NSDictionary *)*((long *)desktopMode + 2) objectForKey:(id)kCGDisplayBitsPerPixel] intValue];
+		fullscreen = false;
+		stretched = false;
+	}
+
+	
+	
+	
+	
+	VID_SetMode (width, height, refreshrate, bpp, fullscreen, stretched);
+	
+	
+	
+	
+	
+//    // Get the GL pixel format
+//    NSOpenGLPixelFormatAttribute pixelAttributes[] = {
+//        NSOpenGLPFANoRecovery,      //0
+//        NSOpenGLPFAClosestPolicy,   //1
+//        NSOpenGLPFAAccelerated,     //2
+//        NSOpenGLPFADoubleBuffer,    //3
+//        NSOpenGLPFADepthSize, 24,   //4 5
+//        NSOpenGLPFAAlphaSize, 8,    //6 7
+//        NSOpenGLPFAStencilSize, 8,  //8 9
+//        NSOpenGLPFAAccumSize, 0,    //10 11
+//        NSOpenGLPFAColorSize, 32,   //12 13
+//        0, 0, 0, 0                  //14 15 16 17 - reserved
+//    };
+//    
+//    if (colorDepth < 16)
+//        colorDepth = 16;
+//    else if (colorDepth > 16)
+//        colorDepth = 32;
+//    
+//    pixelAttributes[13] = colorDepth;
+//    
+//	if (vidmode_fullscreen) {
+//        pixelAttributes[14] = NSOpenGLPFAFullScreen;
+//        pixelAttributes[15] = NSOpenGLPFAScreenMask;
+//        pixelAttributes[16] = CGDisplayIDToOpenGLDisplayMask(display);
+//    } else {
+//        pixelAttributes[14] = NSOpenGLPFAWindow;
+//    }
+//    
+//    NSOpenGLPixelFormat *pixelFormat = [[NSOpenGLPixelFormat alloc] initWithAttributes:pixelAttributes];
+//    if (!pixelFormat) {
+//        Sys_Error("No pixel format found");
+//    }
+//    
+//    // Create a context with the desired pixel attributes
+//    glcontext = [[NSOpenGLContext alloc] initWithFormat:pixelFormat shareContext:nil];
+//    if (!glcontext) {
+//        Sys_Error("Cannot create OpenGL context");
+//    }
+//    [glcontext makeCurrentContext];
+//    
+//    if (!vidmode_fullscreen) {
+//        NSRect windowRect;
+//        
+//        // Create a window of the desired size
+//        windowRect.origin.x = ([screen frame].size.width - vid.width) / 2;
+//        windowRect.origin.y = ([screen frame].size.height - vid.height) / 2;
+//        windowRect.size.width = vid.width;
+//        windowRect.size.height = vid.height;
+//        
+//        window = [[NSWindow alloc] initWithContentRect:windowRect 
+//                                             styleMask:NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask | NSResizableWindowMask 
+//                                               backing:NSBackingStoreBuffered 
+//                                                 defer:NO 
+//                                                screen:screen];
+//        [window setTitle:@"fxQuake"];
+//        [window makeKeyAndOrderFront: nil];
+//        
+//        // Always get mouse moved events. If mouse support is turned off (rare) the event system will filter them out.
+//        [window setAcceptsMouseMovedEvents:YES];
+//        [window setDelegate:(id<NSWindowDelegate>)[NSApp delegate]];
+//        
+//        // Note: as of the macOS 10.15 SDK, this defaults to YES instead of NO when the NSHighResolutionCapable boolean is set in Info.plist.
+//        NSView *contentView = [window contentView];
+//        if ([contentView respondsToSelector:@selector(setWantsBestResolutionOpenGLSurface:)]) {
+//            [contentView setWantsBestResolutionOpenGLSurface:NO];
+//        }
+//        
+//        // Direct the context to draw in this window
+//        [glcontext setView:contentView];
+//    } else {
+//        // Set the context to full screen
+//        CGLError glerr = CGLSetFullScreenOnDisplay([glcontext CGLContextObj], CGDisplayIDToOpenGLDisplayMask(display));
+//        if (glerr) {
+//            Sys_Error("Cannot set fullscreen");
+//        }
+//    }
     
     vid_activewindow = true;
 	vid_hiddenwindow = false;
 	vid_notifywindow = true;
     
-    vid.conwidth = vid.width;
-	vid.conheight = vid.height;
+	
+//	// set vid parameters
+//	vid.width = 640;
+//	vid.height = 480;
+//	
+//	vid.numpages = 2;
+//	vid.colormap = host_colormap;
+//	
+//    vid.conwidth = vid.width;
+//	vid.conheight = vid.height;
     
-    vid.recalc_refdef = true; // force a surface cache flush
+//    vid.recalc_refdef = true; // force a surface cache flush
     
 	if (COM_CheckParm("-fullsbar"))
 		fullsbardraw = true;
     
-	Con_SafePrintf ("Video mode %dx%dx%d %dHz %s%s initialized\n", vid.width, vid.height, colorDepth, refreshRate, isStretched ? "(stretched) " : "", vidmode_fullscreen ? "fullscreen" : "windowed");
+//	Con_SafePrintf ("Video mode %dx%dx%d %dHz %s%s initialized\n", vid.width, vid.height, colorDepth, refreshRate, isStretched ? "(stretched) " : "", vidmode_fullscreen ? "fullscreen" : "windowed");
 	
 	GL_Init();
 	
@@ -385,7 +836,8 @@ void VID_Shutdown (void)
         }
         
         // Switch back to the original screen resolution
-        if (vidmode_fullscreen) {
+		if (vid.fullscreen) {
+//        if (vidmode_fullscreen) {
             if (desktopMode) {
                 CGDisplaySetDisplayMode(display, desktopMode, NULL);
             }
@@ -397,6 +849,7 @@ void VID_Shutdown (void)
         }
     }
     
-    vidmode_fullscreen = false;
+	vid.fullscreen = false;
+//    vidmode_fullscreen = false;
 }
 

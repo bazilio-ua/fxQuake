@@ -525,7 +525,8 @@ int main (int argc, char *argv[])
 - (void)checkActive {
     static qboolean active = true;
     
-    if (vidmode_fullscreen)
+	if (vid.fullscreen)
+//    if (vidmode_fullscreen)
     {
         if (!vid_hiddenwindow)
         {
