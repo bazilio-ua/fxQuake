@@ -365,7 +365,8 @@ void VID_Unlock (void)
 }
 
 
-#define MAX_DISPLAYS 128
+//#define MAX_DISPLAYS 128
+#define MAX_DISPLAYS 32
 
 //FIXME: -
 //#define CGDisplayModeGetBPP(mode) [[(NSDictionary *)*((long *)mode + 2) objectForKey:(id)kCGDisplayBitsPerPixel] intValue]
