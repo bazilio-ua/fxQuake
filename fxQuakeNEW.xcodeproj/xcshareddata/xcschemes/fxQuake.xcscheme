@@ -141,7 +141,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-width 640 -height 480"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-width 720 -height 450"
@@ -157,7 +157,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-width 800 -height 600"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-width 320 -height 200"
