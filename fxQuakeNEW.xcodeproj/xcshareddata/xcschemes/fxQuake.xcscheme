@@ -168,6 +168,10 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
+            argument = "-width 1920 -height 1200"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
             argument = "+gl_picmip 10"
             isEnabled = "NO">
          </CommandLineArgument>
@@ -197,10 +201,6 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-nocombine"
-            isEnabled = "NO">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "-width 1920 -height 1200"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
@@ -325,6 +325,10 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-window"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-fullscreen"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
