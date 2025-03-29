@@ -100,6 +100,11 @@ int DisplayModeGetRefreshRate (CGDisplayModeRef mode)
 	return Q_rint(CGDisplayModeGetRefreshRate(mode));
 }
 
+qboolean DisplayModeGetStretchedFlag (CGDisplayModeRef mode)
+{
+	return (CGDisplayModeGetIOFlags(mode) & kDisplayModeStretchedFlag) == kDisplayModeStretchedFlag;
+}
+
 /*
 ================
 VID_GetMatchingDisplayMode
@@ -123,7 +128,7 @@ CGDisplayModeRef VID_GetMatchingDisplayMode (int width, int height, int refreshr
 			(int)CGDisplayModeGetHeight(mode) == height &&
 			DisplayModeGetRefreshRate(mode) == refreshrate &&
 			DisplayModeGetBitsPerPixel(mode) == bpp &&
-			((CGDisplayModeGetIOFlags(mode) & kDisplayModeStretchedFlag) == kDisplayModeStretchedFlag) == stretched)
+			DisplayModeGetStretchedFlag(mode) == stretched)
 		{
 			return mode; // we got it
 		}
@@ -134,10 +139,10 @@ CGDisplayModeRef VID_GetMatchingDisplayMode (int width, int height, int refreshr
 
 /*
 ================
-VID_CheckValidMode
+VID_CheckMode
 ================
 */
-qboolean VID_CheckValidMode (int width, int height, int refreshrate, int bpp, qboolean fullscreen, qboolean stretched)
+qboolean VID_CheckMode (int width, int height, int refreshrate, int bpp, qboolean fullscreen, qboolean stretched)
 {
 	if (width < 320)
 		return false;
@@ -470,7 +475,7 @@ void VID_Init (void)
 		height = (int)CGDisplayModeGetHeight(desktopMode);
 		refreshrate = DisplayModeGetRefreshRate(desktopMode);
 		bpp = DisplayModeGetBitsPerPixel(desktopMode);
-		stretched = (qboolean)(CGDisplayModeGetIOFlags(desktopMode) & kDisplayModeStretchedFlag) == kDisplayModeStretchedFlag;
+		stretched = DisplayModeGetStretchedFlag(desktopMode);
 		fullscreen = true;
 	}
 	else
@@ -546,7 +551,7 @@ void VID_Init (void)
 	displayModesCount = CFArrayGetCount(displayModes);
 	
 	
-	if (!VID_CheckValidMode(width, height, refreshrate, bpp, fullscreen, stretched))
+	if (!VID_CheckMode(width, height, refreshrate, bpp, fullscreen, stretched))
 	{
 		width = (int)vid_width.value;
 		height = (int)vid_height.value;
@@ -556,7 +561,7 @@ void VID_Init (void)
 		stretched = (int)vid_stretched.value;
 	}
 	
-	if (!VID_CheckValidMode(width, height, refreshrate, bpp, fullscreen, stretched))
+	if (!VID_CheckMode(width, height, refreshrate, bpp, fullscreen, stretched))
 	{
 		width = 640;
 		height = 480;
