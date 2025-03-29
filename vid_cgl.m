@@ -37,6 +37,8 @@ viddef_t vid; // global video state
 qboolean vid_locked = false; //johnfitz
 qboolean vid_changed = false;
 
+qboolean	vid_initialized = false;
+
 //====================================
 
 //johnfitz -- new cvars
@@ -338,6 +340,23 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 }
 
 /*
+================
+VID_SyncCvars -- johnfitz -- set vid cvars to match current video mode
+================
+*/
+void VID_SyncCvars (void)
+{
+	Cvar_SetValue ("vid_width", vid.width);
+	Cvar_SetValue ("vid_height", vid.height);
+	Cvar_SetValue ("vid_bpp", vid.bpp);
+	Cvar_SetValue ("vid_refreshrate", vid.refreshrate);
+	Cvar_Set ("vid_fullscreen", (vid.fullscreen) ? "1" : "0");
+	Cvar_Set ("vid_stretched", (vid.stretched) ? "1" : "0");
+	
+	vid_changed = false;
+}
+
+/*
 ===================
 VID_Changed -- kristian -- notify us that a value has changed that requires a vid_restart
 ===================
@@ -354,6 +373,58 @@ VID_Restart -- johnfitz -- change video modes on the fly
 */
 void VID_Restart (void)
 {
+	int width, height, refreshrate, bpp;
+	qboolean fullscreen, stretched;
+
+	if (vid_locked || !vid_changed)
+		return;
+
+	width = (int)vid_width.value;
+	height = (int)vid_height.value;
+	refreshrate = (int)vid_refreshrate.value;
+	bpp = (int)vid_bpp.value;
+	fullscreen = (int)vid_fullscreen.value;
+	stretched = (int)vid_stretched.value;
+
+	//
+	// validate new mode
+	//
+	if (!VID_CheckMode(width, height, refreshrate, bpp, fullscreen, stretched))
+	{
+		Con_SafePrintf ("Video mode %dx%dx%d %dHz %s%s is not a valid mode\n",
+						width,
+						height,
+						bpp,
+						refreshrate,
+						stretched ? "(stretched) " : "",
+						fullscreen ? "fullscreen" : "windowed");
+		return;
+	}
+	
+	//
+	// textures invalid after mode change,
+	// so delete all GL textures now.
+	TexMgr_DeleteImages ();
+	
+	//
+	// set new mode
+	//
+	VID_SetMode (width, height, refreshrate, bpp, fullscreen, stretched);
+	
+//	GL_Init ();
+	TexMgr_ReloadImages ();
+	GL_SetupState ();
+//	Fog_SetupState ();
+	
+	GL_SwapInterval();
+	
+	// warpimage needs to be recalculated
+	TexMgr_UploadWarpImage ();
+	
+	//
+	// keep cvars in line with actual mode
+	//
+	VID_SyncCvars();
 	
 }
 
@@ -364,7 +435,10 @@ VID_Test -- johnfitz -- like vid_restart, but asks for confirmation after switch
 */
 void VID_Test (void)
 {
+	int old_width, old_height, old_refreshrate, old_bpp, old_fullscreen, old_stretched;
 	
+	if (vid_locked || !vid_changed)
+		return;
 }
 
 /*
@@ -391,6 +465,7 @@ VID_Unlock -- johnfitz
 void VID_Unlock (void)
 {
 	vid_locked = false;
+	VID_SyncCvars ();
 }
 
 
@@ -574,6 +649,7 @@ void VID_Init (void)
 	
 	VID_SetMode (width, height, refreshrate, bpp, fullscreen, stretched);
 	
+	vid_initialized = true;
 	
 	vid_activewindow = true;
 	vid_hiddenwindow = false;
@@ -583,6 +659,10 @@ void VID_Init (void)
 	GL_Init();
 	
 	GL_SwapInterval(); // TODO: sync cvars
+	
+	//QuakeSpasm: current vid settings should override config file settings.
+	//so we have to lock the vid mode from now until after all config files are read.
+//	vid_locked = true;
 }
 
 /*

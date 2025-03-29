@@ -1849,6 +1849,8 @@ gltexture_t *TexMgr_NewTexture (void)
 	return glt;
 }
 
+//ericw -- workaround for preventing TexMgr_FreeTexture during TexMgr_ReloadImages
+qboolean in_reload_images;
 
 /*
 ================
@@ -1858,6 +1860,9 @@ TexMgr_FreeTexture
 void TexMgr_FreeTexture (gltexture_t *texture)
 {
 	gltexture_t *glt;
+
+	if (in_reload_images)
+		return;
 
 	if (texture == NULL)
 	{
@@ -1927,6 +1932,49 @@ void TexMgr_FreeTexturesForOwner (model_t *owner)
 		if (glt && glt->owner == owner)
 			TexMgr_FreeTexture (glt);
 	}
+}
+
+/*
+================
+TexMgr_DeleteImages
+================
+*/
+void TexMgr_DeleteImages (void)
+{
+	gltexture_t *glt;
+
+	for (glt = active_gltextures; glt; glt = glt->next)
+	{
+		GL_DeleteTexture (glt);
+	}
+}
+
+/*
+================
+TexMgr_ReloadImages -- reloads all texture images. called only by vid_restart
+================
+*/
+void TexMgr_ReloadImages (void)
+{
+	gltexture_t *glt;
+	
+// ericw -- tricky bug: if the hunk is almost full, an allocation in TexMgr_ReloadImage
+// triggers cache items to be freed, which calls back into TexMgr to free the
+// texture. If this frees 'glt' in the loop below, the active_gltextures
+// list gets corrupted.
+// A test case is jam3_tronyn.bsp with -heapsize 65536, and do several mode
+// switches/fullscreen toggles
+// 2015-09-04 -- Cache_Flush workaround was causing issues (http://sourceforge.net/p/quakespasm/bugs/10/)
+// switching to a boolean flag.
+	in_reload_images = true;
+	
+	for (glt = active_gltextures; glt; glt = glt->next)
+	{
+		glGenTextures(1, &glt->texnum);
+		TexMgr_ReloadTextureTranslation (glt, -1, -1);
+	}
+	
+	in_reload_images = false;
 }
 
 /*
