@@ -95,6 +95,11 @@ qboolean gl_texture_compression = false; // EER1
 
 qboolean gl_swap_control = false;
 int gl_stencilbits;
+int gl_depthbits;
+int gl_alphabits;
+int gl_redbits;
+int gl_greenbits;
+int gl_bluebits;
 
 /*
 ================================================
@@ -414,9 +419,6 @@ void GL_CheckExtensions (void)
 	GL_CheckExtension_VSync ();
 	
 	GL_Check_MultithreadedGL ();
-	
-    // read stencil bits
-    glGetIntegerv (GL_STENCIL_BITS, &gl_stencilbits);
 }
 
 /*
@@ -588,6 +590,25 @@ GL_Init
 */
 void GL_Init (void)
 {
+	// read stencil bits
+	glGetIntegerv (GL_STENCIL_BITS, &gl_stencilbits);
+	// read depth bits
+	glGetIntegerv (GL_DEPTH_BITS, &gl_depthbits);
+	// read color bits
+	glGetIntegerv (GL_RED_BITS, &gl_redbits);
+	glGetIntegerv (GL_GREEN_BITS, &gl_greenbits);
+	glGetIntegerv (GL_BLUE_BITS, &gl_bluebits);
+	// read alpha bits
+	glGetIntegerv (GL_ALPHA_BITS, &gl_alphabits);
+	
+	Con_Printf ("Pixel format\n"
+				"   color RGBA (%d/%d/%d/%d-bits)\n"
+				"   Z-buffer (%d-bits)\n"
+				"   stencil (%d-bits)\n",
+				gl_redbits, gl_greenbits, gl_bluebits, gl_alphabits,
+				gl_depthbits,
+				gl_stencilbits);
+	
 	// gl_info
 	gl_vendor = (char *)glGetString (GL_VENDOR);
 	gl_renderer = (char *)glGetString (GL_RENDERER);

@@ -141,7 +141,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-width 640 -height 480"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-width 720 -height 450"
@@ -329,7 +329,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-fullscreen"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-stretched"

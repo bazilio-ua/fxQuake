@@ -134,10 +134,10 @@ CGDisplayModeRef VID_GetMatchingDisplayMode (int width, int height, int refreshr
 
 /*
 ================
-VID_ValidMode
+VID_CheckValidMode
 ================
 */
-qboolean VID_ValidMode (int width, int height, int refreshrate, int bpp, qboolean fullscreen, qboolean stretched)
+qboolean VID_CheckValidMode (int width, int height, int refreshrate, int bpp, qboolean fullscreen, qboolean stretched)
 {
 	if (width < 320)
 		return false;
@@ -174,11 +174,31 @@ VID_SetMode
 void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean fullscreen, qboolean stretched)
 {
 	int		temp;
-	
+//	int		depth, stencil;
+
 	// so Con_Printfs don't mess us up by forcing vid and snd updates
 	temp = scr_disabled_for_loading;
 	scr_disabled_for_loading = true;
 	
+	CDAudio_Pause ();
+	S_BlockSound ();
+	S_ClearBuffer ();
+
+	
+	// z-buffer depth
+//	switch (bpp)
+//	{
+//		case 32:
+//			depth = 24;
+//			stencil = 8;
+//			break;
+//		case 16:
+//			depth = 16;
+//			stencil = 0;
+//			break;
+//		default:
+//			Sys_Error("Unsupported bits per pixel format");
+//	}
 	
 	// Get the GL pixel format
 	NSOpenGLPixelFormatAttribute pixelAttributes[] = {
@@ -186,18 +206,22 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 		NSOpenGLPFAClosestPolicy,   //1
 		NSOpenGLPFAAccelerated,     //2
 		NSOpenGLPFADoubleBuffer,    //3
+//		NSOpenGLPFADepthSize, depth,   //4 5
 		NSOpenGLPFADepthSize, 24,   //4 5
+//		NSOpenGLPFAAlphaSize, 0,    //6 7
 		NSOpenGLPFAAlphaSize, 8,    //6 7
+//		NSOpenGLPFAStencilSize, stencil,  //8 9
 		NSOpenGLPFAStencilSize, 8,  //8 9
 		NSOpenGLPFAAccumSize, 0,    //10 11
+//		NSOpenGLPFAColorSize, bpp,   //12 13
 		NSOpenGLPFAColorSize, 32,   //12 13
 		0, 0, 0, 0                  //14 15 16 17 - reserved
 	};
 	
-	if (bpp < 16)
-		bpp = 16;
-	else if (bpp > 16)
-		bpp = 32;
+//	if (bpp < 16)
+//		bpp = 16;
+//	else if (bpp > 16)
+//		bpp = 32;
 	
 	pixelAttributes[13] = bpp;
 	
@@ -211,7 +235,8 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 	
 	NSOpenGLPixelFormat *pixelFormat = [[NSOpenGLPixelFormat alloc] initWithAttributes:pixelAttributes];
 	if (!pixelFormat)
-		Sys_Error("No pixel format found");
+//		Sys_Error("No pixel format found");
+		Sys_Error("Unable to find a matching pixel format");
 	
 	// Create a context with the desired pixel attributes
 	glcontext = [[NSOpenGLContext alloc] initWithFormat:pixelFormat shareContext:nil];
@@ -268,9 +293,14 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 			Sys_Error("Cannot set fullscreen");
 	}
 	
-	
+	CDAudio_Resume ();
+	S_UnblockSound ();
+	S_ClearBuffer ();
+
 	scr_disabled_for_loading = temp;
 	
+	// fix the leftover Alt from any Alt-Tab or the like that switched us away
+    Key_ClearStates ();
 	
 	// set vid parameters
 	vid.width = width;
@@ -516,7 +546,7 @@ void VID_Init (void)
 	displayModesCount = CFArrayGetCount(displayModes);
 	
 	
-	if (!VID_ValidMode(width, height, refreshrate, bpp, fullscreen, stretched))
+	if (!VID_CheckValidMode(width, height, refreshrate, bpp, fullscreen, stretched))
 	{
 		width = (int)vid_width.value;
 		height = (int)vid_height.value;
@@ -526,7 +556,7 @@ void VID_Init (void)
 		stretched = (int)vid_stretched.value;
 	}
 	
-	if (!VID_ValidMode(width, height, refreshrate, bpp, fullscreen, stretched))
+	if (!VID_CheckValidMode(width, height, refreshrate, bpp, fullscreen, stretched))
 	{
 		width = 640;
 		height = 480;
