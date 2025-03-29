@@ -61,6 +61,8 @@ cvar_t	cl_crossy = {"cl_crossy", "0", CVAR_NONE};
 
 cvar_t	gl_cshiftpercent = {"gl_cshiftpercent", "100", CVAR_NONE};
 
+cvar_t	v_contentblend = {"v_contentblend", "1", CVAR_NONE};
+
 float	v_dmg_time, v_dmg_roll, v_dmg_pitch;
 
 extern	int			in_forward, in_forward2, in_back;
@@ -246,7 +248,7 @@ void V_DriftPitch (void)
 ============================================================================== 
 */ 
  
-cshift_t	cshift_empty = { {130,80,50}, 0 };
+cshift_t	cshift_empty = { {0,0,0}, 0 };
 cshift_t	cshift_water = { {130,80,50}, 128 };
 cshift_t	cshift_slime = { {0,25,5}, 150 };
 cshift_t	cshift_lava = { {255,80,0}, 150 };
@@ -400,11 +402,14 @@ Underwater, lava, etc each has a color shift
 */
 void V_SetContentsColor (int contents)
 {
+	if (!v_contentblend.value) {
+		cl.cshifts[CSHIFT_CONTENTS] = cshift_empty;
+		return;
+	}
+	
 	switch (contents)
 	{
 	case CONTENTS_EMPTY:
-	case CONTENTS_SOLID:
-	case CONTENTS_SKY: // no blend in sky
 		cl.cshifts[CSHIFT_CONTENTS] = cshift_empty;
 		break;
 	case CONTENTS_LAVA:
@@ -413,8 +418,11 @@ void V_SetContentsColor (int contents)
 	case CONTENTS_SLIME:
 		cl.cshifts[CSHIFT_CONTENTS] = cshift_slime;
 		break;
-	default:
+	case CONTENTS_WATER:
 		cl.cshifts[CSHIFT_CONTENTS] = cshift_water;
+		break;
+	default:
+		cl.cshifts[CSHIFT_CONTENTS] = cshift_empty;
 	}
 }
 
@@ -1090,6 +1098,7 @@ void V_Init (void)
 	Cvar_RegisterVariable (&cl_crossx);
 	Cvar_RegisterVariable (&cl_crossy);
 	Cvar_RegisterVariable (&gl_cshiftpercent);
+	Cvar_RegisterVariable (&v_contentblend);
 
 	Cvar_RegisterVariable (&scr_ofsx);
 	Cvar_RegisterVariable (&scr_ofsy);

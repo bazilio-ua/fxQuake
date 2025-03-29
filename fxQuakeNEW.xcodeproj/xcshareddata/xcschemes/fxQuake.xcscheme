@@ -157,7 +157,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-width 800 -height 600"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-width 320 -height 200"
@@ -165,6 +165,10 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-width 1152 -height 720"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-width 1920 -height 1200"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
@@ -197,10 +201,6 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-nocombine"
-            isEnabled = "NO">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "-width 1920 -height 1200"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
@@ -326,6 +326,10 @@
          <CommandLineArgument
             argument = "-window"
             isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-fullscreen"
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-stretched"
