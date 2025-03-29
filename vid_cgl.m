@@ -307,6 +307,14 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 	// fix the leftover Alt from any Alt-Tab or the like that switched us away
     Key_ClearStates ();
 	
+	Con_SafePrintf ("Video mode %dx%dx%d %dHz %s%s initialized\n",
+					width,
+					height,
+					bpp,
+					refreshrate,
+					stretched ? "(stretched) " : "",
+					fullscreen ? "fullscreen" : "windowed");
+	
 	// set vid parameters
 	vid.width = width;
 	vid.height = height;
@@ -323,14 +331,6 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 	vid.conheight = vid.height;
 	
 	vid.recalc_refdef = true; // force a surface cache flush
-	
-	Con_SafePrintf ("Video mode %dx%dx%d %dHz %s%s initialized\n",
-					vid.width,
-					vid.height,
-					vid.bpp,
-					vid.refreshrate,
-					vid.stretched ? "(stretched) " : "",
-					vid.fullscreen ? "fullscreen" : "windowed");
 	
 	
 	// no pending changes
