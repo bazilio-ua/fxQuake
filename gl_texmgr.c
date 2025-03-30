@@ -381,7 +381,7 @@ void GL_CheckExtension_VSync (void)
 		Con_Warning ("Vertical sync not supported (extension not found)\n");
 }
 
-void GL_Check_MultithreadedGL (void)
+void GL_CheckMultithreadedGL (void)
 {
 	if (has_smp)
 	{
@@ -417,8 +417,6 @@ void GL_CheckExtensions (void)
 	GL_CheckExtension_TextureCompression ();
 	GL_CheckExtension_Anisotropy ();
 	GL_CheckExtension_VSync ();
-	
-	GL_Check_MultithreadedGL ();
 }
 
 /*
@@ -617,8 +615,6 @@ GL_Init
 */
 void GL_Init (void)
 {
-	GL_PixelFormatInfo ();
-	
 	// gl_info
 	gl_vendor = (char *)glGetString (GL_VENDOR);
 	gl_renderer = (char *)glGetString (GL_RENDERER);
@@ -630,6 +626,7 @@ void GL_Init (void)
 	Con_SafePrintf ("GL_VERSION: %s\n", gl_version);
 
 	GL_CheckExtensions ();
+	GL_CheckMultithreadedGL ();
 
 	Cvar_RegisterVariableCallback (&gl_swapinterval, GL_SwapInterval);
 
@@ -642,8 +639,6 @@ void GL_Init (void)
 	}
 
 	Con_Printf ("OpenGL initialized\n");
-
-	GL_SetupState ();
 }
 
 /*

@@ -394,6 +394,7 @@ void GL_Init (void);
 void GL_SetupState (void);
 void GL_SwapInterval (void);
 void GL_PixelFormatInfo (void);
+void GL_CheckMultithreadedGL (void);
 
 // gl_warp.c
 void R_UpdateWarpTextures (void);

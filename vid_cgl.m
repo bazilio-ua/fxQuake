@@ -445,14 +445,13 @@ void VID_Restart (void)
 	vid_hiddenwindow = false;
 	vid_notifywindow = true;
 	
-//	GL_Init ();
-//	GL_CheckExtensions ();
 	GL_PixelFormatInfo ();
-	GL_SetupState ();
-	TexMgr_ReloadImages ();
-//	Fog_SetupState ();
 	
-	GL_SwapInterval();
+	TexMgr_ReloadImages ();
+	
+	GL_SetupState ();
+	GL_CheckMultithreadedGL ();
+	GL_SwapInterval ();
 	
 	// warpimage needs to be recalculated
 	TexMgr_UploadWarpImage ();
@@ -460,7 +459,7 @@ void VID_Restart (void)
 	//
 	// keep cvars in line with actual mode
 	//
-	VID_SyncCvars();
+	VID_SyncCvars ();
 	
 }
 
@@ -691,10 +690,11 @@ void VID_Init (void)
 	vid_hiddenwindow = false;
 	vid_notifywindow = true;
 	
+	GL_PixelFormatInfo ();
+	GL_Init ();
+	GL_SetupState ();
 	
-	GL_Init();
-	
-	GL_SwapInterval(); // TODO: sync cvars
+	GL_SwapInterval ();
 	
 	//QuakeSpasm: current vid settings should override config file settings.
 	//so we have to lock the vid mode from now until after all config files are read.
