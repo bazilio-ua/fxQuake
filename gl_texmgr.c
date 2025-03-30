@@ -583,12 +583,7 @@ void GL_SetupState (void)
 	glDepthFunc (GL_LEQUAL); // moved here because gl_ztrick is gone.
 }
 
-/*
-===============
-GL_Init
-===============
-*/
-void GL_Init (void)
+void GL_PixelFormatInfo (void)
 {
 	// read stencil bits
 	glGetIntegerv (GL_STENCIL_BITS, &gl_stencilbits);
@@ -602,12 +597,23 @@ void GL_Init (void)
 	glGetIntegerv (GL_ALPHA_BITS, &gl_alphabits);
 	
 	Con_Printf ("Pixel format\n"
-				"   color RGBA (%d/%d/%d/%d-bits)\n"
-				"   Z-buffer (%d-bits)\n"
-				"   stencil (%d-bits)\n",
+				"   RGBA (%d/%d/%d/%d bits)\n"
+				"   Z-buffer (%d bits)\n"
+				"   stencil (%d bits)\n",
 				gl_redbits, gl_greenbits, gl_bluebits, gl_alphabits,
 				gl_depthbits,
 				gl_stencilbits);
+	
+}
+
+/*
+===============
+GL_Init
+===============
+*/
+void GL_Init (void)
+{
+	GL_PixelFormatInfo ();
 	
 	// gl_info
 	gl_vendor = (char *)glGetString (GL_VENDOR);

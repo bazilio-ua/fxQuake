@@ -190,13 +190,8 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 	CDAudio_Pause ();
 	S_BlockSound ();
 	S_ClearBuffer ();
-
 	
-	// Release the main display
-	if (CGDisplayIsCaptured(display)) {
-		CGDisplayRelease(display);
-	}
-
+	
 	if (glcontext) {
 		[NSOpenGLContext clearCurrentContext];
 		
@@ -207,7 +202,17 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 		[glcontext release];
 		glcontext = nil;
 	}
-
+	
+	if (window) {
+		[window close];
+		window = nil;
+	}
+	
+	// Release the main display
+	if (CGDisplayIsCaptured(display)) {
+		CGDisplayRelease(display);
+	}
+	
 	// Switch back to the original screen resolution
 	if (!fullscreen && vid.fullscreen) {
 //        if (vidmode_fullscreen) {
@@ -217,7 +222,6 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 	}
 	
 	
-
 	// z-buffer depth
 //	switch (bpp)
 //	{
@@ -437,8 +441,13 @@ void VID_Restart (void)
 	//
 	VID_SetMode (width, height, refreshrate, bpp, fullscreen, stretched);
 	
+	vid_activewindow = true;
+	vid_hiddenwindow = false;
+	vid_notifywindow = true;
+	
 //	GL_Init ();
 //	GL_CheckExtensions ();
+	GL_PixelFormatInfo ();
 	GL_SetupState ();
 	TexMgr_ReloadImages ();
 //	Fog_SetupState ();
