@@ -192,6 +192,32 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 	S_ClearBuffer ();
 
 	
+	// Release the main display
+	if (CGDisplayIsCaptured(display)) {
+		CGDisplayRelease(display);
+	}
+
+	if (glcontext) {
+		[NSOpenGLContext clearCurrentContext];
+		
+		// Have to call both to actually deallocate kernel resources and free the NSSurface
+		CGLClearDrawable([glcontext CGLContextObj]);
+		[glcontext clearDrawable];
+		
+		[glcontext release];
+		glcontext = nil;
+	}
+
+	// Switch back to the original screen resolution
+	if (!fullscreen && vid.fullscreen) {
+//        if (vidmode_fullscreen) {
+		if (desktopMode) {
+			CGDisplaySetDisplayMode(display, desktopMode, NULL);
+		}
+	}
+	
+	
+
 	// z-buffer depth
 //	switch (bpp)
 //	{
@@ -412,8 +438,9 @@ void VID_Restart (void)
 	VID_SetMode (width, height, refreshrate, bpp, fullscreen, stretched);
 	
 //	GL_Init ();
-	TexMgr_ReloadImages ();
+//	GL_CheckExtensions ();
 	GL_SetupState ();
+	TexMgr_ReloadImages ();
 //	Fog_SetupState ();
 	
 	GL_SwapInterval();
