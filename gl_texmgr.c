@@ -581,6 +581,10 @@ void GL_SetupState (void)
 
 	glDepthRange (0, 1); // moved here because gl_ztrick is gone.
 	glDepthFunc (GL_LEQUAL); // moved here because gl_ztrick is gone.
+	
+	// set up global fog
+	glFogi (GL_FOG_MODE, GL_EXP2);
+	glHint (GL_FOG_HINT, GL_NICEST); /*  per pixel  */
 }
 
 void GL_PixelFormatInfo (void)

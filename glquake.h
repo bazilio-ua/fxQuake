@@ -322,7 +322,7 @@ void R_MakeAliasModelDisplayLists (model_t *m, aliashdr_t *hdr);
 void R_InitPlayerTextures (void);
 void R_TranslatePlayerSkin (int playernum);
 void R_TranslateNewPlayerSkin (int playernum); //johnfitz -- this handles cases when the actual texture changes
-void R_InitMapGlobals (void);
+void R_InitSkyBoxTextures (void);
 void R_ParseWorldspawn (void);
 void R_TimeRefresh_f (void);
 
@@ -502,7 +502,7 @@ extern	gltexture_t	*playertextures[MAX_SCOREBOARD];
 extern	gltexture_t	*skyboxtextures[6];
 
 extern	qboolean	oldsky;
-extern	char	skybox_name[MAX_QPATH];
+extern	char	skybox_name[MAX_OSPATH];
 extern	float	globalwateralpha;
 
 #define	OVERBRIGHT_SCALE	2.0

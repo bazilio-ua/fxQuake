@@ -179,7 +179,7 @@ void R_Init (void)
 
 	R_InitPlayerTextures ();
 
-	R_InitMapGlobals ();
+	R_InitSkyBoxTextures ();
 
 	R_InitBloomTextures();
 }
@@ -274,22 +274,17 @@ void R_TranslateNewPlayerSkin (int playernum)
 
 /*
 =================
-R_InitMapGlobals
-
-called when quake initializes
+R_InitSkyBoxTextures
 =================
 */
-void R_InitMapGlobals (void)
+void R_InitSkyBoxTextures (void)
 {
 	int i;
 
+	skybox_name[0] = 0;
 	// clear skyboxtextures pointers
 	for (i=0; i<6; i++)
 		skyboxtextures[i] = NULL;
-
-	// set up global fog
-	glFogi(GL_FOG_MODE, GL_EXP2);
-	glHint(GL_FOG_HINT, GL_NICEST); /*  per pixel  */
 }
 
 float globalwateralpha = 0.0;
