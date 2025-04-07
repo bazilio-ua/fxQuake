@@ -402,15 +402,6 @@ void IN_ProcessEvents (void)
         }
     }
     
-	//
-	// update mouse grab
-	//
-//	if (vid.fullscreen)
-//	{
-//		if (key_dest == key_console || key_dest == key_menu)
-//			IN_ActivateMouse ();
-//	}
-//	else
     // handle the mouse state when windowed if that's changed
 	if (!vid.fullscreen)
 	{

@@ -259,21 +259,19 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 	
 	// Switch back to the original screen resolution
 	if (!fullscreen && vid.fullscreen) {
-//		CGError err;
 		if (desktopMode) {
-			err = CGDisplaySetDisplayMode(display, desktopMode, NULL); /* Restoring desktop mode */
+			err = CGDisplaySetDisplayMode(display, desktopMode, NULL); // Restoring desktop mode
 			if (err != kCGErrorSuccess)
 				Sys_Error("Unable to restore display mode");
 		}
 	}
 	
 	
-	// if we going to fullscreen from window
+	// We going to fullscreen from windowed
 	if (fullscreen && !vid.fullscreen) {
-//		CGError err;
 		// Capture the main display
 		if (CGDisplayIsMain(display)) {
-			/* If we don't capture all displays, Cocoa tries to rearrange windows... *sigh* */
+			// If we don't capture all displays, Cocoa tries to rearrange windows...
 			err = CGCaptureAllDisplays();
 		} else {
 			err = CGDisplayCapture(display);
@@ -281,10 +279,9 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 		if (err != kCGErrorSuccess)
 			Sys_Error("Unable to capture display");
 	}
-	// if we going to windowed from fullscreen
+	// We going to window from fullscreen
 	else
 	if (!fullscreen && vid.fullscreen) {
-//		CGError err;
 		// Release the main display
 		if (CGDisplayIsMain(display)) {
 			err = CGReleaseAllDisplays();
@@ -327,28 +324,20 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 		// Direct the context to draw in this window
 		[glcontext setView:contentView];
 	} else {
-//		CGError err;
 		
 		
 		// Switch to the correct resolution
-		err = CGDisplaySetDisplayMode(display, VID_GetMatchingDisplayMode (width, height, refreshrate, bpp, stretched), NULL); /* Do the physical switch */
+		err = CGDisplaySetDisplayMode(display, VID_GetMatchingDisplayMode (width, height, refreshrate, bpp, stretched), NULL); // Do the physical switch
 		if (err != kCGErrorSuccess)
 			Sys_Error("Unable to set display mode");
 		
-		
-//		NSRect rect;
-//		CGRect bounds = CGDisplayBounds(display);
 		
 		CGRect main = CGDisplayBounds(CGMainDisplayID());
 		CGRect rect = CGDisplayBounds(display);
 		NSRect windowRect = NSMakeRect(rect.origin.x, main.size.height - rect.origin.y - rect.size.height, rect.size.width, rect.size.height);
 		
-//		rect.origin.x = bounds.origin.x;
-//		rect.origin.y = bounds.origin.y;
-//		rect.size.width = bounds.size.width;
-//		rect.size.height = bounds.size.height;
 		
-		window = [[NSWindow alloc] initWithContentRect:windowRect //rect
+		window = [[NSWindow alloc] initWithContentRect:windowRect
 											 styleMask:NSBorderlessWindowMask
 											   backing:NSBackingStoreBuffered
 												 defer:NO];
@@ -366,7 +355,6 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 		}
 		
 		[glcontext setView:contentView];
-		
 	}
 	
 	
@@ -754,6 +742,8 @@ called at shutdown
 */
 void VID_Shutdown (void)
 {
+	CGError err;
+
     if (display) {
         
         if (glcontext) {
@@ -778,17 +768,21 @@ void VID_Shutdown (void)
         // Switch back to the original screen resolution
         if (vid.fullscreen) {
             if (desktopMode) {
-                CGDisplaySetDisplayMode(display, desktopMode, NULL); /* Restoring desktop mode */
+				err = CGDisplaySetDisplayMode(display, desktopMode, NULL); // Restoring desktop mode
+				if (err != kCGErrorSuccess)
+					Sys_Error("Unable to restore display mode");
             }
         }
         
 		// Release the main display
 		if (vid.fullscreen) {
 			if (CGDisplayIsMain(display)) {
-				CGReleaseAllDisplays();
+				err = CGReleaseAllDisplays();
 			} else {
-				CGDisplayRelease(display);
+				err = CGDisplayRelease(display);
 			}
+			if (err != kCGErrorSuccess)
+				Sys_Error("Unable to release display");
 		}
     }
     
