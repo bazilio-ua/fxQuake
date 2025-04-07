@@ -358,15 +358,19 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 			Sys_Error("Unable to set display mode");
 		
 		
-		NSRect rect;
-		CGRect bounds = CGDisplayBounds(display);
+//		NSRect rect;
+//		CGRect bounds = CGDisplayBounds(display);
 		
-		rect.origin.x = bounds.origin.x;
-		rect.origin.y = bounds.origin.y;
-		rect.size.width = bounds.size.width;
-		rect.size.height = bounds.size.height;
+		CGRect main = CGDisplayBounds(CGMainDisplayID());
+		CGRect rect = CGDisplayBounds(display);
+		NSRect windowRect = NSMakeRect(rect.origin.x, main.size.height - rect.origin.y - rect.size.height, rect.size.width, rect.size.height);
 		
-		window = [[NSWindow alloc] initWithContentRect:rect
+//		rect.origin.x = bounds.origin.x;
+//		rect.origin.y = bounds.origin.y;
+//		rect.size.width = bounds.size.width;
+//		rect.size.height = bounds.size.height;
+		
+		window = [[NSWindow alloc] initWithContentRect:windowRect //rect
 											 styleMask:NSBorderlessWindowMask
 											   backing:NSBackingStoreBuffered
 												 defer:NO];
