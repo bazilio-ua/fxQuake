@@ -28,7 +28,7 @@ NSOpenGLContext     *glcontext = nil;
 NSWindow            *window = nil;
 NSScreen            *screen = nil;
 CGDisplayModeRef    desktopMode;
-//CGDisplayModeRef    gameMode;
+
 CFArrayRef          displayModes;
 CFIndex             displayModesCount;
 
@@ -74,14 +74,7 @@ GL_EndRendering
 */
 void GL_EndRendering (void)
 {
-	//NSOpenGLContext
-	/* When your application uses a double-buffered context, it displays the rendered image
-	 by calling a function to flush the image to the screen— theNSOpenGLContext class’s flushBuffer method or the CGL function CGLFlushDrawable.
-	 When the image is displayed, the contents of the back buffer are not preserved.
-	 The next time your application wants to update the back buffer, it must completely redraw the scene. */
-//	CGLFlushDrawable([glcontext CGLContextObj]);
 	[glcontext flushBuffer];
-//	[glcontext flushDrawable];
 	
 	if (fullsbardraw)
 		Sbar_Changed();
@@ -191,9 +184,10 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 	int		temp;
 	int		depth, stencil;
 	
+	CGError err;
+	
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	
-//	block_drawing = true;
 	// so Con_Printfs don't mess us up by forcing vid and snd updates
 	temp = scr_disabled_for_loading;
 	scr_disabled_for_loading = true;
@@ -204,18 +198,15 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 	
 	
 	if (glcontext) {
-		// counterpart of makeCurrentContext
 		[NSOpenGLContext clearCurrentContext];
 		
-		// Have to call both to actually deallocate kernel resources and free the NSSurface
-//		CGLClearDrawable([glcontext CGLContextObj]);
 		[glcontext clearDrawable];
 		
 		[glcontext setView:nil];
 		[glcontext release];
 		glcontext = nil;
 	}
-
+	
 	
 	if (bpp == 32) {
 		depth = 24;
@@ -233,11 +224,9 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 		NSOpenGLPFAAccelerated,
 		NSOpenGLPFADoubleBuffer,
 		
-//		NSOpenGLPFADepthSize, 1,
-		NSOpenGLPFADepthSize, depth,   //4 5
+		NSOpenGLPFADepthSize, depth,
 		NSOpenGLPFAAlphaSize, 0,
-//		NSOpenGLPFAStencilSize, 0,
-		NSOpenGLPFAStencilSize, stencil,  //8 9
+		NSOpenGLPFAStencilSize, stencil,
 		NSOpenGLPFAAccumSize, 0,
 		
 		NSOpenGLPFAColorSize, bpp,
@@ -248,7 +237,6 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 	
 	NSOpenGLPixelFormat *pixelFormat = [[NSOpenGLPixelFormat alloc] initWithAttributes:pixelAttributes];
 	if (!pixelFormat)
-//		Sys_Error("No pixel format found");
 		Sys_Error("Unable to find a matching pixel format");
 	
 	// Create a context with the desired pixel attributes
@@ -260,24 +248,18 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 	
 	
 	
-	
-	
-	
 	if (window) {
 		[window setContentView:nil];
 		[window close];
 //		[window release];
 		window = nil;
 	}
-
-	
 	
 	
 	
 	// Switch back to the original screen resolution
 	if (!fullscreen && vid.fullscreen) {
-		CGError err;
-//        if (vidmode_fullscreen) {
+//		CGError err;
 		if (desktopMode) {
 			err = CGDisplaySetDisplayMode(display, desktopMode, NULL); /* Restoring desktop mode */
 			if (err != kCGErrorSuccess)
@@ -288,7 +270,7 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 	
 	// if we going to fullscreen from window
 	if (fullscreen && !vid.fullscreen) {
-		CGError err;
+//		CGError err;
 		// Capture the main display
 		if (CGDisplayIsMain(display)) {
 			/* If we don't capture all displays, Cocoa tries to rearrange windows... *sigh* */
@@ -302,7 +284,7 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 	// if we going to windowed from fullscreen
 	else
 	if (!fullscreen && vid.fullscreen) {
-		CGError err;
+//		CGError err;
 		// Release the main display
 		if (CGDisplayIsMain(display)) {
 			err = CGReleaseAllDisplays();
@@ -312,10 +294,6 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 		if (err != kCGErrorSuccess)
 			Sys_Error("Unable to release display");
 	}
-	
-	
-	
-	
 	
 	
 	
@@ -349,7 +327,7 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 		// Direct the context to draw in this window
 		[glcontext setView:contentView];
 	} else {
-		CGError err;
+//		CGError err;
 		
 		
 		// Switch to the correct resolution
@@ -389,21 +367,18 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 		
 		[glcontext setView:contentView];
 		
-		
 	}
 	
 	
-
 	
 //	CDAudio_Resume ();
 //	S_UnblockSound ();
 //	S_ClearBuffer ();
 
 	scr_disabled_for_loading = temp;
-//	block_drawing = false;
 	
 	// fix the leftover Alt from any Alt-Tab or the like that switched us away
-    Key_ClearStates ();
+//    Key_ClearStates ();
 	
 	Con_SafePrintf ("Video mode %dx%dx%d %dHz %s%s initialized\n",
 					width,
@@ -784,8 +759,6 @@ void VID_Shutdown (void)
         if (glcontext) {
             [NSOpenGLContext clearCurrentContext];
             
-            // Have to call both to actually deallocate kernel resources and free the NSSurface
-//            CGLClearDrawable([glcontext CGLContextObj]);
             [glcontext clearDrawable];
             
             [glcontext release];
@@ -803,14 +776,12 @@ void VID_Shutdown (void)
         }
         
         // Switch back to the original screen resolution
-		if (vid.fullscreen) {
-//        if (vidmode_fullscreen) {
+        if (vid.fullscreen) {
             if (desktopMode) {
                 CGDisplaySetDisplayMode(display, desktopMode, NULL); /* Restoring desktop mode */
             }
         }
         
-		
 		// Release the main display
 		if (vid.fullscreen) {
 			if (CGDisplayIsMain(display)) {
@@ -819,10 +790,8 @@ void VID_Shutdown (void)
 				CGDisplayRelease(display);
 			}
 		}
-		
     }
     
-	vid.fullscreen = false;
-//    vidmode_fullscreen = false;
+    vid.fullscreen = false;
 }
 

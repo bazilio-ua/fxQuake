@@ -33,7 +33,6 @@ static float old_mouse_x, old_mouse_y;
 
 cvar_t m_filter = {"m_filter", "0", CVAR_ARCHIVE};
 
-//qboolean vidmode_fullscreen = false; // was vidmode_active
 
 // if window is not the active window, don't hog as much CPU time,
 // let go of the mouse, turn off sound, and restore system gamma ramps...
@@ -78,8 +77,7 @@ void IN_ActivateMouse (void)
         CGAssociateMouseAndMouseCursorPosition(false);
         
         CGPoint center;
-		if (vid.fullscreen) {
-//        if (vidmode_fullscreen) {
+        if (vid.fullscreen) {
             CGRect bounds = CGDisplayBounds(display);
             
             // just center at the middle of the screen
@@ -415,7 +413,6 @@ void IN_ProcessEvents (void)
 //	else
     // handle the mouse state when windowed if that's changed
 	if (!vid.fullscreen)
-//	if (!vidmode_fullscreen)
 	{
 		if ( key_dest == key_game && !mouse_active && vid_activewindow )
 //		if ( key_dest != key_console && !mouse_active && vid_activewindow )

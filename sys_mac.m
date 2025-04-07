@@ -525,8 +525,7 @@ int main (int argc, char *argv[])
 - (void)checkActive {
     static qboolean active = true;
     
-	if (vid.fullscreen)
-//    if (vidmode_fullscreen)
+    if (vid.fullscreen)
     {
         if (!vid_hiddenwindow)
         {
@@ -539,7 +538,7 @@ int main (int argc, char *argv[])
             // set our video mode
         }
     }
-    else //if (!vidmode_fullscreen)
+    else //if (!vid.fullscreen)
     {
         // enable/disable sound and grab/ungrab keyboard
         // on focus gain/loss
