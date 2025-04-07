@@ -249,7 +249,7 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 	
 	
 	if (window) {
-		[window setContentView:nil];
+//		[window setContentView:nil];
 		[window close];
 //		[window release];
 		window = nil;
