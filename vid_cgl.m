@@ -215,95 +215,6 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 		[glcontext release];
 		glcontext = nil;
 	}
-	
-	if (window) {
-		[window setContentView:nil];
-		[window close];
-//		[window release];
-		window = nil;
-	}
-	
-	// Release the main display
-	if (CGDisplayIsCaptured(display)) {
-//		if (CGDisplayIsMain(display)) {
-//			CGReleaseAllDisplays();
-//		} else {
-//			CGDisplayRelease(display);
-//		}
-		CGDisplayRelease(display);
-	}
-	
-	// Switch back to the original screen resolution
-	if (!fullscreen && vid.fullscreen) {
-//        if (vidmode_fullscreen) {
-		if (desktopMode) {
-			CGDisplaySetDisplayMode(display, desktopMode, NULL);
-		}
-	}
-	
-	
-	// z-buffer depth
-//	switch (bpp)
-//	{
-//		case 32:
-//			depth = 24;
-//			stencil = 8;
-//			break;
-//		case 16:
-//			depth = 16;
-//			stencil = 0;
-//			break;
-//		default:
-//			Sys_Error("Unsupported bits per pixel format");
-//	}
-	
-//	// Get the GL pixel format
-//	NSOpenGLPixelFormatAttribute pixelAttributes[] = {
-//		NSOpenGLPFANoRecovery,      //0
-//		NSOpenGLPFAClosestPolicy,   //1
-//		NSOpenGLPFAAccelerated,     //2
-//		NSOpenGLPFADoubleBuffer,    //3
-////		NSOpenGLPFADepthSize, depth,   //4 5
-//		NSOpenGLPFADepthSize, 24,   //4 5
-////		NSOpenGLPFAAlphaSize, 0,    //6 7
-//		NSOpenGLPFAAlphaSize, 8,    //6 7
-////		NSOpenGLPFAStencilSize, stencil,  //8 9
-//		NSOpenGLPFAStencilSize, 8,  //8 9
-//		NSOpenGLPFAAccumSize, 0,    //10 11
-////		NSOpenGLPFAColorSize, bpp,   //12 13
-//		NSOpenGLPFAColorSize, 32,   //12 13
-//		0, 0, 0, 0                  //14 15 16 17 - reserved
-//	};
-	
-//	if (bpp < 16)
-//		bpp = 16;
-//	else if (bpp > 16)
-//		bpp = 32;
-	
-//	pixelAttributes[13] = bpp;
-//	
-//	if (fullscreen) {
-//		pixelAttributes[14] = NSOpenGLPFAFullScreen;
-//		pixelAttributes[15] = NSOpenGLPFAScreenMask;
-//		pixelAttributes[16] = CGDisplayIDToOpenGLDisplayMask(display);
-//	} else {
-//		pixelAttributes[14] = NSOpenGLPFAWindow;
-//	}
-	
-	
-	//	switch (bpp)
-	//	{
-	//		case 32:
-	//			depth = 24;
-	//			stencil = 8;
-	//			break;
-	//		case 16:
-	//			depth = 16;
-	//			stencil = 0;
-	//			break;
-	//		default:
-	//			Sys_Error("Unsupported bits per pixel format");
-	//	}
 
 	
 	if (bpp == 32) {
@@ -347,6 +258,67 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 	[glcontext makeCurrentContext];
 	[pixelFormat release];
 	
+	
+	
+	
+	
+	
+	if (window) {
+		[window setContentView:nil];
+		[window close];
+//		[window release];
+		window = nil;
+	}
+
+	
+	
+	
+	
+	// Switch back to the original screen resolution
+	if (!fullscreen && vid.fullscreen) {
+		CGError err;
+//        if (vidmode_fullscreen) {
+		if (desktopMode) {
+			err = CGDisplaySetDisplayMode(display, desktopMode, NULL); /* Restoring desktop mode */
+			if (err != kCGErrorSuccess)
+				Sys_Error("Unable to restore display mode");
+		}
+	}
+	
+	
+	// if we going to fullscreen from window
+	if (fullscreen && !vid.fullscreen) {
+		CGError err;
+		// Capture the main display
+		if (CGDisplayIsMain(display)) {
+			/* If we don't capture all displays, Cocoa tries to rearrange windows... *sigh* */
+			err = CGCaptureAllDisplays();
+		} else {
+			err = CGDisplayCapture(display);
+		}
+		if (err != kCGErrorSuccess)
+			Sys_Error("Unable to capture display");
+	}
+	// if we going to windowed from fullscreen
+	else
+	if (!fullscreen && vid.fullscreen) {
+		CGError err;
+		// Release the main display
+		if (CGDisplayIsMain(display)) {
+			err = CGReleaseAllDisplays();
+		} else {
+			err = CGDisplayRelease(display);
+		}
+		if (err != kCGErrorSuccess)
+			Sys_Error("Unable to release display");
+	}
+	
+	
+	
+	
+	
+	
+	
 	if (!fullscreen) {
 		NSRect windowRect;
 		
@@ -379,16 +351,6 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 	} else {
 		CGError err;
 		
-		// Capture the main display
-//		if (CGDisplayIsMain(display)) {
-//			// If we don't capture all displays, Cocoa tries to rearrange windows
-//			err = CGCaptureAllDisplays();
-//		} else {
-//			err = CGDisplayCapture(display);
-//		}
-		err = CGDisplayCapture(display);
-		if (err != kCGErrorSuccess)
-			Sys_Error("Unable to capture display");
 		
 		// Switch to the correct resolution
 		err = CGDisplaySetDisplayMode(display, VID_GetMatchingDisplayMode (width, height, refreshrate, bpp, stretched), NULL); /* Do the physical switch */
@@ -412,10 +374,6 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 		[window makeKeyAndOrderFront: nil];
 		
 		[window setLevel:CGShieldingWindowLevel()];
-//		[window setOpaque:YES];
-//		[window setHidesOnDeactivate:YES];
-//		[window setOneShot:NO]; // Prevents the window's "window device" from being destroyed when it is hidden.
-//		[window setBackgroundColor:[NSColor blackColor]];
 		
 		[window setAcceptsMouseMovedEvents:YES];
 		[window setDelegate:(id<NSWindowDelegate>)[NSApp delegate]];
@@ -428,23 +386,9 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 		[glcontext setView:contentView];
 		
 		
-//		// Set the context to full screen
-//		CGLError glerr = CGLSetFullScreenOnDisplay([glcontext CGLContextObj], CGDisplayIDToOpenGLDisplayMask(display));
-//		if (glerr)
-//			Sys_Error("Cannot set fullscreen");
 	}
 	
 	
-//	/* SDL_WindowData will be holding a strong reference to the NSWindow, and
-//	 * it will also call [NSWindow close] in DestroyWindow before releasing the
-//	 * NSWindow, so the extra release provided by releasedWhenClosed isn't
-//	 * necessary. */
-//	[window setReleasedWhenClosed:NO];
-//
-//	/* Prevents the window's "window device" from being destroyed when it is
-//	 * hidden. See http://www.mikeash.com/pyblog/nsopenglcontext-and-one-shot.html
-//	 */
-//	[window setOneShot:NO];
 
 	
 //	CDAudio_Resume ();
@@ -862,15 +806,16 @@ void VID_Shutdown (void)
             }
         }
         
-        // Release the main display
-        if (CGDisplayIsCaptured(display)) {
-//			if (CGDisplayIsMain(display)) {
-//				CGReleaseAllDisplays();
-//			} else {
-//				CGDisplayRelease(display);
-//			}
-            CGDisplayRelease(display);
-        }
+		
+		// Release the main display
+		if (vid.fullscreen) {
+			if (CGDisplayIsMain(display)) {
+				CGReleaseAllDisplays();
+			} else {
+				CGDisplayRelease(display);
+			}
+		}
+		
     }
     
 	vid.fullscreen = false;
