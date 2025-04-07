@@ -484,9 +484,9 @@ void VID_Restart (void)
 	
 	[[NSApp delegate] checkActive];
 	
-	
-	GL_PixelFormatInfo ();
-	
+	GL_GetPixelFormatInfo ();
+	GL_GetInfo ();
+
 	TexMgr_ReloadImages ();
 //	TexMgr_ReloadTextures ();
 	
@@ -731,7 +731,7 @@ void VID_Init (void)
 	vid_hiddenwindow = false;
 	vid_notifywindow = true;
 	
-	GL_PixelFormatInfo ();
+	GL_GetPixelFormatInfo ();
 	GL_Init ();
 	GL_SetupState ();
 	

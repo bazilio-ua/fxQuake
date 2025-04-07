@@ -585,7 +585,7 @@ void GL_SetupState (void)
 	glHint (GL_FOG_HINT, GL_NICEST); /*  per pixel  */
 }
 
-void GL_PixelFormatInfo (void)
+void GL_GetPixelFormatInfo (void)
 {
 	// read stencil bits
 	glGetIntegerv (GL_STENCIL_BITS, &gl_stencilbits);
@@ -608,12 +608,7 @@ void GL_PixelFormatInfo (void)
 	
 }
 
-/*
-===============
-GL_Init
-===============
-*/
-void GL_Init (void)
+void GL_GetInfo (void)
 {
 	// gl_info
 	gl_vendor = (char *)glGetString (GL_VENDOR);
@@ -624,7 +619,16 @@ void GL_Init (void)
 	Con_SafePrintf ("GL_VENDOR: %s\n", gl_vendor);
 	Con_SafePrintf ("GL_RENDERER: %s\n", gl_renderer);
 	Con_SafePrintf ("GL_VERSION: %s\n", gl_version);
+}
 
+/*
+===============
+GL_Init
+===============
+*/
+void GL_Init (void)
+{
+	GL_GetInfo ();
 	GL_CheckExtensions ();
 	GL_CheckMultithreadedGL ();
 
