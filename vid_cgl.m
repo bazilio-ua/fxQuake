@@ -341,10 +341,8 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 											 styleMask:NSBorderlessWindowMask
 											   backing:NSBackingStoreBuffered
 												 defer:NO];
-		
-		[window makeKeyAndOrderFront: nil];
-		
 		[window setLevel:CGShieldingWindowLevel()];
+		[window makeKeyAndOrderFront: nil];
 		
 		[window setAcceptsMouseMovedEvents:YES];
 		[window setDelegate:(id<NSWindowDelegate>)[NSApp delegate]];
