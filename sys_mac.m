@@ -532,10 +532,27 @@ int main (int argc, char *argv[])
             // set our video mode
             
             // move the viewport to top left
+			
+			if (!active) {
+				CDAudio_Resume ();
+				S_UnblockSound ();
+				S_ClearBuffer ();
+				IN_ActivateMouse ();
+				active = true;
+			}
         }
         else if (vid_hiddenwindow)
         {
             // set our video mode
+			
+			if (active) {
+				CDAudio_Pause ();
+				S_BlockSound ();
+				S_ClearBuffer ();
+				Key_ClearStates ();
+				IN_DeactivateMouse ();
+				active = false;
+			}
         }
     }
     else //if (!vid.fullscreen)

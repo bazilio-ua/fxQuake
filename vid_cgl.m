@@ -460,6 +460,14 @@ void VID_Restart (void)
 		return;
 	}
 	
+	
+	vid_activewindow = false;
+	vid_hiddenwindow = true;//false;
+	vid_notifywindow = false;
+
+	[[NSApp delegate] checkActive];
+	
+	
 	//
 	// textures invalid after mode change,
 	// so delete all GL textures now.
@@ -473,6 +481,9 @@ void VID_Restart (void)
 	vid_activewindow = true;
 	vid_hiddenwindow = false;
 	vid_notifywindow = true;
+	
+	[[NSApp delegate] checkActive];
+	
 	
 	GL_PixelFormatInfo ();
 	
