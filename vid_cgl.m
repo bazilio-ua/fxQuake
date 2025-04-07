@@ -202,7 +202,7 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 		
 		[glcontext clearDrawable];
 		
-		[glcontext setView:nil];
+//		[glcontext setView:nil];
 		[glcontext release];
 		glcontext = nil;
 	}
