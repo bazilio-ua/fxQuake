@@ -74,8 +74,15 @@ GL_EndRendering
 */
 void GL_EndRendering (void)
 {
-	CGLFlushDrawable([glcontext CGLContextObj]);
-    
+	//NSOpenGLContext
+	/* When your application uses a double-buffered context, it displays the rendered image
+	 by calling a function to flush the image to the screen— theNSOpenGLContext class’s flushBuffer method or the CGL function CGLFlushDrawable.
+	 When the image is displayed, the contents of the back buffer are not preserved.
+	 The next time your application wants to update the back buffer, it must completely redraw the scene. */
+//	CGLFlushDrawable([glcontext CGLContextObj]);
+	[glcontext flushBuffer];
+//	[glcontext flushDrawable];
+	
 	if (fullsbardraw)
 		Sbar_Changed();
 }
@@ -180,36 +187,49 @@ VID_SetMode
 */
 void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean fullscreen, qboolean stretched)
 {
+	
 	int		temp;
-//	int		depth, stencil;
-
+	int		depth, stencil;
+	
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+	
+//	block_drawing = true;
 	// so Con_Printfs don't mess us up by forcing vid and snd updates
 	temp = scr_disabled_for_loading;
 	scr_disabled_for_loading = true;
 	
-	CDAudio_Pause ();
-	S_BlockSound ();
-	S_ClearBuffer ();
+//	CDAudio_Pause ();
+//	S_BlockSound ();
+//	S_ClearBuffer ();
 	
 	
 	if (glcontext) {
+		// counterpart of makeCurrentContext
 		[NSOpenGLContext clearCurrentContext];
 		
 		// Have to call both to actually deallocate kernel resources and free the NSSurface
-		CGLClearDrawable([glcontext CGLContextObj]);
+//		CGLClearDrawable([glcontext CGLContextObj]);
 		[glcontext clearDrawable];
 		
+		[glcontext setView:nil];
 		[glcontext release];
 		glcontext = nil;
 	}
 	
 	if (window) {
+		[window setContentView:nil];
 		[window close];
+//		[window release];
 		window = nil;
 	}
 	
 	// Release the main display
 	if (CGDisplayIsCaptured(display)) {
+//		if (CGDisplayIsMain(display)) {
+//			CGReleaseAllDisplays();
+//		} else {
+//			CGDisplayRelease(display);
+//		}
 		CGDisplayRelease(display);
 	}
 	
@@ -237,38 +257,83 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 //			Sys_Error("Unsupported bits per pixel format");
 //	}
 	
-	// Get the GL pixel format
-	NSOpenGLPixelFormatAttribute pixelAttributes[] = {
-		NSOpenGLPFANoRecovery,      //0
-		NSOpenGLPFAClosestPolicy,   //1
-		NSOpenGLPFAAccelerated,     //2
-		NSOpenGLPFADoubleBuffer,    //3
-//		NSOpenGLPFADepthSize, depth,   //4 5
-		NSOpenGLPFADepthSize, 24,   //4 5
-//		NSOpenGLPFAAlphaSize, 0,    //6 7
-		NSOpenGLPFAAlphaSize, 8,    //6 7
-//		NSOpenGLPFAStencilSize, stencil,  //8 9
-		NSOpenGLPFAStencilSize, 8,  //8 9
-		NSOpenGLPFAAccumSize, 0,    //10 11
-//		NSOpenGLPFAColorSize, bpp,   //12 13
-		NSOpenGLPFAColorSize, 32,   //12 13
-		0, 0, 0, 0                  //14 15 16 17 - reserved
-	};
+//	// Get the GL pixel format
+//	NSOpenGLPixelFormatAttribute pixelAttributes[] = {
+//		NSOpenGLPFANoRecovery,      //0
+//		NSOpenGLPFAClosestPolicy,   //1
+//		NSOpenGLPFAAccelerated,     //2
+//		NSOpenGLPFADoubleBuffer,    //3
+////		NSOpenGLPFADepthSize, depth,   //4 5
+//		NSOpenGLPFADepthSize, 24,   //4 5
+////		NSOpenGLPFAAlphaSize, 0,    //6 7
+//		NSOpenGLPFAAlphaSize, 8,    //6 7
+////		NSOpenGLPFAStencilSize, stencil,  //8 9
+//		NSOpenGLPFAStencilSize, 8,  //8 9
+//		NSOpenGLPFAAccumSize, 0,    //10 11
+////		NSOpenGLPFAColorSize, bpp,   //12 13
+//		NSOpenGLPFAColorSize, 32,   //12 13
+//		0, 0, 0, 0                  //14 15 16 17 - reserved
+//	};
 	
 //	if (bpp < 16)
 //		bpp = 16;
 //	else if (bpp > 16)
 //		bpp = 32;
 	
-	pixelAttributes[13] = bpp;
+//	pixelAttributes[13] = bpp;
+//	
+//	if (fullscreen) {
+//		pixelAttributes[14] = NSOpenGLPFAFullScreen;
+//		pixelAttributes[15] = NSOpenGLPFAScreenMask;
+//		pixelAttributes[16] = CGDisplayIDToOpenGLDisplayMask(display);
+//	} else {
+//		pixelAttributes[14] = NSOpenGLPFAWindow;
+//	}
 	
-	if (fullscreen) {
-		pixelAttributes[14] = NSOpenGLPFAFullScreen;
-		pixelAttributes[15] = NSOpenGLPFAScreenMask;
-		pixelAttributes[16] = CGDisplayIDToOpenGLDisplayMask(display);
-	} else {
-		pixelAttributes[14] = NSOpenGLPFAWindow;
+	
+	//	switch (bpp)
+	//	{
+	//		case 32:
+	//			depth = 24;
+	//			stencil = 8;
+	//			break;
+	//		case 16:
+	//			depth = 16;
+	//			stencil = 0;
+	//			break;
+	//		default:
+	//			Sys_Error("Unsupported bits per pixel format");
+	//	}
+
+	
+	if (bpp == 32) {
+		depth = 24;
+		stencil = 8;
+	} else { // bpp == 16
+		depth = 16;
+		stencil = 0;
 	}
+	
+	// Get the GL pixel format
+	NSOpenGLPixelFormatAttribute pixelAttributes[] = {
+		NSOpenGLPFAAllowOfflineRenderers,
+		NSOpenGLPFANoRecovery,
+		NSOpenGLPFAClosestPolicy,
+		NSOpenGLPFAAccelerated,
+		NSOpenGLPFADoubleBuffer,
+		
+//		NSOpenGLPFADepthSize, 1,
+		NSOpenGLPFADepthSize, depth,   //4 5
+		NSOpenGLPFAAlphaSize, 0,
+//		NSOpenGLPFAStencilSize, 0,
+		NSOpenGLPFAStencilSize, stencil,  //8 9
+		NSOpenGLPFAAccumSize, 0,
+		
+		NSOpenGLPFAColorSize, bpp,
+		NSOpenGLPFAScreenMask, CGDisplayIDToOpenGLDisplayMask(display),
+		0
+	};
+	
 	
 	NSOpenGLPixelFormat *pixelFormat = [[NSOpenGLPixelFormat alloc] initWithAttributes:pixelAttributes];
 	if (!pixelFormat)
@@ -280,6 +345,7 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 	if (!glcontext)
 		Sys_Error("Cannot create OpenGL context");
 	[glcontext makeCurrentContext];
+	[pixelFormat release];
 	
 	if (!fullscreen) {
 		NSRect windowRect;
@@ -314,27 +380,79 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 		CGError err;
 		
 		// Capture the main display
+//		if (CGDisplayIsMain(display)) {
+//			// If we don't capture all displays, Cocoa tries to rearrange windows
+//			err = CGCaptureAllDisplays();
+//		} else {
+//			err = CGDisplayCapture(display);
+//		}
 		err = CGDisplayCapture(display);
 		if (err != kCGErrorSuccess)
 			Sys_Error("Unable to capture display");
 		
 		// Switch to the correct resolution
-		err = CGDisplaySetDisplayMode(display, VID_GetMatchingDisplayMode (width, height, refreshrate, bpp, stretched), NULL);
+		err = CGDisplaySetDisplayMode(display, VID_GetMatchingDisplayMode (width, height, refreshrate, bpp, stretched), NULL); /* Do the physical switch */
 		if (err != kCGErrorSuccess)
 			Sys_Error("Unable to set display mode");
 		
 		
-		// Set the context to full screen
-		CGLError glerr = CGLSetFullScreenOnDisplay([glcontext CGLContextObj], CGDisplayIDToOpenGLDisplayMask(display));
-		if (glerr)
-			Sys_Error("Cannot set fullscreen");
+		NSRect rect;
+		CGRect bounds = CGDisplayBounds(display);
+		
+		rect.origin.x = bounds.origin.x;
+		rect.origin.y = bounds.origin.y;
+		rect.size.width = bounds.size.width;
+		rect.size.height = bounds.size.height;
+		
+		window = [[NSWindow alloc] initWithContentRect:rect
+											 styleMask:NSBorderlessWindowMask
+											   backing:NSBackingStoreBuffered
+												 defer:NO];
+		
+		[window makeKeyAndOrderFront: nil];
+		
+		[window setLevel:CGShieldingWindowLevel()];
+//		[window setOpaque:YES];
+//		[window setHidesOnDeactivate:YES];
+//		[window setOneShot:NO]; // Prevents the window's "window device" from being destroyed when it is hidden.
+//		[window setBackgroundColor:[NSColor blackColor]];
+		
+		[window setAcceptsMouseMovedEvents:YES];
+		[window setDelegate:(id<NSWindowDelegate>)[NSApp delegate]];
+		
+		NSView *contentView = [window contentView];
+		if ([contentView respondsToSelector:@selector(setWantsBestResolutionOpenGLSurface:)]) {
+			[contentView setWantsBestResolutionOpenGLSurface:NO];
+		}
+		
+		[glcontext setView:contentView];
+		
+		
+//		// Set the context to full screen
+//		CGLError glerr = CGLSetFullScreenOnDisplay([glcontext CGLContextObj], CGDisplayIDToOpenGLDisplayMask(display));
+//		if (glerr)
+//			Sys_Error("Cannot set fullscreen");
 	}
 	
-	CDAudio_Resume ();
-	S_UnblockSound ();
-	S_ClearBuffer ();
+	
+//	/* SDL_WindowData will be holding a strong reference to the NSWindow, and
+//	 * it will also call [NSWindow close] in DestroyWindow before releasing the
+//	 * NSWindow, so the extra release provided by releasedWhenClosed isn't
+//	 * necessary. */
+//	[window setReleasedWhenClosed:NO];
+//
+//	/* Prevents the window's "window device" from being destroyed when it is
+//	 * hidden. See http://www.mikeash.com/pyblog/nsopenglcontext-and-one-shot.html
+//	 */
+//	[window setOneShot:NO];
+
+	
+//	CDAudio_Resume ();
+//	S_UnblockSound ();
+//	S_ClearBuffer ();
 
 	scr_disabled_for_loading = temp;
+//	block_drawing = false;
 	
 	// fix the leftover Alt from any Alt-Tab or the like that switched us away
     Key_ClearStates ();
@@ -367,6 +485,8 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 	
 	// no pending changes
 	vid_changed = false;
+	
+	[pool release];
 }
 
 /*
@@ -448,6 +568,7 @@ void VID_Restart (void)
 	GL_PixelFormatInfo ();
 	
 	TexMgr_ReloadImages ();
+//	TexMgr_ReloadTextures ();
 	
 	GL_SetupState ();
 	GL_CheckMultithreadedGL ();
@@ -716,7 +837,7 @@ void VID_Shutdown (void)
             [NSOpenGLContext clearCurrentContext];
             
             // Have to call both to actually deallocate kernel resources and free the NSSurface
-            CGLClearDrawable([glcontext CGLContextObj]);
+//            CGLClearDrawable([glcontext CGLContextObj]);
             [glcontext clearDrawable];
             
             [glcontext release];
@@ -737,12 +858,17 @@ void VID_Shutdown (void)
 		if (vid.fullscreen) {
 //        if (vidmode_fullscreen) {
             if (desktopMode) {
-                CGDisplaySetDisplayMode(display, desktopMode, NULL);
+                CGDisplaySetDisplayMode(display, desktopMode, NULL); /* Restoring desktop mode */
             }
         }
         
         // Release the main display
         if (CGDisplayIsCaptured(display)) {
+//			if (CGDisplayIsMain(display)) {
+//				CGReleaseAllDisplays();
+//			} else {
+//				CGDisplayRelease(display);
+//			}
             CGDisplayRelease(display);
         }
     }
