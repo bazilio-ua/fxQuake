@@ -290,6 +290,11 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 												screen:screen];
 	}
 	
+	if (([window styleMask] & NSFullScreenWindowMask) == NSFullScreenWindowMask) {
+		if ([window respondsToSelector:@selector(toggleFullScreen:)])
+			[window toggleFullScreen:nil];
+	}
+	
 	[window orderOut:nil]; // hide
 	
 	if (!fullscreen) {
