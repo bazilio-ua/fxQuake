@@ -772,7 +772,7 @@ void VID_Shutdown (void)
             if (desktopMode) {
 				err = CGDisplaySetDisplayMode(display, desktopMode, NULL); // Restoring desktop mode
 				if (err != kCGErrorSuccess)
-					Sys_Error("Unable to restore display mode");
+					Con_Printf("Unable to restore display mode\n");
             }
         }
         
@@ -784,7 +784,7 @@ void VID_Shutdown (void)
 				err = CGDisplayRelease(display);
 			}
 			if (err != kCGErrorSuccess)
-				Sys_Error("Unable to release display");
+				Con_Printf("Unable to release display\n");
 		}
     }
     
