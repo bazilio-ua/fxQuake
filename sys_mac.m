@@ -537,7 +537,7 @@ int main (int argc, char *argv[])
 				CDAudio_Resume ();
 				S_UnblockSound ();
 				S_ClearBuffer ();
-				IN_ActivateMouse ();
+//				IN_ActivateMouse ();
 				active = true;
 			}
         }
@@ -550,7 +550,7 @@ int main (int argc, char *argv[])
 				S_BlockSound ();
 				S_ClearBuffer ();
 				Key_ClearStates ();
-				IN_DeactivateMouse ();
+//				IN_DeactivateMouse ();
 				active = false;
 			}
         }

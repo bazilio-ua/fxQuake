@@ -416,6 +416,17 @@ void IN_ProcessEvents (void)
 			IN_DeactivateMouse ();
 		}
 	}
-    
+	else
+	{
+		if (!mouse_active && !vid_hiddenwindow && vid_activewindow)
+		{
+			IN_ActivateMouse ();
+		}
+		else if (mouse_active && vid_hiddenwindow)
+		{
+			IN_DeactivateMouse ();
+		}
+	}
+	
 }
 
