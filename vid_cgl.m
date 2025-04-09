@@ -192,9 +192,6 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 	temp = scr_disabled_for_loading;
 	scr_disabled_for_loading = true;
 	
-//	CDAudio_Pause ();
-//	S_BlockSound ();
-//	S_ClearBuffer ();
 	
 	
 	if (glcontext) {
@@ -202,7 +199,6 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 		
 		[glcontext clearDrawable];
 		
-//		[glcontext setView:nil];
 		[glcontext release];
 		glcontext = nil;
 	}
@@ -356,14 +352,8 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 	
 	
 	
-//	CDAudio_Resume ();
-//	S_UnblockSound ();
-//	S_ClearBuffer ();
-
 	scr_disabled_for_loading = temp;
 	
-	// fix the leftover Alt from any Alt-Tab or the like that switched us away
-//    Key_ClearStates ();
 	
 	Con_SafePrintf ("Video mode %dx%dx%d %dHz %s%s initialized\n",
 					width,
@@ -460,17 +450,16 @@ void VID_Restart (void)
 	}
 	
 	
-	vid_activewindow = false;
-	vid_hiddenwindow = true;//false;
-	vid_notifywindow = false;
-
-	[[NSApp delegate] checkActive];
-	
-	
 	//
 	// textures invalid after mode change,
 	// so delete all GL textures now.
 	TexMgr_DeleteImages ();
+	
+	
+	vid_activewindow = false;
+	vid_hiddenwindow = true;
+	vid_notifywindow = false;
+	[[NSApp delegate] checkActive];
 	
 	//
 	// set new mode
@@ -480,12 +469,12 @@ void VID_Restart (void)
 	vid_activewindow = true;
 	vid_hiddenwindow = false;
 	vid_notifywindow = true;
-	
 	[[NSApp delegate] checkActive];
+	
 	
 	GL_GetPixelFormatInfo ();
 	GL_GetInfo ();
-
+	
 	TexMgr_ReloadImages ();
 //	TexMgr_ReloadTextures ();
 	
@@ -721,14 +710,19 @@ void VID_Init (void)
 		stretched = false;
 	}
 	
-	
+	//
+	// set initial mode
+	//
 	VID_SetMode (width, height, refreshrate, bpp, fullscreen, stretched);
-	
-	vid_initialized = true;
 	
 	vid_activewindow = true;
 	vid_hiddenwindow = false;
 	vid_notifywindow = true;
+	[[NSApp delegate] checkActive];
+	
+	
+	vid_initialized = true;
+	
 	
 	GL_GetPixelFormatInfo ();
 	GL_Init ();
