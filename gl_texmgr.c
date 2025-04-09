@@ -505,6 +505,34 @@ char *GL_MakeNiceExtensionsList (char *in)
 	return out;
 }
 
+
+void GL_Info (qboolean all)
+{
+	static char *gl_extensions_nice = NULL;
+#ifdef GLX_GLXEXT_PROTOTYPES
+	static char *glx_extensions_nice = NULL;
+#endif
+	
+	if (!gl_extensions_nice)
+		gl_extensions_nice = GL_MakeNiceExtensionsList (gl_extensions);
+#ifdef GLX_GLXEXT_PROTOTYPES
+	if (!glx_extensions_nice)
+		glx_extensions_nice = GL_MakeNiceExtensionsList (glx_extensions);
+#endif
+	
+	Con_SafePrintf ("GL_VENDOR: %s\n", gl_vendor);
+	Con_SafePrintf ("GL_RENDERER: %s\n", gl_renderer);
+	Con_SafePrintf ("GL_VERSION: %s\n", gl_version);
+	
+	if (all)
+	{
+		Con_SafePrintf ("GL_EXTENSIONS: %s\n", gl_extensions_nice);
+#ifdef GLX_GLXEXT_PROTOTYPES
+		Con_SafePrintf ("GLX_EXTENSIONS: %s\n", glx_extensions_nice);
+#endif
+	}
+}
+
 /*
 ===============
 GL_Info_f
@@ -512,25 +540,26 @@ GL_Info_f
 */
 void GL_Info_f (void)
 {
-	static char *gl_extensions_nice = NULL;
-#ifdef GLX_GLXEXT_PROTOTYPES
-	static char *glx_extensions_nice = NULL;
-#endif
-
-	if (!gl_extensions_nice)
-		gl_extensions_nice = GL_MakeNiceExtensionsList (gl_extensions);
-#ifdef GLX_GLXEXT_PROTOTYPES
-	if (!glx_extensions_nice)
-		glx_extensions_nice = GL_MakeNiceExtensionsList (glx_extensions);
-#endif
-
-	Con_SafePrintf ("GL_VENDOR: %s\n", gl_vendor);
-	Con_SafePrintf ("GL_RENDERER: %s\n", gl_renderer);
-	Con_SafePrintf ("GL_VERSION: %s\n", gl_version);
-	Con_SafePrintf ("GL_EXTENSIONS: %s\n", gl_extensions_nice);
-#ifdef GLX_GLXEXT_PROTOTYPES
-	Con_SafePrintf ("GLX_EXTENSIONS: %s\n", glx_extensions_nice);
-#endif
+	char	*command;
+	
+	if (Cmd_Argc() < 2)
+	{
+		Con_Printf("commands: ");
+		Con_Printf("short, all\n");
+		return;
+	}
+	
+	command = Cmd_Argv (1);
+	if (strcasecmp(command, "short") == 0)
+	{
+		GL_Info (false);
+		return;
+	}
+	if (strcasecmp(command, "all") == 0)
+	{
+		GL_Info (true);
+		return;
+	}
 }
 
 
