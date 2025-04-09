@@ -464,8 +464,8 @@ void VID_Restart (void)
 	GL_GetPixelFormatInfo ();
 	GL_GetInfo ();
 	
-	// re-generate all GL textures.
-	TexMgr_RegenerateTextures ();
+	// re-create and reload all GL textures with new context.
+	TexMgr_GenerateTextures ();
 	
 	GL_SetupState ();
 	GL_CheckMultithreadedGL ();

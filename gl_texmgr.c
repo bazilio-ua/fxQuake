@@ -1858,7 +1858,7 @@ gltexture_t *TexMgr_NewTexture (void)
 	return glt;
 }
 
-//ericw -- workaround for preventing TexMgr_FreeTexture during TexMgr_RegenerateTextures
+//ericw -- workaround for preventing TexMgr_FreeTexture during TexMgr_GenerateTextures
 qboolean in_reload_textures;
 
 /*
@@ -1960,10 +1960,10 @@ void TexMgr_DeleteTextures (void)
 
 /*
 ================
-TexMgr_RegenerateTextures -- re-generate all textures. called only by vid_restart
+TexMgr_GenerateTextures -- re-create all textures. called only by vid_restart
 ================
 */
-void TexMgr_RegenerateTextures (void)
+void TexMgr_GenerateTextures (void)
 {
 	gltexture_t *glt;
 	
