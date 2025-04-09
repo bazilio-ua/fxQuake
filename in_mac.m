@@ -285,7 +285,7 @@ void IN_ProcessEvents (void)
         case NSLeftMouseDragged:
         case NSRightMouseDragged:
         case NSOtherMouseDragged: // other mouse dragged
-			if (do_warp)
+			if (do_warp && mouse_active)
 				do_warp = false;
             else if (mouse_active)
             {
