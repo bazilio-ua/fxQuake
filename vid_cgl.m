@@ -290,6 +290,7 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 												screen:screen];
 	}
 	
+	// We should exit from windowed fullscreen mode before any mode change
 	if (([window styleMask] & NSFullScreenWindowMask) == NSFullScreenWindowMask) {
 		if ([window respondsToSelector:@selector(toggleFullScreen:)])
 			[window toggleFullScreen:nil];
