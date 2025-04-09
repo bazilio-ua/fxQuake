@@ -244,14 +244,6 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 	
 	
 	
-	if (window) {
-		[window close];
-//		[window release];
-		window = nil;
-	}
-	
-	
-	
 	// Switch back to the original screen resolution
 	if (!fullscreen && vid.fullscreen) {
 		if (desktopMode) {
@@ -274,8 +266,8 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 		if (err != kCGErrorSuccess)
 			Sys_Error("Unable to capture display");
 	}
-	// We going to window from fullscreen
 	else
+	// We going to window from fullscreen
 	if (!fullscreen && vid.fullscreen) {
 		// Release the main display
 		if (CGDisplayIsMain(display)) {
@@ -289,10 +281,16 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 	
 	
 	
+	if (window) {
+		[window close];
+//		[window release];
+		window = nil;
+	}
+
 	if (!fullscreen) {
 		NSRect contentRect;
 		
-		// Create a window of the desired size
+		// Create a window of the desired content size
 		contentRect.origin.x = ([screen frame].size.width - width) / 2;
 		contentRect.origin.y = ([screen frame].size.height - height) / 2;
 		contentRect.size.width = width;
@@ -304,22 +302,8 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 												 defer:NO
 												screen:screen];
 		[window setTitle:@"fxQuake"];
-		[window makeKeyAndOrderFront:nil];
 		
-		// Always get mouse moved events. If mouse support is turned off (rare) the event system will filter them out.
-		[window setAcceptsMouseMovedEvents:YES];
-		[window setDelegate:(id<NSWindowDelegate>)[NSApp delegate]];
-		
-		// Note: as of the macOS 10.15 SDK, this defaults to YES instead of NO when the NSHighResolutionCapable boolean is set in Info.plist.
-		NSView *contentView = [window contentView];
-		if ([contentView respondsToSelector:@selector(setWantsBestResolutionOpenGLSurface:)]) {
-			[contentView setWantsBestResolutionOpenGLSurface:NO];
-		}
-		
-		// Direct the context to draw in this window
-		[glcontext setView:contentView];
 	} else {
-		
 		
 		// Switch to the correct resolution
 		err = CGDisplaySetDisplayMode(display, VID_GetMatchingDisplayMode (width, height, refreshrate, bpp, stretched), NULL); // Do the physical switch
@@ -337,18 +321,23 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 											   backing:NSBackingStoreBuffered
 												 defer:NO];
 		[window setLevel:CGShieldingWindowLevel()];
-		[window makeKeyAndOrderFront:nil];
 		
-		[window setAcceptsMouseMovedEvents:YES];
-		[window setDelegate:(id<NSWindowDelegate>)[NSApp delegate]];
-		
-		NSView *contentView = [window contentView];
-		if ([contentView respondsToSelector:@selector(setWantsBestResolutionOpenGLSurface:)]) {
-			[contentView setWantsBestResolutionOpenGLSurface:NO];
-		}
-		
-		[glcontext setView:contentView];
 	}
+	
+	[window makeKeyAndOrderFront:nil];
+	
+	// Always get mouse moved events. If mouse support is turned off (rare) the event system will filter them out.
+	[window setAcceptsMouseMovedEvents:YES];
+	[window setDelegate:(id<NSWindowDelegate>)[NSApp delegate]];
+	
+	// Note: as of the macOS 10.15 SDK, this defaults to YES instead of NO when the NSHighResolutionCapable boolean is set in Info.plist.
+	NSView *contentView = [window contentView];
+	if ([contentView respondsToSelector:@selector(setWantsBestResolutionOpenGLSurface:)]) {
+		[contentView setWantsBestResolutionOpenGLSurface:NO];
+	}
+	
+	// Direct the context to draw in this window
+	[glcontext setView:contentView];
 	
 	
 	
