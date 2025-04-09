@@ -245,6 +245,7 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 	
 	
 	// Switch back to the original screen resolution
+	// We going to window from fullscreen
 	if (!fullscreen && vid.fullscreen) {
 		if (desktopMode) {
 			err = CGDisplaySetDisplayMode(display, desktopMode, NULL); // Restoring desktop mode
@@ -307,7 +308,7 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 		
 	} else {
 		
-		// Switch to the correct resolution
+		// Switch to the requested resolution
 		err = CGDisplaySetDisplayMode(display, VID_GetMatchingDisplayMode (width, height, refreshrate, bpp, stretched), NULL); // Do the physical switch
 		if (err != kCGErrorSuccess)
 			Sys_Error("Unable to set display mode");
