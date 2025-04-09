@@ -383,6 +383,31 @@ void GL_CheckExtension_VSync (void)
 
 /*
 ===============
+GL_CheckSwapInterval -- check vsync after vid_restart
+===============
+*/
+void GL_CheckSwapInterval (void)
+{
+	if (gl_swap_control)
+	{
+#if defined __APPLE__ && defined __MACH__
+		GLint state = gl_swapintervalstate;
+		
+		CGLError glerr = CGLSetParameter(CGLGetCurrentContext(), kCGLCPSwapInterval, &state);
+		if (glerr == kCGLNoError) {
+			Con_Printf ("%s sync to vertical retrace\n", (state == 1) ? "Enabled" : "Disabled");
+		} else {
+			Con_Warning ("Unable to set CGL swap interval\n");
+		}
+#else
+		if (!qglSwapInterval((gl_swapinterval.value) ? 1 : 0))
+			Con_Printf ("GL_SwapInterval: failed on %s\n", SWAPINTERVALFUNC);
+#endif
+	}
+}
+
+/*
+===============
 GL_SwapInterval
 ===============
 */

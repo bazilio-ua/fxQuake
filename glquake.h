@@ -394,6 +394,7 @@ void GL_Init (void);
 void GL_GetInfo (void);
 void GL_SetupState (void);
 void GL_SwapInterval (void);
+void GL_CheckSwapInterval (void);
 void GL_GetPixelFormatInfo (void);
 void GL_CheckMultithreadedGL (void);
 

@@ -467,8 +467,8 @@ void VID_Restart (void)
 	TexMgr_GenerateTextures ();
 	
 	GL_SetupState ();
+	GL_CheckSwapInterval ();
 	GL_CheckMultithreadedGL ();
-	GL_SwapInterval ();
 	
 	// warpimage needs to be recalculated
 	TexMgr_UploadWarpImage ();
