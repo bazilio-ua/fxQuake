@@ -249,7 +249,6 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 	
 	
 	if (window) {
-//		[window setContentView:nil];
 		[window close];
 //		[window release];
 		window = nil;
@@ -295,21 +294,21 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 	
 	
 	if (!fullscreen) {
-		NSRect windowRect;
+		NSRect contentRect;
 		
 		// Create a window of the desired size
-		windowRect.origin.x = ([screen frame].size.width - width) / 2;
-		windowRect.origin.y = ([screen frame].size.height - height) / 2;
-		windowRect.size.width = width;
-		windowRect.size.height = height;
+		contentRect.origin.x = ([screen frame].size.width - width) / 2;
+		contentRect.origin.y = ([screen frame].size.height - height) / 2;
+		contentRect.size.width = width;
+		contentRect.size.height = height;
 		
-		window = [[NSWindow alloc] initWithContentRect:windowRect
+		window = [[NSWindow alloc] initWithContentRect:contentRect
 											 styleMask:NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask | NSResizableWindowMask
 											   backing:NSBackingStoreBuffered
 												 defer:NO
 												screen:screen];
 		[window setTitle:@"fxQuake"];
-		[window makeKeyAndOrderFront: nil];
+		[window makeKeyAndOrderFront:nil];
 		
 		// Always get mouse moved events. If mouse support is turned off (rare) the event system will filter them out.
 		[window setAcceptsMouseMovedEvents:YES];
@@ -334,15 +333,15 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 		
 		CGRect main = CGDisplayBounds(CGMainDisplayID());
 		CGRect rect = CGDisplayBounds(display);
-		NSRect windowRect = NSMakeRect(rect.origin.x, main.size.height - rect.origin.y - rect.size.height, rect.size.width, rect.size.height);
+		NSRect contentRect = NSMakeRect(rect.origin.x, main.size.height - rect.origin.y - rect.size.height, rect.size.width, rect.size.height);
 		
 		
-		window = [[NSWindow alloc] initWithContentRect:windowRect
+		window = [[NSWindow alloc] initWithContentRect:contentRect
 											 styleMask:NSBorderlessWindowMask
 											   backing:NSBackingStoreBuffered
 												 defer:NO];
 		[window setLevel:CGShieldingWindowLevel()];
-		[window makeKeyAndOrderFront: nil];
+		[window makeKeyAndOrderFront:nil];
 		
 		[window setAcceptsMouseMovedEvents:YES];
 		[window setDelegate:(id<NSWindowDelegate>)[NSApp delegate]];
