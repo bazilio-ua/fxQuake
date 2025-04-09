@@ -290,7 +290,7 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 												screen:screen];
 	}
 	
-	[window orderOut:nil];
+	[window orderOut:nil]; // hide
 	
 	if (!fullscreen) {
 		NSRect contentRect;
@@ -313,7 +313,6 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 		if (err != kCGErrorSuccess)
 			Sys_Error("Unable to set display mode");
 		
-		
 		CGRect main = CGDisplayBounds(CGMainDisplayID());
 		CGRect rect = CGDisplayBounds(display);
 		NSRect contentRect = NSMakeRect(rect.origin.x, main.size.height - rect.origin.y - rect.size.height, rect.size.width, rect.size.height);
@@ -324,7 +323,7 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 		
 	}
 	
-	[window makeKeyAndOrderFront:nil];
+	[window makeKeyAndOrderFront:nil]; // show
 	
 	// Always get mouse moved events. If mouse support is turned off (rare) the event system will filter them out.
 	[window setAcceptsMouseMovedEvents:YES];
