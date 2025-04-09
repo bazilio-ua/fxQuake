@@ -280,13 +280,22 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 	}
 	
 	
+//	if (window) {
+//		[window close];
+////		[window release];
+//		window = nil;
+//	}
 	
-	if (window) {
-		[window close];
-//		[window release];
-		window = nil;
+	if (!window) {
+		window = [[NSWindow alloc] initWithContentRect:NSMakeRect(0, 0, 0, 0)
+											 styleMask:NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask | NSResizableWindowMask
+											   backing:NSBackingStoreBuffered
+												 defer:NO
+												screen:screen];
 	}
-
+	
+	[window orderOut:nil];
+	
 	if (!fullscreen) {
 		NSRect contentRect;
 		
@@ -296,11 +305,15 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 		contentRect.size.width = width;
 		contentRect.size.height = height;
 		
-		window = [[NSWindow alloc] initWithContentRect:contentRect
-											 styleMask:NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask | NSResizableWindowMask
-											   backing:NSBackingStoreBuffered
-												 defer:NO
-												screen:screen];
+//		window = [[NSWindow alloc] initWithContentRect:contentRect
+//											 styleMask:NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask | NSResizableWindowMask
+//											   backing:NSBackingStoreBuffered
+//												 defer:NO
+//												screen:screen];
+		
+		[window setStyleMask:NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask | NSResizableWindowMask];
+		[window setFrame:[window frameRectForContentRect:contentRect] display:NO];
+		[window setLevel:NSNormalWindowLevel];
 		[window setTitle:@"fxQuake"];
 		
 	} else {
@@ -315,11 +328,14 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 		CGRect rect = CGDisplayBounds(display);
 		NSRect contentRect = NSMakeRect(rect.origin.x, main.size.height - rect.origin.y - rect.size.height, rect.size.width, rect.size.height);
 		
+//		window = [[NSWindow alloc] initWithContentRect:contentRect
+//											 styleMask:NSBorderlessWindowMask
+//											   backing:NSBackingStoreBuffered
+//												 defer:NO];
 		
-		window = [[NSWindow alloc] initWithContentRect:contentRect
-											 styleMask:NSBorderlessWindowMask
-											   backing:NSBackingStoreBuffered
-												 defer:NO];
+		[window setStyleMask:NSBorderlessWindowMask];
+//		[window setFrame:contentRect display:YES];
+		[window setFrame:[window frameRectForContentRect:contentRect] display:YES];
 		[window setLevel:CGShieldingWindowLevel()];
 		
 	}
