@@ -439,10 +439,10 @@ void VID_Restart (void)
 	}
 	
 	
-	//
-	// textures invalid after mode change,
-	// so delete all GL textures now.
-	TexMgr_DeleteImages ();
+	// textures are invalid after mode change,
+	// we destroy and re-create GL context,
+	// so we delete all GL textures now.
+	TexMgr_DeleteTextures ();
 	
 	
 	vid_activewindow = false;
@@ -464,8 +464,8 @@ void VID_Restart (void)
 	GL_GetPixelFormatInfo ();
 	GL_GetInfo ();
 	
-	TexMgr_ReloadImages ();
-//	TexMgr_ReloadTextures ();
+	// re-generate all GL textures.
+	TexMgr_RegenerateTextures ();
 	
 	GL_SetupState ();
 	GL_CheckMultithreadedGL ();
