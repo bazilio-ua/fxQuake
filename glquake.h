@@ -391,7 +391,7 @@ void GL_SelectTMU1 (void);
 void GL_SelectTMU2 (void);
 void GL_SelectTMU3 (void);
 void GL_Init (void);
-void GL_GetInfo (void);
+void GL_GetGLInfo (void);
 void GL_SetupState (void);
 void GL_SwapInterval (void);
 void GL_CheckSwapInterval (void);

@@ -633,17 +633,13 @@ void GL_GetPixelFormatInfo (void)
 	
 }
 
-void GL_GetInfo (void)
+void GL_GetGLInfo (void)
 {
 	// gl_info
 	gl_vendor = (char *)glGetString (GL_VENDOR);
 	gl_renderer = (char *)glGetString (GL_RENDERER);
 	gl_version = (char *)glGetString (GL_VERSION);
 	gl_extensions = (char *)glGetString (GL_EXTENSIONS);
-
-	Con_SafePrintf ("GL_VENDOR: %s\n", gl_vendor);
-	Con_SafePrintf ("GL_RENDERER: %s\n", gl_renderer);
-	Con_SafePrintf ("GL_VERSION: %s\n", gl_version);
 }
 
 /*
@@ -653,7 +649,13 @@ GL_Init
 */
 void GL_Init (void)
 {
-	GL_GetInfo ();
+	GL_GetGLInfo ();
+	
+	// gl_info
+	Con_SafePrintf ("GL_VENDOR: %s\n", gl_vendor);
+	Con_SafePrintf ("GL_RENDERER: %s\n", gl_renderer);
+	Con_SafePrintf ("GL_VERSION: %s\n", gl_version);
+	
 	GL_CheckExtensions ();
 	GL_CheckMultithreadedGL ();
 
