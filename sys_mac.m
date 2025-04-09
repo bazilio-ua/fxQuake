@@ -635,6 +635,7 @@ int main (int argc, char *argv[])
     CGDirectDisplayID currentDisplay = [[[currentScreen deviceDescription] objectForKey:@"NSScreenNumber"] unsignedIntValue];
     
     display = currentDisplay;
+	screen = currentScreen;
 }
 
 - (BOOL)windowShouldClose:(id)sender {
