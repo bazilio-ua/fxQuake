@@ -25,10 +25,6 @@ int 		con_linewidth;
 
 float		con_cursorspeed = 4;
 
-#define		CON_TEXTSIZE	0x40000 //new default size
-#define		CON_MINSIZE		16384 //johnfitz -- old default, now the minimum size
-
-int			con_buffersize; //johnfitz -- user can now override default
 
 qboolean 	con_forcedup;		// because no entities to refresh
 
@@ -131,7 +127,7 @@ Con_Clear_f
 void Con_Clear_f (void)
 {
 	if (con_text)
-		memset (con_text, ' ', con_buffersize); //johnfitz -- con_buffersize replaces CON_TEXTSIZE
+		memset (con_text, ' ', CON_TEXTSIZE);
 
 	con_backscroll = 0; //johnfitz -- if console is empty, being scrolled up is confusing
 }
@@ -250,8 +246,7 @@ If the line width has changed, reformat the buffer.
 void Con_CheckResize (void)
 {
 	int	i, j, width, oldwidth, oldtotallines, numlines, numchars;
-	char	*tbuf; //johnfitz -- tbuf no longer a static array
-	int		mark; //johnfitz
+	char	tbuf[CON_TEXTSIZE];
 
 	width = (vid.conwidth >> 3) - 2; //johnfitz -- use vid.conwidth instead of vid.width
 
@@ -261,7 +256,7 @@ void Con_CheckResize (void)
 	oldwidth = con_linewidth;
 	con_linewidth = width;
 	oldtotallines = con_totallines;
-	con_totallines = con_buffersize / con_linewidth; //johnfitz -- con_buffersize replaces CON_TEXTSIZE
+	con_totallines = CON_TEXTSIZE / con_linewidth;
 	numlines = oldtotallines;
 
 	if (con_totallines < numlines)
@@ -271,12 +266,9 @@ void Con_CheckResize (void)
 
 	if (con_linewidth < numchars)
 		numchars = con_linewidth;
-
-	mark = Hunk_LowMark (); //johnfitz
-	tbuf = Hunk_Alloc (con_buffersize); //johnfitz
 	
-	memcpy (tbuf, con_text, con_buffersize); //johnfitz -- con_buffersize replaces CON_TEXTSIZE
-	memset (con_text, ' ', con_buffersize); //johnfitz -- con_buffersize replaces CON_TEXTSIZE
+	memcpy (tbuf, con_text, CON_TEXTSIZE);
+	memset (con_text, ' ', CON_TEXTSIZE);
 
 	for (i=0 ; i<numlines ; i++)
 	{
@@ -286,8 +278,6 @@ void Con_CheckResize (void)
 					tbuf[((con_current - i + oldtotallines) % oldtotallines) * oldwidth + j];
 		}
 	}
-	
-	Hunk_FreeToLowMark (mark); //johnfitz
 	
 	Con_ClearNotify ();
 	
@@ -303,21 +293,12 @@ Con_Init
 */
 void Con_Init (void)
 {
-	int i;
-
-	//johnfitz -- user settable console buffer size
-	i = COM_CheckParm("-consize");
-	if (i && i < com_argc-1)
-		con_buffersize = max(CON_MINSIZE, atoi(com_argv[i+1]) * 1024);
-	else
-		con_buffersize = CON_TEXTSIZE;
-	
-	con_text = Hunk_AllocName (con_buffersize, "context"); //johnfitz -- con_buffersize replaces CON_TEXTSIZE
-	memset (con_text, ' ', con_buffersize); //johnfitz -- con_buffersize replaces CON_TEXTSIZE
+	con_text = Hunk_AllocName (CON_TEXTSIZE, "context");
+	memset (con_text, ' ', CON_TEXTSIZE);
 
 	//johnfitz -- no need to run Con_CheckResize() here
 	con_linewidth = 38; // video hasn't been initialized yet
-	con_totallines = con_buffersize / con_linewidth; //johnfitz -- con_buffersize replaces CON_TEXTSIZE
+	con_totallines = CON_TEXTSIZE / con_linewidth;
 	con_backscroll = 0;
 	con_current = con_totallines - 1;
 	
