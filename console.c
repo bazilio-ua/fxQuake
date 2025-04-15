@@ -21,22 +21,32 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "quakedef.h"
 
-int 		con_linewidth;
-
 float		con_cursorspeed = 4;
 
+qboolean 	con_initialized = false;
+qboolean 	con_debuglog = false;
 
 qboolean 	con_forcedup;		// because no entities to refresh
+qboolean 	con_wrapped;		// will be set to true after 1st buffer wrap
+qboolean 	con_wordwrap;
 
+int			con_linewidth;
 int			con_totallines;		// total lines in console scrollback
 int			con_backscroll;		// lines up from bottom to display
-int			con_current;		// where next message will be printed
+int			con_current;		// line where next message will be printed
 int			con_x;				// offset in current line for next print
+
+int			con_display;		// bottom of console displays this line
+int			con_startpos;		// points to begin of text buffer
+int			con_endpos;			// text will be placed to endpos
+
+int			con_vislines;
+
 char		*con_text = NULL;
 
-cvar_t		con_notifytime = {"con_notifytime","3", CVAR_NONE};			// in seconds
-cvar_t		con_logcenterprint = {"con_logcenterprint","1", CVAR_NONE};	// log centerprints to console
-cvar_t		con_removecr = {"con_removecr","1", CVAR_NONE}; 			// remove \r from console output
+struct {
+	int line, pos;
+} con_disp, con_notif;
 
 char		con_lastcenterstring[MAX_PRINTMSG];
 
@@ -44,9 +54,9 @@ char		con_lastcenterstring[MAX_PRINTMSG];
 float		con_times[NUM_CON_TIMES];	// realtime time the line was generated
 										// for transparent notify lines
 
-int			con_vislines;
-
-qboolean	con_debuglog = false;
+cvar_t		con_notifytime = {"con_notifytime","3", CVAR_NONE};			// in seconds
+cvar_t		con_logcenterprint = {"con_logcenterprint","1", CVAR_NONE};	// log centerprints to console
+cvar_t		con_removecr = {"con_removecr","1", CVAR_NONE}; 			// remove \r from console output
 
 extern	char	key_lines[64][MAX_CMDLINE];
 extern	int		edit_line;
@@ -55,8 +65,6 @@ extern	int		key_linepos;
 extern	int		key_insert;
 
 extern	char	chat_buffer[];
-
-qboolean	con_initialized = false;
 
 /*
 ================
