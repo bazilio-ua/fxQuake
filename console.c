@@ -114,6 +114,7 @@ void Con_ToggleConsole_f (void)
 		key_lines[edit_line][1] = 0;	// clear any typing
 		key_linepos = 1;
 		con_backscroll = 0; //johnfitz -- toggleconsole should return you to the bottom of the scrollback
+		con_display = con_current;
 		history_line = edit_line; //johnfitz -- it should also return you to the bottom of the command history
 		
 		if (cls.state == ca_connected)

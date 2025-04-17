@@ -336,6 +336,7 @@ void Key_Console (int key)
 			con_backscroll = CLAMP(0, con_current-i%con_totallines-2, con_totallines-(int)(vid.height>>3)-1);
 			
 //			con_backscroll = con_current - con_totallines + 12;	// new con
+			con_display = con_current - con_totallines;
 		}
 		else
 			key_linepos = 1;
@@ -343,7 +344,10 @@ void Key_Console (int key)
 		
 	case K_END:
 		if (keydown[K_CTRL])
+		{
 			con_backscroll = 0;
+			con_display = con_current;
+		}
 		else
 			key_linepos = strlen(keyeditline);
 		return;
@@ -357,6 +361,11 @@ void Key_Console (int key)
 //		con_backscroll += keydown[K_CTRL] ? 8 : 2; // new con
 //		if (con_backscroll > con_current - con_totallines + 12)
 //			con_backscroll = con_current - con_totallines + 12;
+			
+		con_display -= keydown[K_CTRL] ? 8 : 2;
+		// fix con_display if out of buffer
+		if (con_display < con_current - con_totallines + 12)
+			con_display = con_current - con_totallines + 12;
 		return;
 		
 	case K_PGDN:
@@ -368,6 +377,11 @@ void Key_Console (int key)
 //		con_backscroll -= keydown[K_CTRL] ? 8 : 2; // new con
 //		if (con_backscroll < 0)
 //			con_backscroll = 0;
+			
+		con_display += keydown[K_CTRL] ? 8 : 2;
+		// when console buffer contains leas than 10 lines, require next line ...
+		if (con_display > con_current)
+			con_display = con_current;
 		return;
 		
 	case K_LEFTARROW:
