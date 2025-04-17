@@ -28,7 +28,10 @@ qboolean 	con_debuglog = false;
 
 qboolean 	con_forcedup;		// because no entities to refresh
 qboolean 	con_wrapped;		// will be set to true after 1st buffer wrap
-qboolean 	con_wordwrap;
+qboolean 	con_dowrap;
+
+// WRAP_CHAR will be placed as "soft" line-feed instead of a space char
+#define		WRAP_CHAR	(char)(' ' + 128)
 
 int			con_linewidth;
 int			con_totallines;		// total lines in console scrollback
@@ -42,7 +45,8 @@ int			con_endpos;			// text will be placed to endpos
 
 int			con_vislines;
 
-char		*con_text = NULL;
+//char		*con_text = NULL;
+char		con_text[CON_TEXTSIZE * 2];	// first half - text, second - color mask
 
 struct {
 	int line, pos;
@@ -57,6 +61,7 @@ float		con_times[NUM_CON_TIMES];	// realtime time the line was generated
 cvar_t		con_notifytime = {"con_notifytime","3", CVAR_NONE};			// in seconds
 cvar_t		con_logcenterprint = {"con_logcenterprint","1", CVAR_NONE};	// log centerprints to console
 cvar_t		con_removecr = {"con_removecr","1", CVAR_NONE}; 			// remove \r from console output
+cvar_t		con_wordwrap = {"con_wordwrap","1", CVAR_NONE}; 			// console word wrap may be controlled
 
 extern	char	key_lines[64][MAX_CMDLINE];
 extern	int		edit_line;
@@ -301,7 +306,7 @@ Con_Init
 */
 void Con_Init (void)
 {
-	con_text = Hunk_AllocName (CON_TEXTSIZE, "context");
+//	con_text = Hunk_AllocName (CON_TEXTSIZE, "context");
 	memset (con_text, ' ', CON_TEXTSIZE);
 
 	//johnfitz -- no need to run Con_CheckResize() here
@@ -319,6 +324,7 @@ void Con_Init (void)
 	Cvar_RegisterVariable (&con_notifytime);
 	Cvar_RegisterVariable (&con_logcenterprint);
 	Cvar_RegisterVariable (&con_removecr); // remove \r from console output
+	Cvar_RegisterVariable (&con_wordwrap);
 
 	Cmd_AddCommand ("toggleconsole", Con_ToggleConsole_f);
 	Cmd_AddCommand ("messagemode", Con_MessageMode_f);

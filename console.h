@@ -30,8 +30,10 @@ extern qboolean con_initialized;
 extern int	con_vislines;
 extern int	con_current;
 extern int	con_x;
+extern int	con_display;
 extern int	con_linewidth;
-extern char	*con_text;
+//extern char	*con_text;
+extern char	con_text[CON_TEXTSIZE * 2];
 extern char	con_lastcenterstring[MAX_PRINTMSG];
 
 void Con_DrawCharacter (int cx, int line, int num);
