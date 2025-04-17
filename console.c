@@ -1451,11 +1451,33 @@ void Con_DrawNotify (void)
 {
 	int		x, v;
 	char	*text;
-	int		i;
+	int		i, pos;
 	float	time;
+	char	c, mask;
 
+
+//	v = 0;
+//	for (i=con_current-NUM_CON_TIMES+1 ; i<=con_current ; i++)
+//	{
+//		if (i < 0)
+//			continue;
+//		time = con_times[i % NUM_CON_TIMES];
+//		if (time == 0)
+//			continue;
+//		time = realtime - time;
+//		if (time > con_notifytime.value)
+//			continue;
+//		text = con_text + (i % con_totallines)*con_linewidth;
+//
+//		for (x = 0 ; x < con_linewidth ; x++)
+//			Draw_Character ( (x+1)<<3, v, text[x]);
+//
+//		v += 8;
+//	}
+	
 	v = 0;
-	for (i=con_current-NUM_CON_TIMES+1 ; i<=con_current ; i++)
+	pos = -1;
+	for (i = con_current - NUM_CON_TIMES + 1; i <= con_current; i++)
 	{
 		if (i < 0)
 			continue;
@@ -1465,10 +1487,28 @@ void Con_DrawNotify (void)
 		time = realtime - time;
 		if (time > con_notifytime.value)
 			continue;
-		text = con_text + (i % con_totallines)*con_linewidth;
 
-		for (x = 0 ; x < con_linewidth ; x++)
-			Draw_Character ( (x+1)<<3, v, text[x]);
+		if (pos == -1)
+		{
+			pos = FindLine(i); // else (pos!=-1) - already searched on previous loop
+			// cache info
+			con_notif.line = i;
+			con_notif.pos  = pos;
+		}
+		if (pos == -1)
+			continue; // should not happen
+
+		for (x = 0; x < con_linewidth; x++)
+		{
+			c = con_text[pos];
+			mask = con_text[pos + CON_TEXTSIZE];
+			if (++pos >= CON_TEXTSIZE)
+				pos -= CON_TEXTSIZE;
+
+			if (c == '\n' || c == WRAP_CHAR)
+				break;
+			Draw_Character ( (x+1)<<3, v, c | mask);
+		}
 
 		v += 8;
 	}
