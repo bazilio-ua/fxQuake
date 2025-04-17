@@ -336,6 +336,90 @@ void Con_Init (void)
 
 /*
 ===============
+PlaceChar
+===============
+*/
+static void PlaceChar (char c, char mask)
+{
+	int size;
+	int i, x;
+	char t;
+
+	// calculate free space in buffer
+	size = con_startpos - con_endpos;
+	if (size < 0)
+		size += CON_TEXTSIZE; // size of free space in buffer
+
+	if (!size && !con_wrapped)
+		size = CON_TEXTSIZE;
+	if (size <= 2)
+	{
+		// kill first line in buffer
+		x = 0;
+		while (true)
+		{
+			t = con_text[con_startpos++];
+			if (con_startpos >= CON_TEXTSIZE)
+				con_startpos -= CON_TEXTSIZE;
+
+			if (t == '\n' || t == WRAP_CHAR || ++x >= con_linewidth)
+				break; // killed
+		}
+		con_totallines--;
+	}
+
+	// mark time for transparent overlay
+	con_times[con_current % NUM_CON_TIMES] = realtime;
+
+	con_text[con_endpos] = c;
+	con_text[con_endpos + CON_TEXTSIZE] = mask;
+	if (++con_endpos >= CON_TEXTSIZE)
+	{
+		con_endpos -= CON_TEXTSIZE;
+		con_wrapped = true;
+	}
+	con_text[con_endpos] = '\n'; // mark (temporary) end of line
+
+	if (c == '\n' || ++con_x >= con_linewidth)
+	{
+		// new line (linefeed)
+		con_x = 0;
+		if (con_dowrap && c != '\n')
+		{
+			// make a word wrap
+			i = con_endpos; // seek back to find space
+			x = -1;
+			while (++x < con_linewidth)
+			{
+				if (--i < 0)
+					i += CON_TEXTSIZE;
+				c = con_text[i];
+
+				if (c == '\n' || c == WRAP_CHAR)
+					break; // wrap found - word is too long
+				if (c == ' ')
+				{
+					con_text[i] = WRAP_CHAR;
+					con_x = x;
+					break;
+				}
+			}
+		}
+		
+		if (con_backscroll)
+			con_backscroll++;
+		if (con_backscroll > con_current - con_totallines + 12)
+			con_backscroll = con_current - con_totallines + 12;
+		
+		if (con_display == con_current)
+			con_display++;
+		con_current++;
+		con_totallines++;
+	}
+}
+
+/*
+===============
 Con_Linefeed
 ===============
 */
@@ -1155,6 +1239,65 @@ DRAWING
 ==============================================================================
 */
 
+
+/*
+===============
+FindLine
+ 
+printing text to console
+===============
+*/
+static int FindLine (int num)
+{
+	int i, x;
+	int line, size, pos;
+	char c;
+
+	// try to get line info from cache
+	if (num == con_disp.line)
+		return con_disp.pos;
+	else if (num == con_notif.line)
+		return con_notif.pos;
+
+	if (num == con_current)
+	{
+		i = con_endpos - con_x;
+		if (i < 0)
+			i += CON_TEXTSIZE;
+		return i;
+	}
+
+	line = con_current - con_totallines + 1; // number of 1st line in buffer
+	if (num < line || num > con_current)
+		return -1; // this line is out of buffer
+	if (num == line)
+		return con_startpos; // first line in buffer
+
+	size = con_endpos - con_startpos; // number of bytes in buffer
+	if (size < 0)
+		size += CON_TEXTSIZE; // wrap buffer: endpos < startpos
+
+	if (!size)
+		return -1; // no text in buffer
+
+	pos = con_startpos;
+	x = 0;
+	while (size--)
+	{
+		c = con_text[pos++];
+		if (pos >= CON_TEXTSIZE)
+			pos -= CON_TEXTSIZE;
+
+		if (c == '\n' || c == WRAP_CHAR || ++x >= con_linewidth)
+		{
+			x = 0;
+			line++;
+			if (line == num)
+				return pos;
+		}
+	}
+	return -1; // should not happen
+}
 
 /*
 ================
