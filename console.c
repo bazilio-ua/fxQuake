@@ -1509,7 +1509,6 @@ void Con_DrawNotify (void)
 				break;
 			Draw_Character ( (x+1)<<3, v, c | mask);
 		}
-
 		v += 8;
 	}
 
