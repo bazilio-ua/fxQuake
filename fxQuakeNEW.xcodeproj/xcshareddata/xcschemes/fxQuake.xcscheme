@@ -64,6 +64,10 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
+            argument = "-condebug"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
             argument = "-display 1 -fullscreen -refreshrate 0 -bpp 32"
             isEnabled = "NO">
          </CommandLineArgument>
