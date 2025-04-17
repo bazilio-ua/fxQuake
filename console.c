@@ -520,9 +520,9 @@ static void PlaceChar (char c, char mask)
 		
 		if (con_backscroll)
 			con_backscroll++;
-		if (con_backscroll > con_current - con_totallines + 12)
-			con_backscroll = con_current - con_totallines + 12;
-		
+		if (con_backscroll > con_totallines - 1)
+			con_backscroll = con_totallines - 1;
+
 		if (con_display == con_current)
 			con_display++;
 		con_current++;
