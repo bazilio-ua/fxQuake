@@ -139,11 +139,26 @@ Con_Clear_f
 ================
 */
 void Con_Clear_f (void)
-{
+{/*
 	if (con_text)
 		memset (con_text, ' ', CON_TEXTSIZE);
 
 	con_backscroll = 0; //johnfitz -- if console is empty, being scrolled up is confusing
+*/
+	
+	con_totallines = 1;		// current line, even if empty, encounted
+	con_current = con_display = 0;
+	con_backscroll = 0; //johnfitz -- if console is empty, being scrolled up is confusing
+	con_x = 0;
+	
+	con_startpos = con_endpos = 0;
+	con_wrapped = false;
+	con_text[0] = '\n';		// mark current line end (for correct display)
+	
+	Con_ClearNotify ();
+	
+	// clear line position cache
+	con_disp.line = con_notif.line = -1;
 }
 
 /*
@@ -257,46 +272,125 @@ Con_CheckResize
 If the line width has changed, reformat the buffer.
 ================
 */
+//void Con_CheckResize (void)
+//{
+//	int	i, j, width, oldwidth, oldtotallines, numlines, numchars;
+//	char	tbuf[CON_TEXTSIZE];
+//
+//	width = (vid.conwidth >> 3) - 2; //johnfitz -- use vid.conwidth instead of vid.width
+//
+//	if (width == con_linewidth)
+//		return;
+//
+//	oldwidth = con_linewidth;
+//	con_linewidth = width;
+//	oldtotallines = con_totallines;
+//	con_totallines = CON_TEXTSIZE / con_linewidth;
+//	numlines = oldtotallines;
+//
+//	if (con_totallines < numlines)
+//		numlines = con_totallines;
+//
+//	numchars = oldwidth;
+//
+//	if (con_linewidth < numchars)
+//		numchars = con_linewidth;
+//	
+//	memcpy (tbuf, con_text, CON_TEXTSIZE);
+//	memset (con_text, ' ', CON_TEXTSIZE);
+//
+//	for (i=0 ; i<numlines ; i++)
+//	{
+//		for (j=0 ; j<numchars ; j++)
+//		{
+//			con_text[(con_totallines - 1 - i) * con_linewidth + j] =
+//					tbuf[((con_current - i + oldtotallines) % oldtotallines) * oldwidth + j];
+//		}
+//	}
+//	
+//	Con_ClearNotify ();
+//	
+//	con_backscroll = 0;
+//	con_current = con_totallines - 1;
+//}
+
+
 void Con_CheckResize (void)
 {
-	int	i, j, width, oldwidth, oldtotallines, numlines, numchars;
-	char	tbuf[CON_TEXTSIZE];
+	int width, size, line;
+	int i, x, i1, x1;
+	char c, c1;
+	qboolean wrap = (con_wordwrap.value != 0.f);
+	
+	if (wrap != con_dowrap)
+	{
+		con_linewidth = -1; // force resize
+		con_dowrap = wrap;
+	}
 
 	width = (vid.conwidth >> 3) - 2; //johnfitz -- use vid.conwidth instead of vid.width
+	if (width < 1)
+		width = 38; // video hasn't been initialized yet
 
 	if (width == con_linewidth)
 		return;
 
-	oldwidth = con_linewidth;
 	con_linewidth = width;
-	oldtotallines = con_totallines;
-	con_totallines = CON_TEXTSIZE / con_linewidth;
-	numlines = oldtotallines;
 
-	if (con_totallines < numlines)
-		numlines = con_totallines;
+	size = con_endpos - con_startpos; // size of data in buffer
+	if (size < 0)
+		size += CON_TEXTSIZE; // wrap buffer: endpos < startpos
 
-	numchars = oldwidth;
-
-	if (con_linewidth < numchars)
-		numchars = con_linewidth;
-	
-	memcpy (tbuf, con_text, CON_TEXTSIZE);
-	memset (con_text, ' ', CON_TEXTSIZE);
-
-	for (i=0 ; i<numlines ; i++)
+	i = con_startpos;
+	x = 0;
+	line = 0;
+	while (size--)
 	{
-		for (j=0 ; j<numchars ; j++)
+		c = con_text[i];
+		if (c == WRAP_CHAR)
+			c = ' '; // ignore old WRAP_CHARs
+		con_text[i] = c;
+		if (++i >= CON_TEXTSIZE)
+			i -= CON_TEXTSIZE;
+
+		if (c != '\n' && ++x < width)
+			continue; // no line feed or line wrap
+
+		x = 0;
+		line++;
+
+		if (!con_dowrap || c == '\n')
+			continue; // no word wrap here
+
+		// make a word wrap
+		i1 = i; // seek back to find a space char
+		x1 = -1;
+		while (++x1 < width)
 		{
-			con_text[(con_totallines - 1 - i) * con_linewidth + j] =
-					tbuf[((con_current - i + oldtotallines) % oldtotallines) * oldwidth + j];
+			if (--i1 < 0)
+				i1 += CON_TEXTSIZE;
+			c1 = con_text[i1];
+
+			if (c1 == '\n' || c1 == WRAP_CHAR)
+				break; // wrap found - word is too long
+			if (c1 == ' ')
+			{
+				con_text[i1] = WRAP_CHAR;
+				x = x1;
+				break;
+			}
 		}
 	}
+	con_totallines = line + 1;
+	con_current = line;
+	con_display = line;
+	
+	con_backscroll = 0;
 	
 	Con_ClearNotify ();
 	
-	con_backscroll = 0;
-	con_current = con_totallines - 1;
+	// clear cache
+	con_disp.line = con_notif.line = -1;
 }
 
 
@@ -306,7 +400,7 @@ Con_Init
 ================
 */
 void Con_Init (void)
-{
+{/*
 //	con_text = Hunk_AllocName (CON_TEXTSIZE, "context");
 	memset (con_text, ' ', CON_TEXTSIZE);
 
@@ -315,6 +409,23 @@ void Con_Init (void)
 	con_totallines = CON_TEXTSIZE / con_linewidth;
 	con_backscroll = 0;
 	con_current = con_totallines - 1;
+	*/
+	
+	con_linewidth = 38; // video hasn't been initialized yet
+	
+	con_totallines = 1; // current line, even if empty, encounted
+	con_current = con_display = 0;
+	con_backscroll = 0;
+	con_x = 0;
+	
+	con_startpos = con_endpos = 0;
+	con_wrapped = false;
+	con_text[0] = '\n'; // mark current line end (for correct display)
+	
+	Con_ClearNotify ();
+	
+	// clear line position cache
+	con_disp.line = con_notif.line = -1;
 	
 	con_initialized = true;
 	Con_Printf ("Console initialized\n");
@@ -419,23 +530,52 @@ static void PlaceChar (char c, char mask)
 	}
 }
 
+void Con_Print (char *txt)
+{
+	char 	c;
+	char	mask;
+
+	if (txt[0] == 1 || txt[0] == 2)
+	{
+		if (txt[0] == 1)
+			S_LocalSound ("misc/talk.wav"); // play talk wav
+		mask = 128;		// go to colored text
+		txt++;
+	}
+	else
+		mask = 0;
+
+	while ( (c = *txt++) )
+	{
+		if (c == '\r' && *txt == '\n') // handle CR+LF correctly
+		{
+			c = '\n';
+			txt++;
+		}
+		else if (c == WRAP_CHAR)
+			c = ' '; // force WRAP_CHAR (== space|0x80) to be a space
+
+		PlaceChar(c, mask);
+	}
+}
+
 /*
 ===============
 Con_Linefeed
 ===============
 */
-void Con_Linefeed (void)
-{
-	//johnfitz -- improved scrolling
-	if (con_backscroll)
-		con_backscroll++;
-
-	con_backscroll = CLAMP(0, con_backscroll, con_totallines - (int)(vid.height>>3) - 1);
-
-	con_x = 0;
-	con_current++;
-	memset (&con_text[(con_current%con_totallines)*con_linewidth] , ' ', con_linewidth);
-}
+//void Con_Linefeed (void)
+//{
+//	//johnfitz -- improved scrolling
+//	if (con_backscroll)
+//		con_backscroll++;
+//
+//	con_backscroll = CLAMP(0, con_backscroll, con_totallines - (int)(vid.height>>3) - 1);
+//
+//	con_x = 0;
+//	con_current++;
+//	memset (&con_text[(con_current%con_totallines)*con_linewidth] , ' ', con_linewidth);
+//}
 
 /*
 ================
@@ -446,94 +586,94 @@ All console printing must go through this in order to be logged to disk
 If no console is visible, the notify window will pop up.
 ================
 */
-void Con_Print (char *txt)
-{
-	int		y;
-	int		c, l;
-	static int	cr;
-	int		mask;
-	qboolean	boundary;
-	
-//	con_backscroll = 0; //johnfitz -- better console scrolling
-
-	if (txt[0] == 1)
-	{
-		mask = 128;		// go to colored text
-		S_LocalSound ("misc/talk.wav"); // play talk wav
-		txt++;
-	}
-	else if (txt[0] == 2)
-	{
-		mask = 128;		// go to colored text
-		txt++;
-	}
-	else
-		mask = 0;
-
-	boundary = true;
-
-	while ( (c = *txt) )
-	{
-		if (c <= ' ')
-		{
-			boundary = true;
-		}
-		else if (boundary)
-		{
-		// count word length
-			for (l=0 ; l<con_linewidth ; l++)
-				if ( txt[l] <= ' ')
-					break;
-
-		// word wrap
-			if (l != con_linewidth && (con_x + l > con_linewidth) )
-				con_x = 0;
-
-			boundary = false;
-		}
-
-		txt++;
-
-		if (cr)
-		{
-			con_current--;
-			cr = false;
-		}
-
-		if (!con_x)
-		{
-			Con_Linefeed ();
-		// mark time for transparent overlay
-			if (con_current >= 0)
-				con_times[con_current % NUM_CON_TIMES] = realtime;
-		}
-
-		switch (c)
-		{
-		case '\n':
-			con_x = 0;
-			break;
-
-		case '\r':
-			if (con_removecr.value)	// optionally remove '\r'
-				c += 128;
-			else
-			{
-				con_x = 0;
-				cr = 1;
-				break;
-			}
-
-		default:	// display character and advance
-			y = con_current % con_totallines;
-			con_text[y*con_linewidth+con_x] = c | mask;
-			con_x++;
-			if (con_x >= con_linewidth)
-				con_x = 0;
-			break;
-		}
-	}
-}
+//void Con_Print (char *txt)
+//{
+//	int		y;
+//	int		c, l;
+//	static int	cr;
+//	int		mask;
+//	qboolean	boundary;
+//	
+////	con_backscroll = 0; //johnfitz -- better console scrolling
+//
+//	if (txt[0] == 1)
+//	{
+//		mask = 128;		// go to colored text
+//		S_LocalSound ("misc/talk.wav"); // play talk wav
+//		txt++;
+//	}
+//	else if (txt[0] == 2)
+//	{
+//		mask = 128;		// go to colored text
+//		txt++;
+//	}
+//	else
+//		mask = 0;
+//
+//	boundary = true;
+//
+//	while ( (c = *txt) )
+//	{
+//		if (c <= ' ')
+//		{
+//			boundary = true;
+//		}
+//		else if (boundary)
+//		{
+//		// count word length
+//			for (l=0 ; l<con_linewidth ; l++)
+//				if ( txt[l] <= ' ')
+//					break;
+//
+//		// word wrap
+//			if (l != con_linewidth && (con_x + l > con_linewidth) )
+//				con_x = 0;
+//
+//			boundary = false;
+//		}
+//
+//		txt++;
+//
+//		if (cr)
+//		{
+//			con_current--;
+//			cr = false;
+//		}
+//
+//		if (!con_x)
+//		{
+//			Con_Linefeed ();
+//		// mark time for transparent overlay
+//			if (con_current >= 0)
+//				con_times[con_current % NUM_CON_TIMES] = realtime;
+//		}
+//
+//		switch (c)
+//		{
+//		case '\n':
+//			con_x = 0;
+//			break;
+//
+//		case '\r':
+//			if (con_removecr.value)	// optionally remove '\r'
+//				c += 128;
+//			else
+//			{
+//				con_x = 0;
+//				cr = 1;
+//				break;
+//			}
+//
+//		default:	// display character and advance
+//			y = con_current % con_totallines;
+//			con_text[y*con_linewidth+con_x] = c | mask;
+//			con_x++;
+//			if (con_x >= con_linewidth)
+//				con_x = 0;
+//			break;
+//		}
+//	}
+//}
 
 /*
 ================
