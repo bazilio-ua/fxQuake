@@ -334,6 +334,8 @@ void Key_Console (int key)
 					break;
 			}
 			con_backscroll = CLAMP(0, con_current-i%con_totallines-2, con_totallines-(int)(vid.height>>3)-1);
+			
+//			con_backscroll = con_current - con_totallines + 12;	// new con
 		}
 		else
 			key_linepos = 1;
@@ -351,6 +353,10 @@ void Key_Console (int key)
 		con_backscroll += keydown[K_CTRL] ? ((con_vislines>>3) - 4) : 2;
 		if (con_backscroll > con_totallines - (vid.height>>3) - 1)
 			con_backscroll = con_totallines - (vid.height>>3) - 1;
+			
+//		con_backscroll += keydown[K_CTRL] ? 8 : 2; // new con
+//		if (con_backscroll > con_current - con_totallines + 12)
+//			con_backscroll = con_current - con_totallines + 12;
 		return;
 		
 	case K_PGDN:
@@ -358,6 +364,10 @@ void Key_Console (int key)
 		con_backscroll -= keydown[K_CTRL] ? ((con_vislines>>3) - 4) : 2;
 		if (con_backscroll < 0)
 			con_backscroll = 0;
+			
+//		con_backscroll -= keydown[K_CTRL] ? 8 : 2; // new con
+//		if (con_backscroll < 0)
+//			con_backscroll = 0;
 		return;
 		
 	case K_LEFTARROW:
