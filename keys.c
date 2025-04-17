@@ -319,23 +319,23 @@ void Key_Console (int key)
 	case K_HOME:
 		if (keydown[K_CTRL])
 		{	//skip initial empty lines
-			int		i, x;
-			char	*line;
+//			int		i, x;
+//			char	*line;
+//			
+//			for (i = con_current - con_totallines + 1 ; i <= con_current ; i++)
+//			{
+//				line = con_text + (i%con_totallines)*con_linewidth;
+//				for (x=0 ; x<con_linewidth ; x++)
+//				{
+//					if (line[x] != ' ')
+//						break;
+//				}
+//				if (x != con_linewidth)
+//					break;
+//			}
+//			con_backscroll = CLAMP(0, con_current-i%con_totallines-2, con_totallines-(int)(vid.height>>3)-1);
 			
-			for (i = con_current - con_totallines + 1 ; i <= con_current ; i++)
-			{
-				line = con_text + (i%con_totallines)*con_linewidth;
-				for (x=0 ; x<con_linewidth ; x++)
-				{
-					if (line[x] != ' ')
-						break;
-				}
-				if (x != con_linewidth)
-					break;
-			}
-			con_backscroll = CLAMP(0, con_current-i%con_totallines-2, con_totallines-(int)(vid.height>>3)-1);
-			
-//			con_backscroll = con_current - con_totallines + 12;	// new con
+			con_backscroll = con_current - con_totallines + 12;	// new con
 			con_display = con_current - con_totallines;
 		}
 		else
@@ -354,13 +354,13 @@ void Key_Console (int key)
 		
 	case K_PGUP:
 	case K_MWHEELUP:
-		con_backscroll += keydown[K_CTRL] ? ((con_vislines>>3) - 4) : 2;
-		if (con_backscroll > con_totallines - (vid.height>>3) - 1)
-			con_backscroll = con_totallines - (vid.height>>3) - 1;
+//		con_backscroll += keydown[K_CTRL] ? ((con_vislines>>3) - 4) : 2;
+//		if (con_backscroll > con_totallines - (vid.height>>3) - 1)
+//			con_backscroll = con_totallines - (vid.height>>3) - 1;
 			
-//		con_backscroll += keydown[K_CTRL] ? 8 : 2; // new con
-//		if (con_backscroll > con_current - con_totallines + 12)
-//			con_backscroll = con_current - con_totallines + 12;
+		con_backscroll += keydown[K_CTRL] ? 8 : 2; // new con
+		if (con_backscroll > con_current - con_totallines + 12)
+			con_backscroll = con_current - con_totallines + 12;
 			
 		con_display -= keydown[K_CTRL] ? 8 : 2;
 		// fix con_display if out of buffer
@@ -370,13 +370,13 @@ void Key_Console (int key)
 		
 	case K_PGDN:
 	case K_MWHEELDOWN:
-		con_backscroll -= keydown[K_CTRL] ? ((con_vislines>>3) - 4) : 2;
-		if (con_backscroll < 0)
-			con_backscroll = 0;
-			
-//		con_backscroll -= keydown[K_CTRL] ? 8 : 2; // new con
+//		con_backscroll -= keydown[K_CTRL] ? ((con_vislines>>3) - 4) : 2;
 //		if (con_backscroll < 0)
 //			con_backscroll = 0;
+			
+		con_backscroll -= keydown[K_CTRL] ? 8 : 2; // new con
+		if (con_backscroll < 0)
+			con_backscroll = 0;
 			
 		con_display += keydown[K_CTRL] ? 8 : 2;
 		// when console buffer contains leas than 10 lines, require next line ...
