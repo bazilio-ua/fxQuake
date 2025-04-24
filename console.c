@@ -145,7 +145,7 @@ void Con_Clear_f (void)
 
 	con_backscroll = 0; //johnfitz -- if console is empty, being scrolled up is confusing
 */
-	memset (con_text, ' ', CON_TEXTSIZE);
+	memset (con_text, 0, CON_TEXTSIZE * 2);
 
 	con_totallines = 1;		// current line, even if empty, encounted
 	con_current = con_display = 0;
@@ -412,7 +412,7 @@ void Con_Init (void)
 	con_current = con_totallines - 1;
 	*/
 	
-	memset (con_text, ' ', CON_TEXTSIZE);
+	memset (con_text, 0, CON_TEXTSIZE * 2);
 
 	con_linewidth = 38; // video hasn't been initialized yet
 	
