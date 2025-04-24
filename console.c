@@ -58,7 +58,6 @@ float		con_times[NUM_CON_TIMES];	// realtime time the line was generated
 
 cvar_t		con_notifytime = {"con_notifytime","3", CVAR_NONE};			// in seconds
 cvar_t		con_logcenterprint = {"con_logcenterprint","1", CVAR_NONE};	// log centerprints to console
-//cvar_t		con_removecr = {"con_removecr","1", CVAR_NONE}; 			// remove \r from console output
 cvar_t		con_wordwrap = {"con_wordwrap","1", CVAR_NONE}; 			// console word wrap may be controlled
 
 extern	char	key_lines[64][MAX_CMDLINE];
@@ -373,7 +372,6 @@ void Con_Init (void)
 //
 	Cvar_RegisterVariable (&con_notifytime);
 	Cvar_RegisterVariable (&con_logcenterprint);
-//	Cvar_RegisterVariable (&con_removecr); // remove \r from console output
 	Cvar_RegisterVariable (&con_wordwrap);
 
 	Cmd_AddCommand ("toggleconsole", Con_ToggleConsole_f);
@@ -1418,7 +1416,7 @@ The typing input line at the bottom should only be drawn if typing is allowed
 void Con_DrawConsole (int lines, qboolean drawinput)
 {
 	int				i, x, y;
-	int  rows, sb=0;
+	int  rows, row, topline;
 	char *text, ver[256];
 	int  j, len, pos;
 	char c, mask;
@@ -1433,36 +1431,18 @@ void Con_DrawConsole (int lines, qboolean drawinput)
 	con_vislines = lines * vid.conheight / vid.height;
 
 	rows = (con_vislines + 7) / 8;	// rows of text to draw
-//	y = con_vislines - rows * 8;	// may start slightly negative
-	y = con_vislines - 24; // initial 'y' position for console text, input and version (16 + 8)
-//	rows -= 2;			// for input and version lines
-	rows -= 1; // for input line
+	y = con_vislines - 24;			// initial 'y' position for console text, input and version (16 + 8)
+	rows -= 1;			// for input line
 	
-//	sb = con_backscroll ? 1 : 0;	// > 1 generates blank lines in arrow printout below
-//	sb = (con_backscroll) ? 2 : 0;
-
-//	for (i=con_current - rows + 1 ; i<=con_current - sb ; i++, y+=8 )
-//	{
-//		j = i - con_backscroll;
-//		if (j<0)
-//			j = 0;
-//		text = con_text + (j % con_totallines)*con_linewidth;
-//
-//		for (x=0 ; x<con_linewidth ; x++)
-//			Draw_Character ( (x+1)<<3, y, text[x]);
-//	}
-
-	int topline = con_current - con_totallines + 1;			// number of top line in buffer
-
+	topline = con_current - con_totallines + 1;	// number of top line in buffer
 	// fix con_display if out of buffer
-	if (con_display < topline + 10) // 10 is a row count when con_visline 100, as for screen 320*200
+	if (con_display < topline + 10)	// 10 is a row count when con_visline 100, as for screen 320*200
 		con_display = topline + 10;
 	// when console buffer contains leas than 10 lines, require next line ...
 	if (con_display > con_current)
 		con_display = con_current;
 
-	int row = con_display - rows + 1; // top line to display
-
+	row = con_display - rows + 1; // top line to display
 	if (row < topline)
 	{
 		// row is out of (before) buffer
@@ -1471,28 +1451,19 @@ void Con_DrawConsole (int lines, qboolean drawinput)
 		rows -= i;
 	}
 
-
-//	y -= (rows - 1) * 8;
 	y -= (rows - 2) * 8; // may start slightly negative
 
-
 	if (con_totallines && con_display < con_current)
-	{
-//		rows--;
 		rows -= 3; // reserved for drawing arrows and blank lines to show the buffer is backscrolled
-//		y -= 2 * 8; // 0 or more blank lines
-	}
 	
-
 	pos = FindLine(row);
 	// cache info
 	con_disp.line = row;
 	con_disp.pos = pos;
+	
 	// draw console text
-
 	if (rows > 0 && pos != -1)
 	{
-//		for (i=0 ; i<rows ; i++, y+=8 )
 		while (rows--)
 		{
 			for (x = 0; x < con_linewidth; x++)
@@ -1510,61 +1481,23 @@ void Con_DrawConsole (int lines, qboolean drawinput)
 		}
 	}
 
-	
-//	pos = -1;
-//	for (i=con_current - rows + 1 ; i<=con_current - sb ; i++, y+=8 )
-//	{
-//		j = i - con_backscroll;
-//		if (j<0)
-//			j = 0;
-//
-//		if (pos == -1)
-//		{
-//			pos = FindLine(j); // else (pos!=-1) - already searched on previous loop
-//			// cache info
-//			con_disp.line = j;
-//			con_disp.pos = pos;
-//		}
-//		if (pos == -1)
-//			continue; // should not happen
-//
-//		for (x = 0; x < con_linewidth; x++)
-//		{
-//			c = con_text[pos];
-//			mask = con_text[pos + CON_TEXTSIZE];
-//			if (++pos >= CON_TEXTSIZE)
-//				pos -= CON_TEXTSIZE;
-//
-//			if (c == '\n' || c == WRAP_CHAR)
-//				break;
-//			Draw_Character ( (x+1)<<3, y, c | mask);
-//		}
-//	}
-
-
 // draw scrollback arrows
 	if (con_totallines && con_display < con_current)
-//	if (con_backscroll)
 	{
-//		y += (sb - 1) * 8; // 0 or more blank lines
 		y += 8; // blank line
 		for (x=0 ; x<con_linewidth ; x+=4)
 			Draw_Character ((x+1)<<3, y, '^');
-//		y+=8;
 	}
-
 
 // draw the input prompt, user text, and cursor if desired
 	if (drawinput)
 		Con_DrawInput ();
 
 // draw version number in bottom right
-//	y += 8;
 	sprintf (ver, "fxQuake %4.2f", (float)VERSION);
 	len = strlen (ver);
 	for (x = 0; x < len; x++)
 		Draw_Character ((con_linewidth - len + x + 2) << 3, con_vislines - 8, ver[x] /*+ 128*/);
-//		Draw_Character ((con_linewidth - len + x + 2) << 3, y, ver[x] /*+ 128*/);
 }
 
 
