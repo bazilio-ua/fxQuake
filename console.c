@@ -145,7 +145,8 @@ void Con_Clear_f (void)
 
 	con_backscroll = 0; //johnfitz -- if console is empty, being scrolled up is confusing
 */
-	
+	memset (con_text, ' ', CON_TEXTSIZE);
+
 	con_totallines = 1;		// current line, even if empty, encounted
 	con_current = con_display = 0;
 	con_backscroll = 0; //johnfitz -- if console is empty, being scrolled up is confusing
@@ -411,6 +412,8 @@ void Con_Init (void)
 	con_current = con_totallines - 1;
 	*/
 	
+	memset (con_text, ' ', CON_TEXTSIZE);
+
 	con_linewidth = 38; // video hasn't been initialized yet
 	
 	con_totallines = 1; // current line, even if empty, encounted
@@ -1647,7 +1650,7 @@ The typing input line at the bottom should only be drawn if typing is allowed
 void Con_DrawConsole (int lines, qboolean drawinput)
 {
 	int				i, x, y;
-	int  rows, sb;
+	int  rows, sb=0;
 	char *text, ver[256];
 	int  j, len, pos;
 	char c, mask;
@@ -1662,10 +1665,13 @@ void Con_DrawConsole (int lines, qboolean drawinput)
 	con_vislines = lines * vid.conheight / vid.height;
 
 	rows = (con_vislines + 7) / 8;	// rows of text to draw
-	y = con_vislines - rows * 8;	// may start slightly negative
-	rows -= 2;			// for input and version lines
+//	y = con_vislines - rows * 8;	// may start slightly negative
+	y = con_vislines - 24; // initial 'y' position for console text, input and version (16 + 8)
+//	rows -= 2;			// for input and version lines
+	rows -= 1; // for input line
+	
 //	sb = con_backscroll ? 1 : 0;	// > 1 generates blank lines in arrow printout below
-	sb = (con_backscroll) ? 2 : 0;
+//	sb = (con_backscroll) ? 2 : 0;
 
 //	for (i=con_current - rows + 1 ; i<=con_current - sb ; i++, y+=8 )
 //	{
@@ -1678,56 +1684,119 @@ void Con_DrawConsole (int lines, qboolean drawinput)
 //			Draw_Character ( (x+1)<<3, y, text[x]);
 //	}
 
-	pos = -1;
-	for (i=con_current - rows + 1 ; i<=con_current - sb ; i++, y+=8 )
+	int topline = con_current - con_totallines + 1;			// number of top line in buffer
+
+	// fix con_display if out of buffer
+	if (con_display < topline + 10) // 10 is a row count when con_visline 100, as if for screen 320*200
+		con_display = topline + 10;
+	// when console buffer contains leas than 10 lines, require next line ...
+	if (con_display > con_current)
+		con_display = con_current;
+
+	int row = con_display - rows + 1; // top line to display
+
+	if (row < topline)
 	{
-		j = i - con_backscroll;
-		if (j<0)
-			j = 0;
+		// row is out of (before) buffer
+		i = topline - row;
+		row = topline;
+		rows -= i;
+	}
 
-		if (pos == -1)
+
+//	y -= (rows - 1) * 8;
+	y -= (rows - 2) * 8; // may start slightly negative
+
+
+	if (con_totallines && con_display < con_current)
+	{
+//		rows--;
+		rows -= 3; // reserved for drawing arrows line and blank line to show the buffer is backscrolled
+//		y -= 2 * 8; // 0 or more blank lines
+	}
+	
+
+	pos = FindLine(row);
+	// cache info
+	con_disp.line = row;
+	con_disp.pos = pos;
+	// draw console text
+
+	if (rows > 0 && pos != -1)
+	{
+//		for (i=0 ; i<rows ; i++, y+=8 )
+		while (rows--)
 		{
-			pos = FindLine(j); // else (pos!=-1) - already searched on previous loop
-			// cache info
-			con_disp.line = j;
-			con_disp.pos = pos;
-		}
-		if (pos == -1)
-			continue; // should not happen
-
-		for (x = 0; x < con_linewidth; x++)
-		{
-			c = con_text[pos];
-			mask = con_text[pos + CON_TEXTSIZE];
-			if (++pos >= CON_TEXTSIZE)
-				pos -= CON_TEXTSIZE;
-
-			if (c == '\n' || c == WRAP_CHAR)
-				break;
-			Draw_Character ( (x+1)<<3, y, c | mask);
+			for (x = 0; x < con_linewidth; x++)
+			{
+				c = con_text[pos];
+				mask = con_text[pos + CON_TEXTSIZE];
+				if (++pos >= CON_TEXTSIZE)
+					pos -= CON_TEXTSIZE;
+				
+				if (c == '\n' || c == WRAP_CHAR)
+					break;
+				Draw_Character ( (x+1)<<3, y, c | mask);
+			}
+			y+=8;
 		}
 	}
 
+	
+//	pos = -1;
+//	for (i=con_current - rows + 1 ; i<=con_current - sb ; i++, y+=8 )
+//	{
+//		j = i - con_backscroll;
+//		if (j<0)
+//			j = 0;
+//
+//		if (pos == -1)
+//		{
+//			pos = FindLine(j); // else (pos!=-1) - already searched on previous loop
+//			// cache info
+//			con_disp.line = j;
+//			con_disp.pos = pos;
+//		}
+//		if (pos == -1)
+//			continue; // should not happen
+//
+//		for (x = 0; x < con_linewidth; x++)
+//		{
+//			c = con_text[pos];
+//			mask = con_text[pos + CON_TEXTSIZE];
+//			if (++pos >= CON_TEXTSIZE)
+//				pos -= CON_TEXTSIZE;
+//
+//			if (c == '\n' || c == WRAP_CHAR)
+//				break;
+//			Draw_Character ( (x+1)<<3, y, c | mask);
+//		}
+//	}
+
+
 // draw scrollback arrows
-	if (con_backscroll)
+	if (con_totallines && con_display < con_current)
+//	if (con_backscroll)
 	{
 //		y += (sb - 1) * 8; // 0 or more blank lines
 		y += 8; // blank line
 		for (x=0 ; x<con_linewidth ; x+=4)
 			Draw_Character ((x+1)<<3, y, '^');
-		y+=8;
+//		y+=8;
 	}
+
 
 // draw the input prompt, user text, and cursor if desired
 	if (drawinput)
 		Con_DrawInput ();
 
 // draw version number in bottom right
-	y += 8;
+//	y += 8;
 	sprintf (ver, "fxQuake %4.2f", (float)VERSION);
 	len = strlen (ver);
 	for (x = 0; x < len; x++)
-		Draw_Character ((con_linewidth - len + x + 2) << 3, y, ver[x] /*+ 128*/);
+		Draw_Character ((con_linewidth - len + x + 2) << 3, con_vislines - 8, ver[x] /*+ 128*/);
+//		Draw_Character ((con_linewidth - len + x + 2) << 3, y, ver[x] /*+ 128*/);
 }
 
 
