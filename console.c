@@ -1407,6 +1407,22 @@ void Con_DrawInput (void)
 
 /*
 ================
+Con_DrawVersion
+================
+*/
+void Con_DrawVersion (void)
+{
+	int		len, x;
+	char ver[32];
+
+	sprintf (ver, "fxQuake %4.2f", (float)VERSION);
+	len = strlen (ver);
+	for (x = 0; x < len; x++)
+		Draw_Character ((con_linewidth - len + x + 2) << 3, con_vislines - 8, ver[x]);
+}
+
+/*
+================
 Con_DrawConsole
 
 Draws the console with the solid background
@@ -1417,8 +1433,7 @@ void Con_DrawConsole (int lines, qboolean drawinput)
 {
 	int				i, x, y;
 	int  rows, row, topline;
-	char *text, ver[256];
-	int  j, len, pos;
+	int  pos;
 	char c, mask;
 
 	if (lines <= 0)
@@ -1432,8 +1447,8 @@ void Con_DrawConsole (int lines, qboolean drawinput)
 
 	rows = (con_vislines + 7) / 8;	// rows of text to draw
 	y = con_vislines - 24;			// initial 'y' position for console text, input and version (16 + 8)
-	rows -= 1;			// for input line
-	
+	rows -= 1; // for input line
+
 	topline = con_current - con_totallines + 1;	// number of top line in buffer
 	// fix con_display if out of buffer
 	if (con_display < topline + 10)	// 10 is a row count when con_visline 100, as for screen 320*200
@@ -1494,10 +1509,7 @@ void Con_DrawConsole (int lines, qboolean drawinput)
 		Con_DrawInput ();
 
 // draw version number in bottom right
-	sprintf (ver, "fxQuake %4.2f", (float)VERSION);
-	len = strlen (ver);
-	for (x = 0; x < len; x++)
-		Draw_Character ((con_linewidth - len + x + 2) << 3, con_vislines - 8, ver[x] /*+ 128*/);
+	Con_DrawVersion ();
 }
 
 
