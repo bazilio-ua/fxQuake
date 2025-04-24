@@ -28,7 +28,7 @@ qboolean 	con_debuglog = false;
 
 qboolean 	con_forcedup;		// because no entities to refresh
 qboolean 	con_wrapped;		// will be set to true after 1st buffer wrap
-qboolean 	con_dowrap;
+qboolean 	con_wrdwrap;
 
 // WRAP_CHAR will be placed as "soft" line-feed instead of a space char
 #define		WRAP_CHAR	(char)(' ' + 128)
@@ -323,10 +323,10 @@ void Con_CheckResize (void)
 	char c, c1;
 	qboolean wrap = (con_wordwrap.value != 0.f);
 	
-	if (wrap != con_dowrap)
+	if (wrap != con_wrdwrap)
 	{
 		con_linewidth = -1; // force resize
-		con_dowrap = wrap;
+		con_wrdwrap = wrap;
 	}
 
 	width = (vid.conwidth >> 3) - 2; //johnfitz -- use vid.conwidth instead of vid.width
@@ -360,7 +360,7 @@ void Con_CheckResize (void)
 		x = 0;
 		line++;
 
-		if (!con_dowrap || c == '\n')
+		if (!con_wrdwrap || c == '\n')
 			continue; // no word wrap here
 
 		// make a word wrap
@@ -499,7 +499,7 @@ static void PlaceChar (char c, char mask)
 	{
 		// new line (linefeed)
 		con_x = 0;
-		if (con_dowrap && c != '\n')
+		if (con_wrdwrap && c != '\n')
 		{
 			// make a word wrap
 			i = con_endpos; // seek back to find space
@@ -1687,7 +1687,7 @@ void Con_DrawConsole (int lines, qboolean drawinput)
 	int topline = con_current - con_totallines + 1;			// number of top line in buffer
 
 	// fix con_display if out of buffer
-	if (con_display < topline + 10) // 10 is a row count when con_visline 100, as if for screen 320*200
+	if (con_display < topline + 10) // 10 is a row count when con_visline 100, as for screen 320*200
 		con_display = topline + 10;
 	// when console buffer contains leas than 10 lines, require next line ...
 	if (con_display > con_current)
@@ -1711,7 +1711,7 @@ void Con_DrawConsole (int lines, qboolean drawinput)
 	if (con_totallines && con_display < con_current)
 	{
 //		rows--;
-		rows -= 3; // reserved for drawing arrows line and blank line to show the buffer is backscrolled
+		rows -= 3; // reserved for drawing arrows and blank lines to show the buffer is backscrolled
 //		y -= 2 * 8; // 0 or more blank lines
 	}
 	
