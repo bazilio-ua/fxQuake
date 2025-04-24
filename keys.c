@@ -335,9 +335,9 @@ void Key_Console (int key)
 //			}
 //			con_backscroll = CLAMP(0, con_current-i%con_totallines-2, con_totallines-(int)(vid.height>>3)-1);
 			
-			con_backscroll = con_current-0%con_totallines-2; // new con
-			if (con_backscroll > con_totallines - 1)
-				con_backscroll = con_totallines - 1;
+//			con_backscroll = con_current-0%con_totallines-2; // new con
+//			if (con_backscroll > con_totallines - 1)
+//				con_backscroll = con_totallines - 1;
 			
 			con_display = con_current - con_totallines;
 		}
@@ -348,7 +348,7 @@ void Key_Console (int key)
 	case K_END:
 		if (keydown[K_CTRL])
 		{
-			con_backscroll = 0;
+//			con_backscroll = 0;
 			con_display = con_current;
 		}
 		else
@@ -361,9 +361,9 @@ void Key_Console (int key)
 //		if (con_backscroll > con_totallines - (vid.height>>3) - 1)
 //			con_backscroll = con_totallines - (vid.height>>3) - 1;
 			
-		con_backscroll += keydown[K_CTRL] ? 8 : 2; // new con
-		if (con_backscroll > con_totallines - 1)
-			con_backscroll = con_totallines - 1;
+//		con_backscroll += keydown[K_CTRL] ? 8 : 2; // new con
+//		if (con_backscroll > con_totallines - 1)
+//			con_backscroll = con_totallines - 1;
 			
 		con_display -= keydown[K_CTRL] ? 8 : 2;
 		if (con_display < con_current - con_totallines + 1) // fix con_display if out of buffer
@@ -376,9 +376,9 @@ void Key_Console (int key)
 //		if (con_backscroll < 0)
 //			con_backscroll = 0;
 			
-		con_backscroll -= keydown[K_CTRL] ? 8 : 2; // new con
-		if (con_backscroll < 0)
-			con_backscroll = 0;
+//		con_backscroll -= keydown[K_CTRL] ? 8 : 2; // new con
+//		if (con_backscroll < 0)
+//			con_backscroll = 0;
 			
 		con_display += keydown[K_CTRL] ? 8 : 2;
 		if (con_display > con_current) // when console buffer contains leas than 10 lines, require next line ...

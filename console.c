@@ -35,7 +35,7 @@ qboolean 	con_dowrap;
 
 int			con_linewidth;
 int			con_totallines;		// total lines in console scrollback
-int			con_backscroll;		// lines up from bottom to display
+//int			con_backscroll;		// lines up from bottom to display
 int			con_current;		// line where next message will be printed
 int			con_x;				// offset in current line for next print
 
@@ -113,7 +113,7 @@ void Con_ToggleConsole_f (void)
 	{
 		key_lines[edit_line][1] = 0;	// clear any typing
 		key_linepos = 1;
-		con_backscroll = 0; //johnfitz -- toggleconsole should return you to the bottom of the scrollback
+//		con_backscroll = 0; //johnfitz -- toggleconsole should return you to the bottom of the scrollback
 		con_display = con_current;
 		history_line = edit_line; //johnfitz -- it should also return you to the bottom of the command history
 		
@@ -149,7 +149,7 @@ void Con_Clear_f (void)
 
 	con_totallines = 1;		// current line, even if empty, encounted
 	con_current = con_display = 0;
-	con_backscroll = 0; //johnfitz -- if console is empty, being scrolled up is confusing
+//	con_backscroll = 0; //johnfitz -- if console is empty, being scrolled up is confusing
 	con_x = 0;
 	
 	con_startpos = con_endpos = 0;
@@ -386,7 +386,7 @@ void Con_CheckResize (void)
 	con_current = line;
 	con_display = line;
 	
-	con_backscroll = 0;
+//	con_backscroll = 0;
 	
 	Con_ClearNotify ();
 	
@@ -418,7 +418,7 @@ void Con_Init (void)
 	
 	con_totallines = 1; // current line, even if empty, encounted
 	con_current = con_display = 0;
-	con_backscroll = 0;
+//	con_backscroll = 0;
 	con_x = 0;
 	
 	con_startpos = con_endpos = 0;
@@ -521,10 +521,10 @@ static void PlaceChar (char c, char mask)
 			}
 		}
 		
-		if (con_backscroll)
-			con_backscroll++;
-		if (con_backscroll > con_totallines - 1)
-			con_backscroll = con_totallines - 1;
+//		if (con_backscroll)
+//			con_backscroll++;
+//		if (con_backscroll > con_totallines - 1)
+//			con_backscroll = con_totallines - 1;
 
 		if (con_display == con_current)
 			con_display++;
