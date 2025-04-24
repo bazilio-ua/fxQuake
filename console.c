@@ -1378,10 +1378,6 @@ void Con_DrawInput (void)
 
 	text = strcpy (temp, key_lines[edit_line]);
 
-// fill out remainder with spaces
-/*	for (i = strlen(text) ; i < MAX_CMDLINE ; i++)
-		text[i] = ' ';	*/
-
 // pad with one space so we can draw one past the string (in case the cursor is there)
 	len = strlen(key_lines[edit_line]);
 	text[len] = ' ';
@@ -1394,11 +1390,7 @@ void Con_DrawInput (void)
 // prestep if horizontally scrolling
 	if (key_linepos >= con_linewidth)
 		text += 1 + key_linepos - con_linewidth;
-	
-// draw it
-/*	for (i=0 ; i < con_linewidth ; i++)
-		Draw_Character ( (i+1)<<3, con_vislines - 16, text[i]);	*/
-	
+
 // draw input string
 	for (i=0 ; i <= (int)(strlen(text) - 1) ; i++) // only write enough letters to go from *text to cursor
 		Draw_Character ((i+1)<<3, con_vislines - 16, text[i]);
