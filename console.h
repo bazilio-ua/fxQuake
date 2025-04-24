@@ -39,6 +39,7 @@ extern char	con_lastcenterstring[MAX_PRINTMSG];
 void Con_DrawCharacter (int cx, int line, int num);
 
 void Con_CheckResize (void);
+void Con_Start (void);
 void Con_Init (void);
 void Con_DrawConsole (int lines, qboolean drawinput);
 void Con_Print (char *txt);

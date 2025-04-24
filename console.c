@@ -139,27 +139,8 @@ Con_Clear_f
 ================
 */
 void Con_Clear_f (void)
-{/*
-	if (con_text)
-		memset (con_text, ' ', CON_TEXTSIZE);
-
-	con_backscroll = 0; //johnfitz -- if console is empty, being scrolled up is confusing
-*/
-	memset (con_text, 0, CON_TEXTSIZE * 2);
-
-	con_totallines = 1;		// current line, even if empty, encounted
-	con_current = con_display = 0;
-//	con_backscroll = 0; //johnfitz -- if console is empty, being scrolled up is confusing
-	con_x = 0;
-	
-	con_startpos = con_endpos = 0;
-	con_wrapped = false;
-	con_text[0] = '\n';		// mark current line end (for correct display)
-	
-	Con_ClearNotify ();
-	
-	// clear line position cache
-	con_disp.line = con_notif.line = -1;
+{
+	Con_Start ();
 }
 
 /*
@@ -397,28 +378,16 @@ void Con_CheckResize (void)
 
 /*
 ================
-Con_Init
+Con_Start
 ================
 */
-void Con_Init (void)
-{/*
-//	con_text = Hunk_AllocName (CON_TEXTSIZE, "context");
-	memset (con_text, ' ', CON_TEXTSIZE);
-
-	//johnfitz -- no need to run Con_CheckResize() here
-	con_linewidth = 38; // video hasn't been initialized yet
-	con_totallines = CON_TEXTSIZE / con_linewidth;
-	con_backscroll = 0;
-	con_current = con_totallines - 1;
-	*/
-	
+void Con_Start (void)
+{
 	memset (con_text, 0, CON_TEXTSIZE * 2);
-
-	con_linewidth = 38; // video hasn't been initialized yet
 	
 	con_totallines = 1; // current line, even if empty, encounted
 	con_current = con_display = 0;
-//	con_backscroll = 0;
+//	con_backscroll = 0; //johnfitz -- if console is empty, being scrolled up is confusing
 	con_x = 0;
 	
 	con_startpos = con_endpos = 0;
@@ -429,6 +398,19 @@ void Con_Init (void)
 	
 	// clear line position cache
 	con_disp.line = con_notif.line = -1;
+}
+
+/*
+================
+Con_Init
+================
+*/
+void Con_Init (void)
+{
+	//johnfitz -- no need to run Con_CheckResize() here
+	con_linewidth = 38; // video hasn't been initialized yet
+	
+	Con_Start ();
 	
 	con_initialized = true;
 	Con_Printf ("Console initialized\n");
