@@ -366,8 +366,8 @@ void Key_Console (int key)
 //			con_backscroll = con_totallines - 1;
 			
 		con_display -= keydown[K_CTRL] ? 8 : 2;
-		if (con_display < con_current - con_totallines + 1) // fix con_display if out of buffer
-			con_display = con_current - con_totallines + 1;
+//		if (con_display < con_current - con_totallines + 1) // fix con_display if out of buffer
+//			con_display = con_current - con_totallines + 1;
 		return;
 		
 	case K_PGDN:
@@ -381,8 +381,8 @@ void Key_Console (int key)
 //			con_backscroll = 0;
 			
 		con_display += keydown[K_CTRL] ? 8 : 2;
-		if (con_display > con_current) // when console buffer contains leas than 10 lines, require next line ...
-			con_display = con_current;
+//		if (con_display > con_current) // when console buffer contains leas than 10 lines, require next line ...
+//			con_display = con_current;
 		return;
 		
 	case K_LEFTARROW:
