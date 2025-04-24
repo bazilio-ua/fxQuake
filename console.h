@@ -23,16 +23,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define		CON_TEXTSIZE	262144
 
 extern int con_totallines;
-//extern int con_backscroll;
 extern qboolean con_forcedup;	// because no entities to refresh
 extern qboolean con_initialized;
-//extern byte *con_chars;
 extern int	con_vislines;
 extern int	con_current;
 extern int	con_x;
 extern int	con_display;
 extern int	con_linewidth;
-//extern char	*con_text;
 extern char	con_text[CON_TEXTSIZE * 2];
 extern char	con_lastcenterstring[MAX_PRINTMSG];
 

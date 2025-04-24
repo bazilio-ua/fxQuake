@@ -35,17 +35,15 @@ qboolean 	con_wrdwrap;
 
 int			con_linewidth;
 int			con_totallines;		// total lines in console scrollback
-//int			con_backscroll;		// lines up from bottom to display
 int			con_current;		// line where next message will be printed
-int			con_x;				// offset in current line for next print
-
 int			con_display;		// bottom of console displays this line
+
+int			con_x;				// offset in current line for next print
 int			con_startpos;		// points to begin of text buffer
 int			con_endpos;			// text will be placed to endpos
 
 int			con_vislines;
 
-//char		*con_text = NULL;
 char		con_text[CON_TEXTSIZE * 2];	// first half - text, second - color mask
 
 struct {
@@ -113,8 +111,7 @@ void Con_ToggleConsole_f (void)
 	{
 		key_lines[edit_line][1] = 0;	// clear any typing
 		key_linepos = 1;
-//		con_backscroll = 0; //johnfitz -- toggleconsole should return you to the bottom of the scrollback
-		con_display = con_current;
+		con_display = con_current; //johnfitz -- toggleconsole should return you to the bottom of the scrollback
 		history_line = edit_line; //johnfitz -- it should also return you to the bottom of the command history
 		
 		if (cls.state == ca_connected)
@@ -252,51 +249,9 @@ void Con_MessageMode2_f (void)
 Con_CheckResize
 
 If the line width has changed, reformat the buffer.
+Supported word wrap
 ================
 */
-//void Con_CheckResize (void)
-//{
-//	int	i, j, width, oldwidth, oldtotallines, numlines, numchars;
-//	char	tbuf[CON_TEXTSIZE];
-//
-//	width = (vid.conwidth >> 3) - 2; //johnfitz -- use vid.conwidth instead of vid.width
-//
-//	if (width == con_linewidth)
-//		return;
-//
-//	oldwidth = con_linewidth;
-//	con_linewidth = width;
-//	oldtotallines = con_totallines;
-//	con_totallines = CON_TEXTSIZE / con_linewidth;
-//	numlines = oldtotallines;
-//
-//	if (con_totallines < numlines)
-//		numlines = con_totallines;
-//
-//	numchars = oldwidth;
-//
-//	if (con_linewidth < numchars)
-//		numchars = con_linewidth;
-//	
-//	memcpy (tbuf, con_text, CON_TEXTSIZE);
-//	memset (con_text, ' ', CON_TEXTSIZE);
-//
-//	for (i=0 ; i<numlines ; i++)
-//	{
-//		for (j=0 ; j<numchars ; j++)
-//		{
-//			con_text[(con_totallines - 1 - i) * con_linewidth + j] =
-//					tbuf[((con_current - i + oldtotallines) % oldtotallines) * oldwidth + j];
-//		}
-//	}
-//	
-//	Con_ClearNotify ();
-//	
-//	con_backscroll = 0;
-//	con_current = con_totallines - 1;
-//}
-
-
 void Con_CheckResize (void)
 {
 	int width, size, line;
@@ -367,8 +322,6 @@ void Con_CheckResize (void)
 	con_current = line;
 	con_display = line;
 	
-//	con_backscroll = 0;
-	
 	Con_ClearNotify ();
 	
 	// clear cache
@@ -386,11 +339,11 @@ void Con_Start (void)
 	memset (con_text, 0, CON_TEXTSIZE * 2);
 	
 	con_totallines = 1; // current line, even if empty, encounted
-	con_current = con_display = 0;
-//	con_backscroll = 0; //johnfitz -- if console is empty, being scrolled up is confusing
-	con_x = 0;
+	con_current = con_display = 0; //johnfitz -- if console is empty, being scrolled up is confusing
 	
+	con_x = 0;
 	con_startpos = con_endpos = 0;
+	
 	con_wrapped = false;
 	con_text[0] = '\n'; // mark current line end (for correct display)
 	
@@ -502,12 +455,6 @@ static void PlaceChar (char c, char mask)
 				}
 			}
 		}
-		
-//		if (con_backscroll)
-//			con_backscroll++;
-//		if (con_backscroll > con_totallines - 1)
-//			con_backscroll = con_totallines - 1;
-
 		if (con_display == con_current)
 			con_display++;
 		con_current++;
@@ -515,6 +462,15 @@ static void PlaceChar (char c, char mask)
 	}
 }
 
+/*
+================
+Con_Print
+
+Handles cursor positioning, line wrapping, etc
+All console printing must go through this in order to be logged to disk
+If no console is visible, the notify window will pop up.
+================
+*/
 void Con_Print (char *txt)
 {
 	char 	c;
@@ -544,121 +500,6 @@ void Con_Print (char *txt)
 	}
 }
 
-/*
-===============
-Con_Linefeed
-===============
-*/
-//void Con_Linefeed (void)
-//{
-//	//johnfitz -- improved scrolling
-//	if (con_backscroll)
-//		con_backscroll++;
-//
-//	con_backscroll = CLAMP(0, con_backscroll, con_totallines - (int)(vid.height>>3) - 1);
-//
-//	con_x = 0;
-//	con_current++;
-//	memset (&con_text[(con_current%con_totallines)*con_linewidth] , ' ', con_linewidth);
-//}
-
-/*
-================
-Con_Print
-
-Handles cursor positioning, line wrapping, etc
-All console printing must go through this in order to be logged to disk
-If no console is visible, the notify window will pop up.
-================
-*/
-//void Con_Print (char *txt)
-//{
-//	int		y;
-//	int		c, l;
-//	static int	cr;
-//	int		mask;
-//	qboolean	boundary;
-//	
-////	con_backscroll = 0; //johnfitz -- better console scrolling
-//
-//	if (txt[0] == 1)
-//	{
-//		mask = 128;		// go to colored text
-//		S_LocalSound ("misc/talk.wav"); // play talk wav
-//		txt++;
-//	}
-//	else if (txt[0] == 2)
-//	{
-//		mask = 128;		// go to colored text
-//		txt++;
-//	}
-//	else
-//		mask = 0;
-//
-//	boundary = true;
-//
-//	while ( (c = *txt) )
-//	{
-//		if (c <= ' ')
-//		{
-//			boundary = true;
-//		}
-//		else if (boundary)
-//		{
-//		// count word length
-//			for (l=0 ; l<con_linewidth ; l++)
-//				if ( txt[l] <= ' ')
-//					break;
-//
-//		// word wrap
-//			if (l != con_linewidth && (con_x + l > con_linewidth) )
-//				con_x = 0;
-//
-//			boundary = false;
-//		}
-//
-//		txt++;
-//
-//		if (cr)
-//		{
-//			con_current--;
-//			cr = false;
-//		}
-//
-//		if (!con_x)
-//		{
-//			Con_Linefeed ();
-//		// mark time for transparent overlay
-//			if (con_current >= 0)
-//				con_times[con_current % NUM_CON_TIMES] = realtime;
-//		}
-//
-//		switch (c)
-//		{
-//		case '\n':
-//			con_x = 0;
-//			break;
-//
-//		case '\r':
-//			if (con_removecr.value)	// optionally remove '\r'
-//				c += 128;
-//			else
-//			{
-//				con_x = 0;
-//				cr = 1;
-//				break;
-//			}
-//
-//		default:	// display character and advance
-//			y = con_current % con_totallines;
-//			con_text[y*con_linewidth+con_x] = c | mask;
-//			con_x++;
-//			if (con_x >= con_linewidth)
-//				con_x = 0;
-//			break;
-//		}
-//	}
-//}
 
 /*
 ================
@@ -1574,61 +1415,6 @@ Draws the console with the solid background
 The typing input line at the bottom should only be drawn if typing is allowed
 ================
 */
-//void Con_DrawConsole (int lines, qboolean drawinput)
-//{
-//	int				i, x, y;
-//	int  rows, sb;
-//	char *text, ver[256];
-//	int  j, len;
-//	
-//	if (lines <= 0)
-//		return;
-//
-//// draw the background
-//	Draw_ConsoleBackground (lines);
-//
-//// draw the buffer text
-//	con_vislines = lines * vid.conheight / vid.height;
-//
-//	rows = (con_vislines + 7) / 8;	// rows of text to draw
-//	y = con_vislines - rows * 8;	// may start slightly negative
-//	rows -= 2;			// for input and version lines
-////	sb = con_backscroll ? 1 : 0;	// > 1 generates blank lines in arrow printout below
-//	sb = (con_backscroll) ? 2 : 0;
-//
-//	for (i=con_current - rows + 1 ; i<=con_current - sb ; i++, y+=8 )
-//	{
-//		j = i - con_backscroll;
-//		if (j<0)
-//			j = 0;
-//		text = con_text + (j % con_totallines)*con_linewidth;
-//
-//		for (x=0 ; x<con_linewidth ; x++)
-//			Draw_Character ( (x+1)<<3, y, text[x]);
-//	}
-//
-//// draw scrollback arrows
-//	if (con_backscroll)
-//	{
-////		y += (sb - 1) * 8; // 0 or more blank lines
-//		y += 8; // blank line
-//		for (x=0 ; x<con_linewidth ; x+=4)
-//			Draw_Character ((x+1)<<3, y, '^');
-//		y+=8;
-//	}
-//
-//// draw the input prompt, user text, and cursor if desired
-//	if (drawinput)
-//		Con_DrawInput ();
-//
-//// draw version number in bottom right
-//	y += 8;
-//	sprintf (ver, "fxQuake %4.2f", (float)VERSION);
-//	len = strlen (ver);
-//	for (x = 0; x < len; x++)
-//		Draw_Character ((con_linewidth - len + x + 2) << 3, y, ver[x] /*+ 128*/);
-//}
-
 void Con_DrawConsole (int lines, qboolean drawinput)
 {
 	int				i, x, y;
