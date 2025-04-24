@@ -60,7 +60,7 @@ float		con_times[NUM_CON_TIMES];	// realtime time the line was generated
 
 cvar_t		con_notifytime = {"con_notifytime","3", CVAR_NONE};			// in seconds
 cvar_t		con_logcenterprint = {"con_logcenterprint","1", CVAR_NONE};	// log centerprints to console
-cvar_t		con_removecr = {"con_removecr","1", CVAR_NONE}; 			// remove \r from console output
+//cvar_t		con_removecr = {"con_removecr","1", CVAR_NONE}; 			// remove \r from console output
 cvar_t		con_wordwrap = {"con_wordwrap","1", CVAR_NONE}; 			// console word wrap may be controlled
 
 extern	char	key_lines[64][MAX_CMDLINE];
@@ -438,7 +438,7 @@ void Con_Init (void)
 //
 	Cvar_RegisterVariable (&con_notifytime);
 	Cvar_RegisterVariable (&con_logcenterprint);
-	Cvar_RegisterVariable (&con_removecr); // remove \r from console output
+//	Cvar_RegisterVariable (&con_removecr); // remove \r from console output
 	Cvar_RegisterVariable (&con_wordwrap);
 
 	Cmd_AddCommand ("toggleconsole", Con_ToggleConsole_f);
