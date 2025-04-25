@@ -76,29 +76,29 @@ Con_Quakebar -- returns a bar of the desired length, but never wider than the co
 includes a newline, unless len >= con_linewidth.
 ================
 */
-char *Con_Quakebar (int len)
-{
-	static char bar[42];
-	int	    i;
-
-	len = min(len, sizeof(bar) - 2);
-	len = min(len, con_linewidth);
-
-	bar[0] = '\35';
-	for (i = 1; i < len - 1; i++)
-		bar[i] = '\36';
-	bar[len-1] = '\37';
-
-	if (len < con_linewidth)
-	{
-		bar[len] = '\n';
-		bar[len+1] = 0;
-	}
-	else
-		bar[len] = 0;
-
-	return bar;
-}
+//char *Con_Quakebar (int len)
+//{
+//	static char bar[42];
+//	int	    i;
+//
+//	len = min(len, sizeof(bar) - 2);
+//	len = min(len, con_linewidth);
+//
+//	bar[0] = '\35';
+//	for (i = 1; i < len - 1; i++)
+//		bar[i] = '\36';
+//	bar[len-1] = '\37';
+//
+//	if (len < con_linewidth)
+//	{
+//		bar[len] = '\n';
+//		bar[len+1] = 0;
+//	}
+//	else
+//		bar[len] = 0;
+//
+//	return bar;
+//}
 
 /*
 ================
@@ -814,9 +814,11 @@ void Con_LogCenterPrint (char *str)
 
 	if (con_logcenterprint.value)
 	{
-		Con_Printf ("%s", Con_Quakebar(40));
+		Con_Printf ("\35\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\37\n");
+//		Con_Printf ("%s", Con_Quakebar(40));
 		Con_CenterPrintf (40, "%s\n", str);
-		Con_Printf ("%s", Con_Quakebar(40));
+		Con_Printf ("\35\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\37\n");
+//		Con_Printf ("%s", Con_Quakebar(40));
 		Con_ClearNotify ();
 	}
 }
@@ -1495,11 +1497,13 @@ void Con_NotifyBox (char *text)
 	double		t1, t2;
 
 // during startup for sound / cd warnings
-	Con_Printf ("\n\n%s", Con_Quakebar(40));
+	Con_Printf ("\n\n\35\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\37\n");
+//	Con_Printf ("\n\n%s", Con_Quakebar(40));
 	Con_Printf ("%s", text);
 
 	Con_Printf ("Press a key.\n");
-	Con_Printf ("%s", Con_Quakebar(40));
+	Con_Printf ("\35\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\37\n");
+//	Con_Printf ("%s", Con_Quakebar(40));
 
 	key_count = -2;		// wait for a key down and up
 	key_dest = key_console;
