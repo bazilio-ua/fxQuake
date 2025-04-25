@@ -1860,6 +1860,9 @@ void COM_Game_f (void)
 		// Write config file
 		Host_WriteConfiguration ("config.cfg");
 		
+		History_Shutdown ();
+		LOG_Close ();
+
 		// Close the extra game if it is loaded
 		while (com_searchpaths != com_base_searchpaths)
 		{
@@ -1980,6 +1983,9 @@ void COM_Game_f (void)
 			strcpy (com_gamedir, va("%s/%s", com_basedir, GAMENAME));
 			COM_SetGamedirToHomeDirectory (homedir, GAMENAME);
 		}
+
+		LOG_Init ();
+		History_Init ();
 
 		// clear out and reload appropriate data
 		Cache_Flush ();

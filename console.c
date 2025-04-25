@@ -514,7 +514,8 @@ void LOG_Close (void)
 	if (!con_debuglog)
 		return;
 
-	fclose (logfile);
+	if (logfile)
+		fclose (logfile);
 	logfile = NULL;
 }
 
@@ -561,8 +562,10 @@ void Con_DebugLog (char *fmt, ...)
 
 //	Con_QuakeStr ((byte *)data);
 
-	fprintf (logfile, "%s", data);
-	fflush (logfile);		// force it to save every time
+	if (logfile) {
+		fprintf (logfile, "%s", data);
+		fflush (logfile);		// force it to save every time
+	}
 }
 
 
