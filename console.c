@@ -69,36 +69,6 @@ extern	int		key_insert;
 
 extern	char	chat_buffer[];
 
-/*
-================
-Con_Quakebar -- returns a bar of the desired length, but never wider than the console
-
-includes a newline, unless len >= con_linewidth.
-================
-*/
-//char *Con_Quakebar (int len)
-//{
-//	static char bar[42];
-//	int	    i;
-//
-//	len = min(len, sizeof(bar) - 2);
-//	len = min(len, con_linewidth);
-//
-//	bar[0] = '\35';
-//	for (i = 1; i < len - 1; i++)
-//		bar[i] = '\36';
-//	bar[len-1] = '\37';
-//
-//	if (len < con_linewidth)
-//	{
-//		bar[len] = '\n';
-//		bar[len+1] = 0;
-//	}
-//	else
-//		bar[len] = 0;
-//
-//	return bar;
-//}
 
 /*
 ================
@@ -759,12 +729,11 @@ Con_CenterPrintf
 pad each line with spaces to make it appear centered
 ================
 */
-void Con_CenterPrintf (/* int linewidth,*/ char *fmt, ...)
+void Con_CenterPrintf (char *fmt, ...)
 {
 	va_list	argptr;
 	char	msg[MAX_PRINTMSG]; //the original message
 	char	line[MAX_PRINTMSG]; //one line from the message
-//	char	spaces[21]; //buffer for spaces
 	char	spaces[19]; //buffer for spaces
 	char	*src, *dst;
 	int	len, s;
@@ -774,7 +743,6 @@ void Con_CenterPrintf (/* int linewidth,*/ char *fmt, ...)
 	vsnprintf (msg, sizeof(msg), fmt, argptr);
 	va_end (argptr);
 
-//	linewidth = min (linewidth, con_linewidth);
 	linewidth = 38; // con_linewidth - as for screen 320*200
 	for (src = msg; *src; )
 	{
@@ -818,11 +786,8 @@ void Con_LogCenterPrint (char *str)
 	if (con_logcenterprint.value)
 	{
 		Con_Printf ("\35\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\37\n");
-//		Con_Printf ("%s", Con_Quakebar(40));
 		Con_CenterPrintf ("%s\n", str);
-//		Con_CenterPrintf (40, "%s\n", str);
 		Con_Printf ("\35\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\37\n");
-//		Con_Printf ("%s", Con_Quakebar(40));
 		Con_ClearNotify ();
 	}
 }
@@ -1502,12 +1467,10 @@ void Con_NotifyBox (char *text)
 
 // during startup for sound / cd warnings
 	Con_Printf ("\n\n\35\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\37\n");
-//	Con_Printf ("\n\n%s", Con_Quakebar(40));
 	Con_Printf ("%s", text);
 
 	Con_Printf ("Press a key.\n");
 	Con_Printf ("\35\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\37\n");
-//	Con_Printf ("%s", Con_Quakebar(40));
 
 	key_count = -2;		// wait for a key down and up
 	key_dest = key_console;

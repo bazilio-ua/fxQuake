@@ -329,7 +329,6 @@ void CL_ParseServerInfo (void)
 
 // seperate the printfs so the server message can have a color
 	Con_SafePrintf ("\n\n\35\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\37\n\n");
-//	Con_SafePrintf ("\n\n%s\n", Con_Quakebar(40));
 	Con_SafePrintf ("%c%s\n", 2, str);
 
 // tell user which protocol this is
