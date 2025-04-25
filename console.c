@@ -759,20 +759,23 @@ Con_CenterPrintf
 pad each line with spaces to make it appear centered
 ================
 */
-void Con_CenterPrintf (int linewidth, char *fmt, ...)
+void Con_CenterPrintf (/* int linewidth,*/ char *fmt, ...)
 {
 	va_list	argptr;
 	char	msg[MAX_PRINTMSG]; //the original message
 	char	line[MAX_PRINTMSG]; //one line from the message
-	char	spaces[21]; //buffer for spaces
+//	char	spaces[21]; //buffer for spaces
+	char	spaces[19]; //buffer for spaces
 	char	*src, *dst;
 	int	len, s;
+	int linewidth;
 
 	va_start (argptr, fmt);
 	vsnprintf (msg, sizeof(msg), fmt, argptr);
 	va_end (argptr);
 
-	linewidth = min (linewidth, con_linewidth);
+//	linewidth = min (linewidth, con_linewidth);
+	linewidth = 38; // con_linewidth - as for screen 320*200
 	for (src = msg; *src; )
 	{
 		dst = line;
@@ -816,7 +819,8 @@ void Con_LogCenterPrint (char *str)
 	{
 		Con_Printf ("\35\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\37\n");
 //		Con_Printf ("%s", Con_Quakebar(40));
-		Con_CenterPrintf (40, "%s\n", str);
+		Con_CenterPrintf ("%s\n", str);
+//		Con_CenterPrintf (40, "%s\n", str);
 		Con_Printf ("\35\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\37\n");
 //		Con_Printf ("%s", Con_Quakebar(40));
 		Con_ClearNotify ();
