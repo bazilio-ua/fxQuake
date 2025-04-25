@@ -168,7 +168,7 @@ void Sys_Printf (char *fmt, ...)
 {
 	va_list		argptr;
 	char		text[MAX_PRINTMSG]; // was 1024 
-//	byte		*p;
+	byte		*p;
     
 	va_start (argptr, fmt);
 	vsnprintf (text, sizeof(text), fmt, argptr);
@@ -180,17 +180,9 @@ void Sys_Printf (char *fmt, ...)
 	if (nostdout)
 		return;
     
-//	for (p = (byte *)text; *p; p++) 
-//	{
-//		*p &= 0x7f;
-//		if ((*p > 128 || *p < 32) && *p != 10 && *p != 13 && *p != 9)
-//			printf("[%02x]", *p);
-////			printf("*");
-//		else
-//			putc(*p, stdout);
-//	}
-	
-	printf ("%s", text);
+	/* translate to ASCII instead of printing [xx]  --KB */
+	for (p = (byte *)text; *p; p++)
+		fputc (sys_char_map[*p], stdout);
 	
 	// rcon (64 doesn't mean anything special, but we need some extra space because NET_MAXMESSAGE == RCON_BUFF_SIZE)
 	if (rcon_active && (rcon_message.cursize < rcon_message.maxsize - (int)strlen(text) - 64))

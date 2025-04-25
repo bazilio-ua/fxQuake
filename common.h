@@ -177,6 +177,9 @@ char *COM_FileExtension (char *in);
 void COM_FileBase (char *in, char *out);
 void COM_DefaultExtension (char *path, char *ext);
 
+const char sys_char_map[256];
+// the translation table between the graphical font and plain ASCII
+
 char	*va(char *format, ...);
 // does a varargs printf into a temp buffer
 
