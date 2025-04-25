@@ -1318,7 +1318,7 @@ The input line scrolls horizontally if typing goes beyond the right edge
 */
 void Con_DrawInput (void)
 {
-	int		i, len;
+	int		x, len;
 	char	*text, temp[MAX_CMDLINE];
 
 	if (key_dest != key_console && !con_forcedup)
@@ -1340,8 +1340,9 @@ void Con_DrawInput (void)
 		text += 1 + key_linepos - con_linewidth;
 
 // draw input string
-	for (i=0 ; i <= (int)(strlen(text) - 1) ; i++) // only write enough letters to go from *text to cursor
-		Draw_Character ((i+1)<<3, con_vislines - 16, text[i]);
+	len = (strlen(text) - 1);
+	for (x=0 ; x <= len ; x++) // only write enough letters to go from *text to cursor
+		Draw_Character ((x+1)<<3, con_vislines - 16, text[x]);
 }
 
 
