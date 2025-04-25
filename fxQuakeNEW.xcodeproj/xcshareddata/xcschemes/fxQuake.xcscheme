@@ -64,15 +64,15 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-condebug"
-            isEnabled = "NO">
-         </CommandLineArgument>
-         <CommandLineArgument
             argument = "-display 1 -fullscreen -refreshrate 0 -bpp 32"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-consize 1024"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-condebug"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
@@ -149,7 +149,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-width 320 -height 200"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-width 640 -height 480"
