@@ -523,27 +523,27 @@ void LOG_Close (void)
 Con_QuakeStr
 ================
 */
-void Con_QuakeStr (byte str[])
-{
-	int  i;
-	byte tchar;
-
-	// Translate into simplified Quake character set
-	for (i = 0; str[i] != '\0'; ++i)
-	{
-		tchar = str[i] & 0x7F;
-
-		// Lower bits not CRLF ?
-		if (tchar != 0x0A && tchar != 0x0D)
-		{
-			if (str[i] != 0x80)
-				str[i] = tchar; // Ignore colour bit unless result becomes NUL
-
-			if (str[i] < 0x1D)
-				str[i] = 0x1D; // Filter colour triggers, control chars etc
-		}
-	}
-}
+//void Con_QuakeStr (byte str[])
+//{
+//	int  i;
+//	byte tchar;
+//
+//	// Translate into simplified Quake character set
+//	for (i = 0; str[i] != '\0'; ++i)
+//	{
+//		tchar = str[i] & 0x7F;
+//
+//		// Lower bits not CRLF ?
+//		if (tchar != 0x0A && tchar != 0x0D)
+//		{
+//			if (str[i] != 0x80)
+//				str[i] = tchar; // Ignore colour bit unless result becomes NUL
+//
+//			if (str[i] < 0x1D)
+//				str[i] = 0x1D; // Filter colour triggers, control chars etc
+//		}
+//	}
+//}
 
 /*
 ================
@@ -559,7 +559,7 @@ void Con_DebugLog (char *fmt, ...)
 	vsnprintf (data, sizeof(data), fmt, argptr);
 	va_end (argptr);
 
-	Con_QuakeStr ((byte *)data);
+//	Con_QuakeStr ((byte *)data);
 
 	fprintf (logfile, "%s", data);
 	fflush (logfile);		// force it to save every time

@@ -73,7 +73,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-condebug"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "+gl_texquality 0"
