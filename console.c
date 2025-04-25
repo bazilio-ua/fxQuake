@@ -46,9 +46,10 @@ int			con_vislines;
 
 char		con_text[CON_TEXTSIZE * 2];	// first half - text, second - color mask
 
-struct {
+typedef struct {
 	int line, pos;
-} con_disp, con_notif;
+} con_cache_t;
+con_cache_t con_disp, con_notif;
 
 char		con_lastcenterstring[MAX_PRINTMSG];
 
@@ -247,8 +248,8 @@ void Con_MessageMode2_f (void)
 ================
 Con_CheckResize
 
-If the line width has changed, reformat the buffer.
-Supported word wrap
+If the line width has changed, reformat the buffer
+Supported word wrap.
 ================
 */
 void Con_CheckResize (void)
@@ -384,10 +385,10 @@ void Con_Init (void)
 
 /*
 ===============
-PlaceChar
+Con_PlaceChar
 ===============
 */
-static void PlaceChar (char c, char mask)
+void Con_PlaceChar (char c, char mask)
 {
 	int size;
 	int i, x;
@@ -494,7 +495,7 @@ void Con_Print (char *txt)
 		else if (c == WRAP_CHAR)
 			c = ' '; // force WRAP_CHAR (== space|0x80) to be a space
 
-		PlaceChar(c, mask);
+		Con_PlaceChar (c, mask);
 	}
 }
 
@@ -1207,12 +1208,12 @@ DRAWING
 
 /*
 ===============
-FindLine
- 
+Con_FindLine
+
 printing text to console
 ===============
 */
-static int FindLine (int num)
+int Con_FindLine (int num)
 {
 	int i, x;
 	int line, size, pos;
@@ -1274,31 +1275,10 @@ Draws the last few lines of output transparently over the game top
 void Con_DrawNotify (void)
 {
 	int		x, v;
-	char	*text;
+	char	c, mask;
 	int		i, pos;
 	float	time;
-	char	c, mask;
 
-
-//	v = 0;
-//	for (i=con_current-NUM_CON_TIMES+1 ; i<=con_current ; i++)
-//	{
-//		if (i < 0)
-//			continue;
-//		time = con_times[i % NUM_CON_TIMES];
-//		if (time == 0)
-//			continue;
-//		time = realtime - time;
-//		if (time > con_notifytime.value)
-//			continue;
-//		text = con_text + (i % con_totallines)*con_linewidth;
-//
-//		for (x = 0 ; x < con_linewidth ; x++)
-//			Draw_Character ( (x+1)<<3, v, text[x]);
-//
-//		v += 8;
-//	}
-	
 	v = 0;
 	pos = -1;
 	for (i = con_current - NUM_CON_TIMES + 1; i <= con_current; i++)
@@ -1314,7 +1294,7 @@ void Con_DrawNotify (void)
 
 		if (pos == -1)
 		{
-			pos = FindLine(i); // else (pos!=-1) - already searched on previous loop
+			pos = Con_FindLine (i); // else (pos!=-1) - already searched on previous loop
 			// cache info
 			con_notif.line = i;
 			con_notif.pos  = pos;
@@ -1434,7 +1414,7 @@ void Con_DrawConsole (int lines, qboolean drawinput)
 // draw the background
 	Draw_ConsoleBackground (lines);
 
-// draw the buffer text
+// setup the buffer text
 	con_vislines = lines * vid.conheight / vid.height;
 
 	rows = (con_vislines + 7) / 8;	// rows of text to draw
@@ -1463,12 +1443,12 @@ void Con_DrawConsole (int lines, qboolean drawinput)
 	if (con_totallines && con_display < con_current)
 		rows -= 3; // reserved for drawing arrows and blank lines to show the buffer is backscrolled
 	
-	pos = FindLine(row);
+	pos = Con_FindLine (row);
 	// cache info
 	con_disp.line = row;
 	con_disp.pos = pos;
 	
-	// draw console text
+// draw console text
 	if (rows > 0 && pos != -1)
 	{
 		while (rows--)
