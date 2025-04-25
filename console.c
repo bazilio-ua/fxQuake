@@ -119,10 +119,11 @@ adapted from quake2 source
 */
 void Con_Dump_f (void)
 {
-	int		l, x;
-	char	*line;
+//	int		l, x;
+	int		pos, size, out;
+//	char	*line;
 	FILE	*f;
-	char	buffer[1024];
+	char	buffer[MAX_PRINTMSG]; // was 1024
 	char	name[MAX_OSPATH];
 
 	// there is a security risk in writing files with an arbitrary filename. so,
@@ -137,34 +138,59 @@ void Con_Dump_f (void)
 		return;
 	}
 
-	// skip initial empty lines
-	for (l = con_current - con_totallines + 1 ; l <= con_current ; l++)
-	{
-		line = con_text + (l%con_totallines)*con_linewidth;
-		for (x=0 ; x<con_linewidth ; x++)
-			if (line[x] != ' ')
-				break;
-		if (x != con_linewidth)
-			break;
-	}
+//	// skip initial empty lines
+//	for (l = con_current - con_totallines + 1 ; l <= con_current ; l++)
+//	{
+//		line = con_text + (l%con_totallines)*con_linewidth;
+//		for (x=0 ; x<con_linewidth ; x++)
+//			if (line[x] != ' ')
+//				break;
+//		if (x != con_linewidth)
+//			break;
+//	}
 
 	// write the remaining lines
-	buffer[con_linewidth] = 0;
-	for ( ; l <= con_current ; l++)
-	{
-		line = con_text + (l%con_totallines)*con_linewidth;
-		strncpy (buffer, line, con_linewidth);
-		for (x=con_linewidth-1 ; x>=0 ; x--)
-		{
-			if (buffer[x] == ' ')
-				buffer[x] = 0;
-			else
-				break;
-		}
-		for (x=0; buffer[x]; x++)
-			buffer[x] &= 0x7f;
+//	buffer[con_linewidth] = 0;
+//	for ( ; l <= con_current ; l++)
+//	{
+//		line = con_text + (l%con_totallines)*con_linewidth;
+//		strncpy (buffer, line, con_linewidth);
+//		for (x=con_linewidth-1 ; x>=0 ; x--)
+//		{
+//			if (buffer[x] == ' ')
+//				buffer[x] = 0;
+//			else
+//				break;
+//		}
+//		for (x=0; buffer[x]; x++)
+//			buffer[x] &= 0x7f;
+//
+//		fprintf (f, "%s\n", buffer);
+//	}
 
-		fprintf (f, "%s\n", buffer);
+	pos = con_startpos;
+	size = con_endpos - pos;
+	if (size < 0)
+		size += CON_TEXTSIZE;
+
+	out = 0;
+	while (size) // write the remaining lines
+	{
+		char c = con_text[pos++];
+		if (pos >= CON_TEXTSIZE)
+			pos -= CON_TEXTSIZE;
+		size--;
+
+		if (c == WRAP_CHAR)
+			c = ' '; // unwrap words
+		c = sys_char_map[c]; 			// translate to ASCII
+		buffer[out++] = c;
+		if (c == '\n' || out >= sizeof(buffer) - 1 || !size)
+		{
+			buffer[out] = 0;			// ASCII
+			out = 0;
+			fprintf (f, "%s", buffer);
+		}
 	}
 
 	fclose (f);
