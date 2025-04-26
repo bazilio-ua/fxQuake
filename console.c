@@ -434,8 +434,7 @@ If no console is visible, the notify window will pop up.
 */
 void Con_Print (char *txt)
 {
-	char 	c;
-	char	mask;
+	char 	c, mask;
 
 	if (txt[0] == 1 || txt[0] == 2)
 	{
