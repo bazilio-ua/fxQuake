@@ -121,6 +121,7 @@ void Con_Dump_f (void)
 {
 	int		pos, size, out;
 	FILE	*f;
+	char	c;
 	char	buffer[MAX_PRINTMSG]; // was 1024
 	char	name[MAX_OSPATH];
 
@@ -144,8 +145,8 @@ void Con_Dump_f (void)
 	out = 0;
 	while (size) // write the remaining lines
 	{
-		char c = con_text[pos++];
-		if (pos >= CON_TEXTSIZE)
+		c = con_text[pos];
+		if (++pos >= CON_TEXTSIZE)
 			pos -= CON_TEXTSIZE;
 		size--;
 
@@ -172,10 +173,7 @@ Con_ClearNotify
 */
 void Con_ClearNotify (void)
 {
-	int		i;
-	
-	for (i=0 ; i<NUM_CON_TIMES ; i++)
-		con_times[i] = 0;
+	memset (con_times, 0, sizeof(con_times));
 }
 
 
