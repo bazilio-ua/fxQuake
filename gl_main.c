@@ -522,9 +522,9 @@ extern vec3_t	lightcolor; // replaces "float shadelight" for lit support
 
 // precalculated dot products for quantized angles
 #define SHADEDOT_QUANT		16
-float	r_avertexnormal_dots[SHADEDOT_QUANT][256] =
+float	r_avertexnormal_dots[SHADEDOT_QUANT][256] = {
 #include "anorm_dots.h"
-;
+};
 
 float	*shadedots = r_avertexnormal_dots[0];
 
