@@ -781,6 +781,12 @@ void VID_Shutdown (void)
 			if (err != kCGErrorSuccess)
 				Con_Printf("Unable to release display\n");
 		}
+		
+		if (desktopMode)
+			CGDisplayModeRelease (desktopMode);
+		
+		if (displayModes)
+			CFRelease (displayModes);
     }
     
     vid.fullscreen = false;
