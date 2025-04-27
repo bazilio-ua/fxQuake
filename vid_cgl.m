@@ -173,6 +173,7 @@ qboolean VID_CheckMode (int width, int height, int refreshrate, int bpp, qboolea
 	return true;
 }
 
+void VID_SyncCvars (void);
 /*
 ================
 VID_SetMode
@@ -376,8 +377,13 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 	vid.recalc_refdef = true; // force a surface cache flush
 	
 	
+	//
+	// keep cvars in line with actual mode
+	//
+	VID_SyncCvars ();
+
 	// no pending changes
-	vid_changed = false;
+//	vid_changed = false;
 	
 	[pool release];
 }
@@ -389,6 +395,9 @@ VID_SyncCvars -- johnfitz -- set vid cvars to match current video mode
 */
 void VID_SyncCvars (void)
 {
+	if (vid_locked || !vid_changed)
+		return;
+
 	Cvar_SetValue ("vid_width", vid.width);
 	Cvar_SetValue ("vid_height", vid.height);
 	Cvar_SetValue ("vid_bpp", vid.bpp);
@@ -480,10 +489,10 @@ void VID_Restart (void)
 	// warpimage needs to be recalculated
 	TexMgr_UploadWarpImage ();
 	
-	//
-	// keep cvars in line with actual mode
-	//
-	VID_SyncCvars ();
+//	//
+//	// keep cvars in line with actual mode
+//	//
+//	VID_SyncCvars ();
 	
 }
 
@@ -524,7 +533,7 @@ VID_Unlock -- johnfitz
 void VID_Unlock (void)
 {
 	vid_locked = false;
-	VID_SyncCvars ();
+//	VID_SyncCvars ();
 }
 
 
@@ -728,6 +737,7 @@ void VID_Init (void)
 	//QuakeSpasm: current vid settings should override config file settings.
 	//so we have to lock the vid mode from now until after all config files are read.
 //	vid_locked = true;
+//	VID_Lock ();
 }
 
 /*

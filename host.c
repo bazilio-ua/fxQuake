@@ -326,6 +326,8 @@ void Host_WriteConfiguration (char *configname)
 		Key_WriteBindings (f);
 		Cvar_WriteVariables (f);
 
+//		fprintf (f, "vid_restart\n"); //johnfitz -- extra commands to preserve state
+//
 		if (in_mlook.state & 1)		//if mlook was down, keep it that way
 			fprintf (f, "+mlook\n");
 
@@ -888,6 +890,10 @@ void Host_Init (void)
 	if (cls.state != ca_dedicated)
 	{
 		VID_Init ();
+		// QuakeSpasm: current vid settings should override config file settings.
+		// so we have to lock the vid mode from now until after all config files are read.
+		Cbuf_AddText ("\n\nvid_lock\n");
+		Cbuf_Execute ();
 		TexMgr_Init (); //johnfitz
 		Draw_Init ();
 		SCR_Init ();
@@ -898,8 +904,6 @@ void Host_Init (void)
 		CL_Init ();
 		IN_Init ();
 	}
-
-	Cbuf_InsertText ("exec quake.rc\n");
 
 	Hunk_AllocName (0, "-HOST_HUNKLEVEL-");
 	host_hunklevel = Hunk_LowMark ();
@@ -912,8 +916,22 @@ void Host_Init (void)
 	else
 		Con_Printf ("\n\35\36\36\36\36\37 fxQuake initialized \35\36\36\36\36\37\n\n");
 
+	if (cls.state != ca_dedicated)
+	{
+		Cbuf_InsertText ("exec quake.rc\n");
+		// johnfitz -- in case the vid mode was locked during vid_init, we can unlock it now.
+		// note: two leading newlines because the command buffer swallows one of them.
+		Cbuf_AddText ("\n\nvid_unlock\n");
+		
+		// FIXME: try vid restart, if neeeded, here? instead write it in configuration
+		Cbuf_AddText ("vid_restart\n"); //johnfitz -- extra commands to preserve state
+	}
+
 	if (cls.state == ca_dedicated)
 	{
+		Cbuf_AddText ("exec autoexec.cfg\n");
+		Cbuf_AddText ("stuffcmds");
+		Cbuf_Execute ();
 		if (!sv.active)
 			Cbuf_AddText ("map start\n");
 	}
