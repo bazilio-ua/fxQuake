@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		4215AFEB1FC76F8800064F60 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4215AFEA1FC76F8800064F60 /* AudioToolbox.framework */; };
+		425D10F82DBFCF4C00D5245B /* config.c in Sources */ = {isa = PBXBuildFile; fileRef = 425D10F72DBFCF4C00D5245B /* config.c */; };
 		428B32831FD48E7D00E5197A /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4215AFED1FC7736D00064F60 /* AudioUnit.framework */; };
 		428DD5402D5D0173002D6049 /* gl_bloom.c in Sources */ = {isa = PBXBuildFile; fileRef = 428DD53F2D5D0173002D6049 /* gl_bloom.c */; };
 		428DD5422D5D0FB1002D6049 /* gl_fog.c in Sources */ = {isa = PBXBuildFile; fileRef = 428DD5412D5D0FB1002D6049 /* gl_fog.c */; };
@@ -78,6 +79,8 @@
 /* Begin PBXFileReference section */
 		4215AFEA1FC76F8800064F60 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		4215AFED1FC7736D00064F60 /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
+		425D10F62DBFCF4C00D5245B /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = config.h; sourceTree = "<group>"; };
+		425D10F72DBFCF4C00D5245B /* config.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = config.c; sourceTree = "<group>"; };
 		4273FAB01DFF2EDA005DC9A7 /* anorm_dots.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = anorm_dots.h; sourceTree = SOURCE_ROOT; };
 		4273FAB11DFF2EDA005DC9A7 /* anorms.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = anorms.h; sourceTree = SOURCE_ROOT; };
 		4273FAB21DFF2EDA005DC9A7 /* bspfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bspfile.h; sourceTree = SOURCE_ROOT; };
@@ -273,6 +276,8 @@
 				4273FABD1DFF2EDA005DC9A7 /* cmd.h */,
 				4273FABE1DFF2EDA005DC9A7 /* common.c */,
 				4273FABF1DFF2EDA005DC9A7 /* common.h */,
+				425D10F72DBFCF4C00D5245B /* config.c */,
+				425D10F62DBFCF4C00D5245B /* config.h */,
 				4273FAC01DFF2EDA005DC9A7 /* console.c */,
 				4273FAC11DFF2EDA005DC9A7 /* console.h */,
 				4273FAC21DFF2EDA005DC9A7 /* crc.c */,
@@ -479,6 +484,7 @@
 				42B718491EA2C0F700BD51E1 /* gl_mesh.c in Sources */,
 				428DD5422D5D0FB1002D6049 /* gl_fog.c in Sources */,
 				42B7184A1EA2C0F700BD51E1 /* gl_misc.c in Sources */,
+				425D10F82DBFCF4C00D5245B /* config.c in Sources */,
 				42B7184B1EA2C0F700BD51E1 /* gl_model.c in Sources */,
 				42B7184C1EA2C0F700BD51E1 /* gl_part.c in Sources */,
 				42B7184D1EA2C0F700BD51E1 /* gl_screen.c in Sources */,
