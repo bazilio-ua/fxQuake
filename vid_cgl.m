@@ -555,6 +555,15 @@ void VID_Init (void)
     uint32_t displayCount;
     uint32_t displayIndex = 0;
 	
+	char *cvars[] = {
+		"vid_fullscreen",
+		"vid_width",
+		"vid_height",
+		"vid_refreshrate",
+		"vid_bpp",
+		"vid_stretched"
+	};
+	int cvarscount = sizeof(cvars)/sizeof(cvars[0]);
 	
 	Cvar_RegisterVariableCallback (&vid_fullscreen, VID_Changed); //johnfitz
 	Cvar_RegisterVariableCallback (&vid_width, VID_Changed); //johnfitz
@@ -568,6 +577,12 @@ void VID_Init (void)
 	Cmd_AddCommand ("vid_restart", VID_Restart); //johnfitz
 	Cmd_AddCommand ("vid_test", VID_Test); //johnfitz
 	
+	if (CFG_OpenConfig("config.cfg") == 0)
+	{
+		CFG_ReadCvars(cvars, cvarscount);
+		CFG_CloseConfig();
+	}
+	CFG_ReadCvarOverrides(cvars, cvarscount);
 	
 	width = (int)vid_width.value;
 	height = (int)vid_height.value;

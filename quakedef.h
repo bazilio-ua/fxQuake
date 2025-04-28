@@ -239,6 +239,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "world.h"
 #include "keys.h"
 #include "console.h"
+#include "config.h"
 #include "view.h"
 #include "menu.h"
 #include "crc.h"
