@@ -38,6 +38,7 @@ int             static_registered = 1;  // only for startup check, then set
 
 void COM_InitFilesystem (void);
 void COM_Path_f (void);
+void COM_Game_f (void);
 
 // if a packfile directory differs from this, it is assumed to be hacked
 #define PAK0_COUNT_V091		308		// id1/pak0.pak - v0.91/0.92, not supported
@@ -951,7 +952,6 @@ void COM_InitArgv (int argc, char **argv)
 		nehahra = true;
 }
 
-void COM_Game_f (void);
 
 /*
 ================

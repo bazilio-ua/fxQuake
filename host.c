@@ -923,8 +923,8 @@ void Host_Init (void)
 		// note: two leading newlines because the command buffer swallows one of them.
 		Cbuf_AddText ("\n\nvid_unlock\n");
 		
-		// FIXME: try vid restart, if neeeded, here? instead write it in configuration
-		Cbuf_AddText ("vid_restart\n"); //johnfitz -- extra commands to preserve state
+//		// FIXME: try vid restart, if neeeded, here? instead write it in configuration
+//		Cbuf_AddText ("vid_restart\n"); //johnfitz -- extra commands to preserve state
 	}
 
 	if (cls.state == ca_dedicated)

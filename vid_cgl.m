@@ -173,7 +173,63 @@ qboolean VID_CheckMode (int width, int height, int refreshrate, int bpp, qboolea
 	return true;
 }
 
-void VID_SyncCvars (void);
+/*
+================
+VID_SyncCvars -- johnfitz -- set vid cvars to match current video mode
+================
+*/
+void VID_SyncCvars (void)
+{
+	if (vid_locked || !vid_changed)
+		return;
+
+	Cvar_SetValue ("vid_width", vid.width);
+	Cvar_SetValue ("vid_height", vid.height);
+	Cvar_SetValue ("vid_bpp", vid.bpp);
+	Cvar_SetValue ("vid_refreshrate", vid.refreshrate);
+	Cvar_Set ("vid_fullscreen", (vid.fullscreen) ? "1" : "0");
+	Cvar_Set ("vid_stretched", (vid.stretched) ? "1" : "0");
+	
+	vid_changed = false;
+}
+
+/*
+===================
+VID_Changed -- kristian -- notify us that a value has changed that requires a vid_restart
+===================
+*/
+void VID_Changed (void)
+{
+	vid_changed = true;
+}
+
+/*
+================
+VID_Lock -- ericw
+
+Subsequent changes to vid_* mode settings, and vid_restart commands, will
+be ignored until the "vid_unlock" command is run.
+
+Used when changing gamedirs so the current settings override what was saved
+in the config.cfg.
+================
+*/
+void VID_Lock (void)
+{
+	vid_locked = true;
+}
+
+/*
+================
+VID_Unlock -- johnfitz
+================
+*/
+void VID_Unlock (void)
+{
+	vid_locked = false;
+//	VID_SyncCvars ();
+}
+
 /*
 ================
 VID_SetMode
@@ -388,35 +444,6 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 	[pool release];
 }
 
-/*
-================
-VID_SyncCvars -- johnfitz -- set vid cvars to match current video mode
-================
-*/
-void VID_SyncCvars (void)
-{
-	if (vid_locked || !vid_changed)
-		return;
-
-	Cvar_SetValue ("vid_width", vid.width);
-	Cvar_SetValue ("vid_height", vid.height);
-	Cvar_SetValue ("vid_bpp", vid.bpp);
-	Cvar_SetValue ("vid_refreshrate", vid.refreshrate);
-	Cvar_Set ("vid_fullscreen", (vid.fullscreen) ? "1" : "0");
-	Cvar_Set ("vid_stretched", (vid.stretched) ? "1" : "0");
-	
-	vid_changed = false;
-}
-
-/*
-===================
-VID_Changed -- kristian -- notify us that a value has changed that requires a vid_restart
-===================
-*/
-void VID_Changed (void)
-{
-	vid_changed = true;
-}
 
 /*
 ===================
@@ -507,33 +534,6 @@ void VID_Test (void)
 	
 	if (vid_locked || !vid_changed)
 		return;
-}
-
-/*
-================
-VID_Lock -- ericw
-
-Subsequent changes to vid_* mode settings, and vid_restart commands, will
-be ignored until the "vid_unlock" command is run.
-
-Used when changing gamedirs so the current settings override what was saved
-in the config.cfg.
-================
-*/
-void VID_Lock (void)
-{
-	vid_locked = true;
-}
-
-/*
-================
-VID_Unlock -- johnfitz
-================
-*/
-void VID_Unlock (void)
-{
-	vid_locked = false;
-//	VID_SyncCvars ();
 }
 
 
