@@ -1107,7 +1107,7 @@ CL_Init
 */
 void CL_Init (void)
 {	
-	SZ_Alloc (&cls.message, 8192); //1024, possibly dependant on CMDTEXTSIZE
+	SZ_Alloc (&cls.message, 8192); //1024, possibly dependant on CMD_TEXTSIZE
 
 	CL_InitInput ();
 	CL_InitTEnts ();

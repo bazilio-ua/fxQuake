@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 void Cmd_ForwardToServer (void);
 
-#define	CMDTEXTSIZE	65536	// space for commands and script files
+#define	CMD_TEXTSIZE	262144	// space for commands and script files. spike -- orig. was 8192, but modern configs can be _HUGE_, at least if they contain lots of comments/docs for things.
 #define	MAX_ALIAS_NAME	32
 
 typedef struct cmdalias_s
@@ -69,7 +69,7 @@ Cbuf_Init
 */
 void Cbuf_Init (void)
 {
-	SZ_Alloc (&cmd_text, CMDTEXTSIZE); //8192	// space for commands and script files
+	SZ_Alloc (&cmd_text, CMD_TEXTSIZE);
 }
 
 
@@ -88,22 +88,22 @@ void Cbuf_AddText (char *text)
 
 	if (cmd_text.cursize + l >= cmd_text.maxsize)
 	{
-		int  i, lth;
+		int  i, l2;
 		char text2[64];
 
 		// Make text reasonably short and printable
 		strncpy (text2, text, sizeof(text2) - 1);
 		text2[sizeof(text2) - 1] = 0;
 
-		lth = strlen (text2);
+		l2 = strlen (text2);
 
-		for (i = 0; i < lth; ++i)
+		for (i = 0; i < l2; ++i)
 		{
 			if (!isprint(text2[i]))
 				text2[i] = ' ';
 		}
 
-		if (lth == sizeof(text2) - 1)
+		if (l2 == sizeof(text2) - 1)
 			strcpy (&text2[sizeof(text2) - 4], "...");
 
 		Con_SafePrintf ("Cbuf_AddText: overflow for '%s' (%d, max = %d)\n", text2, cmd_text.cursize + l, cmd_text.maxsize);
@@ -126,11 +126,11 @@ FIXME: actually change the command buffer to do less copying
 void Cbuf_InsertText (char *text)
 {
 	char	*temp;
-	int	templen, len;
+	int	templen, l;
 
-	len = strlen (text);
+	l = strlen (text);
 
-	if (len == 0)
+	if (l == 0)
 		return;
 
 // copy off any commands still remaining in the exec buffer
@@ -148,7 +148,7 @@ void Cbuf_InsertText (char *text)
 	Cbuf_AddText (text);
 
 // Add newline if missing
-	if (text[len - 1] != '\n')
+	if (text[l - 1] != '\n')
 		Cbuf_AddText ("\n");
 
 // add the copied off data
@@ -166,9 +166,9 @@ Cbuf_Execute
 */
 void Cbuf_Execute (void)
 {
-	int		i;
+	int		l;
 	char	*text;
-	char	line[CMDTEXTSIZE];
+	char	line[CMD_TEXTSIZE];
 	int		quotes;
 	
 	while (cmd_text.cursize)
@@ -177,31 +177,30 @@ void Cbuf_Execute (void)
 		text = (char *)cmd_text.data;
 
 		quotes = 0;
-		for (i=0 ; i< cmd_text.cursize ; i++)
+		for (l=0 ; l< cmd_text.cursize ; l++)
 		{
-			if (text[i] == '"')
+			if (text[l] == '"')
 				quotes++;
-			if ( !(quotes&1) &&  text[i] == ';')
+			if ( !(quotes&1) &&  text[l] == ';')
 				break;	// don't break if inside a quoted string
-			if (text[i] == '\n')
+			if (text[l] == '\n')
 				break;
 		}
-			
-				
-		memcpy (line, text, i);
-		line[i] = 0;
+		
+		memcpy (line, text, l);
+		line[l] = 0;
 		
 // delete the text from the command buffer and move remaining commands down
 // this is necessary because commands (exec, alias) can insert data at the
 // beginning of the text buffer
 
-		if (i == cmd_text.cursize)
+		if (l == cmd_text.cursize)
 			cmd_text.cursize = 0;
 		else
 		{
-			i++;
-			cmd_text.cursize -= i;
-			memmove (text, text+i, cmd_text.cursize); // using memcpy within the same buffer is not safe, replaced by memmove
+			l++;
+			cmd_text.cursize -= l;
+			memmove (text, text+l, cmd_text.cursize); // using memcpy within the same buffer is not safe, replaced by memmove
 		}
 
 // execute the command line
