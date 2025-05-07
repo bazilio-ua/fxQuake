@@ -2051,19 +2051,13 @@ void COM_Game_f (void)
 		Host_ConfigListRebuild ();
 		
 		Con_Printf("\"game\" changed to \"%s\"\n", COM_SkipPath(com_gamedir));
-
-//		TODO: vid lock
-//		block_drawing = true;
-//		VID_Lock ();
+		
 		Cbuf_AddText ("vid_lock\n");
 		Cbuf_Execute ();
 		
 		Cbuf_AddText ("exec quake.rc\n");
 		
-//		TODO: vid unlock
-//		block_drawing = false;
 		Cbuf_AddText ("vid_unlock\n");
-		
 	}
 	else // Diplay the current gamedir
 		Con_Printf ("\"game\" is \"%s\"\n", COM_SkipPath(com_gamedir));

@@ -748,11 +748,6 @@ void VID_Init (void)
 	GL_SetupState ();
 	
 	GL_SwapInterval ();
-	
-	//QuakeSpasm: current vid settings should override config file settings.
-	//so we have to lock the vid mode from now until after all config files are read.
-//	vid_locked = true;
-//	VID_Lock ();
 }
 
 /*
