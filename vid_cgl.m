@@ -237,7 +237,6 @@ VID_SetMode
 */
 void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean fullscreen, qboolean stretched)
 {
-	
 	int		temp;
 	int		depth, stencil;
 	
@@ -249,8 +248,6 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 	temp = scr_disabled_for_loading;
 	scr_disabled_for_loading = true;
 	
-	
-	
 	if (glcontext) {
 		[NSOpenGLContext clearCurrentContext];
 		
@@ -259,7 +256,6 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 		[glcontext release];
 		glcontext = nil;
 	}
-	
 	
 	if (bpp == 32) {
 		depth = 24;
@@ -276,17 +272,14 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 		NSOpenGLPFAClosestPolicy,
 		NSOpenGLPFAAccelerated,
 		NSOpenGLPFADoubleBuffer,
-		
 		NSOpenGLPFADepthSize, depth,
 		NSOpenGLPFAAlphaSize, 0,
 		NSOpenGLPFAStencilSize, stencil,
 		NSOpenGLPFAAccumSize, 0,
-		
 		NSOpenGLPFAColorSize, bpp,
 		NSOpenGLPFAScreenMask, CGDisplayIDToOpenGLDisplayMask(display),
 		0
 	};
-	
 	
 	NSOpenGLPixelFormat *pixelFormat = [[NSOpenGLPixelFormat alloc] initWithAttributes:pixelAttributes];
 	if (!pixelFormat)
@@ -299,8 +292,6 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 	[glcontext makeCurrentContext];
 	[pixelFormat release];
 	
-	
-	
 	// Switch back to the original screen resolution
 	// We going to window from fullscreen
 	if (!fullscreen && vid.fullscreen) {
@@ -310,7 +301,6 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 				Sys_Error("Unable to restore display mode");
 		}
 	}
-	
 	
 	// We going to fullscreen from windowed
 	if (fullscreen && !vid.fullscreen) {
@@ -336,8 +326,6 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 		if (err != kCGErrorSuccess)
 			Sys_Error("Unable to release display");
 	}
-	
-	
 	
 	if (!window) {
 		window = [[NSWindow alloc] initWithContentRect:NSMakeRect(0, 0, 0, 0)
@@ -369,9 +357,7 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 		[window setFrame:[window frameRectForContentRect:contentRect] display:NO];
 		[window setLevel:NSNormalWindowLevel];
 		[window setTitle:@"fxQuake"];
-		
 	} else {
-		
 		// Switch to the requested resolution
 		err = CGDisplaySetDisplayMode(display, VID_GetMatchingDisplayMode (width, height, refreshrate, bpp, stretched), NULL); // Do the physical switch
 		if (err != kCGErrorSuccess)
@@ -384,7 +370,6 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 		[window setStyleMask:NSBorderlessWindowMask];
 		[window setFrame:[window frameRectForContentRect:contentRect] display:YES];
 		[window setLevel:CGShieldingWindowLevel()];
-		
 	}
 	
 	[window makeKeyAndOrderFront:nil]; // show
@@ -402,10 +387,7 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 	// Direct the context to draw in this window
 	[glcontext setView:contentView];
 	
-	
-	
 	scr_disabled_for_loading = temp;
-	
 	
 	Con_SafePrintf ("Video mode %dx%dx%d %dHz %s%s initialized\n",
 					width,
@@ -423,15 +405,13 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 	vid.fullscreen = fullscreen;
 	vid.stretched = stretched;
 	
+	vid.conwidth = vid.width;
+	vid.conheight = vid.height;
 	
 	vid.numpages = 2;
 	vid.colormap = host_colormap;
 	
-	vid.conwidth = vid.width;
-	vid.conheight = vid.height;
-	
 	vid.recalc_refdef = true; // force a surface cache flush
-	
 	
 	//
 	// keep cvars in line with actual mode
@@ -480,12 +460,10 @@ void VID_Restart (void)
 		return;
 	}
 	
-	
 	// textures are invalid after mode change,
 	// we destroy and re-create GL context,
 	// so we delete all GL textures now.
 	TexMgr_DeleteTextures ();
-	
 	
 	vid_activewindow = false;
 	vid_hiddenwindow = true;
@@ -501,7 +479,6 @@ void VID_Restart (void)
 	vid_hiddenwindow = false;
 	vid_notifywindow = true;
 	[[NSApp delegate] checkActive];
-	
 	
 	GL_GetPixelFormatInfo ();
 	GL_GetGLInfo ();
@@ -520,7 +497,6 @@ void VID_Restart (void)
 //	// keep cvars in line with actual mode
 //	//
 //	VID_SyncCvars ();
-	
 }
 
 /*
@@ -591,13 +567,11 @@ void VID_Init (void)
 	fullscreen = (int)vid_fullscreen.value;
 	stretched = (int)vid_stretched.value;
 	
-	
     // Get the active display list
     err = CGGetActiveDisplayList(MAX_DISPLAYS, displays, &displayCount);
     if (err != kCGErrorSuccess)
         Sys_Error("Cannot get display list");
     
-	
     // check for command-line display number
     if ((i = COM_CheckParm("-display"))) 
     {
@@ -701,13 +675,11 @@ void VID_Init (void)
 	if (COM_CheckParm("-fullsbar"))
 		fullsbardraw = true;
 	
-	
     // get video mode list
     displayModes = CGDisplayCopyAllDisplayModes(display, NULL);
     if (!displayModes)
         Sys_Error("Display available modes returned NULL");
 	displayModesCount = CFArrayGetCount(displayModes);
-	
 	
 	if (!VID_CheckMode(width, height, refreshrate, bpp, fullscreen, stretched))
 	{
@@ -739,9 +711,7 @@ void VID_Init (void)
 	vid_notifywindow = true;
 	[[NSApp delegate] checkActive];
 	
-	
 	vid_initialized = true;
-	
 	
 	GL_GetPixelFormatInfo ();
 	GL_Init ();
@@ -760,7 +730,7 @@ called at shutdown
 void VID_Shutdown (void)
 {
 	CGError err;
-
+	
     if (display) {
         
         if (glcontext) {

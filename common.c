@@ -2053,10 +2053,7 @@ void COM_Game_f (void)
 		Con_Printf("\"game\" changed to \"%s\"\n", COM_SkipPath(com_gamedir));
 		
 		Cbuf_AddText ("vid_lock\n");
-//		Cbuf_Execute ();
-		
 		Cbuf_AddText ("exec quake.rc\n");
-		
 		Cbuf_AddText ("vid_unlock\n");
 	}
 	else // Diplay the current gamedir
