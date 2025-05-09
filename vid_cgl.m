@@ -227,7 +227,6 @@ VID_Unlock -- johnfitz
 void VID_Unlock (void)
 {
 	vid_locked = false;
-//	VID_SyncCvars ();
 }
 
 /*
@@ -336,7 +335,7 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 	}
 	
 	// We should exit from windowed fullscreen mode before any mode change
-	// NSFullScreenWindowMask flag isn't exist in OS X 10.6 SDK
+	// NSFullScreenWindowMask flag is absent in OS X 10.6 SDK
 	if (([window styleMask] & (1 << 14)) == (1 << 14)) {
 		if ([window respondsToSelector:@selector(toggleFullScreen:)])
 			[window toggleFullScreen:nil];
@@ -413,13 +412,8 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 	
 	vid.recalc_refdef = true; // force a surface cache flush
 	
-	//
 	// keep cvars in line with actual mode
-	//
 	VID_SyncCvars ();
-
-	// no pending changes
-//	vid_changed = false;
 	
 	[pool release];
 }
