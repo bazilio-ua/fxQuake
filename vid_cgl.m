@@ -486,11 +486,6 @@ void VID_Restart (void)
 	
 	// warpimage needs to be recalculated
 	TexMgr_UploadWarpImage ();
-	
-//	//
-//	// keep cvars in line with actual mode
-//	//
-//	VID_SyncCvars ();
 }
 
 /*
