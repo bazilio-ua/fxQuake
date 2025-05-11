@@ -495,10 +495,37 @@ VID_Test -- johnfitz -- like vid_restart, but asks for confirmation after switch
 */
 void VID_Test (void)
 {
-	int old_width, old_height, old_refreshrate, old_bpp, old_fullscreen, old_stretched;
+	int old_width, old_height, old_refreshrate, old_bpp;
+	qboolean old_fullscreen, old_stretched;
 	
 	if (vid_locked || !vid_changed)
 		return;
+	
+	//
+	// now try the switch
+	//
+	old_width = vid.width;
+	old_height = vid.height;
+	old_refreshrate = vid.refreshrate;
+	old_bpp = vid.bpp;
+	old_fullscreen = vid.fullscreen;
+	old_stretched = vid.stretched;
+	
+	VID_Restart ();
+	
+	//pop up confirmation dialoge
+	if (!SCR_ModalMessage("Would you like to keep this\nvideo mode? (y/n)\n", 5.0f))
+	{
+		//revert cvars and mode
+		Cvar_SetValue ("vid_width", old_width);
+		Cvar_SetValue ("vid_height", old_height);
+		Cvar_SetValue ("vid_bpp", old_bpp);
+		Cvar_SetValue ("vid_refreshrate", old_refreshrate);
+		Cvar_Set ("vid_fullscreen", (old_fullscreen) ? "1" : "0");
+		Cvar_Set ("vid_stretched", (old_stretched) ? "1" : "0");
+		
+		VID_Restart ();
+	}
 }
 
 
