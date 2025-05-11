@@ -62,6 +62,9 @@ void	VID_Init (void);
 void	VID_Shutdown (void);
 // Called at shutdown
 
+void	VID_Toggle (void);
+// Called by alt-return key binding
+
 //int		VID_SetMode (int modenum);
 // sets the mode; only used by the Quake engine for resetting to mode 0 (the
 // base mode) on memory allocation failures

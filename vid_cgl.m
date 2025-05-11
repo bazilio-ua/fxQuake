@@ -436,8 +436,8 @@ void VID_Restart (void)
 	height = (int)vid_height.value;
 	refreshrate = (int)vid_refreshrate.value;
 	bpp = (int)vid_bpp.value;
-	fullscreen = (int)vid_fullscreen.value;
-	stretched = (int)vid_stretched.value;
+	fullscreen = (qboolean)vid_fullscreen.value;
+	stretched = (qboolean)vid_stretched.value;
 
 	//
 	// validate new mode
@@ -528,6 +528,35 @@ void VID_Test (void)
 	}
 }
 
+/*
+================
+VID_Toggle -- new proc by S.A., called by alt-return key binding.
+
+EER1 -- rewritten
+================
+*/
+void	VID_Toggle (void)
+{
+	qboolean do_toggle;
+	qboolean fullscreen;
+	
+	S_ClearBuffer ();
+	
+	fullscreen = !(qboolean)vid_fullscreen.value;
+	do_toggle = VID_CheckMode((int)vid_width.value,
+							  (int)vid_height.value,
+							  (int)vid_refreshrate.value,
+							  (int)vid_bpp.value,
+							  fullscreen,
+							  (qboolean)vid_stretched.value);
+	
+	if (do_toggle)
+	{
+		Cvar_Set ("vid_fullscreen", (fullscreen) ? "1" : "0");
+		Cbuf_AddText ("vid_restart\n");
+	}
+}
+
 
 #define MAX_DISPLAYS 32
 
@@ -580,8 +609,8 @@ void VID_Init (void)
 	height = (int)vid_height.value;
 	refreshrate = (int)vid_refreshrate.value;
 	bpp = (int)vid_bpp.value;
-	fullscreen = (int)vid_fullscreen.value;
-	stretched = (int)vid_stretched.value;
+	fullscreen = (qboolean)vid_fullscreen.value;
+	stretched = (qboolean)vid_stretched.value;
 	
     // Get the active display list
     err = CGGetActiveDisplayList(MAX_DISPLAYS, displays, &displayCount);
@@ -703,8 +732,8 @@ void VID_Init (void)
 		height = (int)vid_height.value;
 		refreshrate = (int)vid_refreshrate.value;
 		bpp = (int)vid_bpp.value;
-		fullscreen = (int)vid_fullscreen.value;
-		stretched = (int)vid_stretched.value;
+		fullscreen = (qboolean)vid_fullscreen.value;
+		stretched = (qboolean)vid_stretched.value;
 	}
 	
 	if (!VID_CheckMode(width, height, refreshrate, bpp, fullscreen, stretched))

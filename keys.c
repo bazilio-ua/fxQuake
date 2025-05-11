@@ -915,6 +915,15 @@ void Key_Event (int key, qboolean down)
 		return;		// just catching keys for Con_NotifyBox
 
 //
+// handle fullscreen toggle
+//
+	if (down && (key == K_ENTER || key == K_KP_ENTER) && keydown[K_ALT])
+	{
+		VID_Toggle ();
+		return;
+	}
+
+//
 // handle autorepeats and stray key up events
 //
 	if (down)
