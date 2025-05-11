@@ -14,6 +14,7 @@
 		421A5DC92D81AE9300168C38 /* gl_warp.c in Sources */ = {isa = PBXBuildFile; fileRef = 421A5DC82D81AE9300168C38 /* gl_warp.c */; };
 		421A5DCB2D81AEAB00168C38 /* image.c in Sources */ = {isa = PBXBuildFile; fileRef = 421A5DCA2D81AEAB00168C38 /* image.c */; };
 		428B32831FD48E7D00E5197A /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4215AFED1FC7736D00064F60 /* AudioUnit.framework */; };
+		429F18B92DD1570400BD8918 /* config.c in Sources */ = {isa = PBXBuildFile; fileRef = 429F18B82DD1570400BD8918 /* config.c */; };
 		42A7FC6C1EA2BA88002A1C29 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 428D9ED51DFF2769000ACF30 /* Cocoa.framework */; };
 		42B718371EA2C0E400BD51E1 /* cd_mac.m in Sources */ = {isa = PBXBuildFile; fileRef = 42F16D141E01DC28001659BD /* cd_mac.m */; };
 		42B718381EA2C0E400BD51E1 /* chase.c in Sources */ = {isa = PBXBuildFile; fileRef = 4273FAB51DFF2EDA005DC9A7 /* chase.c */; };
@@ -178,6 +179,8 @@
 		428D9ED51DFF2769000ACF30 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		428D9ED81DFF2778000ACF30 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		428D9EDA1DFF2782000ACF30 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
+		429F18B72DD1570400BD8918 /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = config.h; sourceTree = SOURCE_ROOT; };
+		429F18B82DD1570400BD8918 /* config.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = config.c; sourceTree = SOURCE_ROOT; };
 		42A7FC5B1EA2B730002A1C29 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = SOURCE_ROOT; };
 		42A7FC5D1EA2B730002A1C29 /* Credits.rtf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.rtf; path = Credits.rtf; sourceTree = SOURCE_ROOT; };
 		42A7FC5E1EA2B730002A1C29 /* fxQuake.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = fxQuake.xib; sourceTree = SOURCE_ROOT; };
@@ -272,6 +275,8 @@
 				4273FABD1DFF2EDA005DC9A7 /* cmd.h */,
 				4273FABE1DFF2EDA005DC9A7 /* common.c */,
 				4273FABF1DFF2EDA005DC9A7 /* common.h */,
+				429F18B82DD1570400BD8918 /* config.c */,
+				429F18B72DD1570400BD8918 /* config.h */,
 				4273FAC01DFF2EDA005DC9A7 /* console.c */,
 				4273FAC11DFF2EDA005DC9A7 /* console.h */,
 				4273FAC21DFF2EDA005DC9A7 /* crc.c */,
@@ -492,6 +497,7 @@
 				421A5DC72D81AE8400168C38 /* gl_texmgr.c in Sources */,
 				421A5DC92D81AE9300168C38 /* gl_warp.c in Sources */,
 				421A5DCB2D81AEAB00168C38 /* image.c in Sources */,
+				429F18B92DD1570400BD8918 /* config.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
