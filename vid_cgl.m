@@ -514,7 +514,7 @@ void VID_Test (void)
 	VID_Restart ();
 	
 	//pop up confirmation dialoge
-	if (!SCR_ModalMessage("Would you like to keep this\nvideo mode? (y/n)\n", 5.0f))
+	if (!SCR_ModalMessage("Would you like to keep this\nvideo mode?\n", 5.0f))
 	{
 		//revert cvars and mode
 		Cvar_SetValue ("vid_width", old_width);
