@@ -107,6 +107,21 @@ qboolean DisplayModeGetStretchedFlag (CGDisplayModeRef mode)
 	return (CGDisplayModeGetIOFlags(mode) & kDisplayModeStretchedFlag) == kDisplayModeStretchedFlag;
 }
 
+qboolean HasValidDisplayModeFlags (CGDisplayModeRef mode)
+{
+	uint32_t flags = CGDisplayModeGetIOFlags(mode);
+	
+	// Filter out modes which have flags that we don't want
+	if (flags & (kDisplayModeNeverShowFlag | kDisplayModeNotGraphicsQualityFlag))
+		return false;
+	
+	// Filter out modes which don't have flags that we want
+	if (!(flags & kDisplayModeValidFlag) || !(flags & kDisplayModeSafeFlag))
+		return false;
+	
+	return true;
+}
+
 /*
 ================
 VID_GetMatchingDisplayMode
