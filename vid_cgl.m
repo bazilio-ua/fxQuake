@@ -128,7 +128,8 @@ qboolean HasValidDisplayModeFlags (CGDisplayModeRef mode)
 	uint32_t flags = CGDisplayModeGetIOFlags(mode);
 	
 	// Filter out modes which have flags that we don't want
-	if (flags & (kDisplayModeNeverShowFlag | kDisplayModeNotGraphicsQualityFlag))
+	if (flags & (kDisplayModeNeverShowFlag | kDisplayModeNotGraphicsQualityFlag | kDisplayModeInterlacedFlag | kDisplayModeStretchedFlag))
+//	if (flags & (kDisplayModeNeverShowFlag | kDisplayModeNotGraphicsQualityFlag))
 		return false;
 	
 	// Filter out modes which don't have flags that we want
@@ -662,7 +663,7 @@ void VID_InitModelist (void)
 			break;
 		
 		mode = (CGDisplayModeRef)CFArrayGetValueAtIndex(displayModes, modeIndex);
-		if (mode && HasValidDisplayModeFlags(mode))
+		if (mode && HasValidDisplayModeFlags(mode) && DisplayModeGetBitsPerPixel(mode) >= 16)
 		{
 			modelist[nummodes].width = (int)CGDisplayModeGetWidth(mode);
 			modelist[nummodes].height = (int)CGDisplayModeGetHeight(mode);
