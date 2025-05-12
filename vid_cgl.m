@@ -32,6 +32,22 @@ CGDisplayModeRef    desktopMode;
 CFArrayRef          displayModes;
 CFIndex             displayModesCount;
 
+#define MAX_MODE_LIST	600 //johnfitz -- was 30
+#define MAX_BPPS_LIST	5
+#define MAX_RATES_LIST	20
+
+typedef struct
+{
+	int			width;
+	int			height;
+	int			refreshrate;
+	int			bpp;
+	qboolean		stretched;
+} vmode_t;
+
+vmode_t	modelist[MAX_MODE_LIST];
+int		nummodes;
+
 viddef_t vid; // global video state
 
 qboolean vid_locked = false; //johnfitz
@@ -572,6 +588,40 @@ void	VID_Toggle (void)
 	}
 }
 
+//==========================================================================
+//
+//  INIT
+//
+//==========================================================================
+
+/*
+=================
+VID_InitModelist
+=================
+*/
+void VID_InitModelist (void)
+{
+	CGDisplayModeRef mode;
+	CFIndex modeIndex;
+	
+	for (modeIndex = 0; modeIndex < displayModesCount; modeIndex++)
+	{
+		if (nummodes >= MAX_MODE_LIST)
+			break;
+		
+		mode = (CGDisplayModeRef)CFArrayGetValueAtIndex(displayModes, modeIndex);
+		if (mode && HasValidDisplayModeFlags(mode))
+		{
+			modelist[nummodes].width = (int)CGDisplayModeGetWidth(mode);
+			modelist[nummodes].height = (int)CGDisplayModeGetHeight(mode);
+			modelist[nummodes].bpp = DisplayModeGetBitsPerPixel(mode);
+			modelist[nummodes].refreshrate = DisplayModeGetRefreshRate(mode);
+			modelist[nummodes].stretched = DisplayModeGetStretchedFlag(mode);
+			nummodes++;
+		}
+	}
+}
+
 
 #define MAX_DISPLAYS 32
 
@@ -740,6 +790,8 @@ void VID_Init (void)
     if (!displayModes)
         Sys_Error("Display available modes returned NULL");
 	displayModesCount = CFArrayGetCount(displayModes);
+	
+	VID_InitModelist ();
 	
 	if (!VID_CheckMode(width, height, refreshrate, bpp, fullscreen, stretched))
 	{
