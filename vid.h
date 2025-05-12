@@ -36,7 +36,6 @@ typedef struct
 	int				refreshrate;
 	int				bpp;
 	qboolean		fullscreen;
-	qboolean		stretched;
 	int				numpages;
 	qboolean		recalc_refdef;	// if true, recalc vid-based stuff
 	int				conwidth;

@@ -42,7 +42,6 @@ typedef struct
 	int			height;
 	int			refreshrate;
 	int			bpp;
-	qboolean		stretched;
 } vmode_t;
 
 vmode_t	modelist[MAX_MODE_LIST];
@@ -63,7 +62,6 @@ cvar_t		vid_width = {"vid_width", "640", CVAR_ARCHIVE};		// QuakeSpasm, was 800
 cvar_t		vid_height = {"vid_height", "480", CVAR_ARCHIVE};	// QuakeSpasm, was 600
 cvar_t		vid_bpp = {"vid_bpp", "32", CVAR_ARCHIVE};
 cvar_t		vid_refreshrate = {"vid_refreshrate", "60", CVAR_ARCHIVE};
-cvar_t		vid_stretched = {"vid_stretched", "0", CVAR_ARCHIVE};
 //johnfitz
 
 //====================================
@@ -118,18 +116,12 @@ int DisplayModeGetRefreshRate (CGDisplayModeRef mode)
 	return Q_rint(CGDisplayModeGetRefreshRate(mode));
 }
 
-qboolean DisplayModeGetStretchedFlag (CGDisplayModeRef mode)
-{
-	return (CGDisplayModeGetIOFlags(mode) & kDisplayModeStretchedFlag) == kDisplayModeStretchedFlag;
-}
-
 qboolean HasValidDisplayModeFlags (CGDisplayModeRef mode)
 {
 	uint32_t flags = CGDisplayModeGetIOFlags(mode);
 	
 	// Filter out modes which have flags that we don't want
 	if (flags & (kDisplayModeNeverShowFlag | kDisplayModeNotGraphicsQualityFlag | kDisplayModeInterlacedFlag | kDisplayModeStretchedFlag))
-//	if (flags & (kDisplayModeNeverShowFlag | kDisplayModeNotGraphicsQualityFlag))
 		return false;
 	
 	// Filter out modes which don't have flags that we want
@@ -144,7 +136,7 @@ qboolean HasValidDisplayModeFlags (CGDisplayModeRef mode)
 VID_GetMatchingDisplayMode
 ================
 */
-CGDisplayModeRef VID_GetMatchingDisplayMode (int width, int height, int refreshrate, int bpp, qboolean stretched)
+CGDisplayModeRef VID_GetMatchingDisplayMode (int width, int height, int refreshrate, int bpp)
 {
 	CGDisplayModeRef mode;
 	CFIndex modeIndex;
@@ -161,8 +153,7 @@ CGDisplayModeRef VID_GetMatchingDisplayMode (int width, int height, int refreshr
 		if ((int)CGDisplayModeGetWidth(mode) == width &&
 			(int)CGDisplayModeGetHeight(mode) == height &&
 			DisplayModeGetRefreshRate(mode) == refreshrate &&
-			DisplayModeGetBitsPerPixel(mode) == bpp &&
-			DisplayModeGetStretchedFlag(mode) == stretched)
+			DisplayModeGetBitsPerPixel(mode) == bpp)
 		{
 			return mode; // we got it
 		}
@@ -176,17 +167,14 @@ CGDisplayModeRef VID_GetMatchingDisplayMode (int width, int height, int refreshr
 VID_CheckMode
 ================
 */
-qboolean VID_CheckMode (int width, int height, int refreshrate, int bpp, qboolean fullscreen, qboolean stretched)
+qboolean VID_CheckMode (int width, int height, int refreshrate, int bpp, qboolean fullscreen)
 {
 	if (width < 320)
 		return false;
 	
 	if (height < 200)
 		return false;
-	
-	if (!fullscreen && stretched)
-		return false;
-	
+		
 	if (fullscreen && (width < 640 || height < 480))
 		return false;
 	
@@ -199,7 +187,7 @@ qboolean VID_CheckMode (int width, int height, int refreshrate, int bpp, qboolea
 			return false;
 	}
 	
-	if (fullscreen && !VID_GetMatchingDisplayMode (width, height, refreshrate, bpp, stretched))
+	if (fullscreen && !VID_GetMatchingDisplayMode (width, height, refreshrate, bpp))
 		return false;
 	
 	return true;
@@ -220,7 +208,6 @@ void VID_SyncCvars (void)
 	Cvar_SetValue ("vid_bpp", vid.bpp);
 	Cvar_SetValue ("vid_refreshrate", vid.refreshrate);
 	Cvar_Set ("vid_fullscreen", (vid.fullscreen) ? "1" : "0");
-	Cvar_Set ("vid_stretched", (vid.stretched) ? "1" : "0");
 	
 	vid_changed = false;
 }
@@ -266,7 +253,7 @@ void VID_Unlock (void)
 VID_SetMode
 ================
 */
-void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean fullscreen, qboolean stretched)
+void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean fullscreen)
 {
 	int		temp;
 	int		depth, stencil;
@@ -390,7 +377,7 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 		[window setTitle:@"fxQuake"];
 	} else {
 		// Switch to the requested resolution
-		err = CGDisplaySetDisplayMode(display, VID_GetMatchingDisplayMode (width, height, refreshrate, bpp, stretched), NULL); // Do the physical switch
+		err = CGDisplaySetDisplayMode(display, VID_GetMatchingDisplayMode (width, height, refreshrate, bpp), NULL); // Do the physical switch
 		if (err != kCGErrorSuccess)
 			Sys_Error("Unable to set display mode");
 		
@@ -420,12 +407,11 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 	
 	scr_disabled_for_loading = temp;
 	
-	Con_SafePrintf ("Video mode %dx%dx%d %dHz %s%s initialized\n",
+	Con_SafePrintf ("Video mode %dx%dx%d %dHz %s initialized\n",
 					width,
 					height,
 					bpp,
 					refreshrate,
-					stretched ? "(stretched) " : "",
 					fullscreen ? "fullscreen" : "windowed");
 	
 	// set vid parameters
@@ -434,7 +420,6 @@ void VID_SetMode (int width, int height, int refreshrate, int bpp, qboolean full
 	vid.refreshrate = refreshrate;
 	vid.bpp = bpp;
 	vid.fullscreen = fullscreen;
-	vid.stretched = stretched;
 	
 	vid.conwidth = vid.width;
 	vid.conheight = vid.height;
@@ -459,7 +444,7 @@ VID_Restart -- johnfitz -- change video modes on the fly
 void VID_Restart (void)
 {
 	int width, height, refreshrate, bpp;
-	qboolean fullscreen, stretched;
+	qboolean fullscreen;
 
 	if (vid_locked || !vid_changed)
 		return;
@@ -469,19 +454,17 @@ void VID_Restart (void)
 	refreshrate = (int)vid_refreshrate.value;
 	bpp = (int)vid_bpp.value;
 	fullscreen = (qboolean)vid_fullscreen.value;
-	stretched = (qboolean)vid_stretched.value;
 
 	//
 	// validate new mode
 	//
-	if (!VID_CheckMode(width, height, refreshrate, bpp, fullscreen, stretched))
+	if (!VID_CheckMode(width, height, refreshrate, bpp, fullscreen))
 	{
-		Con_SafePrintf ("Video mode %dx%dx%d %dHz %s%s is not a valid mode\n",
+		Con_SafePrintf ("Video mode %dx%dx%d %dHz %s is not a valid mode\n",
 						width,
 						height,
 						bpp,
 						refreshrate,
-						stretched ? "(stretched) " : "",
 						fullscreen ? "fullscreen" : "windowed");
 		return;
 	}
@@ -499,7 +482,7 @@ void VID_Restart (void)
 	//
 	// set new mode
 	//
-	VID_SetMode (width, height, refreshrate, bpp, fullscreen, stretched);
+	VID_SetMode (width, height, refreshrate, bpp, fullscreen);
 	
 	vid_activewindow = true;
 	vid_hiddenwindow = false;
@@ -528,7 +511,7 @@ VID_Test -- johnfitz -- like vid_restart, but asks for confirmation after switch
 void VID_Test (void)
 {
 	int old_width, old_height, old_refreshrate, old_bpp;
-	qboolean old_fullscreen, old_stretched;
+	qboolean old_fullscreen;
 	
 	if (vid_locked || !vid_changed)
 		return;
@@ -541,7 +524,6 @@ void VID_Test (void)
 	old_refreshrate = vid.refreshrate;
 	old_bpp = vid.bpp;
 	old_fullscreen = vid.fullscreen;
-	old_stretched = vid.stretched;
 	
 	VID_Restart ();
 	
@@ -554,7 +536,6 @@ void VID_Test (void)
 		Cvar_SetValue ("vid_bpp", old_bpp);
 		Cvar_SetValue ("vid_refreshrate", old_refreshrate);
 		Cvar_Set ("vid_fullscreen", (old_fullscreen) ? "1" : "0");
-		Cvar_Set ("vid_stretched", (old_stretched) ? "1" : "0");
 		
 		VID_Restart ();
 	}
@@ -579,8 +560,7 @@ void	VID_Toggle (void)
 							  (int)vid_height.value,
 							  (int)vid_refreshrate.value,
 							  (int)vid_bpp.value,
-							  fullscreen,
-							  (qboolean)vid_stretched.value);
+							  fullscreen);
 	
 	if (do_toggle)
 	{
@@ -603,12 +583,11 @@ VID_DescribeCurrentMode_f
 void VID_DescribeCurrentMode_f (void)
 {
 	if (vid_initialized)
-		Con_SafePrintf ("mode %dx%dx%d %dHz %s%s\n",
+		Con_SafePrintf ("mode %dx%dx%d %dHz %s\n",
 						vid.width,
 						vid.height,
 						vid.bpp,
 						vid.refreshrate,
-						vid.stretched ? "(stretched) " : "",
 						vid.fullscreen ? "fullscreen" : "windowed");
 }
 
@@ -630,8 +609,7 @@ void VID_DescribeModes_f (void)
 		{
 			if (count > 0)
 				Con_SafePrintf ("\n");
-//			Con_SafePrintf ("   %4i x %4i x %i : %i", modelist[i].width, modelist[i].height, modelist[i].bpp, modelist[i].refreshrate);
-			Con_SafePrintf ("   %4i x %4i x %i : %i %s", modelist[i].width, modelist[i].height, modelist[i].bpp, modelist[i].refreshrate, modelist[i].stretched ? ": (stretched)" : ""); // FIXME: Temp
+			Con_SafePrintf ("   %4i x %4i x %i : %i", modelist[i].width, modelist[i].height, modelist[i].bpp, modelist[i].refreshrate);
 			lastwidth = modelist[i].width;
 			lastheight = modelist[i].height;
 			lastbpp = modelist[i].bpp;
@@ -669,7 +647,6 @@ void VID_InitModelist (void)
 			modelist[nummodes].height = (int)CGDisplayModeGetHeight(mode);
 			modelist[nummodes].bpp = DisplayModeGetBitsPerPixel(mode);
 			modelist[nummodes].refreshrate = DisplayModeGetRefreshRate(mode);
-			modelist[nummodes].stretched = DisplayModeGetStretchedFlag(mode);
 			nummodes++;
 		}
 	}
@@ -687,7 +664,7 @@ void VID_Init (void)
 {
     int		i;
 	int		width, height, refreshrate, bpp;
-	qboolean	fullscreen, stretched;
+	qboolean	fullscreen;
 	
     CGError err;
     CGDirectDisplayID displays[MAX_DISPLAYS];
@@ -699,8 +676,7 @@ void VID_Init (void)
 		"vid_width",
 		"vid_height",
 		"vid_refreshrate",
-		"vid_bpp",
-		"vid_stretched"
+		"vid_bpp"
 	};
 	int num_cvars = sizeof(cvars)/sizeof(cvars[0]);
 	
@@ -709,7 +685,6 @@ void VID_Init (void)
 	Cvar_RegisterVariableCallback (&vid_height, VID_Changed); //johnfitz
 	Cvar_RegisterVariableCallback (&vid_refreshrate, VID_Changed); //johnfitz
 	Cvar_RegisterVariableCallback (&vid_bpp, VID_Changed); //johnfitz
-	Cvar_RegisterVariableCallback (&vid_stretched, VID_Changed); //EER1
 	
 	Cmd_AddCommand ("vid_lock", VID_Lock); //EER1
 	Cmd_AddCommand ("vid_unlock", VID_Unlock); //johnfitz
@@ -730,7 +705,6 @@ void VID_Init (void)
 	refreshrate = (int)vid_refreshrate.value;
 	bpp = (int)vid_bpp.value;
 	fullscreen = (qboolean)vid_fullscreen.value;
-	stretched = (qboolean)vid_stretched.value;
 	
     // Get the active display list
     err = CGGetActiveDisplayList(MAX_DISPLAYS, displays, &displayCount);
@@ -772,7 +746,6 @@ void VID_Init (void)
 		height = (int)CGDisplayModeGetHeight(desktopMode);
 		refreshrate = DisplayModeGetRefreshRate(desktopMode);
 		bpp = DisplayModeGetBitsPerPixel(desktopMode);
-		stretched = DisplayModeGetStretchedFlag(desktopMode);
 		fullscreen = true;
 	}
 	else
@@ -824,15 +797,11 @@ void VID_Init (void)
 		{
 			fullscreen = true;
 			
-			if (COM_CheckParm("-stretched"))
-				stretched = true;
-			
 			if (width < 640 || height < 480)
 			{
 				Con_Warning ("Fullscreen in low-res mode not available\n");
 				Con_Warning ("Forcing windowed mode\n");
 				fullscreen = false;
-				stretched = false;
 			}
 		}
 	}
@@ -848,30 +817,28 @@ void VID_Init (void)
 	
 	VID_InitModelist ();
 	
-	if (!VID_CheckMode(width, height, refreshrate, bpp, fullscreen, stretched))
+	if (!VID_CheckMode(width, height, refreshrate, bpp, fullscreen))
 	{
 		width = (int)vid_width.value;
 		height = (int)vid_height.value;
 		refreshrate = (int)vid_refreshrate.value;
 		bpp = (int)vid_bpp.value;
 		fullscreen = (qboolean)vid_fullscreen.value;
-		stretched = (qboolean)vid_stretched.value;
 	}
 	
-	if (!VID_CheckMode(width, height, refreshrate, bpp, fullscreen, stretched))
+	if (!VID_CheckMode(width, height, refreshrate, bpp, fullscreen))
 	{
 		width = 640;
 		height = 480;
 		refreshrate = DisplayModeGetRefreshRate(desktopMode);
 		bpp = DisplayModeGetBitsPerPixel(desktopMode);
 		fullscreen = false;
-		stretched = false;
 	}
 	
 	//
 	// set initial mode
 	//
-	VID_SetMode (width, height, refreshrate, bpp, fullscreen, stretched);
+	VID_SetMode (width, height, refreshrate, bpp, fullscreen);
 	
 	vid_activewindow = true;
 	vid_hiddenwindow = false;
