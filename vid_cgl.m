@@ -652,6 +652,31 @@ void VID_InitModelist (void)
 	}
 }
 
+/*
+================
+VID_ReadCvars
+
+early reading video variables
+================
+*/
+void VID_ReadCvars (void)
+{
+	char *cvars[] = {
+		"vid_fullscreen",
+		"vid_width",
+		"vid_height",
+		"vid_refreshrate",
+		"vid_bpp"
+	};
+	int num = sizeof(cvars)/sizeof(cvars[0]);
+	
+	if (CFG_OpenConfig("config.cfg") == 0)
+	{
+		CFG_ReadCvars(cvars, num);
+		CFG_CloseConfig();
+	}
+	CFG_ReadCvarOverrides(cvars, num);
+}
 
 #define MAX_DISPLAYS 32
 
@@ -671,15 +696,6 @@ void VID_Init (void)
     uint32_t displayCount;
     uint32_t displayIndex = 0;
 	
-	char *cvars[] = {
-		"vid_fullscreen",
-		"vid_width",
-		"vid_height",
-		"vid_refreshrate",
-		"vid_bpp"
-	};
-	int num_cvars = sizeof(cvars)/sizeof(cvars[0]);
-	
 	Cvar_RegisterVariableCallback (&vid_fullscreen, VID_Changed); //johnfitz
 	Cvar_RegisterVariableCallback (&vid_width, VID_Changed); //johnfitz
 	Cvar_RegisterVariableCallback (&vid_height, VID_Changed); //johnfitz
@@ -693,12 +709,7 @@ void VID_Init (void)
 	Cmd_AddCommand ("vid_describecurrentmode", VID_DescribeCurrentMode_f);
 	Cmd_AddCommand ("vid_describemodes", VID_DescribeModes_f);
 	
-	if (CFG_OpenConfig("config.cfg") == 0)
-	{
-		CFG_ReadCvars(cvars, num_cvars);
-		CFG_CloseConfig();
-	}
-	CFG_ReadCvarOverrides(cvars, num_cvars);
+	VID_ReadCvars ();
 	
 	width = (int)vid_width.value;
 	height = (int)vid_height.value;
