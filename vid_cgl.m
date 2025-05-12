@@ -590,6 +590,58 @@ void	VID_Toggle (void)
 
 //==========================================================================
 //
+//  COMMANDS
+//
+//==========================================================================
+
+/*
+=================
+VID_DescribeCurrentMode_f
+=================
+*/
+void VID_DescribeCurrentMode_f (void)
+{
+	if (vid_initialized)
+		Con_SafePrintf ("mode %dx%dx%d %dHz %s%s\n",
+						vid.width,
+						vid.height,
+						vid.bpp,
+						vid.refreshrate,
+						vid.stretched ? "(stretched) " : "",
+						vid.fullscreen ? "fullscreen" : "windowed");
+}
+
+/*
+=================
+VID_DescribeModes_f -- johnfitz -- changed formatting, and added refresh rates after each mode.
+=================
+*/
+void VID_DescribeModes_f (void)
+{
+	int	i;
+	int	lastwidth, lastheight, lastbpp, count;
+	
+	lastwidth = lastheight = lastbpp = count = 0;
+	
+	for (i = 0; i < nummodes; i++)
+	{
+		if (lastwidth != modelist[i].width || lastheight != modelist[i].height || lastbpp != modelist[i].bpp)
+		{
+			if (count > 0)
+				Con_SafePrintf ("\n");
+//			Con_SafePrintf ("   %4i x %4i x %i : %i", modelist[i].width, modelist[i].height, modelist[i].bpp, modelist[i].refreshrate);
+			Con_SafePrintf ("   %4i x %4i x %i : %i %s", modelist[i].width, modelist[i].height, modelist[i].bpp, modelist[i].refreshrate, modelist[i].stretched ? ": (stretched)" : ""); // FIXME: Temp
+			lastwidth = modelist[i].width;
+			lastheight = modelist[i].height;
+			lastbpp = modelist[i].bpp;
+			count++;
+		}
+	}
+	Con_Printf ("\n%i modes\n", count);
+}
+
+//==========================================================================
+//
 //  INIT
 //
 //==========================================================================
@@ -662,6 +714,8 @@ void VID_Init (void)
 	Cmd_AddCommand ("vid_unlock", VID_Unlock); //johnfitz
 	Cmd_AddCommand ("vid_restart", VID_Restart); //johnfitz
 	Cmd_AddCommand ("vid_test", VID_Test); //johnfitz
+	Cmd_AddCommand ("vid_describecurrentmode", VID_DescribeCurrentMode_f);
+	Cmd_AddCommand ("vid_describemodes", VID_DescribeModes_f);
 	
 	if (CFG_OpenConfig("config.cfg") == 0)
 	{
