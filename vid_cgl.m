@@ -174,7 +174,7 @@ qboolean VID_CheckMode (int width, int height, int refreshrate, int bpp, qboolea
 	
 	if (height < 200)
 		return false;
-		
+	
 	if (fullscreen && (width < 640 || height < 480))
 		return false;
 	
