@@ -545,7 +545,7 @@ void GL_Info_f (void)
 	if (Cmd_Argc() < 2)
 	{
 		Con_Printf("commands: ");
-		Con_Printf("short, all\n");
+		Con_Printf("short, all, pf\n");
 		return;
 	}
 	
@@ -558,6 +558,11 @@ void GL_Info_f (void)
 	if (strcasecmp(command, "all") == 0)
 	{
 		GL_Info (true);
+		return;
+	}
+	if (strcasecmp(command, "pf") == 0)
+	{
+		GL_GetPixelFormatInfo ();
 		return;
 	}
 }
