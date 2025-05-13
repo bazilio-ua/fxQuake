@@ -569,11 +569,6 @@ void	VID_Toggle (void)
 	}
 }
 
-//==========================================================================
-//
-//  COMMANDS
-//
-//==========================================================================
 
 /*
 =================
@@ -619,11 +614,6 @@ void VID_DescribeModes_f (void)
 	Con_Printf ("\n%i modes\n", count);
 }
 
-//==========================================================================
-//
-//  INIT
-//
-//==========================================================================
 
 /*
 =================
@@ -864,6 +854,7 @@ void VID_Init (void)
 	
 	GL_SwapInterval ();
 	
+	// enable the video options menu
 	vid_menucmdfn = VID_MenuCmd; //johnfitz
 	vid_menudrawfn = VID_MenuDraw;
 	vid_menukeyfn = VID_MenuKey;
@@ -1316,7 +1307,6 @@ void VID_MenuKey (int key)
 			Cbuf_AddText ("vid_restart\n");
 			key_dest = key_game;
 			m_state = m_none;
-//			IN_Activate();
 			break;
 		default:
 			break;
@@ -1337,7 +1327,6 @@ void VID_MenuDraw (void)
 {
 	int i, y;
 	qpic_t *p;
-//	char *title;
 
 	y = 4;
 
@@ -1345,17 +1334,10 @@ void VID_MenuDraw (void)
 	p = Draw_CachePic ("gfx/qplaque.lmp");
 	M_DrawTransPic (16, y, p);
 
-	//p = Draw_CachePic ("gfx/vidmodes.lmp");
 	p = Draw_CachePic ("gfx/p_option.lmp");
 	M_DrawPic ( (320-p->width)/2, y, p);
 
 	y += 28;
-
-	// title
-//	title = "Video Options";
-//	M_PrintWhite ((320-8*strlen(title))/2, y, title);
-
-//	y += 16;
 
 	// options
 	for (i = 0; i < VIDEO_OPTIONS_ITEMS; i++)
@@ -1408,7 +1390,6 @@ VID_MenuCmd
 */
 void VID_MenuCmd (void)
 {
-//	IN_Deactivate(modestate == MS_WINDOWED);
 	key_dest = key_menu;
 	m_state = m_video;
 	m_entersound = true;
