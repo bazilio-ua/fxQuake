@@ -1089,7 +1089,7 @@ void VID_Menu_RebuildRateList (void)
 	// if there are no valid fullscreen refreshrates for this width/height, just pick one
 	if (vid_menu_numrates == 0)
 	{
-		Cvar_SetValue ("vid_refreshrate",(float)modelist[0].refreshrate);
+		Cvar_SetValue ("vid_refreshrate", (float)modelist[0].refreshrate);
 		return;
 	}
 
@@ -1099,7 +1099,7 @@ void VID_Menu_RebuildRateList (void)
 			break;
 
 	if (i == vid_menu_numrates)
-		Cvar_SetValue ("vid_refreshrate",(float)vid_menu_rates[0]);
+		Cvar_SetValue ("vid_refreshrate", (float)vid_menu_rates[0]);
 }
 
 /*
@@ -1209,7 +1209,7 @@ void VID_Menu_ChooseNextRate (int dir)
 			i = vid_menu_numrates-1;
 	}
 
-	Cvar_SetValue ("vid_refreshrate",(float)vid_menu_rates[i]);
+	Cvar_SetValue ("vid_refreshrate", (float)vid_menu_rates[i]);
 }
 
 /*
@@ -1337,7 +1337,7 @@ void VID_MenuDraw (void)
 {
 	int i, y;
 	qpic_t *p;
-	char *title;
+//	char *title;
 
 	y = 4;
 
@@ -1352,10 +1352,10 @@ void VID_MenuDraw (void)
 	y += 28;
 
 	// title
-	title = "Video Options";
-	M_PrintWhite ((320-8*strlen(title))/2, y, title);
+//	title = "Video Options";
+//	M_PrintWhite ((320-8*strlen(title))/2, y, title);
 
-	y += 16;
+//	y += 16;
 
 	// options
 	for (i = 0; i < VIDEO_OPTIONS_ITEMS; i++)
