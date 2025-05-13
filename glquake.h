@@ -152,6 +152,7 @@ extern qboolean isIntel; // intel video workaround
 
 extern qboolean gl_texture_NPOT;
 extern qboolean gl_texture_compression;
+extern qboolean gl_swap_control;
 extern int		gl_stencilbits;
 
 extern GLint gl_hardware_max_size;
@@ -548,6 +549,7 @@ extern	cvar_t	r_oldsky;
 extern	cvar_t	r_flatworld;
 extern	cvar_t	r_flatmodels;
 
+extern	cvar_t	gl_swapinterval;
 extern	cvar_t	gl_finish;
 extern	cvar_t	gl_clear;
 extern	cvar_t	gl_cull;

@@ -1258,7 +1258,7 @@ void VID_MenuKey (int key)
 			Cbuf_AddText ("toggle vid_fullscreen\n");
 			break;
 		case VID_OPT_VSYNC:
-			Cbuf_AddText ("toggle vid_vsync\n"); // kristian
+			Cbuf_AddText ("toggle gl_swapinterval\n");
 			break;
 		default:
 			break;
@@ -1282,7 +1282,7 @@ void VID_MenuKey (int key)
 			Cbuf_AddText ("toggle vid_fullscreen\n");
 			break;
 		case VID_OPT_VSYNC:
-			Cbuf_AddText ("toggle vid_vsync\n");
+			Cbuf_AddText ("toggle gl_swapinterval\n");
 			break;
 		default:
 			break;
@@ -1307,7 +1307,7 @@ void VID_MenuKey (int key)
 			Cbuf_AddText ("toggle vid_fullscreen\n");
 			break;
 		case VID_OPT_VSYNC:
-			Cbuf_AddText ("toggle vid_vsync\n");
+			Cbuf_AddText ("toggle gl_swapinterval\n");
 			break;
 		case VID_OPT_TEST:
 			Cbuf_AddText ("vid_test\n");
@@ -1380,9 +1380,9 @@ void VID_MenuDraw (void)
 			break;
 		case VID_OPT_VSYNC:
 			M_Print (16, y, "     Vertical sync");
-//			if (gl_swap_control)
-//				M_DrawCheckbox (184, y, (int)vid_vsync.value);
-//			else
+			if (gl_swap_control)
+				M_DrawCheckbox (184, y, (int)gl_swapinterval.value);
+			else
 				M_Print (184, y, "N/A");
 			break;
 		case VID_OPT_TEST:
