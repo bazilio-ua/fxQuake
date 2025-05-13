@@ -947,7 +947,7 @@ typedef struct {
 	int width, height;
 } vid_menu_mode;
 
-//TODO: replace these fixed-length arrays with hunk_allocated buffers
+// TODO: replace these fixed-length arrays with hunk_allocated buffers
 vid_menu_mode vid_menu_modes[MAX_MODE_LIST];
 int vid_menu_nummodes = 0;
 
@@ -1213,7 +1213,7 @@ void VID_MenuKey (int key)
 	switch (key)
 	{
 	case K_ESCAPE:
-		VID_SyncCvars (); //sync cvars before leaving menu. FIXME: there are other ways to leave menu
+		VID_SyncCvars (); // sync cvars before leaving menu. FIXME: there are other ways to leave menu
 		S_LocalSound ("misc/menu1.wav");
 		M_Menu_Options_f ();
 		break;
