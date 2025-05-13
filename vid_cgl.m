@@ -1305,8 +1305,8 @@ void VID_MenuKey (int key)
 			break;
 		case VID_OPT_APPLY:
 			Cbuf_AddText ("vid_restart\n");
-			key_dest = key_game;
-			m_state = m_none;
+//			key_dest = key_game;
+//			m_state = m_none;
 			break;
 		default:
 			break;
