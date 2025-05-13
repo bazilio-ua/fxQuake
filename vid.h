@@ -68,3 +68,7 @@ void	VID_Toggle (void);
 // sets the mode; only used by the Quake engine for resetting to mode 0 (the
 // base mode) on memory allocation failures
 
+void VID_MenuInit (void); //johnfitz
+void VID_MenuCmd (void); //johnfitz
+void VID_MenuDraw (void);
+void VID_MenuKey (int key);

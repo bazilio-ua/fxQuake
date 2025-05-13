@@ -988,60 +988,60 @@ void M_Options_Draw (void)
 	p = Draw_CachePic ("gfx/p_option.lmp");
 	M_DrawPic ((320 - p->width) / 2, 4, p);
 
-	M_Print (16, 32+(OPT_CUSTOMIZE*8), "    Customize Controls");
-	M_Print (16, 32+(OPT_CONSOLE*8), "         Go to console");
-	M_Print (16, 32+(OPT_DEFAULTS*8), "     Reset to defaults");
+	M_Print (16, 32+(OPT_CUSTOMIZE*8),			"    Customize Controls");
+	M_Print (16, 32+(OPT_CONSOLE*8),			"         Go to console");
+	M_Print (16, 32+(OPT_DEFAULTS*8),			"     Reset to defaults");
 
-	M_Print (16, 32+(OPT_SCRSIZE*8), "           Screen size");
+	M_Print (16, 32+(OPT_SCRSIZE*8),			"           Screen size");
 	r = (scr_viewsize.value - 30) / (120 - 30);
 	M_DrawSlider (220, 32+(OPT_SCRSIZE*8), r);
 
-	M_Print (16, 32+(OPT_GAMMA*8), "            Brightness");
+	M_Print (16, 32+(OPT_GAMMA*8),				"            Brightness");
 	r = (1.0 - v_gamma.value) / 0.5;
 	M_DrawSlider (220, 32+(OPT_GAMMA*8), r);
 
-	M_Print (16, 32+(OPT_CONTRAST*8), "              Contrast");
+	M_Print (16, 32+(OPT_CONTRAST*8),			"              Contrast");
 	r = v_contrast.value - 1.0;
 	M_DrawSlider (220, 32+(OPT_CONTRAST*8), r);
 
-	M_Print (16, 32+(OPT_MOUSESPEED*8), "           Mouse Speed");
+	M_Print (16, 32+(OPT_MOUSESPEED*8),			"           Mouse Speed");
 	r = (sensitivity.value - 1) / 10;
 	M_DrawSlider (220, 32+(OPT_MOUSESPEED*8), r);
 
-	M_Print (16, 32+(OPT_MUSICTYPE*8), "            Music Type");
+	M_Print (16, 32+(OPT_MUSICTYPE*8),			"            Music Type");
 	if (strcasecmp(bgmtype.string,"cd") == 0)
 		M_Print (220, 32+(OPT_MUSICTYPE*8), "CD");
 	else
 		M_Print (220, 32+(OPT_MUSICTYPE*8), "None");
 
-	M_Print (16, 32+(OPT_MUSICVOL*8), "       Music Volume");
+	M_Print (16, 32+(OPT_MUSICVOL*8),			"          Music Volume");
 	r = bgmvolume.value;
 	M_DrawSlider (220, 32+(OPT_MUSICVOL*8), r);
 
-	M_Print (16, 32+(OPT_SNDVOL*8), "          Sound Volume");
+	M_Print (16, 32+(OPT_SNDVOL*8),				"          Sound Volume");
 	r = volume.value;
 	M_DrawSlider (220, 32+(OPT_SNDVOL*8), r);
 
-	M_Print (16, 32+(OPT_ALWAYRUN*8),  "            Always Run");
+	M_Print (16, 32+(OPT_ALWAYRUN*8),			"            Always Run");
 	M_DrawCheckbox (220, 32+(OPT_ALWAYRUN*8), cl_forwardspeed.value > 200);
 
-	M_Print (16, 32+(OPT_INVMOUSE*8), "          Invert Mouse");
+	M_Print (16, 32+(OPT_INVMOUSE*8),			"          Invert Mouse");
 	M_DrawCheckbox (220, 32+(OPT_INVMOUSE*8), m_pitch.value < 0);
 
-	M_Print (16, 32+(OPT_LOOKSPRING*8), "            Lookspring");
+	M_Print (16, 32+(OPT_LOOKSPRING*8),			"            Lookspring");
 	M_DrawCheckbox (220, 32+(OPT_LOOKSPRING*8), lookspring.value);
 
-	M_Print (16, 32+(OPT_LOOKSTRAFE*8), "            Lookstrafe");
+	M_Print (16, 32+(OPT_LOOKSTRAFE*8),			"            Lookstrafe");
 	M_DrawCheckbox (220, 32+(OPT_LOOKSTRAFE*8), lookstrafe.value);
 
-	M_Print (16, 32+(OPT_CROSSHAIR*8), "        Show Crosshair");
+	M_Print (16, 32+(OPT_CROSSHAIR*8),			"        Show Crosshair");
 	M_DrawCheckbox (220, 32+(OPT_CROSSHAIR*8), crosshair.value);
 
-	M_Print (16, 32+(OPT_ALWAYSMLOOK*8), "            Mouse Look");
+	M_Print (16, 32+(OPT_ALWAYSMLOOK*8),		"            Mouse Look");
 	M_DrawCheckbox (220, 32+(OPT_ALWAYSMLOOK*8), in_mlook.state & 1);
 
 	if (vid_menudrawfn)
-		M_Print (16, 32+(OPT_VIDEO*8), "       Customize Video");
+		M_Print (16, 32+(OPT_VIDEO*8),			"         Video Options");
 
 	// cursor
 	// doesn't get drawn properly with XFree4.3/MGA200 S.A.

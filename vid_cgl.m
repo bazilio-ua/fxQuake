@@ -863,6 +863,12 @@ void VID_Init (void)
 	GL_SetupState ();
 	
 	GL_SwapInterval ();
+	
+	vid_menucmdfn = VID_MenuCmd; //johnfitz
+	vid_menudrawfn = VID_MenuDraw;
+	vid_menukeyfn = VID_MenuKey;
+	
+	VID_MenuInit(); //johnfitz
 }
 
 /*
@@ -925,5 +931,493 @@ void VID_Shutdown (void)
     }
     
     vid.fullscreen = false;
+}
+
+//==========================================================================
+//
+//  NEW VIDEO MENU -- johnfitz
+//
+//==========================================================================
+
+enum {
+	VID_OPT_MODE,
+	VID_OPT_BPP,
+	VID_OPT_REFRESHRATE,
+	VID_OPT_FULLSCREEN,
+	VID_OPT_VSYNC,
+	VID_OPT_TEST,
+	VID_OPT_APPLY,
+	VIDEO_OPTIONS_ITEMS
+};
+
+int	video_options_cursor = 0;
+
+typedef struct {
+	int width, height;
+} vid_menu_mode;
+
+//TODO: replace these fixed-length arrays with hunk_allocated buffers
+vid_menu_mode vid_menu_modes[MAX_MODE_LIST];
+int vid_menu_nummodes = 0;
+
+int vid_menu_bpps[MAX_BPPS_LIST];
+int vid_menu_numbpps = 0;
+
+int vid_menu_rates[MAX_RATES_LIST];
+int vid_menu_numrates=0;
+
+/*
+================
+VID_MenuInit
+================
+*/
+void VID_MenuInit (void)
+{
+	int i, j, h, w;
+
+	for (i = 0; i < nummodes; i++)
+	{
+		w = modelist[i].width;
+		h = modelist[i].height;
+
+		for (j = 0; j < vid_menu_nummodes; j++)
+		{
+			if (vid_menu_modes[j].width == w &&
+				vid_menu_modes[j].height == h)
+				break;
+		}
+
+		if (j == vid_menu_nummodes)
+		{
+			vid_menu_modes[j].width = w;
+			vid_menu_modes[j].height = h;
+			vid_menu_nummodes++;
+		}
+	}
+}
+
+/*
+================
+VID_Menu_RebuildBppList
+
+regenerates bpp list based on current vid_width and vid_height
+================
+*/
+void VID_Menu_RebuildBppList (void)
+{
+	int i, j, b;
+
+	vid_menu_numbpps = 0;
+
+	for (i = 0; i < nummodes; i++)
+	{
+		if (vid_menu_numbpps >= MAX_BPPS_LIST)
+			break;
+
+		// bpp list is limited to bpps available with current width/height
+		if (modelist[i].width != vid_width.value ||
+			modelist[i].height != vid_height.value)
+			continue;
+
+		b = modelist[i].bpp;
+
+		for (j = 0; j < vid_menu_numbpps; j++)
+		{
+			if (vid_menu_bpps[j] == b)
+				break;
+		}
+
+		if (j == vid_menu_numbpps)
+		{
+			vid_menu_bpps[j] = b;
+			vid_menu_numbpps++;
+		}
+	}
+
+	// if there are no valid fullscreen bpps for this width/height, just pick one
+	if (vid_menu_numbpps == 0)
+	{
+		Cvar_SetValue ("vid_bpp", (float)modelist[0].bpp);
+		return;
+	}
+
+	// if vid_bpp is not in the new list, change vid_bpp
+	for (i = 0; i < vid_menu_numbpps; i++)
+		if (vid_menu_bpps[i] == (int)(vid_bpp.value))
+			break;
+
+	if (i == vid_menu_numbpps)
+		Cvar_SetValue ("vid_bpp", (float)vid_menu_bpps[0]);
+}
+
+/*
+================
+VID_Menu_RebuildRateList
+
+regenerates rate list based on current vid_width, vid_height and vid_bpp
+================
+*/
+void VID_Menu_RebuildRateList (void)
+{
+	int i, j, r;
+
+	vid_menu_numrates = 0;
+
+	for (i = 0; i < nummodes; i++)
+	{
+		// rate list is limited to rates available with current width/height/bpp
+		if (modelist[i].width != vid_width.value ||
+			modelist[i].height != vid_height.value ||
+			modelist[i].bpp != vid_bpp.value)
+			continue;
+
+		r = modelist[i].refreshrate;
+
+		for (j = 0; j < vid_menu_numrates; j++)
+		{
+			if (vid_menu_rates[j] == r)
+				break;
+		}
+
+		if (j == vid_menu_numrates)
+		{
+			vid_menu_rates[j] = r;
+			vid_menu_numrates++;
+		}
+	}
+
+	// if there are no valid fullscreen refreshrates for this width/height, just pick one
+	if (vid_menu_numrates == 0)
+	{
+		Cvar_SetValue ("vid_refreshrate",(float)modelist[0].refreshrate);
+		return;
+	}
+
+	// if vid_refreshrate is not in the new list, change vid_refreshrate
+	for (i = 0; i < vid_menu_numrates; i++)
+		if (vid_menu_rates[i] == (int)(vid_refreshrate.value))
+			break;
+
+	if (i == vid_menu_numrates)
+		Cvar_SetValue ("vid_refreshrate",(float)vid_menu_rates[0]);
+}
+
+/*
+================
+VID_Menu_ChooseNextMode
+
+chooses next resolution in order, then updates vid_width and
+vid_height cvars, then updates bpp and refreshrate lists
+================
+*/
+void VID_Menu_ChooseNextMode (int dir)
+{
+	int i;
+
+	if (vid_menu_nummodes)
+	{
+		for (i = 0; i < vid_menu_nummodes; i++)
+		{
+			if (vid_menu_modes[i].width == vid_width.value &&
+				vid_menu_modes[i].height == vid_height.value)
+				break;
+		}
+
+		if (i == vid_menu_nummodes) // can't find it in list, so it must be a custom windowed res
+		{
+			i = 0;
+		}
+		else
+		{
+			i += dir;
+			if (i >= vid_menu_nummodes)
+				i = 0;
+			else if (i < 0)
+				i = vid_menu_nummodes-1;
+		}
+
+		Cvar_SetValue ("vid_width", (float)vid_menu_modes[i].width);
+		Cvar_SetValue ("vid_height", (float)vid_menu_modes[i].height);
+		VID_Menu_RebuildBppList ();
+		VID_Menu_RebuildRateList ();
+	}
+}
+
+/*
+================
+VID_Menu_ChooseNextBpp
+
+chooses next bpp in order, then updates vid_bpp cvar
+================
+*/
+void VID_Menu_ChooseNextBpp (int dir)
+{
+	int i;
+
+	if (vid_menu_numbpps)
+	{
+		for (i = 0; i < vid_menu_numbpps; i++)
+		{
+			if (vid_menu_bpps[i] == vid_bpp.value)
+				break;
+		}
+
+		if (i == vid_menu_numbpps) // can't find it in list
+		{
+			i = 0;
+		}
+		else
+		{
+			i += dir;
+			if (i >= vid_menu_numbpps)
+				i = 0;
+			else if (i < 0)
+				i = vid_menu_numbpps-1;
+		}
+
+		Cvar_SetValue ("vid_bpp", (float)vid_menu_bpps[i]);
+	}
+}
+
+/*
+================
+VID_Menu_ChooseNextRate
+
+chooses next refresh rate in order, then updates vid_refreshrate cvar
+================
+*/
+void VID_Menu_ChooseNextRate (int dir)
+{
+	int i;
+
+	for (i = 0; i < vid_menu_numrates; i++)
+	{
+		if (vid_menu_rates[i] == vid_refreshrate.value)
+			break;
+	}
+
+	if (i == vid_menu_numrates) // can't find it in list
+	{
+		i = 0;
+	}
+	else
+	{
+		i += dir;
+		if (i >= vid_menu_numrates)
+			i = 0;
+		else if (i < 0)
+			i = vid_menu_numrates-1;
+	}
+
+	Cvar_SetValue ("vid_refreshrate",(float)vid_menu_rates[i]);
+}
+
+/*
+================
+VID_MenuKey
+================
+*/
+void VID_MenuKey (int key)
+{
+	switch (key)
+	{
+	case K_ESCAPE:
+		VID_SyncCvars (); //sync cvars before leaving menu. FIXME: there are other ways to leave menu
+		S_LocalSound ("misc/menu1.wav");
+		M_Menu_Options_f ();
+		break;
+
+	case K_UPARROW:
+		S_LocalSound ("misc/menu1.wav");
+		video_options_cursor--;
+		if (video_options_cursor < 0)
+			video_options_cursor = VIDEO_OPTIONS_ITEMS-1;
+		break;
+
+	case K_DOWNARROW:
+		S_LocalSound ("misc/menu1.wav");
+		video_options_cursor++;
+		if (video_options_cursor >= VIDEO_OPTIONS_ITEMS)
+			video_options_cursor = 0;
+		break;
+
+	case K_LEFTARROW:
+		S_LocalSound ("misc/menu3.wav");
+		switch (video_options_cursor)
+		{
+		case VID_OPT_MODE:
+			VID_Menu_ChooseNextMode (1);
+			break;
+		case VID_OPT_BPP:
+			VID_Menu_ChooseNextBpp (1);
+			break;
+		case VID_OPT_REFRESHRATE:
+			VID_Menu_ChooseNextRate (1);
+			break;
+		case VID_OPT_FULLSCREEN:
+			Cbuf_AddText ("toggle vid_fullscreen\n");
+			break;
+		case VID_OPT_VSYNC:
+			Cbuf_AddText ("toggle vid_vsync\n"); // kristian
+			break;
+		default:
+			break;
+		}
+		break;
+
+	case K_RIGHTARROW:
+		S_LocalSound ("misc/menu3.wav");
+		switch (video_options_cursor)
+		{
+		case VID_OPT_MODE:
+			VID_Menu_ChooseNextMode (-1);
+			break;
+		case VID_OPT_BPP:
+			VID_Menu_ChooseNextBpp (-1);
+			break;
+		case VID_OPT_REFRESHRATE:
+			VID_Menu_ChooseNextRate (-1);
+			break;
+		case VID_OPT_FULLSCREEN:
+			Cbuf_AddText ("toggle vid_fullscreen\n");
+			break;
+		case VID_OPT_VSYNC:
+			Cbuf_AddText ("toggle vid_vsync\n");
+			break;
+		default:
+			break;
+		}
+		break;
+
+	case K_ENTER:
+	case K_KP_ENTER:
+		m_entersound = true;
+		switch (video_options_cursor)
+		{
+		case VID_OPT_MODE:
+			VID_Menu_ChooseNextMode (1);
+			break;
+		case VID_OPT_BPP:
+			VID_Menu_ChooseNextBpp (1);
+			break;
+		case VID_OPT_REFRESHRATE:
+			VID_Menu_ChooseNextRate (1);
+			break;
+		case VID_OPT_FULLSCREEN:
+			Cbuf_AddText ("toggle vid_fullscreen\n");
+			break;
+		case VID_OPT_VSYNC:
+			Cbuf_AddText ("toggle vid_vsync\n");
+			break;
+		case VID_OPT_TEST:
+			Cbuf_AddText ("vid_test\n");
+			break;
+		case VID_OPT_APPLY:
+			Cbuf_AddText ("vid_restart\n");
+			key_dest = key_game;
+			m_state = m_none;
+//			IN_Activate();
+			break;
+		default:
+			break;
+		}
+		break;
+
+	default:
+		break;
+	}
+}
+
+/*
+================
+VID_MenuDraw
+================
+*/
+void VID_MenuDraw (void)
+{
+	int i, y;
+	qpic_t *p;
+	char *title;
+
+	y = 4;
+
+	// plaque
+	p = Draw_CachePic ("gfx/qplaque.lmp");
+	M_DrawTransPic (16, y, p);
+
+	//p = Draw_CachePic ("gfx/vidmodes.lmp");
+	p = Draw_CachePic ("gfx/p_option.lmp");
+	M_DrawPic ( (320-p->width)/2, y, p);
+
+	y += 28;
+
+	// title
+	title = "Video Options";
+	M_PrintWhite ((320-8*strlen(title))/2, y, title);
+
+	y += 16;
+
+	// options
+	for (i = 0; i < VIDEO_OPTIONS_ITEMS; i++)
+	{
+		switch (i)
+		{
+		case VID_OPT_MODE:
+			M_Print (16, y, "        Video mode");
+			M_Print (184, y, va("%ix%i", (int)vid_width.value, (int)vid_height.value));
+			break;
+		case VID_OPT_BPP:
+			M_Print (16, y, "       Color depth");
+			M_Print (184, y, va("%i", (int)vid_bpp.value));
+			break;
+		case VID_OPT_REFRESHRATE:
+			M_Print (16, y, "      Refresh rate");
+			M_Print (184, y, va("%i", (int)vid_refreshrate.value));
+			break;
+		case VID_OPT_FULLSCREEN:
+			M_Print (16, y, "        Fullscreen");
+			M_DrawCheckbox (184, y, (int)vid_fullscreen.value);
+			break;
+		case VID_OPT_VSYNC:
+			M_Print (16, y, "     Vertical sync");
+//			if (gl_swap_control)
+//				M_DrawCheckbox (184, y, (int)vid_vsync.value);
+//			else
+				M_Print (184, y, "N/A");
+			break;
+		case VID_OPT_TEST:
+			y += 8; // separate the test and apply items
+			M_Print (16, y, "      Test changes");
+			break;
+		case VID_OPT_APPLY:
+			M_Print (16, y, "     Apply changes");
+			break;
+		}
+
+		if (video_options_cursor == i)
+			M_DrawCharacter (168, y, 12+((int)(realtime*4)&1));
+
+		y += 8;
+	}
+}
+
+/*
+================
+VID_MenuCmd
+================
+*/
+void VID_MenuCmd (void)
+{
+//	IN_Deactivate(modestate == MS_WINDOWED);
+	key_dest = key_menu;
+	m_state = m_video;
+	m_entersound = true;
+
+	// set all the cvars to match the current mode when entering the menu
+	VID_SyncCvars ();
+
+	// set up bpp and rate lists based on current cvars
+	VID_Menu_RebuildBppList ();
+	VID_Menu_RebuildRateList ();
 }
 
