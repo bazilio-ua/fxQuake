@@ -175,7 +175,7 @@ qboolean VID_CheckMode (int width, int height, int refreshrate, int bpp, qboolea
 	if (height < 200)
 		return false;
 	
-	if (fullscreen && (width < 640 || height < 480))
+	if (fullscreen && (width < 640 || height < 400))
 		return false;
 	
 	switch (bpp)
@@ -594,26 +594,53 @@ VID_DescribeModes_f -- johnfitz -- changed formatting, and added refresh rates a
 void VID_DescribeModes_f (void)
 {
 	int	i;
-	int	lastwidth, lastheight, lastbpp, count;
+	int	lastwidth, lastheight, lastbpp, lastrefreshrate, count;
 	
-	lastwidth = lastheight = lastbpp = count = 0;
+	lastwidth = lastheight = lastbpp = lastrefreshrate = count = 0;
 	
 	for (i = 0; i < nummodes; i++)
 	{
-		if (lastwidth != modelist[i].width || lastheight != modelist[i].height || lastbpp != modelist[i].bpp)
+		if (lastwidth != modelist[i].width || lastheight != modelist[i].height || lastbpp != modelist[i].bpp || lastrefreshrate != modelist[i].refreshrate)
 		{
 			if (count > 0)
 				Con_SafePrintf ("\n");
-			Con_SafePrintf ("   %4i x %4i x %i : %i", modelist[i].width, modelist[i].height, modelist[i].bpp, modelist[i].refreshrate);
+			Con_SafePrintf ("   %4i x %4i x %i : %iHz", modelist[i].width, modelist[i].height, modelist[i].bpp, modelist[i].refreshrate);
 			lastwidth = modelist[i].width;
 			lastheight = modelist[i].height;
 			lastbpp = modelist[i].bpp;
+			lastrefreshrate = modelist[i].refreshrate;
 			count++;
 		}
 	}
 	Con_Printf ("\n%i modes\n", count);
 }
 
+
+static int vmodecompare(const void *inmode1, const void *inmode2)
+{
+	// sort lowest res to highest
+	const vmode_t *mode1 = (vmode_t *)inmode1;
+	const vmode_t *mode2 = (vmode_t *)inmode2;
+	
+	if (mode1->width < mode2->width)
+		return 1;
+	if (mode1->width > mode2->width)
+		return -1;
+	if (mode1->height < mode2->height)
+		return 1;
+	if (mode1->height > mode2->height)
+		return -1;
+	if (mode1->bpp < mode2->bpp)
+		return 1;
+	if (mode1->bpp > mode2->bpp)
+		return -1;
+	if (mode1->refreshrate < mode2->refreshrate)
+		return 1;
+	if (mode1->refreshrate > mode2->refreshrate)
+		return -1;
+	
+	return 0;
+}
 
 /*
 =================
@@ -640,6 +667,40 @@ void VID_InitModelist (void)
 			nummodes++;
 		}
 	}
+	
+	qsort((void *)modelist, nummodes, sizeof(vmode_t), vmodecompare);
+}
+
+/*
+=================
+VID_InitDisplayModes
+=================
+*/
+void VID_InitDisplayModes (void)
+{
+	CFDictionaryRef options = NULL;
+	
+#ifdef MAC_OS_X_VERSION_10_8
+	if (floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_7)
+	{
+		const CFStringRef keys[] = { kCGDisplayShowDuplicateLowResolutionModes };
+		const CFBooleanRef values[] = { kCFBooleanTrue };
+		options = CFDictionaryCreate(NULL,
+									 (const void **)keys,
+									 (const void **)values, 1,
+									 &kCFCopyStringDictionaryKeyCallBacks,
+									 &kCFTypeDictionaryValueCallBacks);
+	}
+#endif
+	
+	// get video mode list
+	displayModes = CGDisplayCopyAllDisplayModes(display, options);
+	if (!displayModes)
+		Sys_Error("Display available modes returned NULL");
+	displayModesCount = CFArrayGetCount(displayModes);
+	
+	if (options)
+		CFRelease(options);
 }
 
 /*
@@ -798,9 +859,9 @@ void VID_Init (void)
 		{
 			fullscreen = true;
 			
-			if (width < 640 || height < 480)
+			if (width < 640 || height < 400)
 			{
-				Con_Warning ("Fullscreen in low-res mode not available\n");
+				Con_Warning ("Fullscreen in low resolution not supported\n");
 				Con_Warning ("Forcing windowed mode\n");
 				fullscreen = false;
 			}
@@ -810,11 +871,7 @@ void VID_Init (void)
 	if (COM_CheckParm("-fullsbar"))
 		fullsbardraw = true;
 	
-    // get video mode list
-    displayModes = CGDisplayCopyAllDisplayModes(display, NULL);
-    if (!displayModes)
-        Sys_Error("Display available modes returned NULL");
-	displayModesCount = CFArrayGetCount(displayModes);
+	VID_InitDisplayModes ();
 	
 	VID_InitModelist ();
 	
