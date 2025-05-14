@@ -829,7 +829,7 @@ enum
 	OPT_MUSICTYPE,	//7
 	OPT_MUSICVOL,	//8
 	OPT_SNDVOL,		//9
-	OPT_ALWAYRUN,	//10
+	OPT_ALWAYSRUN,	//10
 	OPT_INVMOUSE,	//11
 	OPT_LOOKSPRING,	//12
 	OPT_LOOKSTRAFE,	//13
@@ -919,17 +919,8 @@ void M_AdjustSliders (int dir)
 			volume.value = 1;
 		Cvar_SetValue("volume", volume.value);
 		break;
-	case OPT_ALWAYRUN: //case 10 // always run
-		if (cl_forwardspeed.value > 200)
-		{
-			Cvar_SetValue ("cl_forwardspeed", 200);
-			Cvar_SetValue ("cl_backspeed", 200);
-		}
-		else
-		{
-			Cvar_SetValue ("cl_forwardspeed", 400);
-			Cvar_SetValue ("cl_backspeed", 400);
-		}
+	case OPT_ALWAYSRUN: //case 10 // always run
+		Cvar_SetValue ("cl_run", !cl_run.value);
 		break;
 	case OPT_INVMOUSE: //case 11 // invert mouse
 		Cvar_SetValue ("m_pitch", -m_pitch.value);
@@ -1022,8 +1013,8 @@ void M_Options_Draw (void)
 	r = volume.value;
 	M_DrawSlider (220, 32+(OPT_SNDVOL*8), r);
 
-	M_Print (16, 32+(OPT_ALWAYRUN*8),			"            Always Run");
-	M_DrawCheckbox (220, 32+(OPT_ALWAYRUN*8), cl_forwardspeed.value > 200);
+	M_Print (16, 32+(OPT_ALWAYSRUN*8),			"            Always Run");
+	M_DrawCheckbox (220, 32+(OPT_ALWAYSRUN*8), cl_run.value);
 
 	M_Print (16, 32+(OPT_INVMOUSE*8),			"          Invert Mouse");
 	M_DrawCheckbox (220, 32+(OPT_INVMOUSE*8), m_pitch.value < 0);

@@ -240,18 +240,19 @@ float CL_KeyState (kbutton_t *key)
 
 //==========================================================================
 
+cvar_t	cl_run = {"cl_run","0", CVAR_ARCHIVE}; // adapted from q2
+
 cvar_t	cl_upspeed = {"cl_upspeed","200", CVAR_NONE};
-cvar_t	cl_forwardspeed = {"cl_forwardspeed","200", CVAR_ARCHIVE};
-cvar_t	cl_backspeed = {"cl_backspeed","200", CVAR_ARCHIVE};
-cvar_t	cl_sidespeed = {"cl_sidespeed","350", CVAR_NONE};
+cvar_t	cl_forwardspeed = {"cl_forwardspeed","200", CVAR_NONE};
+cvar_t	cl_sidespeed = {"cl_sidespeed","200", CVAR_NONE};
 
 cvar_t	cl_movespeedkey = {"cl_movespeedkey","2.0", CVAR_NONE};
 
 cvar_t	cl_yawspeed = {"cl_yawspeed","140", CVAR_NONE};
 cvar_t	cl_pitchspeed = {"cl_pitchspeed","150", CVAR_NONE};
 
-cvar_t	cl_maxpitch = {"cl_maxpitch", "90", CVAR_ARCHIVE}; // variable pitch clamping
-cvar_t	cl_minpitch = {"cl_minpitch", "-90", CVAR_ARCHIVE}; // variable pitch clamping
+cvar_t	cl_maxpitch = {"cl_maxpitch", "90", CVAR_NONE}; // variable pitch clamping
+cvar_t	cl_minpitch = {"cl_minpitch", "-90", CVAR_NONE}; // variable pitch clamping
 
 cvar_t	cl_anglespeedkey = {"cl_anglespeedkey","1.5", CVAR_NONE};
 
@@ -268,7 +269,7 @@ void CL_AdjustAngles (void)
 	float	speed;
 	float	up, down;
 	
-	if (in_speed.state & 1)
+	if ( (in_speed.state & 1) ^ (cl_run.value != 0.f) )
 		speed = host_frametime * cl_anglespeedkey.value;
 	else
 		speed = host_frametime;
@@ -339,13 +340,13 @@ void CL_BaseMove (usercmd_t *cmd)
 	if (! (in_klook.state & 1) )
 	{	
 		cmd->forwardmove += cl_forwardspeed.value * CL_KeyState (&in_forward);
-		cmd->forwardmove -= cl_backspeed.value * CL_KeyState (&in_back);
+		cmd->forwardmove -= cl_forwardspeed.value * CL_KeyState (&in_back);
 	}	
 
 //
-// adjust for speed key
+// adjust for speed key / running
 //
-	if (in_speed.state & 1)
+	if ( (in_speed.state & 1) ^ (cl_run.value != 0.f) )
 	{
 		cmd->forwardmove *= cl_movespeedkey.value;
 		cmd->sidemove *= cl_movespeedkey.value;
