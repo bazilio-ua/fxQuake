@@ -1041,7 +1041,7 @@ void M_Options_Draw (void)
 	M_DrawCheckbox (220, 32+(OPT_ALWAYSMLOOK*8), in_mlook.state & 1);
 
 	if (vid_menudrawfn)
-		M_Print (16, 32+(OPT_VIDEO*8),			"         Video Options");
+		M_Print (16, 32+(OPT_VIDEO*8),			"       Customize Video");
 
 	// cursor
 	// doesn't get drawn properly with XFree4.3/MGA200 S.A.
