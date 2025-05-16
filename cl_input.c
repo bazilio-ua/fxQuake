@@ -321,7 +321,7 @@ void CL_BaseMove (usercmd_t *cmd)
 	if (cls.signon != SIGNONS)
 		return;
 			
-	CL_AdjustAngles ();
+//	CL_AdjustAngles ();
 	
 	memset (cmd, 0, sizeof(*cmd));
 	
@@ -373,52 +373,55 @@ void CL_SendMove (usercmd_t *cmd)
 	buf.cursize = 0;
 	buf.data = data;
 	
-	cl.cmd = *cmd;
-
-//
-// send the movement message
-//
-	MSG_WriteByte (&buf, clc_move);
-
-	MSG_WriteFloat (&buf, cl.mtime[0]);	// so server can get ping times
-
-	if (!cls.demoplayback && (cls.netcon->mod == MOD_PROQUAKE) && (cl.protocol == PROTOCOL_NETQUAKE)) // precise aim for ProQuake
+	if (cmd)
 	{
-		for (i=0 ; i<3 ; i++)
-			MSG_WritePreciseAngle (&buf, cl.viewangles[i]);
+		cl.cmd = *cmd;
+		
+	//
+	// send the movement message
+	//
+		MSG_WriteByte (&buf, clc_move);
+		
+		MSG_WriteFloat (&buf, cl.mtime[0]);	// so server can get ping times
+		
+		if (!cls.demoplayback && (cls.netcon->mod == MOD_PROQUAKE) && (cl.protocol == PROTOCOL_NETQUAKE)) // precise aim for ProQuake
+		{
+			for (i=0 ; i<3 ; i++)
+				MSG_WritePreciseAngle (&buf, cl.viewangles[i]);
+		}
+		else if (cl.protocol == PROTOCOL_FITZQUAKE || cl.protocol == PROTOCOL_MARKV || cl.protocol == PROTOCOL_RMQ) //johnfitz -- 16-bit angles for PROTOCOL_FITZQUAKE
+		{
+			for (i=0 ; i<3 ; i++)
+				MSG_WriteAngle16 (&buf, cl.viewangles[i], cl.protocolflags);
+		}
+		else
+		{
+			for (i=0 ; i<3 ; i++)
+				MSG_WriteAngle (&buf, cl.viewangles[i], cl.protocolflags);
+		}
+		
+		MSG_WriteShort (&buf, cmd->forwardmove);
+		MSG_WriteShort (&buf, cmd->sidemove);
+		MSG_WriteShort (&buf, cmd->upmove);
+		
+	//
+	// send button bits
+	//
+		bits = 0;
+		
+		if ( in_attack.state & 3 )
+			bits |= 1;
+		in_attack.state &= ~2;
+		
+		if (in_jump.state & 3)
+			bits |= 2;
+		in_jump.state &= ~2;
+		
+		MSG_WriteByte (&buf, bits);
+		
+		MSG_WriteByte (&buf, in_impulse);
+		in_impulse = 0;
 	}
-	else if (cl.protocol == PROTOCOL_FITZQUAKE || cl.protocol == PROTOCOL_MARKV || cl.protocol == PROTOCOL_RMQ) //johnfitz -- 16-bit angles for PROTOCOL_FITZQUAKE
-	{
-		for (i=0 ; i<3 ; i++)
-			MSG_WriteAngle16 (&buf, cl.viewangles[i], cl.protocolflags);
-	}
-	else
-	{
-		for (i=0 ; i<3 ; i++)
-			MSG_WriteAngle (&buf, cl.viewangles[i], cl.protocolflags);
-	}
-
-	MSG_WriteShort (&buf, cmd->forwardmove);
-	MSG_WriteShort (&buf, cmd->sidemove);
-	MSG_WriteShort (&buf, cmd->upmove);
-
-//
-// send button bits
-//
-	bits = 0;
-	
-	if ( in_attack.state & 3 )
-		bits |= 1;
-	in_attack.state &= ~2;
-	
-	if (in_jump.state & 3)
-		bits |= 2;
-	in_jump.state &= ~2;
-	
-	MSG_WriteByte (&buf, bits);
-
-	MSG_WriteByte (&buf, in_impulse);
-	in_impulse = 0;
 
 //
 // deliver the message

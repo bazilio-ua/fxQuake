@@ -202,6 +202,7 @@ typedef struct
 								// doesn't accidentally do something the 
 								// first frame
 	usercmd_t	cmd;			// last command sent to the server
+	usercmd_t	pendingcmd;		// accumulated state from mice or other external controllers
 
 // information for local display
 	int			stats[MAX_CL_STATS];	// health, etc
@@ -385,6 +386,7 @@ extern 	kbutton_t 	in_speed;
 extern	kbutton_t	in_attack; // added this for completeness
 
 void CL_InitInput (void);
+void CL_AccumulateCmd (void);
 void CL_SendCmd (void);
 void CL_SendMove (usercmd_t *cmd);
 
@@ -396,6 +398,7 @@ void CL_ClearState (void);
 
 int  CL_ReadFromServer (void);
 void CL_WriteToServer (usercmd_t *cmd);
+void CL_AdjustAngles (void);
 void CL_BaseMove (usercmd_t *cmd);
 
 

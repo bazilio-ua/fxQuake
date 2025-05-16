@@ -41,6 +41,7 @@ double		host_time;
 double		realtime;				// without any filtering or bounding
 double		oldrealtime;			// last frame run
 int			host_framecount;
+float		host_netinterval;
 
 int			host_hunklevel;
 
@@ -92,8 +93,32 @@ Host_MaxFPS -- ericw
 */
 void Host_MaxFPS (void)
 {
-	if (host_maxfps.value > 72)
-		Con_Warning ("host_maxfps above 72 breaks physics.\n");
+	if (host_maxfps.value < 0)
+	{
+		if (!host_netinterval)
+			Con_Printf ("Using renderer/network isolation.\n");
+		host_netinterval = 1/-host_maxfps.value;
+		if (host_netinterval > 1/10.f)	// don't let it get too jerky for other players
+			host_netinterval = 1/10.f;
+		if (host_netinterval < 1/150.f)	// don't let us spam servers too often. just abusive.
+			host_netinterval = 1/150.f;
+	}
+	else if (host_maxfps.value > 72 || host_maxfps.value <= 0)
+//	if (host_maxfps.value > 72 || host_maxfps.value <= 0)
+	{
+		if (!host_netinterval)
+			Con_Printf ("Using renderer/network isolation.\n");
+		host_netinterval = 1.0/72;
+	}
+	else
+	{
+		if (host_netinterval)
+			Con_Printf ("Disabling renderer/network isolation.\n");
+		host_netinterval = 0;
+		
+//		if (host_maxfps.value > 72) // FIXME: it is reachable here?
+//			Con_Warning ("host_maxfps above 72 breaks physics.\n");
+	}
 }
 
 /*
@@ -582,20 +607,19 @@ qboolean Host_FilterTime (double time)
 
 	//johnfitz -- max fps cvar
 	maxfps = CLAMP (1.0, host_maxfps.value, 1000.0);
-
-	if (!cls.timedemo && realtime - oldrealtime < 1.0 / maxfps)
+	if (host_maxfps.value > 0 && !cls.timedemo && realtime - oldrealtime < 1.0/maxfps)
 		return false;	// framerate is too high
 
 	host_frametime = realtime - oldrealtime;
 	oldrealtime = realtime;
 
-	// host_timescale is more intuitive than host_framerate
+	//johnfitz -- host_timescale is more intuitive than host_framerate
 	if (host_timescale.value > 0)
 		host_frametime *= CLAMP (1.0, host_timescale.value, 1000.0);
 	else if (host_framerate.value > 0)
 		host_frametime = CLAMP (1.0, host_framerate.value, 1000.0);
-	else // don't allow really long or short frames
-		host_frametime = CLAMP (0.001, host_frametime, 0.1); // use CLAMP
+	else if (host_maxfps.value > 0)	// don't allow really long or short frames
+		host_frametime = CLAMP (0.0001, host_frametime, 0.1); //johnfitz -- use CLAMP
 	
 	return true;
 }
@@ -662,6 +686,7 @@ Runs all active servers
 */
 void _Host_Frame (double time)
 {
+	static double	accumtime = 0;
 	static double		time1 = 0;
 	static double		time2 = 0;
 	static double		time3 = 0;
@@ -674,6 +699,7 @@ void _Host_Frame (double time)
 	rand ();
 	
 // decide the simulation time
+	accumtime += host_netinterval ? CLAMP(0, time, 0.2) : 0;	// for renderer/server isolation
 	if (!Host_FilterTime (time))
 		return;			// don't run too fast, or packets will flood out
 		
@@ -686,6 +712,9 @@ void _Host_Frame (double time)
 // allow other external controllers to add commands
 	IN_Commands ();
 
+// check the stdin for commands (dedicated servers) typed to the host
+	Host_GetConsoleCommands ();
+
 // process console commands
 	Cbuf_Execute ();
 
@@ -694,6 +723,44 @@ void _Host_Frame (double time)
 
 	NET_Poll();
 
+	CL_AccumulateCmd ();
+
+	// hack from baker to allow console scrolling by dinput mouse wheel when con_forcedup
+	if (!sv.active && con_forcedup && (key_dest == key_game || key_dest == key_console))
+		IN_MouseWheel (); // Grab mouse wheel input for DirectInput
+
+//-------------------
+//
+// Run the server+networking (client->server->client), at a different rate from everything
+//
+//-------------------
+	if (accumtime >= host_netinterval)
+	{
+		float realframetime = host_frametime;
+		if (host_netinterval)
+		{
+			host_frametime = max(accumtime, (double)host_netinterval);
+			accumtime -= host_frametime;
+			if (host_timescale.value > 0)
+				host_frametime *= host_timescale.value;
+			else if (host_framerate.value > 0)
+				host_frametime = host_framerate.value;
+		}
+		else
+			accumtime -= host_netinterval;
+		
+		CL_SendCmd ();
+		
+		if (sv.active)
+		{
+			Host_ServerFrame ();
+		}
+		host_frametime = realframetime;
+		
+		Cbuf_Waited();
+	}
+
+/*
 // if running the server locally, make intentions now
 	if (sv.active)
 		CL_SendCmd ();
@@ -723,6 +790,7 @@ void _Host_Frame (double time)
 // the incoming messages have been read
 	if (!sv.active)
 		CL_SendCmd ();
+*/
 
 	host_time += host_frametime;
 
