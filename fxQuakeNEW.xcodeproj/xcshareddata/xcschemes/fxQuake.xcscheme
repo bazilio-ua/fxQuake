@@ -221,11 +221,11 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-protocol 999"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-protocol 15"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "+deathmatch 0 +coop 0 +map start"
