@@ -246,6 +246,7 @@ VID_Unlock -- johnfitz
 void VID_Unlock (void)
 {
 	vid_locked = false;
+	VID_SyncCvars ();
 }
 
 /*
