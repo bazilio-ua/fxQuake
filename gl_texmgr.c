@@ -940,7 +940,7 @@ void TexMgr_UploadWarpImage (void)
 	//
 	gl_warpimage_size = TexMgr_SafeTextureSize((int)gl_warp_image_size.value);
 
-	while (gl_warpimage_size > vid.width)
+	while (gl_warpimage_size * 2 > vid.width) // *2 for glow
 		gl_warpimage_size >>= 1;
 	while (gl_warpimage_size > vid.height)
 		gl_warpimage_size >>= 1;
