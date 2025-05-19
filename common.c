@@ -1000,7 +1000,7 @@ sys_char_map
 The translation table between the graphical font and plain ASCII  --KB
 ============
 */
-const char sys_char_map[256] = {
+const char sys_char_map2[256] = {
 	  0, '#', '#', '#', '#', '.', '#', '#',
 	'#',   9,  10, '#', ' ',  13, '.', '.',
 	'[', ']', '0', '1', '2', '3', '4', '5',
@@ -1036,7 +1036,7 @@ const char sys_char_map[256] = {
 	'x', 'y', 'z', '{', '|', '}', '~', '<'
 };
 
-const char sys_char_map2[256] = {
+const char sys_char_map[256] = {
 	'\0','.', '#', '#', '#', '.', '#', '#',
 	'#','\t','\n', '#', ' ','\r', '.', '.',
 	'[', ']', '0', '1', '2', '3', '4', '5',
