@@ -1036,7 +1036,6 @@ void CL_SendCmd (void)
 		cmd.forwardmove += cl.pendingcmd.forwardmove;
 		cmd.sidemove += cl.pendingcmd.sidemove;
 		cmd.upmove += cl.pendingcmd.upmove;
-//		IN_Move (&cmd);
 	
 	// send the unreliable message
 		CL_SendMove (&cmd);

@@ -321,8 +321,6 @@ void CL_BaseMove (usercmd_t *cmd)
 	if (cls.signon != SIGNONS)
 		return;
 			
-//	CL_AdjustAngles ();
-	
 	memset (cmd, 0, sizeof(*cmd));
 	
 	if (in_strafe.state & 1)

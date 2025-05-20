@@ -104,7 +104,6 @@ void Host_MaxFPS (void)
 			host_netinterval = 1/150.f;
 	}
 	else if (host_maxfps.value > 72 || host_maxfps.value <= 0)
-//	if (host_maxfps.value > 72 || host_maxfps.value <= 0)
 	{
 		if (!host_netinterval)
 			Con_Printf ("Using renderer/network isolation.\n");
@@ -115,9 +114,6 @@ void Host_MaxFPS (void)
 		if (host_netinterval)
 			Con_Printf ("Disabling renderer/network isolation.\n");
 		host_netinterval = 0;
-		
-//		if (host_maxfps.value > 72) // FIXME: it is reachable here?
-//			Con_Warning ("host_maxfps above 72 breaks physics.\n");
 	}
 }
 
@@ -759,38 +755,6 @@ void _Host_Frame (double time)
 		
 		Cbuf_Waited();
 	}
-
-/*
-// if running the server locally, make intentions now
-	if (sv.active)
-		CL_SendCmd ();
-	else // hack from baker to allow console scrolling by dinput mouse wheel when con_forcedup
-	if (con_forcedup && (key_dest == key_game || key_dest == key_console))
-		IN_MouseWheel (); // Grab mouse wheel input for DirectInput
-
-//-------------------
-//
-// server operations
-//
-//-------------------
-
-// check for commands typed to the host
-	Host_GetConsoleCommands ();
-	
-	if (sv.active)
-		Host_ServerFrame ();
-
-//-------------------
-//
-// client operations
-//
-//-------------------
-
-// if running the server remotely, send intentions now after
-// the incoming messages have been read
-	if (!sv.active)
-		CL_SendCmd ();
-*/
 
 	host_time += host_frametime;
 
