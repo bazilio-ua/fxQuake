@@ -102,7 +102,7 @@ sys_socket_t UDP_Init (void)
 	struct hostent *local;
 	char buff[MAXHOSTNAMELEN];
 	struct qsockaddr addr;
-	char *colon;
+	char *test;
 
 	if (COM_CheckParm ("-noudp"))
 		return INVALID_SOCKET;
@@ -116,10 +116,19 @@ sys_socket_t UDP_Init (void)
 	}
 	else
 	{
-
 		buff[MAXHOSTNAMELEN - 1] = 0;
-		local = gethostbyname(buff);
-		if (!local)
+#if defined __APPLE__ && defined __MACH__
+		// ericw -- if our hostname ends in ".local" (a macOS thing),
+		// don't bother calling gethostbyname(), because it blocks for a few seconds
+		// and then fails (on my system anyway.)
+		test = strstr(buff, ".local");
+		if (test && test[6] == '\0')
+		{
+			Con_SafePrintf("UDP_Init: skipping gethostbyname for %s\n", buff);
+		}
+		else
+#endif
+		if (!(local = gethostbyname(buff)))
 		{
 			Con_Warning("UDP_Init: gethostbyname failed (errno: %i)\n", errno);
 		}
@@ -188,9 +197,9 @@ sys_socket_t UDP_Init (void)
 
 	UDP_GetSocketAddr (net_controlsocket, &addr);
 	strcpy(my_tcpip_address,  UDP_AddrToString (&addr));
-	colon = strrchr (my_tcpip_address, ':');
-	if (colon)
-		*colon = 0;
+	test = strrchr (my_tcpip_address, ':');
+	if (test)
+		*test = 0;
 
 	Con_Printf("UDP initialized (%s)\n", my_tcpip_address);
 	tcpipAvailable = true;
