@@ -68,7 +68,7 @@ static int udp_scan_iface(sys_socket_t net_socket)
 
 	if (ioctl(net_socket, SIOCGIFCONF, &ifc) == -1)
 	{
-		Con_Printf("udp_scan_iface: SIOCGIFCONF failed\n");
+		Con_SafePrintf("udp_scan_iface: SIOCGIFCONF failed\n");
 		return -1;
 	}
 
@@ -134,7 +134,7 @@ sys_socket_t UDP_Init (void)
 		}
 		else if (local->h_addrtype != AF_INET)
 		{
-			Con_Printf("UDP_Init: address from gethostbyname not IPv4\n");
+			Con_SafePrintf("UDP_Init: address from gethostbyname not IPv4\n");
 		}
 		else
 		{
@@ -150,8 +150,8 @@ sys_socket_t UDP_Init (void)
 		if (bindAddr.s_addr == htonl(INADDR_NONE))
 			Sys_Error("UDP_Init: %s is not a valid IP address", com_argv[i + 1]);
 
-		Con_Printf("Binding to IP Interface Address of %s\n", com_argv[i + 1]);
-	} 
+		Con_SafePrintf("Binding to IP Interface Address of %s\n", com_argv[i + 1]);
+	}
 	else 
 	{
 		bindAddr.s_addr = htonl(INADDR_NONE);
@@ -165,8 +165,8 @@ sys_socket_t UDP_Init (void)
 		if (localAddr.s_addr == htonl(INADDR_NONE))
 			Sys_Error("UDP_Init: %s is not a valid IP address", com_argv[i + 1]);
 
-		Con_Printf("Advertising %s as the local IP in response packets\n", com_argv[i + 1]);
-	} 
+		Con_SafePrintf("Advertising %s as the local IP in response packets\n", com_argv[i + 1]);
+	}
 	else 
 	{
 		localAddr.s_addr = htonl(INADDR_NONE);
@@ -175,7 +175,7 @@ sys_socket_t UDP_Init (void)
 	net_controlsocket = UDP_OpenSocket(0);
 	if (net_controlsocket == INVALID_SOCKET) 
 	{
-		Con_Printf("UDP_Init: Unable to open control socket, UDP disabled\n");
+		Con_SafePrintf("UDP_Init: Unable to open control socket, UDP disabled\n");
 		return INVALID_SOCKET;
 	}
 
@@ -184,11 +184,11 @@ sys_socket_t UDP_Init (void)
 	if (myAddr.s_addr == htonl(INADDR_LOOPBACK)) 
 	{
 		if (udp_scan_iface(net_controlsocket) == 0)
-			Con_Printf ("UDP, Local address: %s (%s)\n", inet_ntoa(myAddr), ifname);
+			Con_SafePrintf ("UDP, Local address: %s (%s)\n", inet_ntoa(myAddr), ifname);
 	}
 	if (ifname[0] == 0) 
 	{
-		Con_Printf ("UDP, Local address: %s\n", inet_ntoa(myAddr));
+		Con_SafePrintf ("UDP, Local address: %s\n", inet_ntoa(myAddr));
 	}
 
 	broadcastaddr.sin_family = AF_INET;
@@ -201,7 +201,7 @@ sys_socket_t UDP_Init (void)
 	if (test)
 		*test = 0;
 
-	Con_Printf("UDP initialized (%s)\n", my_tcpip_address);
+	Con_SafePrintf("UDP initialized (%s)\n", my_tcpip_address);
 	tcpipAvailable = true;
 
 	return net_controlsocket;
@@ -267,7 +267,7 @@ ErrorReturn:
 	if (tcpipAvailable)
 		Sys_Error("UDP_OpenSocket: Unable to bind to %s", UDP_AddrToString((struct qsockaddr *)&address));
 	else // we are still in init phase, no need to error
-		Con_Printf("UDP_OpenSocket: Unable to bind to %s\n", UDP_AddrToString((struct qsockaddr *)&address));
+		Con_SafePrintf("UDP_OpenSocket: Unable to bind to %s\n", UDP_AddrToString((struct qsockaddr *)&address));
 
 	UDP_CloseSocket (newsocket);
 	return INVALID_SOCKET;
@@ -406,7 +406,7 @@ int UDP_Broadcast (sys_socket_t net_socket, byte *buf, int len)
 		ret = UDP_MakeSocketBroadcastCapable (net_socket);
 		if (ret == -1)
 		{
-			Con_Printf("Unable to make socket broadcast capable\n");
+			Con_SafePrintf("Unable to make socket broadcast capable\n");
 			return ret;
 		}
 	}
