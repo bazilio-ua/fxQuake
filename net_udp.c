@@ -373,7 +373,6 @@ int UDP_Read (sys_socket_t net_socket, byte *buf, int len, struct qsockaddr *add
 	{
 		if (errno == EWOULDBLOCK || errno == ECONNREFUSED)
 			return 0;
-		Con_DPrintf ("UDP read recvfrom: %s\n", strerror(errno));
 	}
 
 	return ret;
@@ -387,10 +386,7 @@ int UDP_MakeSocketBroadcastCapable (sys_socket_t net_socket)
 
 	// make this socket broadcast capable
 	if (setsockopt(net_socket, SOL_SOCKET, SO_BROADCAST, (char *)&i, sizeof(i)) == SOCKET_ERROR)
-	{
-		Con_DPrintf ("UDP make socket broadcast capable setsockopt: %s\n", strerror(errno));
 		return -1;
-	}
 
 	net_broadcastsocket = net_socket;
 
@@ -430,7 +426,6 @@ int UDP_Write (sys_socket_t net_socket, byte *buf, int len, struct qsockaddr *ad
 	{
 		if (errno == EWOULDBLOCK)
 			return 0;
-		Con_DPrintf ("UDP write sendto: %s\n", strerror(errno));
 	}
 
 	return ret;
