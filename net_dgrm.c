@@ -125,13 +125,13 @@ int Datagram_SendMessage (qsocket_t *sock, sizebuf_t *data)
 
 #ifdef DEBUG
 	if (data->cursize == 0)
-		Host_Error("Datagram_SendMessage: zero length message");
+		Host_Error ("Datagram_SendMessage: zero length message");
 
 	if (data->cursize > NET_MAXMESSAGE)
-		Host_Error("Datagram_SendMessage: message too big %u", data->cursize);
+		Host_Error ("Datagram_SendMessage: message too big %u", data->cursize);
 
 	if (sock->canSend == false)
-		Host_Error("SendMessage: called with canSend == false");
+		Host_Error ("SendMessage: called with canSend == false");
 #endif
 
 	memcpy(sock->sendMessage, data->data, data->cursize);
@@ -254,10 +254,10 @@ int Datagram_SendUnreliableMessage (qsocket_t *sock, sizebuf_t *data)
 
 #ifdef DEBUG
 	if (data->cursize == 0)
-		Host_Error("Datagram_SendUnreliableMessage: zero length message");
+		Host_Error ("Datagram_SendUnreliableMessage: zero length message");
 
 	if (data->cursize > sock->mtu)
-		Host_Error("Datagram_SendUnreliableMessage: message too big %u", data->cursize);
+		Host_Error ("Datagram_SendUnreliableMessage: message too big %u", data->cursize);
 #endif
 
 	packetLen = NET_HEADERSIZE + data->cursize;

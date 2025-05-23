@@ -753,7 +753,7 @@ void _Host_Frame (double time)
 		}
 		host_frametime = realframetime;
 		
-		Cbuf_Waited();
+		Cbuf_Waited ();
 	}
 
 	host_time += host_frametime;
