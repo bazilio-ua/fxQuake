@@ -357,7 +357,6 @@ sys_socket_t UDP_CheckNewConnections (void)
 	if (ret != SOCKET_ERROR)
 		return net_acceptsocket;
 
-	Con_DPrintf ("UDP check new connections recvfrom: %s\n", strerror(errno));
 	return INVALID_SOCKET;
 }
 
