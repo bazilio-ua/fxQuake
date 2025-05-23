@@ -112,7 +112,7 @@ sys_socket_t UDP_Init (void)
 	err = gethostname(buff, MAXHOSTNAMELEN);
 	if (err) 
 	{
-		Con_SafePrintf("UDP_Init: gethostname failed (errno: %i)\n", errno);
+		Con_SafePrintf("UDP_Init: gethostname failed %s\n", strerror(errno));
 	}
 	else
 	{
@@ -130,7 +130,7 @@ sys_socket_t UDP_Init (void)
 #endif
 		if (!(local = gethostbyname(buff)))
 		{
-			Con_Warning("UDP_Init: gethostbyname failed (errno: %i)\n", errno);
+			Con_Warning("UDP_Init: gethostbyname failed %s\n", strerror(errno));
 		}
 		else if (local->h_addrtype != AF_INET)
 		{
@@ -357,6 +357,7 @@ sys_socket_t UDP_CheckNewConnections (void)
 	if (ret != SOCKET_ERROR)
 		return net_acceptsocket;
 
+	Con_DPrintf ("UDP check new connections recvfrom: %s\n", strerror(errno));
 	return INVALID_SOCKET;
 }
 
@@ -372,6 +373,7 @@ int UDP_Read (sys_socket_t net_socket, byte *buf, int len, struct qsockaddr *add
 	{
 		if (errno == EWOULDBLOCK || errno == ECONNREFUSED)
 			return 0;
+		Con_DPrintf ("UDP read recvfrom: %s\n", strerror(errno));
 	}
 
 	return ret;
@@ -385,7 +387,10 @@ int UDP_MakeSocketBroadcastCapable (sys_socket_t net_socket)
 
 	// make this socket broadcast capable
 	if (setsockopt(net_socket, SOL_SOCKET, SO_BROADCAST, (char *)&i, sizeof(i)) == SOCKET_ERROR)
+	{
+		Con_DPrintf ("UDP make socket broadcast capable setsockopt: %s\n", strerror(errno));
 		return -1;
+	}
 
 	net_broadcastsocket = net_socket;
 
@@ -422,8 +427,11 @@ int UDP_Write (sys_socket_t net_socket, byte *buf, int len, struct qsockaddr *ad
 
 	ret = (int)sendto(net_socket, (char *)buf, len, 0, (struct sockaddr *)addr, sizeof(struct qsockaddr));
 	if (ret == SOCKET_ERROR)
+	{
 		if (errno == EWOULDBLOCK)
 			return 0;
+		Con_DPrintf ("UDP write sendto: %s\n", strerror(errno));
+	}
 
 	return ret;
 }
@@ -492,7 +500,7 @@ int UDP_GetSocketAddr (sys_socket_t net_socket, struct qsockaddr *addr)
 int UDP_GetNameFromAddr (struct qsockaddr *addr, char *name)
 {
 /*	ProQuake connect speedup fix (verified for w95 -> XP) */
-	// pq comment out this block, EER1 - uncommented
+	// pq comment out this block, EER1 - uncomment
 	struct hostent *hostentry;
 
 	hostentry = gethostbyaddr((char *)&((struct sockaddr_in *)addr)->sin_addr, sizeof(struct in_addr), AF_INET);
