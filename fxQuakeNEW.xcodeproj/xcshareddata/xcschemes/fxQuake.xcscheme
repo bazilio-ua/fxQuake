@@ -56,8 +56,8 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-listen 16"
-            isEnabled = "YES">
+            argument = "-listen 64"
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-basedir /Users/bazilio/Quake"
