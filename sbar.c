@@ -1320,7 +1320,7 @@ void Sbar_DeathmatchOverlay (void)
 	xofs = (vid.width - 320) >> 1;
 
 	pic = Draw_CachePic ("gfx/ranking.lmp");
-	Draw_Pic (xofs + 160 - pic->width/2, 0, pic);
+	Draw_Pic (xofs + 160 - pic->width/2, 8, pic);
 
 	// scores
 	Sbar_SortFrags ();
@@ -1328,7 +1328,7 @@ void Sbar_DeathmatchOverlay (void)
 	// draw the text (stats)
 	l = scoreboardlines;
 
-	x = 80 + ((vid.width - 320)>>1);
+	x = 80 + xofs;
 	y = 40;
 	for (i=0 ; i<l ; i++)
 	{
