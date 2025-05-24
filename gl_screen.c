@@ -176,7 +176,6 @@ void SCR_DrawCenterString (void)
 	int		j;
 	int		x, y;
 	int		remaining;
-	int		yofs;
 
 // the finale prints the characters one at a time
 	if (cl.intermission)
@@ -187,14 +186,12 @@ void SCR_DrawCenterString (void)
 	scr_erase_center = 0;
 	start = scr_centerstring;
 
-	yofs = (vid.height - 200) >> 1;
-
 	if (scr_center_lines <= 4)
 		y = vid.height*0.35;
 	else
 		y = 48;
 
-	do
+	do	
 	{
 	// scan the width of the line
 		for (l=0 ; l<40 ; l++)
@@ -203,7 +200,7 @@ void SCR_DrawCenterString (void)
 		x = (vid.width - l*8)/2;
 		for (j=0 ; j<l ; j++, x+=8)
 		{
-			Draw_Character (x, y + yofs, start[j]);
+			Draw_Character (x, y, start[j]);	
 			if (!remaining--)
 				return;
 		}
