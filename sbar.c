@@ -1312,15 +1312,16 @@ Sbar_DeathmatchOverlay
 */
 void Sbar_DeathmatchOverlay (void)
 {
-	int		i, k, l, top, bottom, x, y, xofs, f;
+	int		i, k, l, top, bottom, x, y, xofs, yofs, f;
 	qpic_t			*pic;
 	char			num[12];
 	scoreboard_t	*s;
 
 	xofs = (vid.width - 320) >> 1;
+	yofs = (vid.height - 200) >> 1;
 
 	pic = Draw_CachePic ("gfx/ranking.lmp");
-	Draw_Pic (xofs + 160 - pic->width/2, 0, pic);
+	Draw_Pic (xofs + 160 - pic->width/2, yofs + 8, pic);
 
 	// scores
 	Sbar_SortFrags ();
@@ -1328,8 +1329,8 @@ void Sbar_DeathmatchOverlay (void)
 	// draw the text (stats)
 	l = scoreboardlines;
 
-	x = 80 + ((vid.width - 320)>>1);
-	y = 40;
+	x = 80 + xofs;
+	y = 40 + yofs;
 	for (i=0 ; i<l ; i++)
 	{
 		k = fragsort[i];
@@ -1456,7 +1457,7 @@ Sbar_IntermissionOverlay
 void Sbar_IntermissionOverlay (void)
 {
 	qpic_t	*pic;
-	int	dig, num, xofs;
+	int	dig, num, xofs, yofs;
 
 	if (cl.gametype == GAME_DEATHMATCH)
 	{
@@ -1465,30 +1466,31 @@ void Sbar_IntermissionOverlay (void)
 	}
 
 	xofs = (vid.width - 320) >> 1;
+	yofs = (vid.height - 200) >> 1;
 
 	pic = Draw_CachePic ("gfx/complete.lmp");
-	Draw_Pic (xofs + 64, 24, pic);
+	Draw_Pic (xofs + 64, yofs + 24, pic);
 
 	pic = Draw_CachePic ("gfx/inter.lmp");
-	Draw_TransPic (xofs, 56, pic);
+	Draw_TransPic (xofs, yofs + 56, pic);
 
 	// time
 	dig = cl.completed_time / 60;
-	Sbar_IntermissionNumber (xofs + 160, 64, dig, 3, 0);
+	Sbar_IntermissionNumber (xofs + 160, yofs + 64, dig, 3, 0);
 	num = cl.completed_time - dig * 60;
-	Draw_TransPic (xofs + 234, 64, sb_colon);
-	Draw_TransPic (xofs + 246, 64, sb_nums[0][num/10]);
-	Draw_TransPic (xofs + 266, 64, sb_nums[0][num%10]);
+	Draw_TransPic (xofs + 234, yofs + 64, sb_colon);
+	Draw_TransPic (xofs + 246, yofs + 64, sb_nums[0][num/10]);
+	Draw_TransPic (xofs + 266, yofs + 64, sb_nums[0][num%10]);
 
 	// secrets
-	Sbar_IntermissionNumber (xofs + 160, 104, cl.stats[STAT_SECRETS], 3, 0);
-	Draw_TransPic (xofs + 232, 104, sb_slash);
-	Sbar_IntermissionNumber (xofs + 240, 104, cl.stats[STAT_TOTALSECRETS], 3, 0);
+	Sbar_IntermissionNumber (xofs + 160, yofs + 104, cl.stats[STAT_SECRETS], 3, 0);
+	Draw_TransPic (xofs + 232, yofs + 104, sb_slash);
+	Sbar_IntermissionNumber (xofs + 240, yofs + 104, cl.stats[STAT_TOTALSECRETS], 3, 0);
 
 	// monsters
-	Sbar_IntermissionNumber (xofs + 160, 144, cl.stats[STAT_MONSTERS], 3, 0);
-	Draw_TransPic (xofs + 232, 144, sb_slash);
-	Sbar_IntermissionNumber (xofs + 240, 144, cl.stats[STAT_TOTALMONSTERS], 3, 0);
+	Sbar_IntermissionNumber (xofs + 160, yofs + 144, cl.stats[STAT_MONSTERS], 3, 0);
+	Draw_TransPic (xofs + 232, yofs + 144, sb_slash);
+	Sbar_IntermissionNumber (xofs + 240, yofs + 144, cl.stats[STAT_TOTALMONSTERS], 3, 0);
 }
 
 
@@ -1503,5 +1505,5 @@ void Sbar_FinaleOverlay (void)
 	qpic_t	*pic;
 
 	pic = Draw_CachePic ("gfx/finale.lmp");
-	Draw_TransPic ( (vid.width-pic->width)/2, 16, pic);
+	Draw_TransPic ( (vid.width-pic->width)/2, 16 + ((vid.height - 200)>>1), pic);
 }
