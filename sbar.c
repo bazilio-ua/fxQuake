@@ -1266,7 +1266,7 @@ void Sbar_Draw (void)
 	}
 
 //	if (sb_lines > 0 && (cl.gametype == GAME_DEATHMATCH || cls.demoplayback) && !scr_centersbar.value)
-	if (scr_viewsize.value < 120 && (cl.gametype == GAME_DEATHMATCH || cls.demoplayback) && !scr_centersbar.value) // check viewsize instead of sb_lines
+	if (scr_viewsize.value < 120 && (cl.gametype == GAME_DEATHMATCH || cls.demoplayback)) // check viewsize instead of sb_lines
 		Sbar_MiniDeathmatchOverlay ();
 }
 
@@ -1409,7 +1409,7 @@ void Sbar_MiniDeathmatchOverlay (void)
 	if (i < 0)
 		i = 0;
 
-	x = 324;
+	x = !scr_centersbar.value ? 324 : 4;
 	for ( ; i < scoreboardlines && y < (int)vid.height - 8 ; i++)
 	{
 		k = fragsort[i];
