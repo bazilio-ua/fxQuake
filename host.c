@@ -671,8 +671,6 @@ void Host_ServerFrame (void)
 }
 
 
-#define HOST_AVG 10
-
 /*
 ==================
 Host_Frame
@@ -686,7 +684,7 @@ void _Host_Frame (double time)
 	static double		time1 = 0;
 	static double		time2 = 0;
 	static double		time3 = 0;
-	static int	avg_index;
+	int			pass1, pass2, pass3;
 
 	if (setjmp (host_abortserver) )
 		return;			// something bad happened, or the server disconnected
@@ -698,9 +696,6 @@ void _Host_Frame (double time)
 	accumtime += host_netinterval ? CLAMP(0, time, 0.2) : 0;	// for renderer/server isolation
 	if (!Host_FilterTime (time))
 		return;			// don't run too fast, or packets will flood out
-		
-	if (!host_speeds.value)
-		time1 = time2 = time3 = avg_index = 0; // Reset
 
 // get new events from environment
 	IN_ProcessEvents ();
@@ -713,9 +708,6 @@ void _Host_Frame (double time)
 
 // process console commands
 	Cbuf_Execute ();
-
-	if (host_speeds.value && !time3)
-		time3 = Sys_DoubleTime (); // No previous time3
 
 	NET_Poll();
 
@@ -791,43 +783,12 @@ void _Host_Frame (double time)
 
 	if (host_speeds.value)
 	{
-		static float pass1[HOST_AVG + 1], pass2[HOST_AVG + 1], pass3[HOST_AVG + 1];
-
-		if (host_speeds.value < 2 || avg_index > HOST_AVG)
-			avg_index = 0;
-
-		pass1[avg_index] = (time1 - time3)*1000;
+		pass1 = (time1 - time3)*1000;
 		time3 = Sys_DoubleTime ();
-		pass2[avg_index] = (time2 - time1)*1000;
-		pass3[avg_index] = (time3 - time2)*1000;
-
-		if (avg_index == HOST_AVG - 1)
-		{
-			int i;
-
-			// Calculate average
-			pass1[HOST_AVG] = pass2[HOST_AVG] = pass3[HOST_AVG] = 0;
-
-			for (i = 0; i < HOST_AVG; ++i)
-			{
-				pass1[HOST_AVG] += pass1[i];
-				pass2[HOST_AVG] += pass2[i];
-				pass3[HOST_AVG] += pass3[i];
-			}
-
-			pass1[HOST_AVG] /= HOST_AVG;
-			pass2[HOST_AVG] /= HOST_AVG;
-			pass3[HOST_AVG] /= HOST_AVG;
-
-			++avg_index;
-		}
-
-		if (host_speeds.value < 2 || avg_index == HOST_AVG)
-			Con_Printf ("%3.0f tot %3.0f server %3.0f gfx %3.0f snd\n",
-				    pass1[avg_index] + pass2[avg_index] + pass3[avg_index], pass1[avg_index], pass2[avg_index], pass3[avg_index]);
-
-		if (host_speeds.value > 1)
-			++avg_index;
+		pass2 = (time2 - time1)*1000;
+		pass3 = (time3 - time2)*1000;
+		Con_Printf ("%3i tot %3i server %3i gfx %3i snd\n",
+					pass1+pass2+pass3, pass1, pass2, pass3);
 	}
 	
 	host_framecount++;
