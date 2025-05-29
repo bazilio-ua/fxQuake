@@ -680,6 +680,7 @@ Runs all active servers
 */
 void _Host_Frame (double time)
 {
+	float realframetime;
 	static double	accumtime = 0;
 	static double		time1 = 0;
 	static double		time2 = 0;
@@ -724,7 +725,7 @@ void _Host_Frame (double time)
 //-------------------
 	if (accumtime >= host_netinterval)
 	{
-		float realframetime = host_frametime;
+		realframetime = host_frametime;
 		if (host_netinterval)
 		{
 			host_frametime = max(accumtime, (double)host_netinterval);
