@@ -917,6 +917,25 @@ void TexMgr_NewGame (void)
 
 /*
 ===============
+TexMgr_GLMaxSize
+===============
+*/
+void TexMgr_GLMaxSize (void)
+{
+	//
+	// find the new correct size
+	//
+	if ((int)gl_max_size.value > 0 && (int)gl_max_size.value < 512)
+		Cvar_SetValueEx ("gl_max_size", 512, false);
+	
+	if ((int)gl_max_size.value > gl_hardware_max_size)
+		Cvar_SetValueEx ("gl_max_size", gl_hardware_max_size, false);
+	
+	TexMgr_ReloadTextures ();
+}
+
+/*
+===============
 TexMgr_UploadWarpImage
 
 called during init,
@@ -933,7 +952,7 @@ void TexMgr_UploadWarpImage (void)
 	// find the new correct size
 	//
 	if ((int)gl_warp_image_size.value < 32)
-		Cvar_SetValue ("gl_warp_image_size", 32);
+		Cvar_SetValueEx ("gl_warp_image_size", 32, false);
 
 	//
 	// make sure warpimage size is a power of two
@@ -946,7 +965,7 @@ void TexMgr_UploadWarpImage (void)
 		gl_warpimage_size >>= 1;
 
 	if (gl_warpimage_size != gl_warp_image_size.value)
-		Cvar_SetValue ("gl_warp_image_size", gl_warpimage_size);
+		Cvar_SetValueEx ("gl_warp_image_size", gl_warpimage_size, false);
 
 	// ericw -- removed early exit if (gl_warpimage_size == oldsize).
 	// after reloads textures to source width/height, which might not match oldsize.
@@ -1014,7 +1033,7 @@ void TexMgr_Init (void)
 //	V_SetPalette (host_basepal);
 	TexMgr_LoadPalette ();
 	
-	Cvar_RegisterVariableCallback (&gl_max_size, TexMgr_ReloadTextures);
+	Cvar_RegisterVariableCallback (&gl_max_size, TexMgr_GLMaxSize);
 	Cvar_RegisterVariableCallback (&gl_picmip, TexMgr_ReloadTextures);
 	Cvar_RegisterVariableCallback (&gl_warp_image_size, TexMgr_UploadWarpImage);
 	Cvar_RegisterVariableCallback (&gl_compression, TexMgr_ReloadTextures);
@@ -1037,16 +1056,35 @@ void TexMgr_Init (void)
 
 /*
 ================
-TexMgr_Pad -- return smallest power of two greater than or equal to s
+TexMgr_Pad -- round up to multiple of 4
 ================
 */
 int TexMgr_Pad (int s)
 {
+	s = (s + 3) & ~3;
+
+	return s;
+	
+//	int i;
+//    
+//	for (i=1; i<s; i<<=1)
+//        ;
+//    
+//	return i;
+}
+
+/*
+================
+TexMgr_CheckSize -- return smallest power of two greater than or equal to size
+================
+*/
+int TexMgr_CheckSize (int s)
+{
 	int i;
-    
+	
 	for (i=1; i<s; i<<=1)
-        ;
-    
+		;
+	
 	return i;
 }
 
@@ -1059,18 +1097,14 @@ int TexMgr_SafeTextureSize (int s)
 {
 	int m;
 	
-	if (!gl_texture_NPOT)
-		s = TexMgr_Pad(s);
+//	if (!gl_texture_NPOT)
+	if (!gl_texture_NPOT || !gl_npot.value)
+		s = TexMgr_CheckSize(s); //TexMgr_Pad
 	
 	m = (int)gl_max_size.value;
 	if (m > 0)
 	{
-		if (m < 512)
-		{
-			m = 512;
-			Cvar_SetValue ("gl_max_size", m);
-		}
-		m = TexMgr_Pad(m);
+		m = TexMgr_CheckSize(m); //TexMgr_Pad
 		if (m < s)
 			s = m;
 	}

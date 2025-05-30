@@ -390,6 +390,11 @@ Cvar_Set
 */
 void Cvar_Set (char *var_name, char *value)
 {
+	Cvar_SetEx (var_name, value, true);
+}
+
+void Cvar_SetEx (char *var_name, char *value, qboolean callback)
+{
 	cvar_t	*var;
 	
 	var = Cvar_FindVar (var_name);
@@ -428,7 +433,7 @@ void Cvar_Set (char *var_name, char *value)
 	}
 
 	//johnfitz
-	if(var->callback)
+	if(var->callback && callback)
 		var->callback();
 	//johnfitz
 
@@ -448,6 +453,11 @@ Cvar_SetValue
 */
 void Cvar_SetValue (char *var_name, float value)
 {
+	Cvar_SetValueEx (var_name, value, true);
+}
+
+void Cvar_SetValueEx (char *var_name, float value, qboolean callback)
+{
 	static char str[32];
 	int			i;
 
@@ -461,7 +471,7 @@ void Cvar_SetValue (char *var_name, float value)
 	if (str[i] == '.')
 		str[i] = 0;
 
-	Cvar_Set (var_name, str); 
+	Cvar_SetEx (var_name, str, callback);
 }
 
 

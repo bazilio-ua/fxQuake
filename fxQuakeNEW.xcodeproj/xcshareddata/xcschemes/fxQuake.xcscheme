@@ -88,8 +88,8 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-developer 1"
-            isEnabled = "NO">
+            argument = "-developer 2"
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-rogue"

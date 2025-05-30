@@ -79,9 +79,11 @@ void 	Cvar_Reset (char *var_name);
 //johnfitz
 
 void 	Cvar_Set (char *var_name, char *value);
+void 	Cvar_SetEx (char *var_name, char *value, qboolean callback);
 // equivelant to "<name> <variable>" typed at the console
 
 void	Cvar_SetValue (char *var_name, float value);
+void	Cvar_SetValueEx (char *var_name, float value, qboolean callback);
 // expands value to a string and calls Cvar_Set
 
 void	Cvar_SetROM (char *var_name, char *value);
