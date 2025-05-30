@@ -1061,16 +1061,16 @@ TexMgr_Pad -- round up to multiple of 4
 */
 int TexMgr_Pad (int s)
 {
-	s = (s + 3) & ~3;
-
-	return s;
+//	s = (s + 3) & ~3;
+//
+//	return s;
 	
-//	int i;
-//    
-//	for (i=1; i<s; i<<=1)
-//        ;
-//    
-//	return i;
+	int i;
+    
+	for (i=1; i<s; i<<=1)
+        ;
+    
+	return i;
 }
 
 /*
@@ -1097,8 +1097,8 @@ int TexMgr_SafeTextureSize (int s)
 {
 	int m;
 	
-//	if (!gl_texture_NPOT)
-	if (!gl_texture_NPOT || !gl_npot.value)
+	if (!gl_texture_NPOT)
+//	if (!gl_texture_NPOT || !gl_npot.value)
 		s = TexMgr_CheckSize(s); //TexMgr_Pad
 	
 	m = (int)gl_max_size.value;
@@ -1598,7 +1598,8 @@ void TexMgr_Upload32 (gltexture_t *glt, unsigned *data)
 	int mip_memory_size;
 	int max_miplevel;
 	
-	if (gl_texture_NPOT && gl_npot.value) {
+	if (gl_texture_NPOT) {
+//	if (gl_texture_NPOT && gl_npot.value) {
 		scaled = data;
 	} else {
         // resample up
