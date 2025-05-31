@@ -458,20 +458,20 @@ void Cvar_SetValue (char *var_name, float value)
 
 void Cvar_SetValueEx (char *var_name, float value, qboolean callback)
 {
-	static char str[32];
+	char	val[32];
 	int			i;
 
-	sprintf (str, "%f", value);
+	sprintf (val, "%f", value);
 
 	// Strip off ending zeros
-	for (i = strlen(str) - 1 ; i > 0 && str[i] == '0' ; i--)
-		str[i] = 0;
+	for (i = strlen(val) - 1 ; i > 0 && val[i] == '0' ; i--)
+		val[i] = 0;
 
 	// Strip off ending period
-	if (str[i] == '.')
-		str[i] = 0;
+	if (val[i] == '.')
+		val[i] = 0;
 
-	Cvar_SetEx (var_name, str, callback);
+	Cvar_SetEx (var_name, val, callback);
 }
 
 
