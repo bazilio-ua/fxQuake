@@ -148,6 +148,13 @@ void SV_Init (void)
 	Sys_Printf ("Server using protocol %i (%s)\n", sv_protocol, p);
 }
 
+/*
+===============
+SV_StupidQuakeBugFix
+ 
+compensate stupid quake bug (inverse pitch) for mods where this bug is fixed
+===============
+*/
 void SV_StupidQuakeBugFix (void)
 {
 	stupidquakebugfix = (qboolean)(sv_stupidquakebugfix.value);

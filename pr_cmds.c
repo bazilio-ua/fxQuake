@@ -440,7 +440,7 @@ vector vectoangles(vector)
 =================
 */
 qboolean stupidquakebugfix = false; 
-cvar_t	sv_stupidquakebugfix = {"sv_stupidquakebugfix", "0", CVAR_ARCHIVE};
+cvar_t	sv_stupidquakebugfix = {"sv_stupidquakebugfix", "0", CVAR_NONE};
 
 void PF_vectoangles (void)
 {
