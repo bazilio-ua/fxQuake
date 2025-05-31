@@ -483,12 +483,15 @@ Cvar_SetROM
 void Cvar_SetROM (char *var_name, char *value)
 {
 	cvar_t *var = Cvar_FindVar (var_name);
-	
+	qboolean	rom;
+
 	if (var)
 	{
+		rom = (var->flags & CVAR_ROM);
 		var->flags &= ~CVAR_ROM;
 		Cvar_Set (var->name, value);
-		var->flags |= CVAR_ROM;
+		if (rom)
+			var->flags |= CVAR_ROM;
 	}
 }
 
@@ -500,12 +503,15 @@ Cvar_SetValueROM
 void Cvar_SetValueROM (char *var_name, float value)
 {
 	cvar_t *var = Cvar_FindVar (var_name);
-	
+	qboolean	rom;
+
 	if (var)
 	{
+		rom = (var->flags & CVAR_ROM);
 		var->flags &= ~CVAR_ROM;
 		Cvar_SetValue (var->name, value);
-		var->flags |= CVAR_ROM;
+		if (rom)
+			var->flags |= CVAR_ROM;
 	}
 }
 
