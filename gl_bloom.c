@@ -53,13 +53,13 @@ old link: http://www.quakesrc.org/forums/viewtopic.php?t=4340&start=0
 
 static int bloom_size;
 
-cvar_t r_bloom					= {"r_bloom", "0", CVAR_ARCHIVE};
-cvar_t r_bloom_darken			= {"r_bloom_darken", "1", CVAR_ARCHIVE};
-cvar_t r_bloom_alpha			= {"r_bloom_alpha", "0.2", CVAR_ARCHIVE};
-cvar_t r_bloom_intensity		= {"r_bloom_intensity", "0.8", CVAR_ARCHIVE};
-cvar_t r_bloom_diamond_size		= {"r_bloom_diamond_size", "8", CVAR_ARCHIVE};
-cvar_t r_bloom_sample_size		= {"r_bloom_sample_size", "64", CVAR_ARCHIVE}; // was 512
-cvar_t r_bloom_fast_sample		= {"r_bloom_fast_sample", "0", CVAR_ARCHIVE};
+cvar_t gl_bloom					= {"gl_bloom", "0", CVAR_ARCHIVE};
+cvar_t gl_bloomdarken			= {"gl_bloomdarken", "1", CVAR_ARCHIVE};
+cvar_t gl_bloomalpha			= {"gl_bloomalpha", "0.2", CVAR_ARCHIVE};
+cvar_t gl_bloomintensity		= {"gl_bloomintensity", "0.8", CVAR_ARCHIVE};
+cvar_t gl_bloomdiamondsize		= {"gl_bloomdiamondsize", "8", CVAR_ARCHIVE};
+cvar_t gl_bloomsamplesize		= {"gl_bloomsamplesize", "64", CVAR_ARCHIVE}; // was 512
+cvar_t gl_bloomfastsample		= {"gl_bloomfastsample", "0", CVAR_ARCHIVE};
 
 gltexture_t *bloomscreentexture;
 gltexture_t *bloomeffecttexture;
@@ -108,7 +108,7 @@ void R_Bloom_InitTextures (void)
 	if (screen_texture_width > TexMgr_SafeTextureSize(screen_texture_width) || screen_texture_height > TexMgr_SafeTextureSize(screen_texture_height))
 	{
 		screen_texture_width = screen_texture_height = 0;
-		Cvar_SetValue ("r_bloom", 0);
+		Cvar_SetValue ("gl_bloom", 0);
 		Con_Warning ("R_Bloom_InitTextures: too high resolution for Light Bloom. Effect disabled\n");
 		return;
 	}
@@ -123,19 +123,19 @@ void R_Bloom_InitTextures (void)
 											 (uintptr_t)bloomscreendata, TEXPREF_BLOOM | TEXPREF_LINEAR);
 
 	// validate bloom size
-	if (r_bloom_sample_size.value < 32)
-		Cvar_SetValueNoCallback ("r_bloom_sample_size", 32);
+	if (gl_bloomsamplesize.value < 32)
+		Cvar_SetValueNoCallback ("gl_bloomsamplesize", 32);
 
 	// make sure bloom size doesn't have funny values
-//	limit = min( (int)r_bloom_sample_size.value, min( screen_texture_width, screen_texture_height ) );
-	limit = min( (int)r_bloom_sample_size.value, min( min( screen_texture_width, screen_texture_height ), min( glwidth, glheight ) ) );
+//	limit = min( (int)gl_bloomsamplesize.value, min( screen_texture_width, screen_texture_height ) );
+	limit = min( (int)gl_bloomsamplesize.value, min( min( screen_texture_width, screen_texture_height ), min( glwidth, glheight ) ) );
 
 	// make sure bloom size is a power of 2
 	for( bloom_size = 32; (bloom_size<<1) <= limit; bloom_size <<= 1 )
 		;
 
-	if (bloom_size != r_bloom_sample_size.value)
-		Cvar_SetValueNoCallback ("r_bloom_sample_size", bloom_size);
+	if (bloom_size != gl_bloomsamplesize.value)
+		Cvar_SetValueNoCallback ("gl_bloomsamplesize", bloom_size);
 
 	// init the bloom effect texture
 	bloomeffectdata = Hunk_Alloc (bloom_size * bloom_size * 4);
@@ -148,7 +148,7 @@ void R_Bloom_InitTextures (void)
 	bloomdownsamplingtexture = NULL;
 	screen_downsampling_texture_size = 0;
 
-	if ( (glwidth > (bloom_size * 2) || glheight > (bloom_size * 2) ) && !r_bloom_fast_sample.value)
+	if ( (glwidth > (bloom_size * 2) || glheight > (bloom_size * 2) ) && !gl_bloomfastsample.value)
 	{
 		screen_downsampling_texture_size = (int)(bloom_size * 2);
 		bloomdownsamplingdata = Hunk_Alloc (screen_downsampling_texture_size * screen_downsampling_texture_size * 4);
@@ -189,7 +189,7 @@ void R_InitBloomTextures (void)
 	bloom_size = 0;
 	bloomscreentexture = NULL;	// first init
 
-	if (!r_bloom.value)
+	if (!gl_bloom.value)
 		return;
 
 	R_Bloom_InitTextures ();
@@ -244,7 +244,7 @@ void R_Bloom_DrawEffect (void)
 {
 	float	alpha;
 
-	alpha = CLAMP(0.0, r_bloom_alpha.value, 1.0);
+	alpha = CLAMP(0.0, gl_bloomalpha.value, 1.0);
 
 	GL_BindTexture (bloomeffecttexture);
 
@@ -298,13 +298,13 @@ void R_Bloom_GeneratexDiamonds (void)
 	glEnable (GL_BLEND);
 
 	// darkening passes
-	if (r_bloom_darken.value < 0)
-		Cvar_SetValue("r_bloom_darken", 0);
+	if (gl_bloomdarken.value < 0)
+		Cvar_SetValue("gl_bloomdarken", 0);
 
     glBlendFunc (GL_DST_COLOR, GL_ZERO);
     glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
-    for (i = 0; i < r_bloom_darken.value; i++) 
+    for (i = 0; i < gl_bloomdarken.value; i++) 
     {
         R_Bloom_SamplePass (0, 0);
     }
@@ -312,20 +312,20 @@ void R_Bloom_GeneratexDiamonds (void)
     glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, 0, 0, sample_texture_width, sample_texture_height);
 
 	// bluring passes
-    if (r_bloom_diamond_size.value < 2)
-        Cvar_SetValue("r_bloom_diamond_size", 2);
-    if (r_bloom_intensity.value < 0)
-        Cvar_SetValue("r_bloom_intensity", 0);
+    if (gl_bloomdiamondsize.value < 2)
+        Cvar_SetValue("gl_bloomdiamondsize", 2);
+    if (gl_bloomintensity.value < 0)
+        Cvar_SetValue("gl_bloomintensity", 0);
 
-    rad = r_bloom_diamond_size.value / 2.0f;
-    point = (r_bloom_diamond_size.value - 1) / 2.0f;
-    scale = min(1.0f, r_bloom_intensity.value * 2.0f / rad);
+    rad = gl_bloomdiamondsize.value / 2.0f;
+    point = (gl_bloomdiamondsize.value - 1) / 2.0f;
+    scale = min(1.0f, gl_bloomintensity.value * 2.0f / rad);
 
 	glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 
-	for (i = 0; i < r_bloom_diamond_size.value; i++) 
+	for (i = 0; i < gl_bloomdiamondsize.value; i++) 
 	{
-		for (j = 0; j < r_bloom_diamond_size.value; j++) 
+		for (j = 0; j < gl_bloomdiamondsize.value; j++) 
 		{
 			intensity = scale * ((point + 1.0f) - (fabs(point - i) + fabs(point - j))) / (point + 1.0f);
 			if (intensity < 0.005f)
@@ -414,7 +414,7 @@ R_BloomBlend
 */
 void R_BloomBlend (void)
 {
-	if (!r_bloom.value)
+	if (!gl_bloom.value)
 		return;
 
 	if (!bloom_size || screen_texture_width < glwidth || screen_texture_height < glheight)
@@ -424,7 +424,7 @@ void R_BloomBlend (void)
 		R_Bloom_InitTextures ();
 
 	// previous function can unset this
-	if (!r_bloom.value)
+	if (!gl_bloom.value)
 		return;
 
 	if (screen_texture_width < bloom_size || screen_texture_height < bloom_size)

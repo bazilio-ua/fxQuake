@@ -167,13 +167,13 @@ void R_Init (void)
 	Cvar_RegisterVariable (&gl_foggreen);
 	Cvar_RegisterVariable (&gl_fogblue);
 
-	Cvar_RegisterVariable (&r_bloom);
-	Cvar_RegisterVariable (&r_bloom_darken);
-	Cvar_RegisterVariable (&r_bloom_alpha);
-	Cvar_RegisterVariable (&r_bloom_intensity);
-	Cvar_RegisterVariable (&r_bloom_diamond_size);
-	Cvar_RegisterVariableCallback (&r_bloom_sample_size, R_InitBloomTextures); // NULL
-	Cvar_RegisterVariable (&r_bloom_fast_sample);
+	Cvar_RegisterVariable (&gl_bloom);
+	Cvar_RegisterVariable (&gl_bloomdarken);
+	Cvar_RegisterVariable (&gl_bloomalpha);
+	Cvar_RegisterVariable (&gl_bloomintensity);
+	Cvar_RegisterVariable (&gl_bloomdiamondsize);
+	Cvar_RegisterVariableCallback (&gl_bloomsamplesize, R_InitBloomTextures); // NULL
+	Cvar_RegisterVariable (&gl_bloomfastsample);
 
 	R_InitParticles ();
 
