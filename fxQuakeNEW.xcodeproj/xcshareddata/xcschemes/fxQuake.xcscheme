@@ -201,7 +201,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-notexturenpot"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-nocompression"
@@ -256,7 +256,7 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "+r_bloom 0"
+            argument = "+gl_bloom 0"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
