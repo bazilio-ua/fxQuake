@@ -89,7 +89,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-developer 2"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-rogue"

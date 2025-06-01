@@ -1454,10 +1454,12 @@ byte *TexMgr_PadImageH (char *name, byte *in, int width, int height, byte padbyt
 #define STB_DXT_IMPLEMENTATION
 #include "stb_dxt.h"
 
-static void
-DXT_ExtractColorBlock(unsigned dst[16], unsigned *in, int inwidth, int inheight, int x, int y)
+void DXT_ExtractColorBlock (unsigned dst[16], unsigned *in, int inwidth, int inheight, int x, int y)
 {
 	unsigned *src = in + y * inwidth + x;
+	unsigned black;
+	int width, height;
+	int y1, x1;
 	
 	if (inheight - y >= 4 && inwidth - x >= 4) {
 		/* Fast path for a full block */
@@ -1467,33 +1469,34 @@ DXT_ExtractColorBlock(unsigned dst[16], unsigned *in, int inwidth, int inheight,
 		memcpy(dst + 12, src + inwidth * 3, 16);
 	} else {
 		/* Partial block, pad with black and alpha 1.0 */
-		unsigned black = (unsigned)LittleLong(255ul << 24);
-		int width  = min(inwidth  - x, 4);
-		int height = min(inheight - y, 4);
-		int y = 0;
-		for ( ; y < height; y++) {
-			int x = 0;
-			for ( ; x < width; x++)
-				dst[y * 4 + x] = src[y * inwidth + x];
-			for ( ; x < 4; x++)
-				dst[y * 4 + x] = black;
+		black = (unsigned)LittleLong(255ul << 24);
+		width  = min(inwidth  - x, 4);
+		height = min(inheight - y, 4);
+		y1 = 0;
+		for ( ; y1 < height; y1++) {
+			x1 = 0;
+			for ( ; x1 < width; x1++)
+				dst[y1 * 4 + x1] = src[y1 * inwidth + x1];
+			for ( ; x1 < 4; x1++)
+				dst[y1 * 4 + x1] = black;
 		}
-		for ( ; y < 4; y++) {
-			for (int x = 0; x < 4; x++)
-				dst[y * 4 + x] = black;
+		for ( ; y1 < 4; y1++) {
+			for (x1 = 0; x1 < 4; x1++)
+				dst[y1 * 4 + x1] = black;
 		}
 	}
 }
 
-static void
-TexMgr_CompressDXT1(unsigned *in, int inwidth, int inheight, byte *dst)
+void TexMgr_CompressDXT1 (unsigned *in, int inwidth, int inheight, byte *dst)
 {
 	unsigned colorblock[16];
-	int width = inwidth;
-	int height = inheight;
-
-	for (int y = 0; y < height; y += 4) {
-		for (int x = 0; x < width; x += 4) {
+	int width, height;
+	int y, x;
+	
+	width = inwidth;
+	height = inheight;
+	for (y = 0; y < height; y += 4) {
+		for (x = 0; x < width; x += 4) {
 			DXT_ExtractColorBlock(colorblock, in, inwidth, inheight, x, y);
 			stb_compress_dxt_block(dst, (byte *)colorblock, false, STB_DXT_HIGHQUAL);
 			dst += 8;
@@ -1501,15 +1504,16 @@ TexMgr_CompressDXT1(unsigned *in, int inwidth, int inheight, byte *dst)
 	}
 }
 
-static void
-TexMgr_CompressDXT5(unsigned *in, int inwidth, int inheight, byte *dst)
+void TexMgr_CompressDXT5 (unsigned *in, int inwidth, int inheight, byte *dst)
 {
 	unsigned colorblock[16];
-	int width = inwidth;
-	int height = inheight;
+	int width, height;
+	int y, x;
 	
-	for (int y = 0; y < height; y += 4) {
-		for (int x = 0; x < width; x += 4) {
+	width = inwidth;
+	height = inheight;
+	for (y = 0; y < height; y += 4) {
+		for (x = 0; x < width; x += 4) {
 			DXT_ExtractColorBlock(colorblock, in, inwidth, inheight, x, y);
 			stb_compress_dxt_block(dst, (byte *)colorblock, true, STB_DXT_HIGHQUAL);
 			dst += 16;
@@ -1517,12 +1521,12 @@ TexMgr_CompressDXT5(unsigned *in, int inwidth, int inheight, byte *dst)
 	}
 }
 
-static int
-TexMgr_GetMipMemorySize(int width, int height, GLint format)
+int TexMgr_GetMipMemorySize (int width, int height, GLint format)
 {
-	int blocksize = 1;
-	int blockbytes = 4;
+	int blocksize, blockbytes, blockwidth, blockheight;
 	
+	blocksize = 1;
+	blockbytes = 4;
 	switch (format) {
 		case GL_COMPRESSED_RGB_S3TC_DXT1_EXT:
 		case GL_COMPRESSED_RGBA_S3TC_DXT1_EXT:
@@ -1536,14 +1540,13 @@ TexMgr_GetMipMemorySize(int width, int height, GLint format)
 			break;
 	}
 	
-	int blockwidth  = (width  + blocksize - 1) / blocksize;
-	int blockheight = (height + blocksize - 1) / blocksize;
+	blockwidth  = (width  + blocksize - 1) / blocksize;
+	blockheight = (height + blocksize - 1) / blocksize;
 	
 	return blockwidth * blockheight * blockbytes;
 }
 
-static void
-TexMgr_CompressMip(unsigned *in, int inwidth, int inheight, GLint format, byte *dst)
+void TexMgr_CompressMip (unsigned *in, int inwidth, int inheight, GLint format, byte *dst)
 {
 	switch (format) {
 		case GL_COMPRESSED_RGB_S3TC_DXT1_EXT:
@@ -1557,11 +1560,11 @@ TexMgr_CompressMip(unsigned *in, int inwidth, int inheight, GLint format, byte *
 	}
 }
 
-static int
-TexMgr_GetMaxMipLevel(int width, int height, GLint format)
+int TexMgr_GetMaxMipLevel (int width, int height, GLint format)
 {
-	int blocksize = 1;
+	int blocksize, max_level;
 	
+	blocksize = 1;
 	switch (format) {
 		case GL_COMPRESSED_RGB_S3TC_DXT1_EXT:
 		case GL_COMPRESSED_RGBA_S3TC_DXT1_EXT:
@@ -1570,8 +1573,7 @@ TexMgr_GetMaxMipLevel(int width, int height, GLint format)
 			blocksize = 4;
 	}
 	
-	int max_level = 0;
-	
+	max_level = 0;
 	while (width > blocksize || height > blocksize) {
 		max_level++;
 		width  = width  > 1 ? width  >> 1 : 1;
