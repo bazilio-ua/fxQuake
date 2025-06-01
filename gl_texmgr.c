@@ -21,12 +21,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "quakedef.h"
 
-//cvar_t		gl_max_size = {"gl_max_size", "0", CVAR_NONE};
 cvar_t		gl_picmip = {"gl_picmip", "0", CVAR_NONE};
 cvar_t		gl_swapinterval = {"gl_swapinterval", "1", CVAR_ARCHIVE};
 cvar_t		gl_warp_image_size = {"gl_warp_image_size", "256", CVAR_ARCHIVE}; // was 512, for water warp
 cvar_t		gl_compression = {"gl_compression", "1", CVAR_ARCHIVE};
-//cvar_t		gl_npot = {"gl_npot", "1", CVAR_ARCHIVE};
 
 gltexture_t	*notexture;
 gltexture_t	*nulltexture;
@@ -917,25 +915,6 @@ void TexMgr_NewGame (void)
 
 /*
 ===============
-TexMgr_GLMaxSize
-===============
-*/
-//void TexMgr_GLMaxSize (void)
-//{
-//	//
-//	// find the new correct size
-//	//
-//	if ((int)gl_max_size.value > 0 && (int)gl_max_size.value < 512)
-//		Cvar_SetValueEx ("gl_max_size", 512, false);
-//	
-//	if ((int)gl_max_size.value > gl_hardware_max_size)
-//		Cvar_SetValueEx ("gl_max_size", gl_hardware_max_size, false);
-//	
-//	TexMgr_ReloadTextures ();
-//}
-
-/*
-===============
 TexMgr_UploadWarpImage
 
 called during init,
@@ -1028,16 +1007,11 @@ void TexMgr_Init (void)
 	numgltextures = 0;
 
 	// palette
-//	V_FindFullbrightColors ();
-//	V_SetOriginalPalette ();
-//	V_SetPalette (host_basepal);
 	TexMgr_LoadPalette ();
 	
-//	Cvar_RegisterVariableCallback (&gl_max_size, TexMgr_GLMaxSize);
 	Cvar_RegisterVariableCallback (&gl_picmip, TexMgr_ReloadTextures);
 	Cvar_RegisterVariableCallback (&gl_warp_image_size, TexMgr_UploadWarpImage);
 	Cvar_RegisterVariableCallback (&gl_compression, TexMgr_ReloadTextures);
-//	Cvar_RegisterVariableCallback (&gl_npot, TexMgr_ReloadTextures);
 
 	Cmd_AddCommand ("gl_texturemode", &GL_TextureMode_f);
 	Cmd_AddCommand ("gl_texture_anisotropy", &GL_Texture_Anisotropy_f);
@@ -1056,29 +1030,10 @@ void TexMgr_Init (void)
 
 /*
 ================
-TexMgr_Pad -- round up to multiple of 4
+TexMgr_Pad -- return smallest power of two greater than or equal to size
 ================
 */
 int TexMgr_Pad (int s)
-{
-//	s = (s + 3) & ~3;
-//
-//	return s;
-	
-	int i;
-    
-	for (i=1; i<s; i<<=1)
-        ;
-    
-	return i;
-}
-
-/*
-================
-TexMgr_CheckSize -- return smallest power of two greater than or equal to size
-================
-*/
-int TexMgr_CheckSize (int s)
 {
 	int i;
 	
@@ -1095,19 +1050,9 @@ TexMgr_SafeTextureSize -- return a size with hardware and user prefs in mind
 */
 int TexMgr_SafeTextureSize (int s)
 {
-//	int m;
-	
 	if (!gl_texture_NPOT)
-//	if (!gl_texture_NPOT || !gl_npot.value)
-		s = TexMgr_CheckSize(s); //TexMgr_Pad
+		s = TexMgr_Pad(s);
 	
-//	m = (int)gl_max_size.value;
-//	if (m > 0)
-//	{
-//		m = TexMgr_CheckSize(m); //TexMgr_Pad
-//		if (m < s)
-//			s = m;
-//	}
 	s = CLAMP(1, s, gl_hardware_max_size);
 	
 	return s;
@@ -1601,7 +1546,6 @@ void TexMgr_Upload32 (gltexture_t *glt, unsigned *data)
 	int max_miplevel;
 	
 	if (gl_texture_NPOT) {
-//	if (gl_texture_NPOT && gl_npot.value) {
 		scaled = data;
 	} else {
         // resample up
