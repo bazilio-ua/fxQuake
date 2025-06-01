@@ -76,10 +76,8 @@ void W_LoadWadFile (void)
 	//johnfitz -- dynamic gamedir loading
 	//johnfitz -- modified to use malloc
 	//TODO: use cache_alloc
-//	wad_base = COM_LoadHunkFile (wadfilename, NULL);
 	wad_base = COM_LoadMallocFile (wadfilename, wad_base, NULL);
 	if (!wad_base)
-//		Sys_Error ("W_LoadWadFile: couldn't load %s", wadfilename);
 		Sys_Error ("W_LoadWadFile: couldn't load %s\n\n"
 				   "Basedir is: %s\n\n"
 				   "Check that this has an " GAMENAME " subdirectory containing pak0.pak and pak1.pak, "

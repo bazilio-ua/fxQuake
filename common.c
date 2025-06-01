@@ -1685,7 +1685,7 @@ pack_t *COM_LoadPackFile (char *packfilename)
 		Sys_Error ("COM_LoadPackFile: packfile %s has too many files (%i, max = %i)", packfilename, numpackfiles, MAX_FILES_IN_PACK);
 
 	//johnfitz -- dynamic gamedir loading
-//	newfiles = Hunk_AllocName (numpackfiles * sizeof(packfile_t), "packfile");
+	//johnfitz -- modified to use zone alloc
 	newfiles = (packfile_t *) Z_Malloc (numpackfiles * sizeof(packfile_t));
 
 	Sys_FileSeek (packhandle, header.dirofs);
@@ -1709,7 +1709,7 @@ pack_t *COM_LoadPackFile (char *packfilename)
 	}
 
 	//johnfitz -- dynamic gamedir loading
-//	pack = Hunk_AllocName (sizeof(pack_t), "pack");
+	//johnfitz -- modified to use zone alloc
 	pack = (pack_t *) Z_Malloc (sizeof (pack_t));
 
 	strcpy (pack->filename, packfilename);
@@ -1750,7 +1750,7 @@ void COM_AddDirectory (char *dir)
 // add the directory to the search path
 //
 	//johnfitz -- dynamic gamedir loading
-//	search = Hunk_AllocName (sizeof(searchpath_t), "searchpath");
+	//johnfitz -- modified to use zone alloc
 	search = (searchpath_t *) Z_Malloc (sizeof(searchpath_t));
 	search->path_id = path_id;
 	strcpy (search->filename, dir);
@@ -1767,7 +1767,7 @@ void COM_AddDirectory (char *dir)
 		if (!pak)
 			break;
 		//johnfitz -- dynamic gamedir loading
-//		search = Hunk_AllocName (sizeof(searchpath_t), "searchpath");
+		//johnfitz -- modified to use zone alloc
 		search = (searchpath_t *) Z_Malloc (sizeof(searchpath_t));
 		search->path_id = path_id;
 		search->pack = pak;
@@ -1822,12 +1822,6 @@ void COM_AddUserDirectory (char *home, char *dir)
 	if (!home)
 		return;
 
-//#if defined __APPLE__ && defined __MACH__
-//	strcpy (com_gamedir, va("%s/Library/Application Support/fxQuake/%s", home, dir));
-//#else
-//	strcpy (com_gamedir, va("%s/.fxQuake/%s", home, dir));
-//#endif
-	
 	COM_SetGamedirToHomeDirectory (home, dir);
 
 	COM_AddDirectory(com_gamedir);
@@ -2056,8 +2050,6 @@ void COM_Game_f (void)
 		}
 		else // just update com_gamedir, game is "id1"
 		{
-//			snprintf (com_gamedir, sizeof(com_gamedir), "%s/%s", com_basedir, GAMENAME);
-			
 			strcpy (com_gamedir, va("%s/%s", com_basedir, GAMENAME));
 			COM_SetGamedirToHomeDirectory (homedir, GAMENAME);
 		}

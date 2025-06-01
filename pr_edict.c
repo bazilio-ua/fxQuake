@@ -1052,7 +1052,6 @@ void PR_LoadProgs (void)
 	//johnfitz -- dynamic gamedir loading
 	//johnfitz -- modified to use malloc
 	//TODO: use cache_alloc
-//	progs = (dprograms_t *)COM_LoadHunkFile ("progs.dat", NULL);
 	progs = (dprograms_t *)COM_LoadMallocFile ("progs.dat", progs, NULL);
 	if (!progs)
 		Host_Error ("PR_LoadProgs: couldn't load progs.dat");
