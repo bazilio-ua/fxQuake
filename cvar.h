@@ -57,6 +57,7 @@ interface from being ambiguous.
 #define	CVAR_ARCHIVE	1	// set to cause it to be saved to vars.rc (config.cfg)
 #define	CVAR_SERVER		2	// notifies players when changed
 #define	CVAR_ROM		4	// display only, cannot be set
+#define	CVAR_CALLBACK	8	// cvar has a callback
 
 typedef struct cvar_s
 {
@@ -79,12 +80,14 @@ void 	Cvar_Reset (char *var_name);
 //johnfitz
 
 void 	Cvar_Set (char *var_name, char *value);
-void 	Cvar_SetEx (char *var_name, char *value, qboolean callback);
 // equivelant to "<name> <variable>" typed at the console
 
 void	Cvar_SetValue (char *var_name, float value);
-void	Cvar_SetValueEx (char *var_name, float value, qboolean callback);
 // expands value to a string and calls Cvar_Set
+
+void	Cvar_SetNoCallback (char *var_name, char *value);
+void	Cvar_SetValueNoCallback (char *var_name, float value);
+// sets a variable without firing callback
 
 void	Cvar_SetROM (char *var_name, char *value);
 void	Cvar_SetValueROM (char *var_name, float value);

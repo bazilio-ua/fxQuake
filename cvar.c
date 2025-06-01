@@ -390,11 +390,6 @@ Cvar_Set
 */
 void Cvar_Set (char *var_name, char *value)
 {
-	Cvar_SetEx (var_name, value, true);
-}
-
-void Cvar_SetEx (char *var_name, char *value, qboolean callback)
-{
 	cvar_t	*var;
 	
 	var = Cvar_FindVar (var_name);
@@ -433,7 +428,7 @@ void Cvar_SetEx (char *var_name, char *value, qboolean callback)
 	}
 
 	//johnfitz
-	if(var->callback && callback)
+	if (var->callback && (var->flags & CVAR_CALLBACK))
 		var->callback();
 	//johnfitz
 
@@ -453,11 +448,6 @@ Cvar_SetValue
 */
 void Cvar_SetValue (char *var_name, float value)
 {
-	Cvar_SetValueEx (var_name, value, true);
-}
-
-void Cvar_SetValueEx (char *var_name, float value, qboolean callback)
-{
 	char	val[32];
 	int			i;
 
@@ -471,7 +461,48 @@ void Cvar_SetValueEx (char *var_name, float value, qboolean callback)
 	if (val[i] == '.')
 		val[i] = 0;
 
-	Cvar_SetEx (var_name, val, callback);
+	Cvar_Set (var_name, val);
+}
+
+
+/*
+============
+Cvar_SetNoCallback
+============
+*/
+void Cvar_SetNoCallback (char *var_name, char *value)
+{
+	cvar_t *var = Cvar_FindVar (var_name);
+	qboolean	callback;
+
+	if (var)
+	{
+		callback = (var->callback && (var->flags & CVAR_CALLBACK));
+		var->flags &= ~CVAR_CALLBACK;
+		Cvar_Set (var->name, value);
+		if (callback)
+			var->flags |= CVAR_CALLBACK;
+	}
+}
+
+/*
+============
+Cvar_SetValueNoCallback
+============
+*/
+void Cvar_SetValueNoCallback (char *var_name, float value)
+{
+	cvar_t *var = Cvar_FindVar (var_name);
+	qboolean	callback;
+
+	if (var)
+	{
+		callback = (var->callback && (var->flags & CVAR_CALLBACK));
+		var->flags &= ~CVAR_CALLBACK;
+		Cvar_SetValue (var->name, value);
+		if (callback)
+			var->flags |= CVAR_CALLBACK;
+	}
 }
 
 
@@ -576,6 +607,8 @@ void Cvar_RegisterVariableCallback (cvar_t *var, void *function)
 	//johnfitz
 
 	var->callback = function; //johnfitz
+	if (function)
+		var->flags |= CVAR_CALLBACK;
 }
 
 /*

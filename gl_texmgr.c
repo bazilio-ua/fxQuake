@@ -952,7 +952,7 @@ void TexMgr_UploadWarpImage (void)
 	// find the new correct size
 	//
 	if ((int)gl_warp_image_size.value < 32)
-		Cvar_SetValueEx ("gl_warp_image_size", 32, false);
+		Cvar_SetValueNoCallback ("gl_warp_image_size", 32);
 
 	//
 	// make sure warpimage size is a power of two
@@ -965,7 +965,7 @@ void TexMgr_UploadWarpImage (void)
 		gl_warpimage_size >>= 1;
 
 	if (gl_warpimage_size != gl_warp_image_size.value)
-		Cvar_SetValueEx ("gl_warp_image_size", gl_warpimage_size, false);
+		Cvar_SetValueNoCallback ("gl_warp_image_size", gl_warpimage_size);
 
 	// ericw -- removed early exit if (gl_warpimage_size == oldsize).
 	// after reloads textures to source width/height, which might not match oldsize.
