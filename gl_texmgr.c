@@ -22,9 +22,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "quakedef.h"
 
 cvar_t		gl_picmip = {"gl_picmip", "0", CVAR_NONE};
-cvar_t		gl_swapinterval = {"gl_swapinterval", "1", CVAR_ARCHIVE};
-cvar_t		gl_warp_image_size = {"gl_warp_image_size", "256", CVAR_ARCHIVE}; // was 512, for water warp
+cvar_t		gl_warpimagesize = {"gl_warpimagesize", "256", CVAR_ARCHIVE}; // was 512, for water warp
 cvar_t		gl_compression = {"gl_compression", "1", CVAR_ARCHIVE};
+
+cvar_t		gl_swapinterval = {"gl_swapinterval", "1", CVAR_ARCHIVE};
 
 gltexture_t	*notexture;
 gltexture_t	*nulltexture;
@@ -930,21 +931,21 @@ void TexMgr_UploadWarpImage (void)
 	//
 	// find the new correct size
 	//
-	if ((int)gl_warp_image_size.value < 32)
-		Cvar_SetValueNoCallback ("gl_warp_image_size", 32);
+	if ((int)gl_warpimagesize.value < 32)
+		Cvar_SetValueNoCallback ("gl_warpimagesize", 32);
 
 	//
 	// make sure warpimage size is a power of two
 	//
-	gl_warpimage_size = TexMgr_SafeTextureSize((int)gl_warp_image_size.value);
+	gl_warpimage_size = TexMgr_SafeTextureSize((int)gl_warpimagesize.value);
 
 	while (gl_warpimage_size*2 > vid.width) // *2 for glow
 		gl_warpimage_size >>= 1;
 	while (gl_warpimage_size > vid.height)
 		gl_warpimage_size >>= 1;
 
-	if (gl_warpimage_size != gl_warp_image_size.value)
-		Cvar_SetValueNoCallback ("gl_warp_image_size", gl_warpimage_size);
+	if (gl_warpimage_size != gl_warpimagesize.value)
+		Cvar_SetValueNoCallback ("gl_warpimagesize", gl_warpimage_size);
 
 	// ericw -- removed early exit if (gl_warpimage_size == oldsize).
 	// after reloads textures to source width/height, which might not match oldsize.
@@ -1010,7 +1011,7 @@ void TexMgr_Init (void)
 	TexMgr_LoadPalette ();
 	
 	Cvar_RegisterVariableCallback (&gl_picmip, TexMgr_ReloadTextures);
-	Cvar_RegisterVariableCallback (&gl_warp_image_size, TexMgr_UploadWarpImage);
+	Cvar_RegisterVariableCallback (&gl_warpimagesize, TexMgr_UploadWarpImage);
 	Cvar_RegisterVariableCallback (&gl_compression, TexMgr_ReloadTextures);
 
 	Cmd_AddCommand ("gl_texturemode", &GL_TextureMode_f);
