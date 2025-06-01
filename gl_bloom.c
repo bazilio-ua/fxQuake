@@ -277,6 +277,7 @@ void R_Bloom_GeneratexDiamonds (void)
 {
 	int		i, j;
 	float	intensity, scale, rad, point;
+	int 	passes, size;
 
 	// setup sample size workspace
 	glViewport (0, 0, sample_texture_width, sample_texture_height);
@@ -301,10 +302,12 @@ void R_Bloom_GeneratexDiamonds (void)
 	if (gl_bloomdarken.value < 0)
 		Cvar_SetValue("gl_bloomdarken", 0);
 
+	passes = (int)gl_bloomdarken.value;
+
     glBlendFunc (GL_DST_COLOR, GL_ZERO);
     glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
-    for (i = 0; i < gl_bloomdarken.value; i++) 
+    for (i = 0; i < passes /*gl_bloomdarken.value*/; i++)
     {
         R_Bloom_SamplePass (0, 0);
     }
@@ -317,15 +320,16 @@ void R_Bloom_GeneratexDiamonds (void)
     if (gl_bloomintensity.value < 0)
         Cvar_SetValue("gl_bloomintensity", 0);
 
+	size = (int)gl_bloomdiamondsize.value;
     rad = gl_bloomdiamondsize.value / 2.0f;
     point = (gl_bloomdiamondsize.value - 1) / 2.0f;
     scale = min(1.0f, gl_bloomintensity.value * 2.0f / rad);
 
 	glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 
-	for (i = 0; i < gl_bloomdiamondsize.value; i++) 
+	for (i = 0; i < size /*gl_bloomdiamondsize.value*/; i++)
 	{
-		for (j = 0; j < gl_bloomdiamondsize.value; j++) 
+		for (j = 0; j < size /*gl_bloomdiamondsize.value*/; j++)
 		{
 			intensity = scale * ((point + 1.0f) - (fabs(point - i) + fabs(point - j))) / (point + 1.0f);
 			if (intensity < 0.005f)
