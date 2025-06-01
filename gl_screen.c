@@ -82,6 +82,7 @@ cvar_t		scr_conspeed = {"scr_conspeed","5000", CVAR_NONE}; //300
 cvar_t		scr_centertime = {"scr_centertime","2", CVAR_NONE};
 cvar_t		scr_showfps = {"scr_showfps", "0", CVAR_NONE};
 cvar_t		scr_showstats = {"scr_showstats", "0", CVAR_NONE};
+cvar_t		scr_showram = {"showram","1", CVAR_NONE};
 cvar_t		scr_showturtle = {"showturtle","0", CVAR_NONE};
 cvar_t		scr_showpause = {"showpause","1", CVAR_NONE};
 cvar_t		scr_printspeed = {"scr_printspeed","8", CVAR_NONE};
@@ -456,6 +457,7 @@ void SCR_Init (void)
 	Cvar_RegisterVariable (&scr_conspeed);
 	Cvar_RegisterVariable (&scr_showfps); 
 	Cvar_RegisterVariable (&scr_showstats); 
+	Cvar_RegisterVariable (&scr_showram);
 	Cvar_RegisterVariable (&scr_showturtle);
 	Cvar_RegisterVariable (&scr_showpause);
 	Cvar_RegisterVariable (&scr_centertime);
@@ -544,6 +546,22 @@ void SCR_DrawStats (void)
 		Draw_String (vid.width - (strlen(str)<<3), y + 16, str);
 	}
 } 
+
+/*
+==============
+SCR_DrawRam
+==============
+*/
+void SCR_DrawRam (void)
+{
+	if (!scr_showram.value)
+		return;
+
+	if (!r_cache_thrash)
+		return;
+
+	Draw_Pic (scr_vrect.x+32, scr_vrect.y, scr_ram);
+}
 
 /*
 ==============
@@ -1058,6 +1076,7 @@ void SCR_UpdateScreen (void)
 	else
 	{
 		Draw_Crosshair ();
+		SCR_DrawRam ();
 		SCR_DrawNet ();
 		SCR_DrawTurtle ();
 		SCR_DrawPause ();

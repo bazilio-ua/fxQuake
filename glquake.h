@@ -468,6 +468,7 @@ extern	int			r_framecount;
 extern	mplane_t	frustum[4];
 extern	int			rs_c_brush_polys, rs_c_brush_passes, rs_c_alias_polys, rs_c_alias_passes, rs_c_sky_polys, rs_c_sky_passes;
 extern	int			rs_c_dynamic_lightmaps, rs_c_particles;
+extern	qboolean	r_cache_thrash;		// compatability
 
 //
 // view origin

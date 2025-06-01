@@ -349,7 +349,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-window"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-fullscreen"

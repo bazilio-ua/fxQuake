@@ -33,6 +33,8 @@ mplane_t	frustum[4];
 int			rs_c_brush_polys, rs_c_brush_passes, rs_c_alias_polys, rs_c_alias_passes, rs_c_sky_polys, rs_c_sky_passes;
 int			rs_c_dynamic_lightmaps, rs_c_particles;
 
+qboolean	r_cache_thrash;		// compatability
+
 //up to 16 color translated skins
 gltexture_t *playertextures[MAX_SCOREBOARD]; // changed to an array of pointers
 
@@ -1040,6 +1042,8 @@ void R_SetupFrame (void)
 
 	V_SetContentsColor (r_viewleaf->contents);
 	V_CalcBlend ();
+
+	r_cache_thrash = false;
 
 	// calculate r_fovx and r_fovy here
 	r_fovx = r_refdef.fov_x;
