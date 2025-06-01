@@ -307,7 +307,7 @@ void R_Bloom_GeneratexDiamonds (void)
     glBlendFunc (GL_DST_COLOR, GL_ZERO);
     glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
-    for (i = 0; i < passes /*gl_bloomdarken.value*/; i++)
+    for (i = 0; i < passes; i++)
     {
         R_Bloom_SamplePass (0, 0);
     }
@@ -327,9 +327,9 @@ void R_Bloom_GeneratexDiamonds (void)
 
 	glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 
-	for (i = 0; i < size /*gl_bloomdiamondsize.value*/; i++)
+	for (i = 0; i < size; i++)
 	{
-		for (j = 0; j < size /*gl_bloomdiamondsize.value*/; j++)
+		for (j = 0; j < size; j++)
 		{
 			intensity = scale * ((point + 1.0f) - (fabs(point - i) + fabs(point - j))) / (point + 1.0f);
 			if (intensity < 0.005f)
