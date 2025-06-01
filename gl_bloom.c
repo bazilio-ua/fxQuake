@@ -124,7 +124,7 @@ void R_Bloom_InitTextures (void)
 
 	// validate bloom size
 	if (r_bloom_sample_size.value < 32)
-		Cvar_SetValueEx ("r_bloom_sample_size", 32, false);
+		Cvar_SetValueNoCallback ("r_bloom_sample_size", 32);
 
 	// make sure bloom size doesn't have funny values
 //	limit = min( (int)r_bloom_sample_size.value, min( screen_texture_width, screen_texture_height ) );
@@ -135,7 +135,7 @@ void R_Bloom_InitTextures (void)
 		;
 
 	if (bloom_size != r_bloom_sample_size.value)
-		Cvar_SetValueEx ("r_bloom_sample_size", bloom_size, false);
+		Cvar_SetValueNoCallback ("r_bloom_sample_size", bloom_size);
 
 	// init the bloom effect texture
 	bloomeffectdata = Hunk_Alloc (bloom_size * bloom_size * 4);
