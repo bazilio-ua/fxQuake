@@ -57,7 +57,7 @@ byte        *host_colormap = NULL;  // set to null
 cvar_t	host_framerate = {"host_framerate","0", CVAR_NONE};	// set for slow motion
 cvar_t	host_timescale = {"host_timescale","0", CVAR_NONE};	// more sensitivity slow motion
 cvar_t	host_speeds = {"host_speeds","0", CVAR_NONE};			// set for running times
-cvar_t	host_maxfps = {"host_maxfps", "72", CVAR_NONE};		// max fps cvar
+cvar_t	host_maxfps = {"host_maxfps", "72", CVAR_ARCHIVE};		// max fps cvar
 
 cvar_t	sys_ticrate = {"sys_ticrate","0.05", CVAR_NONE};
 cvar_t	sys_throttle = {"sys_throttle","0.02", CVAR_ARCHIVE};
