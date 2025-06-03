@@ -698,14 +698,19 @@ void _Host_Frame (double time)
 	if (!Host_FilterTime (time))
 		return;			// don't run too fast, or packets will flood out
 
+	if (cls.state != ca_dedicated)
+	{
 // get new events from environment
-	IN_ProcessEvents ();
+		IN_ProcessEvents ();
 
 // allow other external controllers to add commands
-	IN_Commands ();
-
+		IN_Commands ();
+	}
+	else
+	{
 // check the stdin for commands (dedicated servers) typed to the host
-	Host_GetConsoleCommands ();
+		Host_GetConsoleCommands ();
+	}
 
 // process console commands
 	Cbuf_Execute ();

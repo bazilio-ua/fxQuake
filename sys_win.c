@@ -371,8 +371,8 @@ char *Sys_ConsoleInput (void)
 	int		ch;
 	DWORD	numread, numevents;
 
-	if (cls.state != ca_dedicated)
-		return NULL;
+// 	if (cls.state != ca_dedicated)
+// 		return NULL;
 
 	for ( ;; )
 	{

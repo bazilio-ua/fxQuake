@@ -263,8 +263,8 @@ char *Sys_ConsoleInput(void)
 	fd_set	fdset;
 	struct timeval timeout;
 
-	if (cls.state != ca_dedicated) 
-		return NULL;
+// 	if (cls.state != ca_dedicated) 
+// 		return NULL;
 
 	FD_ZERO(&fdset);
 	FD_SET(STDIN_FILENO, &fdset);	// stdin
