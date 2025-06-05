@@ -478,7 +478,7 @@ void VID_Restart (void)
 	vid_activewindow = false;
 	vid_hiddenwindow = true;
 	vid_notifywindow = false;
-	[[NSApp delegate] checkActive];
+	IN_CheckActive ();
 	
 	//
 	// set new mode
@@ -488,7 +488,7 @@ void VID_Restart (void)
 	vid_activewindow = true;
 	vid_hiddenwindow = false;
 	vid_notifywindow = true;
-	[[NSApp delegate] checkActive];
+	IN_CheckActive ();
 	
 	GL_GetPixelFormatInfo ();
 	GL_GetGLInfo ();
@@ -902,7 +902,7 @@ void VID_Init (void)
 	vid_activewindow = true;
 	vid_hiddenwindow = false;
 	vid_notifywindow = true;
-	[[NSApp delegate] checkActive];
+	IN_CheckActive ();
 	
 	vid_initialized = true;
 	
@@ -917,7 +917,7 @@ void VID_Init (void)
 	vid_menudrawfn = VID_MenuDraw;
 	vid_menukeyfn = VID_MenuKey;
 	
-	VID_MenuInit(); //johnfitz
+	VID_MenuInit (); //johnfitz
 }
 
 /*

@@ -34,3 +34,4 @@ void IN_Move (usercmd_t *cmd);
 
 void IN_MouseWheel (void);
 
+void IN_CheckActive (void);

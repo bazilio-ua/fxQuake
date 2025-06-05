@@ -392,7 +392,6 @@ int main (int argc, char *argv[])
 @interface QController (Private)
 
 - (void)quakeMain;
-- (void)checkActive;
 
 @end
 
@@ -516,65 +515,6 @@ int main (int argc, char *argv[])
 	}
 }
 
-- (void)checkActive {
-    static qboolean active = true;
-    
-    if (vid.fullscreen)
-    {
-        if (!vid_hiddenwindow)
-        {
-            // set our video mode
-            
-            // move the viewport to top left
-			
-			if (!active) {
-				CDAudio_Resume ();
-				S_UnblockSound ();
-				S_ClearBuffer ();
-				active = true;
-			}
-        }
-        else if (vid_hiddenwindow)
-        {
-            // set our video mode
-			
-			if (active) {
-				CDAudio_Pause ();
-				S_BlockSound ();
-				S_ClearBuffer ();
-				Key_ClearStates ();
-				active = false;
-			}
-        }
-    }
-    else //if (!vid.fullscreen)
-    {
-        // enable/disable sound and grab/ungrab keyboard
-        // on focus gain/loss
-        if (vid_activewindow && !vid_hiddenwindow)// && !active)
-        {
-            if (!active) {
-				CDAudio_Resume ();
-				S_UnblockSound ();
-				S_ClearBuffer ();
-				active = true;
-            }
-        }
-        else //if (active)
-        {
-            if (active) {
-				CDAudio_Pause ();
-				S_BlockSound ();
-				S_ClearBuffer ();
-				Key_ClearStates ();
-				active = false;
-            }
-        }
-    }
-    
-    // fix the leftover Alt from any Alt-Tab or the like that switched us away
-//    Key_ClearStates ();
-}
 
 /* <NSWindowDelegate> */
 
@@ -644,7 +584,7 @@ int main (int argc, char *argv[])
     if (!vid_activewindow) {
         vid_activewindow = true;
         
-        [self checkActive];
+		IN_CheckActive ();
     }
 }
 
@@ -652,7 +592,7 @@ int main (int argc, char *argv[])
     if (vid_activewindow) {
         vid_activewindow = false;
         
-        [self checkActive];
+		IN_CheckActive ();
     }
 }
 
@@ -676,7 +616,7 @@ int main (int argc, char *argv[])
     if (!vid_hiddenwindow) {
         vid_hiddenwindow = true;
         
-        [self checkActive];
+		IN_CheckActive ();
     }
 }
 
@@ -684,7 +624,7 @@ int main (int argc, char *argv[])
     if (vid_hiddenwindow) {
         vid_hiddenwindow = false;
         
-        [self checkActive];
+		IN_CheckActive ();
     }
 }
 
@@ -702,7 +642,7 @@ int main (int argc, char *argv[])
         vid_hiddenwindow = true;
         vid_activewindow = false;
         
-        [self checkActive];
+		IN_CheckActive ();
     }
 }
 
@@ -711,7 +651,7 @@ int main (int argc, char *argv[])
         vid_hiddenwindow = false;
         vid_activewindow = true;
         
-        [self checkActive];
+		IN_CheckActive ();
     }
 }
 
@@ -719,7 +659,7 @@ int main (int argc, char *argv[])
     if (vid_activewindow) {
         vid_activewindow = false;
         
-        [self checkActive];
+		IN_CheckActive ();
     }
 }
 
@@ -727,7 +667,7 @@ int main (int argc, char *argv[])
     if (!vid_activewindow) {
         vid_activewindow = true;
         
-        [self checkActive];
+		IN_CheckActive ();
     }
 }
 
