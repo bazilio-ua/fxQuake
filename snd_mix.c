@@ -143,6 +143,51 @@ void S_TransferPaintBuffer(int endtime)
 /*
 ===============================================================================
 
+UNDERWATER EFFECT
+
+===============================================================================
+*/
+
+static struct {
+	float	intensity;
+	float	alpha;
+	float	accum[2];
+} underwater = {0.f, 1.f, {0.f, 0.f}};
+
+extern cvar_t snd_waterfx;
+
+void S_SetUnderwaterIntensity (float target)
+{
+	target *= CLAMP (0.f, snd_waterfx.value, 2.f);
+	if (underwater.intensity < target)
+	{
+		underwater.intensity += host_frametime * 4.f;
+		underwater.intensity = min (underwater.intensity, target);
+	}
+	else if (underwater.intensity > target)
+	{
+		underwater.intensity -= host_frametime * 4.f;
+		underwater.intensity = max (underwater.intensity, target);
+	}
+	underwater.alpha = exp (-underwater.intensity * log (12.f));
+}
+
+void S_UnderwaterFilter (int endtime)
+{
+	int i;
+	for (i = 0; i < endtime; i++)
+	{
+		underwater.accum[0] += underwater.alpha * (paintbuffer[i].left  - underwater.accum[0]);
+		underwater.accum[1] += underwater.alpha * (paintbuffer[i].right - underwater.accum[1]);
+		paintbuffer[i].left  = (int) (underwater.accum[0] + 0.5f);
+		paintbuffer[i].right = (int) (underwater.accum[1] + 0.5f);
+	}
+}
+
+
+/*
+===============================================================================
+
 CHANNEL MIXING
 
 ===============================================================================
@@ -222,8 +267,10 @@ void S_PaintChannels(int endtime)
 					}
 				}
 			}
-
 		}
+
+	// apply the underwater effect
+		S_UnderwaterFilter (end - paintedtime);
 
 	// transfer out according to DMA format
 		S_TransferPaintBuffer(end);

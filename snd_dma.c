@@ -28,6 +28,8 @@ void S_PaintAndSubmit(void);
 void S_StopAllSounds(qboolean clear);
 void S_StopAllSoundsC(void);
 
+void S_SetUnderwaterIntensity (float intensity);
+
 // =======================================================================
 // Internal sound data & structures
 // =======================================================================
@@ -71,6 +73,7 @@ cvar_t snd_noextraupdate = {"snd_noextraupdate", "0", CVAR_NONE};
 cvar_t snd_show = {"snd_show", "0", CVAR_NONE};
 cvar_t snd_mixahead = {"_snd_mixahead", "0.1", CVAR_ARCHIVE};
 
+cvar_t snd_waterfx = {"snd_waterfx", "1", CVAR_ARCHIVE};
 
 // ====================================================================
 // User-setable variables
@@ -166,6 +169,7 @@ void S_Init (void)
 	Cvar_RegisterVariable (&snd_noextraupdate);
 	Cvar_RegisterVariable (&snd_show);
 	Cvar_RegisterVariable (&snd_mixahead);
+	Cvar_RegisterVariable (&snd_waterfx);
 
 	if (host_parms->memsize < 0x800000)
 	{
@@ -593,6 +597,24 @@ void S_StaticSound (sfx_t *sfx, vec3_t origin, float vol, float attenuation)
 
 /*
 ===================
+S_UnderwaterIntensityForContents
+===================
+*/
+float S_UnderwaterIntensityForContents (int contents)
+{
+	switch (contents)
+	{
+		case CONTENTS_WATER:
+		case CONTENTS_SLIME:
+		case CONTENTS_LAVA:
+			return 1.f;
+		default:
+			return 0.f;
+	}
+}
+
+/*
+===================
 S_UpdateAmbientSounds
 ===================
 */
@@ -613,6 +635,7 @@ void S_UpdateAmbientSounds (void)
 		return;
 
 	l = Mod_PointInLeaf (listener_origin, cl.worldmodel);
+	S_SetUnderwaterIntensity (l ? S_UnderwaterIntensityForContents (l->contents) : 0.f);
 	if (!l || !ambient_level.value)
 	{
 		for (ambient_channel = 0 ; ambient_channel< NUM_AMBIENTS ; ambient_channel++)
