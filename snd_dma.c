@@ -602,6 +602,7 @@ void S_UpdateAmbientSounds (void)
 	float		vol;
 	int			ambient_channel;
 	channel_t	*chan;
+	static float	level[NUM_AMBIENTS];
 
 // no ambients when disconnected
 	if (cls.state != ca_connected)
@@ -615,7 +616,10 @@ void S_UpdateAmbientSounds (void)
 	if (!l || !ambient_level.value)
 	{
 		for (ambient_channel = 0 ; ambient_channel< NUM_AMBIENTS ; ambient_channel++)
+		{
 			channels[ambient_channel].sfx = NULL;
+			level[ambient_channel] = 0.f;
+		}
 		return;
 	}
 
@@ -625,24 +629,26 @@ void S_UpdateAmbientSounds (void)
 		chan->sfx = ambient_sfx[ambient_channel];
 	
 		vol = ambient_level.value * l->ambient_sound_level[ambient_channel];
-		if (vol < 8)
-			vol = 0;
+		if (vol < 8.f)
+			vol = 0.f;
+		else if (vol > 255.f)
+			vol = 255.f;
 
 	// don't adjust volume too fast
-		if (chan->master_vol < vol)
+		if (level[ambient_channel] < vol)
 		{
-			chan->master_vol += host_frametime * ambient_fade.value;
-			if (chan->master_vol > vol)
-				chan->master_vol = vol;
+			level[ambient_channel] += host_frametime * ambient_fade.value;
+			if (level[ambient_channel] > vol)
+				level[ambient_channel] = vol;
 		}
-		else if (chan->master_vol > vol)
+		else if (level[ambient_channel] > vol)
 		{
-			chan->master_vol -= host_frametime * ambient_fade.value;
-			if (chan->master_vol < vol)
-				chan->master_vol = vol;
+			level[ambient_channel] -= host_frametime * ambient_fade.value;
+			if (level[ambient_channel] < vol)
+				level[ambient_channel] = vol;
 		}
 		
-		chan->leftvol = chan->rightvol = chan->master_vol;
+		chan->leftvol = chan->rightvol = chan->master_vol = (int)level[ambient_channel];
 	}
 }
 
