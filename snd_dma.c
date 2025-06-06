@@ -46,7 +46,8 @@ vec3_t		listener_origin;
 vec3_t		listener_forward;
 vec3_t		listener_right;
 vec3_t		listener_up;
-vec_t		sound_nominal_clip_dist=1000.0;
+vec_t		sound_nominal_clip_dist=1500.0; // JPG - changed this from 1000 to 1500 (I'm 99% sure that's what it was in 1.06)
+											// woods (put sound back to DOSquake levels!)
 
 int			soundtime;		// sample PAIRS
 int   		paintedtime; 	// sample PAIRS
