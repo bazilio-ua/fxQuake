@@ -37,7 +37,6 @@ quakeparms_t *host_parms;
 qboolean	host_initialized;		// true if into command execution
 
 double		host_frametime;
-double		host_time;
 double		realtime;				// without any filtering or bounding
 double		oldrealtime;			// last frame run
 int			host_framecount;
@@ -317,8 +316,6 @@ void Host_InitLocal (void)
 	Cvar_RegisterVariable (&sv_cheats); // 2021 rerelease
 
 	Host_FindMaxClients ();
-
-	host_time = 1.0;		// so a think at time 0 won't get called
 }
 
 
@@ -753,8 +750,6 @@ void _Host_Frame (double time)
 		
 		Cbuf_Waited ();
 	}
-
-	host_time += host_frametime;
 
 // fetch results from server
 	if (cls.state == ca_connected)

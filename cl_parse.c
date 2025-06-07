@@ -1163,12 +1163,12 @@ void CL_ParseServerMessage (void)
 				VectorCopy (cl.mviewangles[0], cl.mviewangles[1]);
 
 				// From ProQuake - hack with cl.last_angle_time to autodetect continuous svc_setangles
-				if (cl.last_angle_time > host_time - 0.3)
-					cl.last_angle_time = host_time + 0.3;
-				else if (cl.last_angle_time > host_time - 0.6)
-					cl.last_angle_time = host_time;
+				if (cl.last_angle_time > cl.time - 0.3)
+					cl.last_angle_time = cl.time + 0.3;
+				else if (cl.last_angle_time > cl.time - 0.6)
+					cl.last_angle_time = cl.time;
 				else
-					cl.last_angle_time = host_time - 0.3;
+					cl.last_angle_time = cl.time - 0.3;
 
 				for (i=0 ; i<3 ; i++)
 					cl.mviewangles[0][i] = cl.viewangles[i];

@@ -639,7 +639,7 @@ void CL_RelinkEntities (void)
 	for (i=0 ; i<3 ; i++)
 		cl.velocity[i] = cl.mvelocity[1][i] + frac * (cl.mvelocity[0][i] - cl.mvelocity[1][i]);
 
-	if (cls.demoplayback || cl.last_angle_time > host_time)
+	if (cls.demoplayback || cl.last_angle_time > cl.time) // host time replaced
 	{
 	// interpolate the angles
 		for (j=0 ; j<3 ; j++)
