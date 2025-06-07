@@ -240,7 +240,8 @@ typedef struct
 	qboolean	paused;			// send over by server
 	qboolean	onground;
 	qboolean	inwater;
-	
+	qboolean	fixangle;		// freeze view angle until next server frame
+
 	int			intermission;	// don't change view angle, full screen, etc
 	int			completed_time;	// latched at intermission start
 	

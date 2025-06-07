@@ -1098,6 +1098,7 @@ void CL_ParseServerMessage (void)
 		case svc_time:
 			cl.mtime[1] = cl.mtime[0];
 			cl.mtime[0] = MSG_ReadFloat (net_message);
+			cl.fixangle = false;
 			break;
 			
 		case svc_clientdata:
@@ -1173,6 +1174,7 @@ void CL_ParseServerMessage (void)
 				for (i=0 ; i<3 ; i++)
 					cl.mviewangles[0][i] = cl.viewangles[i];
 			}
+			cl.fixangle = true;
 			break;
 			
 		case svc_setview:
