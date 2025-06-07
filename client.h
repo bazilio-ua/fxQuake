@@ -380,6 +380,11 @@ typedef struct
 	int		state;			// low bit is down state
 } kbutton_t;
 
+// kbutton_t states:
+// DOWN				1
+// IMPULSE DOWN		2	// used for "attack" and "use" only
+// IMPULSE UP		4	// not used
+
 extern	kbutton_t	in_mlook, in_klook;
 extern 	kbutton_t 	in_strafe;
 extern 	kbutton_t 	in_speed;
