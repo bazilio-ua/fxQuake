@@ -719,7 +719,7 @@ void _Host_Frame (double time)
 
 	CL_AccumulateCmd ();
 
-	// hack from baker to allow console scrolling by dinput mouse wheel when con_forcedup
+	// hack from Baker to allow console scrolling by dinput mouse wheel when con_forcedup
 	if (!sv.active && con_forcedup && (key_dest == key_game || key_dest == key_console))
 		IN_MouseWheel (); // Grab mouse wheel input for DirectInput
 

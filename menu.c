@@ -261,7 +261,7 @@ void M_Main_Draw (void)
 	M_DrawPic ( (320-p->width)/2, 4, p);
 	M_DrawTransPic (72, 32, Draw_CachePic ("gfx/mainmenu.lmp") );
 
-	f = (int)(realtime * 10)%6; //johnfitz -- was host_time
+	f = (int)(realtime * 10)%6; //johnfitz -- was host time
 
 	M_DrawTransPic (54, 32 + m_main_cursor * 20,Draw_CachePic( va("gfx/menudot%i.lmp", f+1 ) ) );
 }
@@ -344,7 +344,7 @@ void M_SinglePlayer_Draw (void)
 	M_DrawPic ( (320-p->width)/2, 4, p);
 	M_DrawTransPic (72, 32, Draw_CachePic ("gfx/sp_menu.lmp") );
 
-	f = (int)(realtime * 10)%6; //johnfitz -- was host_time
+	f = (int)(realtime * 10)%6; //johnfitz -- was host time
 
 	M_DrawTransPic (54, 32 + m_singleplayer_cursor * 20,Draw_CachePic( va("gfx/menudot%i.lmp", f+1 ) ) );
 }
@@ -592,7 +592,7 @@ void M_MultiPlayer_Draw (void)
 	M_DrawPic ( (320-p->width)/2, 4, p);
 	M_DrawTransPic (72, 32, Draw_CachePic ("gfx/mp_menu.lmp") );
 
-	f = (int)(realtime * 10)%6; //johnfitz -- was host_time
+	f = (int)(realtime * 10)%6; //johnfitz -- was host time
 
 	M_DrawTransPic (54, 32 + m_multiplayer_cursor * 20, Draw_CachePic( va("gfx/menudot%i.lmp", f+1 ) ) );
 
