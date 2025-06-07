@@ -316,6 +316,8 @@ void Host_InitLocal (void)
 	Cvar_RegisterVariable (&sv_cheats); // 2021 rerelease
 
 	Host_FindMaxClients ();
+	
+	cl.last_angle_time = 0.0;  // JPG - smooth chasecam
 }
 
 

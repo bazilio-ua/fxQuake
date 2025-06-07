@@ -919,6 +919,7 @@ void V_CalcRefdef (void)
 
 // transform the view offset by the model's matrix to get the offset from
 // model origin for the view
+	// JPG - viewangles -> lerpangles
 	ent->angles[YAW] = cl.lerpangles[YAW];	// the model should face the view dir
 	ent->angles[PITCH] = -cl.lerpangles[PITCH];	// the model should face the view dir
 
@@ -935,7 +936,7 @@ void V_CalcRefdef (void)
 	r_refdef.vieworg[1] += 1.0/32;
 	r_refdef.vieworg[2] += 1.0/32;
 
-	VectorCopy (cl.lerpangles, r_refdef.viewangles);
+	VectorCopy (cl.lerpangles, r_refdef.viewangles); // JPG - viewangles -> lerpangles
 
 	V_CalcViewRoll ();
 	V_AddIdle ();
@@ -955,7 +956,7 @@ void V_CalcRefdef (void)
 	V_BoundOffsets ();
 
 // set up gun position
-	VectorCopy (cl.viewangles, view->angles);
+	VectorCopy (cl.lerpangles, view->angles); // JPG - viewangles -> lerpangles
 
 	CalcGunAngle ();
 
@@ -965,6 +966,8 @@ void V_CalcRefdef (void)
 	for (i=0 ; i<3 ; i++)
 	{
 		view->origin[i] += forward[i]*bob*0.4;
+//		view->origin[i] += right[i]*bob*0.4;
+//		view->origin[i] += up[i]*bob*0.8;
 	}
 	view->origin[2] += bob;
 

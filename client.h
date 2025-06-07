@@ -278,8 +278,8 @@ typedef struct
 // frag scoreboard
 	scoreboard_t	*scores;		// [cl.maxclients]
 
-	double			last_angle_time;
-	vec3_t			lerpangles;
+	double			last_angle_time;	// JPG - for smooth chasecam
+	vec3_t			lerpangles;			// JPG - angles now used by view.c so that smooth chasecam doesn't fuck up demos
 
 	qboolean		noclip_anglehack;
 
@@ -383,7 +383,7 @@ typedef struct
 extern	kbutton_t	in_mlook, in_klook;
 extern 	kbutton_t 	in_strafe;
 extern 	kbutton_t 	in_speed;
-extern	kbutton_t	in_attack; // added this for completeness
+extern	kbutton_t	in_attack; // JPG - added this for completeness
 
 void CL_InitInput (void);
 void CL_AccumulateCmd (void);

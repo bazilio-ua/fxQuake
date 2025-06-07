@@ -1154,7 +1154,7 @@ void CL_ParseServerMessage (void)
 			vid.recalc_refdef = true;	// leave intermission full screen
 			break;
 			
-		case svc_setangle:
+		case svc_setangle: // JPG - added mviewangles for smooth chasecam, set last_angle_time
 			for (i=0 ; i<3 ; i++)
 				cl.viewangles[i] = MSG_ReadAngle (net_message, cl.protocolflags);
 
@@ -1162,7 +1162,7 @@ void CL_ParseServerMessage (void)
 			{
 				VectorCopy (cl.mviewangles[0], cl.mviewangles[1]);
 
-				// From ProQuake - hack with cl.last_angle_time to autodetect continuous svc_setangles
+				// JPG - hack with last_angle_time to autodetect continuous svc_setangles (From ProQuake)
 				if (cl.last_angle_time > cl.time - 0.3)
 					cl.last_angle_time = cl.time + 0.3;
 				else if (cl.last_angle_time > cl.time - 0.6)
