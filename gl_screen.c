@@ -82,6 +82,9 @@ cvar_t		scr_conspeed = {"scr_conspeed","5000", CVAR_NONE}; //300
 cvar_t		scr_centertime = {"scr_centertime","2", CVAR_NONE};
 cvar_t		scr_showfps = {"scr_showfps", "0", CVAR_NONE};
 cvar_t		scr_showstats = {"scr_showstats", "0", CVAR_NONE};
+cvar_t		scr_showspeed = {"scr_showspeed", "0", CVAR_ARCHIVE};
+cvar_t		cl_speedx = {"cl_speedx", "0", CVAR_ARCHIVE};
+cvar_t		cl_speedy = {"cl_speedy", "0", CVAR_ARCHIVE};
 cvar_t		scr_showram = {"showram","1", CVAR_NONE};
 cvar_t		scr_showturtle = {"showturtle","0", CVAR_NONE};
 cvar_t		scr_showpause = {"showpause","1", CVAR_NONE};
@@ -457,6 +460,9 @@ void SCR_Init (void)
 	Cvar_RegisterVariable (&scr_conspeed);
 	Cvar_RegisterVariable (&scr_showfps); 
 	Cvar_RegisterVariable (&scr_showstats); 
+	Cvar_RegisterVariable (&scr_showspeed);
+	Cvar_RegisterVariable (&cl_speedx);
+	Cvar_RegisterVariable (&cl_speedy);
 	Cvar_RegisterVariable (&scr_showram);
 	Cvar_RegisterVariable (&scr_showturtle);
 	Cvar_RegisterVariable (&scr_showpause);
@@ -546,6 +552,54 @@ void SCR_DrawStats (void)
 		Draw_String (vid.width - (strlen(str)<<3), y + 16, str);
 	}
 } 
+
+/*
+==============
+SCR_DrawSpeed
+==============
+*/
+void SCR_DrawSpeed (void)
+{
+	const float show_speed_interval_value = 0.05f;
+	static float maxspeed = 0, display_speed = -1;
+	static double lastrealtime = 0;
+	float speed;
+	vec3_t vel;
+	char str[12];
+
+	if (!scr_showspeed.value)
+		return;
+
+	if (cl.fixangle && !cl.viewent.model) // cutscene
+		return;
+
+	if (lastrealtime > realtime)
+	{
+		lastrealtime = 0;
+		display_speed = -1;
+		maxspeed = 0;
+	}
+
+	VectorCopy (cl.velocity, vel);
+	vel[2] = 0;
+	speed = VectorLength (vel);
+
+	if (speed > maxspeed)
+		maxspeed = speed;
+
+	if (display_speed >= 0)
+	{
+		sprintf (str, "%d", (int) display_speed);
+		Draw_String (scr_vrect.x + scr_vrect.width/2 + cl_speedx.value - (strlen(str)<<3), scr_vrect.y + scr_vrect.height/2 + cl_speedy.value, str);
+	}
+
+	if (realtime - lastrealtime >= show_speed_interval_value)
+	{
+		lastrealtime = realtime;
+		display_speed = maxspeed;
+		maxspeed = 0;
+	}
+}
 
 /*
 ==============
@@ -1076,6 +1130,7 @@ void SCR_UpdateScreen (void)
 	else
 	{
 		Draw_Crosshair ();
+		SCR_DrawSpeed ();
 		SCR_DrawRam ();
 		SCR_DrawNet ();
 		SCR_DrawTurtle ();
