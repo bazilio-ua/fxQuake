@@ -89,7 +89,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-developer 2"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-rogue"
@@ -273,7 +273,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-mem 512"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-mem 2000"

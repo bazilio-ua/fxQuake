@@ -269,8 +269,8 @@ void CL_AdjustAngles (void)
 	float	speed;
 	float	up, down;
 	
-	if (cl.fixangle && !cl.viewent.model) // in cutscene
-		return;
+//	if (cl.fixangle && !cl.viewent.model) // in cutscene
+//		return;
 
 	if ( (in_speed.state & 1) ^ (cl_run.value != 0.f) )
 		speed = host_frametime * cl_anglespeedkey.value;
