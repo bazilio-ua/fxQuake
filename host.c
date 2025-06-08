@@ -94,8 +94,10 @@ void Host_MaxFPS (void)
 {
 	if (host_maxfps.value < 0)
 	{
-		if (!host_netinterval)
+		if (!host_netinterval) {
 			Con_Printf ("Using renderer/network isolation.\n");
+			Con_Printf ("Negative value sets a packetrate (PPS) while leaving video rates uncapped.\n");
+		}
 		host_netinterval = 1/-host_maxfps.value;
 		if (host_netinterval > 1/10.f)	// don't let it get too jerky for other players
 			host_netinterval = 1/10.f;
@@ -106,7 +108,7 @@ void Host_MaxFPS (void)
 	{
 		if (!host_netinterval)
 			Con_Printf ("Using renderer/network isolation.\n");
-		host_netinterval = 1.0/72;
+		host_netinterval = 1.f/72;
 	}
 	else
 	{
