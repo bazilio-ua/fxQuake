@@ -573,6 +573,9 @@ void SCR_DrawSpeed (void)
 	if (cl.fixangle && !cl.viewent.model) // cutscene
 		return;
 
+	if (key_dest != key_game)
+		return;
+
 	if (lastrealtime > realtime)
 	{
 		lastrealtime = 0;

@@ -310,6 +310,9 @@ void Draw_Crosshair (void)
 	if (cl.fixangle && !cl.viewent.model) // cutscene
 		return;
 
+	if (key_dest != key_game)
+		return;
+
 	Draw_Character (scr_vrect.x + scr_vrect.width/2 + cl_crossx.value, scr_vrect.y + scr_vrect.height/2 + cl_crossy.value, '+');
 }
 
