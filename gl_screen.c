@@ -83,8 +83,8 @@ cvar_t		scr_centertime = {"scr_centertime","2", CVAR_NONE};
 cvar_t		scr_showfps = {"scr_showfps", "0", CVAR_NONE};
 cvar_t		scr_showstats = {"scr_showstats", "0", CVAR_NONE};
 cvar_t		scr_showspeed = {"scr_showspeed", "0", CVAR_ARCHIVE};
-cvar_t		cl_speedx = {"cl_speedx", "0", CVAR_ARCHIVE};
-cvar_t		cl_speedy = {"cl_speedy", "0", CVAR_ARCHIVE};
+cvar_t		scr_speedx = {"scr_speedx", "64", CVAR_ARCHIVE};
+cvar_t		scr_speedy = {"scr_speedy", "8", CVAR_ARCHIVE};
 cvar_t		scr_showram = {"showram","1", CVAR_NONE};
 cvar_t		scr_showturtle = {"showturtle","0", CVAR_NONE};
 cvar_t		scr_showpause = {"showpause","1", CVAR_NONE};
@@ -461,8 +461,8 @@ void SCR_Init (void)
 	Cvar_RegisterVariable (&scr_showfps); 
 	Cvar_RegisterVariable (&scr_showstats); 
 	Cvar_RegisterVariable (&scr_showspeed);
-	Cvar_RegisterVariable (&cl_speedx);
-	Cvar_RegisterVariable (&cl_speedy);
+	Cvar_RegisterVariable (&scr_speedx);
+	Cvar_RegisterVariable (&scr_speedy);
 	Cvar_RegisterVariable (&scr_showram);
 	Cvar_RegisterVariable (&scr_showturtle);
 	Cvar_RegisterVariable (&scr_showpause);
@@ -570,10 +570,7 @@ void SCR_DrawSpeed (void)
 	if (!scr_showspeed.value)
 		return;
 
-	if (cl.fixangle && !cl.viewent.model) // cutscene
-		return;
-
-	if (key_dest != key_game)
+	if (!cl.viewent.model) // supposed cutscene, no speed for NULL model
 		return;
 
 	if (lastrealtime > realtime)
@@ -592,8 +589,8 @@ void SCR_DrawSpeed (void)
 
 	if (display_speed >= 0)
 	{
-		sprintf (str, "%d", (int) display_speed);
-		Draw_String (scr_vrect.x + scr_vrect.width/2 + cl_speedx.value - (strlen(str)<<3), scr_vrect.y + scr_vrect.height/2 + cl_speedy.value, str);
+		sprintf (str, "%d ups", (int) display_speed);
+		Draw_String (scr_vrect.x + scr_vrect.width/2 + scr_speedx.value - (strlen(str)<<3), scr_vrect.y + scr_vrect.height/2 + scr_speedy.value, str);
 	}
 
 	if (realtime - lastrealtime >= show_speed_interval_value)
