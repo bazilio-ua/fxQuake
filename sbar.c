@@ -70,6 +70,8 @@ cvar_t	scr_centersbar = {"scr_centersbar", "1", CVAR_ARCHIVE};
 cvar_t	scr_overdrawsbar = {"scr_overdrawsbar", "1", CVAR_ARCHIVE};
 cvar_t	scr_sbaralpha = {"scr_sbaralpha", "1", CVAR_ARCHIVE};
 
+extern void SCR_RefdefChanged (void);
+
 /*
 ===============
 Sbar_ShowScores
@@ -257,10 +259,9 @@ Sbar_Init
 */
 void Sbar_Init (void)
 {
-
-	Cvar_RegisterVariable (&scr_sbar);
+	Cvar_RegisterVariableCallback (&scr_sbar, SCR_RefdefChanged);
 	Cvar_RegisterVariable (&scr_centersbar);
-	Cvar_RegisterVariable (&scr_overdrawsbar);
+	Cvar_RegisterVariableCallback (&scr_overdrawsbar, SCR_RefdefChanged);
 	Cvar_RegisterVariable (&scr_sbaralpha);
 
 	Cmd_AddCommand ("+showscores", Sbar_ShowScores);

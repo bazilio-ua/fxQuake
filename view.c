@@ -287,7 +287,7 @@ qboolean V_CheckGamma (void)
 	oldcontrast = v_contrast.value;
 	
 	BuildGammaTable (v_gamma.value, v_contrast.value);
-	vid.recalc_refdef = 1;				// force a surface cache flush
+	vid.recalc_refdef = true;				// force a surface cache flush
 	
 	return true;
 }

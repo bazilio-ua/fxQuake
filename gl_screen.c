@@ -73,7 +73,6 @@ int			glx, gly, glwidth, glheight;
 float		scr_con_current;
 float		scr_conlines;		// lines of console to display
 
-float		oldscreensize, oldfov, oldsbar, oldoverdrawsbar, oldweaponsize, oldweaponfov;
 cvar_t		scr_viewsize = {"viewsize","100", CVAR_ARCHIVE};
 cvar_t		scr_weaponsize = {"weaponsize","100", CVAR_ARCHIVE};
 cvar_t		scr_fov = {"fov","90", CVAR_NONE};	// 10 - 170
@@ -286,6 +285,16 @@ float CalcFovy (float fov_x, float width, float height)
 
 /*
 =================
+SCR_RefdefChanged
+=================
+*/
+void SCR_RefdefChanged (void)
+{
+	vid.recalc_refdef = true;
+}
+
+/*
+=================
 SCR_CalcRefdef
 
 Must be called whenever vid changes
@@ -307,27 +316,27 @@ static void SCR_CalcRefdef (void)
 	
 // bound viewsize
 	if (scr_viewsize.value < 30)
-		Cvar_Set ("viewsize","30");
+		Cvar_SetNoCallback ("viewsize","30");
 	if (scr_viewsize.value > 120)
-		Cvar_Set ("viewsize","120");
+		Cvar_SetNoCallback ("viewsize","120");
 
 // bound weaponsize
 	if (scr_weaponsize.value < 60)
-		Cvar_Set ("weaponsize","60");
+		Cvar_SetNoCallback ("weaponsize","60");
 	if (scr_weaponsize.value > 100)
-		Cvar_Set ("weaponsize","100");
+		Cvar_SetNoCallback ("weaponsize","100");
 
 // bound field of view
 	if (scr_fov.value < 10)
-		Cvar_Set ("fov","10");
+		Cvar_SetNoCallback ("fov","10");
 	if (scr_fov.value > 170)
-		Cvar_Set ("fov","170");
+		Cvar_SetNoCallback ("fov","170");
 
 // bound weapon field of view
 	if (scr_weaponfov.value < 10)
-		Cvar_Set ("weaponfov","10");
+		Cvar_SetNoCallback ("weaponfov","10");
 	if (scr_weaponfov.value > 170)
-		Cvar_Set ("weaponfov","170");
+		Cvar_SetNoCallback ("weaponfov","170");
 
 // intermission is always full screen	
 	if (cl.intermission)
@@ -414,7 +423,6 @@ void SCR_SizeUp_f (void)
 {
 	Cvar_SetValue ("viewsize",scr_viewsize.value+10);
 	Cvar_SetValue ("weaponsize",scr_weaponsize.value+10);
-	vid.recalc_refdef = true;
 }
 
 
@@ -429,7 +437,6 @@ void SCR_SizeDown_f (void)
 {
 	Cvar_SetValue ("viewsize",scr_viewsize.value-10);
 	Cvar_SetValue ("weaponsize",scr_weaponsize.value-10);
-	vid.recalc_refdef = true;
 }
 
 //============================================================================
@@ -453,10 +460,10 @@ SCR_Init
 */
 void SCR_Init (void)
 {
-	Cvar_RegisterVariable (&scr_fov);
-	Cvar_RegisterVariable (&scr_viewsize);
-	Cvar_RegisterVariable (&scr_weaponsize);
-	Cvar_RegisterVariable (&scr_weaponfov);
+	Cvar_RegisterVariableCallback (&scr_fov, SCR_RefdefChanged);
+	Cvar_RegisterVariableCallback (&scr_viewsize, SCR_RefdefChanged);
+	Cvar_RegisterVariableCallback (&scr_weaponsize, SCR_RefdefChanged);
+	Cvar_RegisterVariableCallback (&scr_weaponfov, SCR_RefdefChanged);
 	Cvar_RegisterVariable (&scr_conspeed);
 	Cvar_RegisterVariable (&scr_showfps); 
 	Cvar_RegisterVariable (&scr_showstats); 
@@ -1042,42 +1049,6 @@ void SCR_UpdateScreen (void)
 //
 // check for vid changes
 //
-	if (oldscreensize != scr_viewsize.value)
-	{
-		oldscreensize = scr_viewsize.value;
-		vid.recalc_refdef = true;
-	}
-
-	if (oldweaponsize != scr_weaponsize.value)
-	{
-		oldweaponsize = scr_weaponsize.value;
-		vid.recalc_refdef = true;
-	}
-
-	if (oldfov != scr_fov.value)
-	{
-		oldfov = scr_fov.value;
-		vid.recalc_refdef = true;
-	}
-
-	if (oldweaponfov != scr_weaponfov.value)
-	{
-		oldweaponfov = scr_weaponfov.value;
-		vid.recalc_refdef = true;
-	}
-
-	if (oldsbar != scr_sbar.value)
-	{
-		oldsbar = scr_sbar.value;
-		vid.recalc_refdef = true;
-	} 
-
-	if (oldoverdrawsbar != scr_overdrawsbar.value)
-	{
-		oldoverdrawsbar = scr_overdrawsbar.value;
-		vid.recalc_refdef = true;
-	}
-
 	if (vid.recalc_refdef)
 	{
 		// something changed, so reorder the screen
