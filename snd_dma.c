@@ -39,6 +39,7 @@ int			total_channels;
 
 int				snd_blocked = 0;
 qboolean		snd_initialized = false;
+qboolean		snd_changed = false;
 
 // pointer should go away
 volatile dma_t  *shm = 0;
@@ -73,6 +74,7 @@ cvar_t snd_noextraupdate = {"snd_noextraupdate", "0", CVAR_NONE};
 cvar_t snd_show = {"snd_show", "0", CVAR_NONE};
 cvar_t snd_mixahead = {"_snd_mixahead", "0.1", CVAR_ARCHIVE};
 
+cvar_t snd_speed = {"snd_speed", "44100", CVAR_ARCHIVE};
 cvar_t snd_waterfx = {"snd_waterfx", "1", CVAR_ARCHIVE};
 
 // ====================================================================
@@ -139,6 +141,74 @@ void S_Startup (void)
 	sound_started = 1;
 }
 
+void S_SyncCvars (void)
+{
+	if (!snd_changed)
+		return;
+
+	Cvar_SetValue ("snd_speed", shm->speed);
+	
+	snd_changed = false;
+}
+
+/*
+================
+S_Changed
+================
+*/
+void S_Changed (void)
+{
+	snd_changed = true;
+}
+
+/*
+================
+S_Restart
+================
+*/
+void S_Restart (void)
+{
+	sfx_t *s;
+	size_t i;
+	int oldspeed;
+
+	if (!snd_initialized)
+		return;
+
+	if (!snd_changed)
+		return;
+
+	oldspeed = shm->speed;
+	
+	S_Shutdown ();
+	S_Startup ();
+
+	paintedtime = soundtime;
+	// we changed the sound time and probably the rates too...
+	// any timing of sounds will be way off. so lets just kill any currently playing sounds
+	// (note that this lazy way of killing them will ensure that looping sounds restart)
+	for (i = 0; i < total_channels; i++)
+	{
+		channels[i].pos = 0;
+		channels[i].end = 0;
+	}
+
+	// reload any sounds if their rates changed.
+	if (shm->speed != oldspeed)
+	{
+		for (i = 0; i < num_sfx; i++)
+		{
+			s = &known_sfx[i];
+			if (s->cache.data)
+				Cache_Free(&s->cache, false);
+		}
+	}
+
+	
+	// sync
+	
+	S_SyncCvars ();
+}
 
 /*
 ================
@@ -159,6 +229,7 @@ void S_Init (void)
 	Cmd_AddCommand ("stopsound", S_StopAllSoundsC);
 	Cmd_AddCommand ("soundlist", S_SoundList);
 	Cmd_AddCommand ("soundinfo", S_SoundInfo_f);
+	Cmd_AddCommand ("snd_restart", S_Restart);
 
 	Cvar_RegisterVariable (&nosound);
 	Cvar_RegisterVariable (&volume);
@@ -169,6 +240,7 @@ void S_Init (void)
 	Cvar_RegisterVariable (&snd_noextraupdate);
 	Cvar_RegisterVariable (&snd_show);
 	Cvar_RegisterVariable (&snd_mixahead);
+	Cvar_RegisterVariableCallback (&snd_speed, S_Changed);
 	Cvar_RegisterVariable (&snd_waterfx);
 
 	if (host_parms->memsize < 0x800000)

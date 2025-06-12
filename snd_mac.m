@@ -220,7 +220,8 @@ qboolean SNDDMA_Init(void)
 	if ((i = COM_CheckParm("-sndspeed")) != 0 && i < com_argc - 1)
 		shm->speed = atoi(com_argv[i + 1]);
 	else
-		shm->speed = 44100;
+		shm->speed = (int)snd_speed.value;
+//		shm->speed = 44100;
     
     shm->samplebits = 16;
     shm->channels = 2;
