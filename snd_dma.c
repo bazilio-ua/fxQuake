@@ -104,7 +104,7 @@ void S_SoundInfo_f(void)
 		return;
 	}
 
-	Con_Printf("%5d stereo\n", shm->channels - 1);
+	Con_Printf("%5d channels %s\n", shm->channels, shm->channels >= 2 ? "stereo" : "mono");
 	Con_Printf("%5d samples\n", shm->samples);
 	Con_Printf("%5d samplepos\n", shm->samplepos);
 	Con_Printf("%5d samplebits\n", shm->samplebits);
@@ -112,6 +112,19 @@ void S_SoundInfo_f(void)
 	Con_Printf("%5d speed\n", shm->speed);
 	Con_Printf("0x%x dma buffer\n", shm->buffer);
 	Con_Printf("%5d total_channels\n", total_channels);
+}
+
+void S_SoundFormatInfo (void)
+{
+	if (!sound_started || !shm)
+		Con_Printf ("sound system not started\n");
+	else
+	if (sound_started)
+		Con_Printf ("Sound format\n"
+					"   %d channel(s)\n"
+					"   %d bits/sample\n"
+					"   %d bytes/sec\n",
+						shm->channels, shm->samplebits, shm->speed);
 }
 
 
@@ -204,10 +217,14 @@ void S_Restart (void)
 		}
 	}
 
-	
 	// sync
-	
 	S_SyncCvars ();
+	
+	Con_Printf ("Sound restarted\n");
+	if (shm->speed != oldspeed)
+		Con_Printf ("   %d -> %d Hz\n", oldspeed, shm->speed);
+	
+	S_SoundFormatInfo ();
 }
 
 /*
@@ -272,12 +289,7 @@ void S_Init (void)
 		shm->buffer = Hunk_AllocName(1<<16, "shmbuf");
 	}
 
-	if (sound_started)
-		Con_Printf ("Sound format\n"
-					"   %d channel(s)\n"
-					"   %d bits/sample\n"
-					"   %d bytes/sec\n",
-						shm->channels, shm->samplebits, shm->speed);
+	S_SoundFormatInfo ();
 
 // provides a tick sound until washed clean
 //	if (shm->buffer)
