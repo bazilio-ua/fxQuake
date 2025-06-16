@@ -119,6 +119,7 @@ SNDDMA_Init
 */
 qboolean SNDDMA_Init(void)
 {
+	UInt32 propertySize;
     OSStatus status;
     int i;
     
@@ -215,7 +216,163 @@ qboolean SNDDMA_Init(void)
         return false;
     }
     
-    // Tell the main app what we expect from it
+	//
+	// get default device id
+	//
+	AudioDeviceID defaultDevice = kAudioObjectUnknown;
+	propertySize = sizeof(AudioDeviceID);
+	
+	AudioObjectPropertyAddress defaultDeviceProperty;
+	defaultDeviceProperty.mSelector = kAudioHardwarePropertyDefaultOutputDevice;
+	defaultDeviceProperty.mScope = kAudioObjectPropertyScopeGlobal;
+	defaultDeviceProperty.mElement = kAudioObjectPropertyElementMaster;
+	
+	status = AudioObjectGetPropertyData(kAudioObjectSystemObject,
+										&defaultDeviceProperty,
+										0,
+										NULL,
+										&propertySize,
+										&defaultDevice);
+	if (status) {
+		Con_DPrintf("AudioObjectGetPropertyData returned %d\n", status);
+		return false;
+	}
+	
+	//
+	// get default device name
+	//
+	CFStringRef cfName = NULL;
+	propertySize = sizeof(CFStringRef);
+	
+	AudioObjectPropertyAddress defaultDeviceNameProperty;
+	defaultDeviceNameProperty.mSelector = kAudioObjectPropertyName;
+	defaultDeviceNameProperty.mScope = kAudioObjectPropertyScopeGlobal;
+	defaultDeviceNameProperty.mElement = kAudioObjectPropertyElementMaster;
+	
+	status = AudioObjectGetPropertyData(defaultDevice,
+										&defaultDeviceNameProperty,
+										0,
+										NULL,
+										&propertySize,
+										&cfName);
+	if (status) {
+		Con_DPrintf("AudioObjectGetPropertyData returned %d\n", status);
+		return false;
+	}
+	CFRelease(cfName);
+	
+	//
+	// get default device sample rate
+	//
+	Float64 sampleRate1 = 0;
+	propertySize = sizeof(Float64);
+	
+	AudioObjectPropertyAddress defaultDeviceNominalSampleRateProperty;
+	defaultDeviceNominalSampleRateProperty.mSelector = kAudioDevicePropertyNominalSampleRate;
+	defaultDeviceNominalSampleRateProperty.mScope = kAudioObjectPropertyScopeGlobal;
+	defaultDeviceNominalSampleRateProperty.mElement = kAudioObjectPropertyElementMaster;
+	
+	status = AudioObjectGetPropertyData(defaultDevice,
+										&defaultDeviceNominalSampleRateProperty,
+										0,
+										NULL,
+										&propertySize,
+										&sampleRate1);
+	if (status) {
+		Con_DPrintf("AudioObjectGetPropertyData returned %d\n", status);
+		return false;
+	}
+	
+	//
+	// get default device buffer size
+	//
+	UInt32 size;
+	
+	AudioObjectPropertyAddress defaultDeviceStreamConfigurationProperty;
+	defaultDeviceStreamConfigurationProperty.mSelector = kAudioDevicePropertyStreamConfiguration;
+	defaultDeviceStreamConfigurationProperty.mScope = kAudioDevicePropertyScopeOutput;
+	defaultDeviceStreamConfigurationProperty.mElement = kAudioObjectPropertyElementMaster;
+	
+	status = AudioObjectGetPropertyDataSize(defaultDevice,
+											&defaultDeviceStreamConfigurationProperty,
+											0,
+											NULL,
+											&size);
+	if (status) {
+		Con_DPrintf("AudioObjectGetPropertyDataSize returned %d\n", status);
+		return false;
+	}
+	
+	//
+	// get default device buffer list
+	//
+	AudioBufferList *bufferList = NULL;
+	bufferList = (AudioBufferList *)malloc(size);
+	if (!bufferList)
+		return false;
+
+	status = AudioObjectGetPropertyData(defaultDevice,
+										&defaultDeviceStreamConfigurationProperty,
+										0,
+										NULL,
+										&size,
+										bufferList);
+	if (status) {
+		Con_DPrintf("AudioObjectGetPropertyData returned %d\n", status);
+		return false;
+	}
+
+	UInt32 j;
+	UInt32 channelsPerFrame1 = 0;
+	for (j = 0; j < bufferList->mNumberBuffers; j++) {
+		channelsPerFrame1 += bufferList->mBuffers[j].mNumberChannels;
+	}
+	free(bufferList);
+	
+	//
+	// use the stream format coming out of the AUHAL (should be de-interleaved)
+	//
+	AudioStreamBasicDescription streamFormat;
+	propertySize = sizeof(AudioStreamBasicDescription);
+	status = AudioUnitGetProperty(converterUnit,
+								  kAudioUnitProperty_StreamFormat,
+								  kAudioUnitScope_Output,
+								  0,
+								  &streamFormat,
+								  &propertySize);
+	if (status) {
+		Con_DPrintf("AudioUnitGetProperty returned %d\n", status);
+		return false;
+	}
+	
+	//
+	// check the input device's stream format
+	//
+	AudioStreamBasicDescription deviceFormat;
+	status = AudioUnitGetProperty(converterUnit,
+								  kAudioUnitProperty_StreamFormat,
+								  kAudioUnitScope_Input,
+								  0,
+								  &deviceFormat,
+								  &propertySize);
+	if (status) {
+		Con_DPrintf("AudioUnitGetProperty returned %d\n", status);
+		return false;
+	}
+
+	
+	
+	printf ("device rate %f, graph rate %f\n",
+			deviceFormat.mSampleRate,
+			streamFormat.mSampleRate);
+	
+	
+	
+	
+	
+
+/*
+	// Tell the main app what we expect from it
 	// sound speed
 	if ((i = COM_CheckParm("-sndspeed")) != 0 && i < com_argc - 1)
 		shm->speed = atoi(com_argv[i + 1]);
@@ -226,6 +383,12 @@ qboolean SNDDMA_Init(void)
     shm->samplebits = 16;
     shm->channels = 2;
     
+*/
+	
+	shm->speed = 44100;
+	shm->samplebits = 16;
+	shm->channels = 2;
+	
     UInt32 sampleRate = shm->speed;
     UInt32 bitsPerChannel = shm->samplebits;
     UInt32 channelsPerFrame = shm->channels;
