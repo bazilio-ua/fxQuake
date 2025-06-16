@@ -188,8 +188,8 @@ void S_Restart (void)
 	if (!snd_initialized)
 		return;
 
-	if (!snd_changed)
-		return;
+//	if (!snd_changed)
+//		return;
 
 	oldspeed = shm->speed;
 	

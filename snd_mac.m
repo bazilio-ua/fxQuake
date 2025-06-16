@@ -23,15 +23,17 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "unixquake.h"
 #include "macquake.h"
 
+AudioDeviceID defaultDevice = kAudioObjectUnknown;
+
 AudioUnitElement unitElementSND = 0;
 
 AUGraph audioGraph;
 AUNode outputNode;
 AUNode mixerNode;
 AUNode converterNode;
+AudioUnit outputUnit;
 AudioUnit mixerUnit;
 AudioUnit converterUnit;
-AudioUnit outputUnit;
 
 // 64K is > 1 second at 16-bit, 22050 Hz
 #define	WAV_BUFFERS				64
@@ -130,24 +132,64 @@ qboolean SNDDMA_Init(void)
 	//
 	// get default device id
 	//
-	AudioDeviceID defaultDevice = kAudioObjectUnknown;
-	propertySize = sizeof(AudioDeviceID);
+	if (defaultDevice == kAudioObjectUnknown) {
+//		defaultDevice = kAudioObjectUnknown;
+		propertySize = sizeof(AudioDeviceID);
+		
+		AudioObjectPropertyAddress defaultDeviceProperty;
+		defaultDeviceProperty.mSelector = kAudioHardwarePropertyDefaultOutputDevice;
+		defaultDeviceProperty.mScope = kAudioObjectPropertyScopeGlobal;
+		defaultDeviceProperty.mElement = kAudioObjectPropertyElementMaster;
+		
+		status = AudioObjectGetPropertyData(kAudioObjectSystemObject,
+											&defaultDeviceProperty,
+											0,
+											NULL,
+											&propertySize,
+											&defaultDevice);
+		if (status) {
+			Con_DPrintf("AudioObjectGetPropertyData returned %d\n", status);
+			return false;
+		}
+	}
 	
-	AudioObjectPropertyAddress defaultDeviceProperty;
-	defaultDeviceProperty.mSelector = kAudioHardwarePropertyDefaultOutputDevice;
-	defaultDeviceProperty.mScope = kAudioObjectPropertyScopeGlobal;
-	defaultDeviceProperty.mElement = kAudioObjectPropertyElementMaster;
-	
-	status = AudioObjectGetPropertyData(kAudioObjectSystemObject,
-										&defaultDeviceProperty,
+	//
+	// Check if device is hogged by another process
+	//
+	pid_t hoggingProcess;
+	propertySize = sizeof(pid_t);
+
+	AudioObjectPropertyAddress defaultDeviceHogModeProperty;
+	defaultDeviceHogModeProperty.mSelector = kAudioDevicePropertyHogMode;
+	defaultDeviceHogModeProperty.mScope = kAudioObjectPropertyScopeGlobal;
+	defaultDeviceHogModeProperty.mElement = kAudioObjectPropertyElementMaster;
+
+	status = AudioObjectGetPropertyData(defaultDevice,
+										&defaultDeviceHogModeProperty,
 										0,
 										NULL,
 										&propertySize,
-										&defaultDevice);
+										&hoggingProcess);
 	if (status) {
 		Con_DPrintf("AudioObjectGetPropertyData returned %d\n", status);
 		return false;
 	}
+
+	if ((hoggingProcess != -1) && (hoggingProcess != getpid())) {
+		Con_Printf ("The sound device is already hogged by another application\nUnable to get exclusive access\n");
+		return false;
+	}
+	
+	//
+	// Take exclusive access to the device (hog mode)
+	//
+	hoggingProcess = getpid();
+	status = AudioObjectSetPropertyData(defaultDevice, &defaultDeviceHogModeProperty, 0, NULL, sizeof(pid_t), &hoggingProcess);
+	if (status) {
+		Con_DPrintf("AudioObjectSetPropertyData returned %d\n", status);
+		return false;
+	}
+	[NSThread sleepForTimeInterval:0.01]; // wait
 	
 	//
 	// get default device name
@@ -239,43 +281,6 @@ qboolean SNDDMA_Init(void)
 //		channelsPerFrame1 += bufferList->mBuffers[j].mNumberChannels;
 //	}
 //	free(bufferList);
-	
-	//
-	// Check if device is hogged by another process
-	//
-	pid_t hoggingProcess;
-	propertySize = sizeof(pid_t);
-
-	AudioObjectPropertyAddress defaultDeviceHogModeProperty;
-	defaultDeviceHogModeProperty.mSelector = kAudioDevicePropertyHogMode;
-	defaultDeviceHogModeProperty.mScope = kAudioObjectPropertyScopeGlobal;
-	defaultDeviceHogModeProperty.mElement = kAudioObjectPropertyElementMaster;
-
-	status = AudioObjectGetPropertyData(defaultDevice,
-										&defaultDeviceHogModeProperty,
-										0,
-										NULL,
-										&propertySize,
-										&hoggingProcess);
-	if (status) {
-		Con_DPrintf("AudioObjectGetPropertyData returned %d\n", status);
-		return false;
-	}
-
-	if ((hoggingProcess != -1) && (hoggingProcess != getpid())) {
-		Con_Printf ("The sound device is already hogged by another application\nUnable to get exclusive access\n");
-		return false;
-	}
-	
-	//
-	// Take exclusive access to the device (hog mode)
-	//
-	hoggingProcess = getpid();
-	status = AudioObjectSetPropertyData(defaultDevice, &defaultDeviceHogModeProperty, 0, NULL, sizeof(pid_t), &hoggingProcess);
-	if (status) {
-		Con_DPrintf("AudioObjectSetPropertyData returned %d\n", status);
-		return false;
-	}
 	
 	
 	// AUGraph init
@@ -426,7 +431,7 @@ qboolean SNDDMA_Init(void)
 //			streamFormat.mSampleRate);
 	
 	
-/*
+
 	// Tell the main app what we expect from it
 	// sound speed
 	if ((i = COM_CheckParm("-sndspeed")) != 0 && i < com_argc - 1)
@@ -438,11 +443,11 @@ qboolean SNDDMA_Init(void)
     shm->samplebits = 16;
     shm->channels = 2;
     
-*/
+
 	
-	shm->speed = 44100;
-	shm->samplebits = 16;
-	shm->channels = 2;
+//	shm->speed = 44100;
+//	shm->samplebits = 16;
+//	shm->channels = 2;
 	
     UInt32 sampleRate = shm->speed;
     UInt32 bitsPerChannel = shm->samplebits;
@@ -557,7 +562,12 @@ void SNDDMA_Shutdown(void)
         if (status) {
             Con_DPrintf("AUGraphRemoveNode returned %d\n", status);
         }
-        
+
+		status = AUGraphRemoveNode(audioGraph, outputNode);
+		if (status) {
+			Con_DPrintf("AUGraphRemoveNode returned %d\n", status);
+		}
+
         status = AUGraphUninitialize(audioGraph);
         if (status) {
             Con_DPrintf("AUGraphUninitialize returned %d\n", status);
@@ -568,6 +578,23 @@ void SNDDMA_Shutdown(void)
             Con_DPrintf("DisposeAUGraph returned %d\n", status);
         }
         
+		
+		AudioObjectPropertyAddress propertyAddress;
+		pid_t	hogMode;
+
+		//
+		// release device access
+		//
+		propertyAddress.mSelector = kAudioDevicePropertyHogMode;
+		propertyAddress.mScope = kAudioObjectPropertyScopeGlobal;
+		propertyAddress.mElement = kAudioObjectPropertyElementMaster;
+		hogMode = -1;
+		status = AudioObjectSetPropertyData(defaultDevice, &propertyAddress, 0, NULL, sizeof(pid_t), &hogMode);
+		if (status) {
+			Con_DPrintf("AudioObjectSetPropertyData returned %d\n", status);
+		}
+		[NSThread sleepForTimeInterval:0.01]; // wait
+		
         snd_inited = false;
     }
 }
