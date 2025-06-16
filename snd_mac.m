@@ -45,6 +45,25 @@ static UInt32 bufferPosition;
 
 static qboolean snd_inited;
 
+OSStatus HALlistenerProc(AudioObjectID inObjectID,
+						 UInt32 inNumberAddresses,
+						 const AudioObjectPropertyAddress    inAddresses[],
+						 void* inClientData);
+OSStatus HALlistenerProc(AudioObjectID inObjectID,
+						 UInt32 inNumberAddresses,
+						 const AudioObjectPropertyAddress    inAddresses[],
+						 void* inClientData)
+{
+	UInt32 addressIndex;
+	AudioObjectPropertyAddress propertyAddress;
+	UInt32 propSize;
+	UInt32 tmpInt;
+	OSStatus err = noErr;
+	
+	return kAudioHardwareNoError;
+}
+
+
 OSStatus renderCallback(void *inRefCon,
                         AudioUnitRenderActionFlags *ioActionFlags,
                         const AudioTimeStamp *inTimeStamp,
@@ -177,6 +196,15 @@ qboolean SNDDMA_Init(void)
 
 	if ((hoggingProcess != -1) && (hoggingProcess != getpid())) {
 		Con_Printf ("The sound device is already hogged by another application\nUnable to get exclusive access\n");
+		return false;
+	}
+	
+	//
+	// Set a property listener for the hog change
+	//
+	status = AudioObjectAddPropertyListener(defaultDevice, &defaultDeviceHogModeProperty, &HALlistenerProc, NULL);
+	if (status) {
+		Con_DPrintf("AudioObjectAddPropertyListener returned %d\n", status);
 		return false;
 	}
 	
@@ -588,6 +616,12 @@ void SNDDMA_Shutdown(void)
 		propertyAddress.mSelector = kAudioDevicePropertyHogMode;
 		propertyAddress.mScope = kAudioObjectPropertyScopeGlobal;
 		propertyAddress.mElement = kAudioObjectPropertyElementMaster;
+		
+		status = AudioObjectRemovePropertyListener(defaultDevice, &propertyAddress, &HALlistenerProc, NULL);
+		if (status) {
+			Con_DPrintf("AudioObjectRemovePropertyListener returned %d\n", status);
+		}
+		
 		hogMode = -1;
 		status = AudioObjectSetPropertyData(defaultDevice, &propertyAddress, 0, NULL, sizeof(pid_t), &hogMode);
 		if (status) {
