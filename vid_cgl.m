@@ -1387,8 +1387,8 @@ void VID_MenuDraw (void)
 	y = 4;
 
 	// plaque
-	p = Draw_CachePic ("gfx/qplaque.lmp");
-	M_DrawTransPic (16, y, p);
+//	p = Draw_CachePic ("gfx/qplaque.lmp");
+//	M_DrawTransPic (16, y, p);
 
 	p = Draw_CachePic ("gfx/vidmodes.lmp");
 	M_DrawPic ( (320-p->width)/2, y, p);
