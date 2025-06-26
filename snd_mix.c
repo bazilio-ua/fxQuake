@@ -65,11 +65,11 @@ void S_TransferStereo16 (int endtime)
 	while (lpaintedtime < endtime)
 	{
 	// handle recirculating buffer issues
-		lpos = lpaintedtime & ((shm->samples>>1)-1);
+		lpos = lpaintedtime & ((dma.samples>>1)-1);
 
-		snd_out = (short *) shm->buffer + (lpos<<1);
+		snd_out = (short *) dma.buffer + (lpos<<1);
 
-		snd_linear_count = (shm->samples>>1) - lpos;
+		snd_linear_count = (dma.samples>>1) - lpos;
 		if (lpaintedtime + snd_linear_count > endtime)
 			snd_linear_count = endtime - lpaintedtime;
 
@@ -93,22 +93,22 @@ void S_TransferPaintBuffer(int endtime)
 	int		val;
 	int		snd_vol;
 
-	if (shm->samplebits == 16 && shm->channels == 2)
+	if (dma.samplebits == 16 && dma.channels == 2)
 	{	// optimized case
 		S_TransferStereo16 (endtime);
 	}
 	else
 	{	// general case
 		p = (int *) paintbuffer;
-		count = (endtime - paintedtime) * shm->channels;
-		out_mask = shm->samples - 1; 
-		out_idx = paintedtime * shm->channels & out_mask;
-		step = 3 - shm->channels;
+		count = (endtime - paintedtime) * dma.channels;
+		out_mask = dma.samples - 1; 
+		out_idx = paintedtime * dma.channels & out_mask;
+		step = 3 - dma.channels;
 		snd_vol = volume.value*256;
 	
-		if (shm->samplebits == 16)
+		if (dma.samplebits == 16)
 		{
-			short *out = (short *) shm->buffer;
+			short *out = (short *) dma.buffer;
 			while (count--)
 			{
 				val = (*p * snd_vol) >> 8;
@@ -121,9 +121,9 @@ void S_TransferPaintBuffer(int endtime)
 				out_idx = (out_idx + 1) & out_mask;
 			}
 		}
-		else if (shm->samplebits == 8)
+		else if (dma.samplebits == 8)
 		{
-			byte *out = (byte *) shm->buffer;
+			byte *out = (byte *) dma.buffer;
 			while (count--)
 			{
 				val = (*p * snd_vol) >> 8;

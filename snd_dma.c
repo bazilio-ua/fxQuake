@@ -40,9 +40,7 @@ int			total_channels;
 int				snd_blocked = 0;
 qboolean		snd_initialized = false;
 
-// pointer should go away
-volatile dma_t  *shm = 0;
-volatile dma_t sn;
+dma_t		dma;
 
 vec3_t		listener_origin;
 vec3_t		listener_forward;
@@ -96,19 +94,19 @@ S_SoundInfo_f
 */
 void S_SoundInfo_f(void)
 {
-	if (!sound_started || !shm)
+	if (!sound_started)
 	{
 		Con_Printf ("sound system not started\n");
 		return;
 	}
 
-	Con_Printf("%5d stereo\n", shm->channels - 1);
-	Con_Printf("%5d samples\n", shm->samples);
-	Con_Printf("%5d samplepos\n", shm->samplepos);
-	Con_Printf("%5d samplebits\n", shm->samplebits);
-	Con_Printf("%5d submission_chunk\n", shm->submission_chunk);
-	Con_Printf("%5d speed\n", shm->speed);
-	Con_Printf("0x%x dma buffer\n", shm->buffer);
+	Con_Printf("%5d stereo\n", dma.channels - 1);
+	Con_Printf("%5d samples\n", dma.samples);
+	Con_Printf("%5d samplepos\n", dma.samplepos);
+	Con_Printf("%5d samplebits\n", dma.samplebits);
+	Con_Printf("%5d submission_chunk\n", dma.submission_chunk);
+	Con_Printf("%5d speed\n", dma.speed);
+	Con_Printf("0x%x dma buffer\n", dma.buffer);
 	Con_Printf("%5d total_channels\n", total_channels);
 }
 
@@ -190,14 +188,13 @@ void S_Init (void)
 // create a piece of DMA memory
 	if (fakedma)
 	{
-		shm = (void *) Hunk_AllocName(sizeof(*shm), "shm");
-		shm->samplebits = 16;
-		shm->speed = 22050;
-		shm->channels = 2;
-		shm->samples = 32768;
-		shm->samplepos = 0;
-		shm->submission_chunk = 1;
-		shm->buffer = Hunk_AllocName(1<<16, "shmbuf");
+		dma.samplebits = 16;
+		dma.speed = 22050;
+		dma.channels = 2;
+		dma.samples = 32768;
+		dma.samplepos = 0;
+		dma.submission_chunk = 1;
+		dma.buffer = Hunk_AllocName(1<<16, "dmabuf");
 	}
 
 	if (sound_started)
@@ -205,11 +202,11 @@ void S_Init (void)
 					"   %d channel(s)\n"
 					"   %d bits/sample\n"
 					"   %d bytes/sec\n",
-						shm->channels, shm->samplebits, shm->speed);
+						dma.channels, dma.samplebits, dma.speed);
 
 // provides a tick sound until washed clean
-//	if (shm->buffer)
-//		shm->buffer[4] = shm->buffer[5] = 0x7f;	// force a pop for debugging
+//	if (dma.buffer)
+//		dma.buffer[4] = dma.buffer[5] = 0x7f;	// force a pop for debugging
 
 	ambient_sfx[AMBIENT_WATER] = S_PrecacheSound ("ambience/water1.wav");
 	ambient_sfx[AMBIENT_SKY] = S_PrecacheSound ("ambience/wind2.wav");
@@ -227,7 +224,6 @@ void S_Shutdown(void)
 	if (!sound_started)
 		return;
 
-	shm = 0;
 	sound_started = 0;
 
 	if (!fakedma)
@@ -391,7 +387,7 @@ void S_Spatialize(channel_t *ch)
 
 	dot = DotProduct(listener_right, source_vec);
 
-	if (shm->channels == 1)
+	if (dma.channels == 1)
 	{
 		rscale = 1.0;
 		lscale = 1.0;
@@ -476,7 +472,7 @@ void S_StartSound(int entnum, int entchannel, sfx_t *sfx, vec3_t origin, float f
 			continue;
 		if (check->sfx == sfx && !check->pos)
 		{
-			skip = rand () % (int)(0.1*shm->speed);
+			skip = rand () % (int)(0.1*dma.speed);
 			if (skip >= target_chan->end)
 				skip = target_chan->end - 1;
 			target_chan->pos += skip;
@@ -531,18 +527,18 @@ void S_ClearBuffer (void)
 {
 	int		clear;
 
-	if (!sound_started || !shm)
+	if (!sound_started)
 		return;
 
-	if (shm->samplebits == 8)
+	if (dma.samplebits == 8)
 		clear = 0x80;
 	else
 		clear = 0;
 
 	SNDDMA_BeginPainting ();
 
-	if (shm->buffer)
-		memset(shm->buffer, clear, shm->samples * shm->samplebits/8);
+	if (dma.buffer)
+		memset(dma.buffer, clear, dma.samples * dma.samplebits/8);
 
 	SNDDMA_Submit ();
 }
@@ -779,7 +775,7 @@ void GetSoundTime(void)
 	static	int		oldsamplepos;
 	int		fullsamples;
 	
-	fullsamples = shm->samples / shm->channels;
+	fullsamples = dma.samples / dma.channels;
 
 // it is possible to miscount buffers if it has wrapped twice between
 // calls to S_Update.  Oh well.
@@ -798,7 +794,7 @@ void GetSoundTime(void)
 	}
 	oldsamplepos = samplepos;
 
-	soundtime = buffers*fullsamples + samplepos/shm->channels;
+	soundtime = buffers*fullsamples + samplepos/dma.channels;
 }
 
 void S_ExtraUpdateTime (void)
@@ -832,7 +828,7 @@ void S_PaintAndSubmit (void)
 	if (!sound_started /* || (snd_blocked > 0) */ )
 		return;
 
-	if (!shm->buffer)
+	if (!dma.buffer)
 		return;
 
 // Updates DMA time
@@ -849,9 +845,11 @@ void S_PaintAndSubmit (void)
 	}
 
 // mix ahead of current position
-	endtime = soundtime + snd_mixahead.value * shm->speed;
-	samps = shm->samples >> (shm->channels-1);
-	if ((int)endtime - soundtime > samps)
+	endtime = soundtime + snd_mixahead.value * dma.speed;
+
+// never mix more than the complete buffer
+	samps = dma.samples >> (dma.channels-1);
+	if (endtime - soundtime > samps)
 		endtime = soundtime + samps;
 
 	SNDDMA_BeginPainting ();

@@ -146,8 +146,7 @@ extern vec3_t listener_origin;
 extern vec3_t listener_forward;
 extern vec3_t listener_right;
 extern vec3_t listener_up;
-extern volatile dma_t *shm;
-extern volatile dma_t sn;
+extern dma_t dma;
 extern vec_t sound_nominal_clip_dist;
 
 extern	cvar_t loadas8bit;

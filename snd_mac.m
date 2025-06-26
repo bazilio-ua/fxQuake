@@ -123,7 +123,6 @@ qboolean SNDDMA_Init(void)
     int i;
     
     snd_inited = false;
-	shm = &sn;
     
     status = NewAUGraph(&audioGraph);
     if (status) {
@@ -218,16 +217,16 @@ qboolean SNDDMA_Init(void)
     // Tell the main app what we expect from it
 	// sound speed
 	if ((i = COM_CheckParm("-sndspeed")) != 0 && i < com_argc - 1)
-		shm->speed = atoi(com_argv[i + 1]);
+		dma.speed = atoi(com_argv[i + 1]);
 	else
-		shm->speed = 44100;
+		dma.speed = 44100;
     
-    shm->samplebits = 16;
-    shm->channels = 2;
+    dma.samplebits = 16;
+    dma.channels = 2;
     
-    UInt32 sampleRate = shm->speed;
-    UInt32 bitsPerChannel = shm->samplebits;
-    UInt32 channelsPerFrame = shm->channels;
+    UInt32 sampleRate = dma.speed;
+    UInt32 bitsPerChannel = dma.samplebits;
+    UInt32 channelsPerFrame = dma.channels;
     UInt32 bytesPerFrame = channelsPerFrame * (bitsPerChannel >> 3);
     UInt32 framesPerPacket = 1;
     UInt32 bytesPerPacket = bytesPerFrame * framesPerPacket;
@@ -259,10 +258,10 @@ qboolean SNDDMA_Init(void)
         return false;
     }
     
-    shm->samples = sizeof(buffer) / (shm->samplebits >> 3);
-    shm->samplepos = 0;
-    shm->submission_chunk = 1;
-    shm->buffer = buffer;
+    dma.samples = sizeof(buffer) / (dma.samplebits >> 3);
+    dma.samplepos = 0;
+    dma.submission_chunk = 1;
+    dma.buffer = buffer;
     
     // We haven't enqueued anything yet
     bufferPosition = 0;
@@ -288,7 +287,7 @@ int SNDDMA_GetDMAPos(void)
 	if (!snd_inited) 
 		return 0;
     
-    return bufferPosition / (shm->samplebits >> 3);
+    return bufferPosition / (dma.samplebits >> 3);
 }
 
 /*
