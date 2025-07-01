@@ -36,9 +36,10 @@ cvar_t sv_cullentities = {"sv_cullentities", "0", CVAR_SERVER}; // OFF
 SV_Protocol_f
 ===============
 */
-//static int sv_protocol = PROTOCOL_FITZQUAKE;
-static int sv_protocol = PROTOCOL_MARKV;
-static void SV_Protocol_f (void)
+//int sv_protocol = PROTOCOL_FITZQUAKE; //johnfitz
+//int sv_protocol = PROTOCOL_MARKV; //baker
+int sv_protocol = PROTOCOL_RMQ; //spike -- enough maps need this now that we can probably afford incompatibility with engines that still don't support 999 (vanilla was already broken)
+void SV_Protocol_f (void)
 {
 	int i;
 	char	*p;
