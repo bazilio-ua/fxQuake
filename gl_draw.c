@@ -164,7 +164,7 @@ qpic_t *Draw_PicFromWad (char *name)
 		offset = (uintptr_t)p - (uintptr_t)wad_base + sizeof(int)*2; //johnfitz
 		glp->gltexture = TexMgr_LoadTexture (NULL, texturename, p->width, p->height, SRC_INDEXED, p->data, WADFILE, offset, TEXPREF_ALPHA | TEXPREF_PAD | TEXPREF_NOPICMIP);
 		glp->sl = 0;
-        glp->sh = (float)p->width/(float)TexMgr_PadConditional(p->width); //johnfitz
+		glp->sh = (float)p->width/(float)TexMgr_PadConditional(p->width); //johnfitz
 		glp->tl = 0;
 		glp->th = (float)p->height/(float)TexMgr_PadConditional(p->height); //johnfitz
 	}
