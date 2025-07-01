@@ -192,6 +192,7 @@ void Con_MessageMode_f (void)
 	team_message = false;
 }
 
+
 /*
 ================
 Con_MessageMode2_f
