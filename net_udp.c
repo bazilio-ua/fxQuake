@@ -494,7 +494,7 @@ int UDP_GetSocketAddr (sys_socket_t net_socket, struct qsockaddr *addr)
 int UDP_GetNameFromAddr (struct qsockaddr *addr, char *name)
 {
 /*	ProQuake connect speedup fix (verified for w95 -> XP) */
-	// pq comment out this block, EER1 - uncomment
+/*	// pq comment out this block
 	struct hostent *hostentry;
 
 	hostentry = gethostbyaddr((char *)&((struct sockaddr_in *)addr)->sin_addr, sizeof(struct in_addr), AF_INET);
@@ -503,7 +503,7 @@ int UDP_GetNameFromAddr (struct qsockaddr *addr, char *name)
 		strncpy(name, (char *)hostentry->h_name, NET_NAMELEN - 1);
 		return 0;
 	}
-
+*/
 	strcpy(name, UDP_AddrToString (addr));
 
 	return 0;
