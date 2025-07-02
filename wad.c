@@ -87,7 +87,7 @@ void W_LoadWadFile (void)
 
 	header = (wadinfo_t *)wad_base;
 	
-	if (header->id[0] != 'W' || header->id[1] != 'A' || header->id[2] != 'D' || header->id[3] != '2')
+	if (header->ident[0] != 'W' || header->ident[1] != 'A' || header->ident[2] != 'D' || header->ident[3] != '2')
 		Sys_Error ("W_LoadWadFile: %s is not a wadfile, can't read header WAD2 id", wadfilename);
 	
 	wad_numlumps = LittleLong(header->numlumps);

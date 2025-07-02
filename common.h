@@ -237,7 +237,7 @@ typedef struct
 
 typedef struct
 {
-	char    id[4];
+	char    ident[4];		// should be PACK
 	int             dirofs;
 	int             dirlen;
 } dpackheader_t;

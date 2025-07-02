@@ -1661,7 +1661,7 @@ pack_t *COM_LoadPackFile (char *packfilename)
 		return NULL;
 	}
 	if (Sys_FileRead (packhandle, (void *)&header, sizeof(header)) != sizeof(header) ||
-	    header.id[0] != 'P' || header.id[1] != 'A' || header.id[2] != 'C' || header.id[3] != 'K')
+	    header.ident[0] != 'P' || header.ident[1] != 'A' || header.ident[2] != 'C' || header.ident[3] != 'K')
 		Sys_Error ("COM_LoadPackFile: %s is not a packfile, can't read header PACK id", packfilename);
 
 	header.dirofs = LittleLong (header.dirofs);
