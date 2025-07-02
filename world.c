@@ -768,7 +768,7 @@ trace_t SV_ClipMoveToEntity (edict_t *ent, vec3_t start, vec3_t mins, vec3_t max
 // ROTATE END
 
 // trace a line through the apropriate clipping hull
-		SV_RecursiveHullCheck (hull, hull->firstclipnode, 0, 1, start_l, end_l, &trace);
+	SV_RecursiveHullCheck (hull, hull->firstclipnode, 0, 1, start_l, end_l, &trace);
 
 // ROTATE START
 	// rotate endpos back to world frame of reference
@@ -809,7 +809,7 @@ trace_t SV_ClipMoveToEntity (edict_t *ent, vec3_t start, vec3_t mins, vec3_t max
 // ROTATE END
 
 // did we clip the move?
-	if (trace.fraction < 1 || trace.startsolid  )
+	if (trace.fraction < 1 || trace.startsolid)
 		trace.ent = ent;
 
 	return trace;
@@ -874,8 +874,7 @@ void SV_ClipToLinks ( areanode_t *node, moveclip_t *clip )
 			trace = SV_ClipMoveToEntity (touch, clip->start, clip->mins2, clip->maxs2, clip->end);
 		else
 			trace = SV_ClipMoveToEntity (touch, clip->start, clip->mins, clip->maxs, clip->end);
-		if (trace.allsolid || trace.startsolid ||
-		trace.fraction < clip->trace.fraction)
+		if (trace.allsolid || trace.startsolid || trace.fraction < clip->trace.fraction)
 		{
 			trace.ent = touch;
 		 	if (clip->trace.startsolid)
