@@ -1041,17 +1041,15 @@ void Memory_Init (void *buf, int size)
 	
 	Cache_Init ();
 	
-	if (COM_CheckParm ("-zone"))
+	if ((p = COM_CheckParm ("-zone")))
 	{
-		p = COM_CheckParm ("-zone");
 		if (p < com_argc-1)
 			zonesize = atoi (com_argv[p+1]) * 1024;
 		else
 			Sys_Error ("Memory_Init: you must specify a size in KB after -zone");
 	}
-	else if (COM_CheckParm ("-zmem"))
+	else if ((p = COM_CheckParm ("-zmem")))
 	{
-		p = COM_CheckParm ("-zmem");
 		if (p < com_argc-1)
 			zonesize = atoi (com_argv[p+1]) * 1024 * 1024;
 		else

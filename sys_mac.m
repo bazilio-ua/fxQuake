@@ -441,19 +441,19 @@ int main (int argc, char *argv[])
     
 	parms.memsize = DEFAULT_MEMORY_SIZE * 1024 * 1024;
     
-	if (COM_CheckParm ("-heapsize"))
+	if ((t = COM_CheckParm("-heapsize")))
 	{
-		t = COM_CheckParm("-heapsize") + 1;
-        
-		if (t < com_argc)
-			parms.memsize = atoi (com_argv[t]) * 1024;
+		if (t < com_argc-1)
+			parms.memsize = atoi (com_argv[t+1]) * 1024;
+		else
+			Sys_Error ("Sys_Init: you must specify a size in KB after -heapsize");
 	}
-	else if (COM_CheckParm ("-mem"))
+	else if ((t = COM_CheckParm("-mem")))
 	{
-		t = COM_CheckParm("-mem") + 1;
-        
-		if (t < com_argc)
-			parms.memsize = atoi (com_argv[t]) * 1024 * 1024;
+		if (t < com_argc-1)
+			parms.memsize = atoi (com_argv[t+1]) * 1024 * 1024;
+		else
+			Sys_Error ("Sys_Init: you must specify a size in MB after -mem");
 	}
     
 	parms.membase = malloc (parms.memsize);
@@ -470,7 +470,7 @@ int main (int argc, char *argv[])
 	if (COM_CheckParm("-nostdout"))
 		nostdout = true;
     
-	Sys_Init();
+	Sys_Init ();
     
 	Sys_Printf ("Host init started\n");
 	Host_Init ();
