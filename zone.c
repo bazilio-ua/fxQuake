@@ -1040,8 +1040,7 @@ void Memory_Init (void *buf, int size)
 	hunk_high_used = 0;
 	
 	Cache_Init ();
-//	p = COM_CheckParm ("-zone");
-//	if (p)
+	
 	if (COM_CheckParm ("-zone"))
 	{
 		p = COM_CheckParm ("-zone");
