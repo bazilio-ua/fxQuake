@@ -20,8 +20,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // quakedef.h -- primary header for client and server
 
 
-// Quake is a trademark of Id Software, Inc., (c) 1996 Id Software, Inc. All
-// rights reserved.
+// Quake is a trademark of Id Software, Inc., (c) 1996 Id Software, Inc. All rights reserved.
+// NIN logo is a registered trademark licensed to Nothing Interactive, Inc. All rights reserved.
 
 
 // disable data conversion warnings for MSVC++ 
