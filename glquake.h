@@ -157,7 +157,7 @@ extern int		gl_stencilbits;
 
 extern GLint gl_hardware_max_size;
 
-extern int gl_warpimage_size;
+extern int warpimage_size;
 
 // Swap control
 GLint (GLAPIENTRY *qglSwapInterval)(GLint interval);
@@ -206,7 +206,7 @@ void (GLAPIENTRY *qglCompressedTexImage2D) (GLenum target, GLint level, GLenum i
 #define TEXPREF_NOBRIGHT		0x0200	// use nobright mask palette
 #define TEXPREF_CONCHARS		0x0400	// use conchars palette
 #define TEXPREF_WARP			0x0800	// warp texture
-#define TEXPREF_WARPIMAGE		0x1000	// resize this texture when gl_warpimage_size changes
+#define TEXPREF_WARPIMAGE		0x1000	// resize this texture when warpimage_size changes
 #define TEXPREF_SKY				0x2000	// sky texture
 #define TEXPREF_TRANSPARENT		0x4000	// color 0 is transparent, odd - translucent, even - full value
 #define TEXPREF_HOLEY			0x8000	// color 0 is transparent

@@ -546,16 +546,16 @@ void Mod_LoadTextures (lump_t *l)
 				}
 				
 				//now create the warpimage, using dummy data from the hunk to create the initial image
-				Hunk_Alloc (gl_warpimage_size*gl_warpimage_size*4 * (tx->glow ? 2 : 1)); //make sure hunk is big enough so we don't reach an illegal address
+				Hunk_Alloc (warpimage_size*warpimage_size*4 * (tx->glow ? 2 : 1)); //make sure hunk is big enough so we don't reach an illegal address
 				
 				Hunk_FreeToLowMark (mark);
 				
 				sprintf (texturename, "%s_warp", texturename);
-				tx->warpbase = TexMgr_LoadTexture (loadmodel, texturename, gl_warpimage_size, gl_warpimage_size, SRC_RGBA, hunk_base, "", (uintptr_t)hunk_base, TEXPREF_NOPICMIP | TEXPREF_WARPIMAGE);
+				tx->warpbase = TexMgr_LoadTexture (loadmodel, texturename, warpimage_size, warpimage_size, SRC_RGBA, hunk_base, "", (uintptr_t)hunk_base, TEXPREF_NOPICMIP | TEXPREF_WARPIMAGE);
 				if (tx->glow)
 				{
 					sprintf (texturename, "%s_warp_glow", texturename);
-					tx->warpglow = TexMgr_LoadTexture (loadmodel, texturename, gl_warpimage_size, gl_warpimage_size, SRC_RGBA, hunk_base, "", (uintptr_t)hunk_base, TEXPREF_NOPICMIP | TEXPREF_WARPIMAGE);
+					tx->warpglow = TexMgr_LoadTexture (loadmodel, texturename, warpimage_size, warpimage_size, SRC_RGBA, hunk_base, "", (uintptr_t)hunk_base, TEXPREF_NOPICMIP | TEXPREF_WARPIMAGE);
 				}
 				
 				tx->update_warp = true;

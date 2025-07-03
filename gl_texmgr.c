@@ -61,7 +61,7 @@ float 	gl_texture_anisotropy = 1;
 
 GLint		gl_hardware_max_size = 1024; // just in case
 
-int		gl_warpimage_size = 256; // fitzquake has 512, for water warp
+int		warpimage_size = 256; // fitzquake has 512, for water warp
 
 #define	MAX_GLTEXTURES	4096 // orig was 1024, prev 2048
 gltexture_t	*active_gltextures, *free_gltextures;
@@ -937,17 +937,17 @@ void TexMgr_UploadWarpImage (void)
 	//
 	// make sure warpimage size is a power of two
 	//
-	gl_warpimage_size = TexMgr_SafeTextureSize((int)gl_warpimagesize.value);
+	warpimage_size = TexMgr_SafeTextureSize((int)gl_warpimagesize.value);
 
-	while (gl_warpimage_size*2 > vid.width) // *2 for glow
-		gl_warpimage_size >>= 1;
-	while (gl_warpimage_size > vid.height)
-		gl_warpimage_size >>= 1;
+	while (warpimage_size*2 > vid.width) // *2 for glow
+		warpimage_size >>= 1;
+	while (warpimage_size > vid.height)
+		warpimage_size >>= 1;
 
-	if (gl_warpimage_size != gl_warpimagesize.value)
-		Cvar_SetValueNoCallback ("gl_warpimagesize", gl_warpimage_size);
+	if (warpimage_size != gl_warpimagesize.value)
+		Cvar_SetValueNoCallback ("gl_warpimagesize", warpimage_size);
 
-	// ericw -- removed early exit if (gl_warpimage_size == oldsize).
+	// ericw -- removed early exit if (warpimage_size == oldsize).
 	// after reloads textures to source width/height, which might not match oldsize.
 	
 	//
@@ -955,15 +955,15 @@ void TexMgr_UploadWarpImage (void)
 	//
 	mark = Hunk_LowMark ();
 	
-	dummy = Hunk_Alloc (gl_warpimage_size*gl_warpimage_size*4);
+	dummy = Hunk_Alloc (warpimage_size*warpimage_size*4);
 
 	for (glt=active_gltextures; glt; glt=glt->next)
 	{
 		if (glt->flags & TEXPREF_WARPIMAGE)
 		{
 			GL_BindTexture (glt);
-			glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, gl_warpimage_size, gl_warpimage_size, 0, GL_RGBA, GL_UNSIGNED_BYTE, dummy);
-			glt->width = glt->height = gl_warpimage_size;
+			glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, warpimage_size, warpimage_size, 0, GL_RGBA, GL_UNSIGNED_BYTE, dummy);
+			glt->width = glt->height = warpimage_size;
 			
 			// set filter modes
 			GL_SetFilterModes (glt);
@@ -2295,15 +2295,15 @@ void TexMgr_ReloadTextures (void)
     
 	mark = Hunk_LowMark ();
 	
-	dummy = Hunk_Alloc (gl_warpimage_size*gl_warpimage_size*4);
+	dummy = Hunk_Alloc (warpimage_size*warpimage_size*4);
     
 	for (glt=active_gltextures; glt; glt=glt->next)
 	{
 		if (glt->flags & TEXPREF_WARPIMAGE)
 		{
 			GL_BindTexture (glt);
-			glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, gl_warpimage_size, gl_warpimage_size, 0, GL_RGBA, GL_UNSIGNED_BYTE, dummy);
-			glt->width = glt->height = gl_warpimage_size;
+			glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, warpimage_size, warpimage_size, 0, GL_RGBA, GL_UNSIGNED_BYTE, dummy);
+			glt->width = glt->height = warpimage_size;
             
             // set filter modes
             GL_SetFilterModes (glt);
