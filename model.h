@@ -490,6 +490,8 @@ typedef struct model_s
 
 } model_t;
 
+extern	model_t	*loadmodel;
+
 //============================================================================
 
 void	Mod_Init (void);

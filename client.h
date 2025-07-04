@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // client.h
 
-// R_RocketTrail types (self-documenting code!)
+// R_RocketTrail types
 #define RT_ROCKET			0
 #define RT_GRENADE			1
 #define RT_GIB				2
@@ -27,6 +27,27 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define RT_ZOMGIB			4
 #define RT_KNIGHT			5
 #define RT_VORE				6
+
+
+// particles stuff
+
+typedef enum
+{
+	pt_static, pt_grav, pt_slowgrav, pt_fire, pt_explode, pt_explode2, pt_blob, pt_blob2
+} ptype_t;
+
+typedef struct particle_s
+{
+// driver-usable fields
+	vec3_t		org;
+	byte		color;
+// drivers never touch the following fields
+	struct particle_s	*next;
+	vec3_t		vel;
+	float		ramp;
+	float		die;
+	ptype_t		type;
+} particle_t;
 
 
 typedef struct

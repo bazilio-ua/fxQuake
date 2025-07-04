@@ -252,28 +252,8 @@ typedef struct
 	float	sl, tl, sh, th;
 } glpic_t;
 
-// particles stuff
 
-typedef enum 
-{
-	pt_static, pt_grav, pt_slowgrav, pt_fire, pt_explode, pt_explode2, pt_blob, pt_blob2
-} ptype_t;
-
-typedef struct particle_s
-{
-// driver-usable fields
-	vec3_t		org;
-	byte		color;
-// drivers never touch the following fields
-	struct particle_s	*next;
-	vec3_t		vel;
-	float		ramp;
-	float		die;
-	ptype_t		type;
-} particle_t;
-
-
-extern	model_t	*loadmodel;
+//============================================================================
 
 // vid_*gl*.c
 void GL_BeginRendering (int *x, int *y, int *width, int *height);
