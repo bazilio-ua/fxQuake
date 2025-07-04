@@ -229,8 +229,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "sbar.h"
 #include "sound.h"
 #include "render.h"
-#include "client.h"
 #include "progs.h"
+#include "client.h"
 #include "server.h"
 
 #include "model.h"
