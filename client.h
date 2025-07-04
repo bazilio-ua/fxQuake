@@ -363,6 +363,7 @@ void CL_Signon1 (void);
 void CL_Signon2 (void);
 void CL_Signon3 (void);
 void CL_Signon4 (void);
+void CL_SignonReply (void);
 
 void CL_Reconnect (void);
 void CL_Disconnect (void);
@@ -396,11 +397,7 @@ void CL_AccumulateCmd (void);
 void CL_SendCmd (void);
 void CL_SendMove (usercmd_t *cmd);
 
-void CL_ParseTEnt (void);
-void CL_UpdateTEnts (void);
-
 void CL_ClearState (void);
-
 
 int  CL_ReadFromServer (void);
 void CL_WriteToServer (usercmd_t *cmd);
@@ -443,7 +440,8 @@ void V_SetContentsColor (int contents);
 // cl_tent.c
 //
 void CL_InitTEnts (void);
-void CL_SignonReply (void);
+void CL_ParseTEnt (void);
+void CL_UpdateTEnts (void);
 
 //
 // chase.c
