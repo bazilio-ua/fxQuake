@@ -202,7 +202,7 @@ R_Bloom_SamplePass
 sample size workspace coordinates
 =================
 */
-static inline void R_Bloom_SamplePass (int x, int y)
+void R_Bloom_SamplePass (int x, int y)
 {
 	glBegin(GL_QUADS);
 	glTexCoord2f(0, sample_texture_coord_height);
@@ -221,7 +221,7 @@ static inline void R_Bloom_SamplePass (int x, int y)
 R_Bloom_Quad
 =================
 */
-static inline void R_Bloom_Quad (int x, int y, int width, int height, float texwidth, float texheight)
+void R_Bloom_Quad (int x, int y, int width, int height, float texwidth, float texheight)
 {
 	glBegin(GL_QUADS);
 	glTexCoord2f(0, texheight);

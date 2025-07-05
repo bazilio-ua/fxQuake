@@ -617,7 +617,7 @@ void VID_DescribeModes_f (void)
 }
 
 
-static int vmodecompare(const void *inmode1, const void *inmode2)
+int vmodecompare(const void *inmode1, const void *inmode2)
 {
 	// sort lowest res to highest
 	const vmode_t *mode1 = (vmode_t *)inmode1;

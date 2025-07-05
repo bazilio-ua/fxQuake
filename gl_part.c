@@ -168,7 +168,7 @@ void R_ClearParticles (void)
 R_AllocParticle
 ===============
 */
-static inline particle_t *R_AllocParticle (void)
+particle_t *R_AllocParticle (void)
 {
 	particle_t *p;
 	

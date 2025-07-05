@@ -946,7 +946,7 @@ void R_PolyBlend (void)
 SignbitsForPlane
 ===============
 */
-static inline int SignbitsForPlane (mplane_t *out)
+int SignbitsForPlane (mplane_t *out)
 {
 	int	bits, j;
 

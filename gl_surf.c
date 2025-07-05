@@ -156,7 +156,7 @@ void R_AddToAlpha (int type, vec_t dist, void *data, model_t *model, entity_t *e
 	gl_alphalist_num++;
 }
 
-static inline int alphadistcompare (const void *arg1, const void *arg2) 
+int alphadistcompare (const void *arg1, const void *arg2)
 {
 	// Sort in descending dist order, i.e. back to front
 	// Sorted in reverse order
