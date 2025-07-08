@@ -163,7 +163,7 @@ typedef struct msurface_s
 	float		mins[3];		// johnfitz -- for frustum culling
 	float		maxs[3];		// johnfitz -- for frustum culling
 
-    float		alpha;			// alpha value
+	float		alpha;			// alpha value
 	float		midp[3];		// for alpha sorting
 
 	mplane_t	*plane;
@@ -306,7 +306,6 @@ typedef struct
 	int					maxheight;
 	int					numframes;
 	float				beamlength;		// remove?
-	void				*cachespot;		// remove?
 	mspriteframedesc_t	frames[1];
 } msprite_t;
 
