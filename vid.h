@@ -30,7 +30,7 @@ typedef struct vrect_s
 
 typedef struct
 {
-    byte            *colormap;        // 256 * VID_GRADES size
+	byte			*colormap;        // 256 * VID_GRADES size
 	int				width;		
 	int				height;
 	int				refreshrate;
@@ -64,9 +64,6 @@ void	VID_Shutdown (void);
 void	VID_Toggle (void);
 // Called by alt-return key binding
 
-//int		VID_SetMode (int modenum);
-// sets the mode; only used by the Quake engine for resetting to mode 0 (the
-// base mode) on memory allocation failures
 
 void VID_MenuInit (void); //johnfitz
 void VID_MenuCmd (void); //johnfitz
