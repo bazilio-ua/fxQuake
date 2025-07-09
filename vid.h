@@ -30,7 +30,7 @@ typedef struct vrect_s
 
 typedef struct
 {
-	byte			*colormap;        // 256 * VID_GRADES size
+	byte			*colormap;		// 256 * VID_GRADES size
 	int				width;		
 	int				height;
 	int				refreshrate;
