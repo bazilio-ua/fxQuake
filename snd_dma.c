@@ -61,6 +61,9 @@ sfx_t		*ambient_sfx[NUM_AMBIENTS];
 
 int sound_started=0;
 
+cvar_t bgmvolume = {"bgmvolume", "1", CVAR_ARCHIVE};
+cvar_t bgmtype = {"bgmtype", "cd", CVAR_ARCHIVE};   // cd or none
+
 cvar_t volume = {"volume", "0.7", CVAR_ARCHIVE};
 cvar_t nosound = {"nosound", "0", CVAR_NONE};
 cvar_t precache = {"precache", "1", CVAR_NONE};
@@ -158,6 +161,9 @@ void S_Init (void)
 	Cmd_AddCommand ("soundlist", S_SoundList);
 	Cmd_AddCommand ("soundinfo", S_SoundInfo_f);
 
+	Cvar_RegisterVariable (&bgmvolume);
+	Cvar_RegisterVariable (&bgmtype);
+	
 	Cvar_RegisterVariable (&nosound);
 	Cvar_RegisterVariable (&volume);
 	Cvar_RegisterVariable (&precache);

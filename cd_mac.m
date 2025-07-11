@@ -30,9 +30,6 @@ AudioUnit audioUnit;
 AudioFileID audioFileId;
 SInt64 filePosition = 0;
 
-cvar_t bgmvolume = {"bgmvolume", "1", CVAR_ARCHIVE};
-cvar_t bgmtype = {"bgmtype", "cd", CVAR_ARCHIVE};   // cd or none
-
 static qboolean cdValid = false;
 static qboolean	playing = false;
 static qboolean	wasPlaying = false;
@@ -566,9 +563,6 @@ int CDAudio_Init(void)
         return -1;
     
     Cmd_AddCommand ("cd", CD_f);
-    
-    Cvar_RegisterVariable (&bgmvolume);
-	Cvar_RegisterVariable (&bgmtype);
     
     Boolean audioGraphIsRunning = NO;
     status = AUGraphIsRunning(audioGraph, &audioGraphIsRunning);

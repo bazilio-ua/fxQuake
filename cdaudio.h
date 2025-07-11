@@ -19,9 +19,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // cdaudio.h
 
-extern	cvar_t bgmvolume;
-extern	cvar_t bgmtype;
-
 int CDAudio_Init(void);
 void CDAudio_Play(byte track, qboolean looping);
 void CDAudio_Stop(void);
