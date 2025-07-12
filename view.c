@@ -56,8 +56,8 @@ cvar_t	v_ipitch_level = {"v_ipitch_level", "0.3", CVAR_NONE};
 cvar_t	v_idlescale = {"v_idlescale", "0", CVAR_NONE};
 
 cvar_t	crosshair = {"crosshair", "0", CVAR_ARCHIVE};
-cvar_t	scr_crossx = {"scr_crossx", "0", CVAR_NONE};
-cvar_t	scr_crossy = {"scr_crossy", "0", CVAR_NONE};
+cvar_t	cl_crossx = {"cl_crossx", "0", CVAR_NONE};
+cvar_t	cl_crossy = {"cl_crossy", "0", CVAR_NONE};
 
 cvar_t	gl_cshiftpercent = {"gl_cshiftpercent", "100", CVAR_NONE};
 
@@ -1098,8 +1098,8 @@ void V_Init (void)
 
 	Cvar_RegisterVariable (&v_idlescale);
 	Cvar_RegisterVariable (&crosshair);
-	Cvar_RegisterVariable (&scr_crossx);
-	Cvar_RegisterVariable (&scr_crossy);
+	Cvar_RegisterVariable (&cl_crossx);
+	Cvar_RegisterVariable (&cl_crossy);
 	Cvar_RegisterVariable (&gl_cshiftpercent);
 	Cvar_RegisterVariable (&v_contentblend);
 
