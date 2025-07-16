@@ -215,7 +215,10 @@ void IN_MouseMove (usercmd_t *cmd)
 		cl.viewangles[YAW] -= m_yaw.value * mouse_x;
 	
 	if (in_mlook.state & 1)
-		V_StopPitchDrift ();
+	{
+		if (mouse_x || mouse_y) //jkrige - mlook and lookspring fix
+			V_StopPitchDrift ();
+	}
     
 	if ( (in_mlook.state & 1) && !(in_strafe.state & 1))
 	{
