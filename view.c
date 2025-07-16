@@ -44,7 +44,7 @@ cvar_t	cl_bobup = {"cl_bobup","0.5", CVAR_NONE};
 cvar_t	v_kicktime = {"v_kicktime", "0.5", CVAR_NONE};
 cvar_t	v_kickroll = {"v_kickroll", "0.6", CVAR_NONE};
 cvar_t	v_kickpitch = {"v_kickpitch", "0.6", CVAR_NONE};
-cvar_t	v_gunkick = {"v_gunkick", "1", CVAR_NONE};
+cvar_t	v_gunkick = {"v_gunkick", "1", CVAR_NONE}; //johnfitz
 
 cvar_t	v_iyaw_cycle = {"v_iyaw_cycle", "2", CVAR_NONE};
 cvar_t	v_iroll_cycle = {"v_iroll_cycle", "0.5", CVAR_NONE};
@@ -67,7 +67,7 @@ float	v_dmg_time, v_dmg_roll, v_dmg_pitch;
 
 extern	int			in_forward, in_forward2, in_back;
 
-vec3_t	v_punchangles[2]; // copied from cl.punchangle.  0 is current, 1 is previous value. never the same unless map just loaded
+vec3_t	v_punchangles[2]; //johnfitz -- copied from cl.punchangle.  0 is current, 1 is previous value. never the same unless map just loaded
 
 /*
 ===============
@@ -92,7 +92,7 @@ float V_CalcRoll (vec3_t angles, vec3_t velocity)
 //	if (cl.inwater)
 //		value *= 6;
 
-	if (side < cl_rollspeed.value && cl_rollspeed.value)
+	if (side < cl_rollspeed.value)
 		side = side * value / cl_rollspeed.value;
 	else
 		side = value;
@@ -113,14 +113,14 @@ float V_CalcBob (void)
 	float	bob;
 	float	cycle;
 
-	if (!cl_bobcycle.value)
+	if (!cl_bobcycle.value) // avoid divide by zero, don't bob
 		return 0;
 
 	cycle = cl.time - (int)(cl.time/cl_bobcycle.value)*cl_bobcycle.value;
 	cycle /= cl_bobcycle.value;
-	if (cycle < cl_bobup.value && cl_bobup.value)
+	if (cycle < cl_bobup.value)
 		cycle = M_PI * cycle / cl_bobup.value;
-	else if (cl_bobup.value != 1)
+	else
 		cycle = M_PI + M_PI*(cycle-cl_bobup.value)/(1.0 - cl_bobup.value);
 
 // bob is proportional to velocity in the xy plane
