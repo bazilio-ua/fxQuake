@@ -494,6 +494,7 @@ void V_CalcBlend (void)
 		if (!a2)
 			continue;
 		a = a + a2*(1-a);
+//Con_Printf ("j:%i a:%f\n", j, a);
 		a2 = a2/a;
 		r = r*(1-a2) + cl.cshifts[j].destcolor[0]*a2;
 		g = g*(1-a2) + cl.cshifts[j].destcolor[1]*a2;
