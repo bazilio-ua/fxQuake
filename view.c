@@ -486,7 +486,7 @@ void V_CalcBlend (void)
 		if (!gl_cshiftpercent.value)
 			continue;
 
-		// only apply leaf contents color shifts during intermission
+		//johnfitz -- only apply leaf contents color shifts during intermission
 		if (cl.intermission && j != CSHIFT_CONTENTS)
 			continue;
 
