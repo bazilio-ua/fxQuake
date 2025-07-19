@@ -909,7 +909,7 @@ void V_CalcRefdef (void)
 	vec3_t		angles;
 	float		bob;
 	static float oldz = 0;
-	static vec3_t punch = {0,0,0}; //johnfitz -- lerped kick
+	static vec3_t punchangle = {0,0,0}; //johnfitz -- lerped kick
 	float delta; //johnfitz -- lerped kick
 
 	V_DriftPitch ();
@@ -994,21 +994,21 @@ void V_CalcRefdef (void)
 // set up the refresh position
 	if (v_gunkick.value == 1) //original quake kick
 		VectorAdd (r_refdef.viewangles, cl.punchangle, r_refdef.viewangles);
-	if (v_gunkick.value == 2) //johnfitz -- lerped kick
+	else if (v_gunkick.value == 2) //johnfitz -- lerped kick
 	{
 		for (i=0; i<3; i++)
-			if (punch[i] != v_punchangles[0][i])
+			if (punchangle[i] != v_punchangles[0][i])
 			{
 				// speed determined by how far we need to lerp in 1/10th of a second
 				delta = (v_punchangles[0][i]-v_punchangles[1][i]) * host_frametime * 10;
 
 				if (delta > 0)
-					punch[i] = min(punch[i]+delta, v_punchangles[0][i]);
+					punchangle[i] = min(punchangle[i]+delta, v_punchangles[0][i]);
 				else if (delta < 0)
-					punch[i] = max(punch[i]+delta, v_punchangles[0][i]);
+					punchangle[i] = max(punchangle[i]+delta, v_punchangles[0][i]);
 			}
 
-		VectorAdd (r_refdef.viewangles, punch, r_refdef.viewangles);
+		VectorAdd (r_refdef.viewangles, punchangle, r_refdef.viewangles);
 	}
 
 // smooth out stair step ups
