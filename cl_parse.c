@@ -1306,24 +1306,14 @@ void CL_ParseServerMessage (void)
 			cl.intermission = 1;
 			cl.completed_time = cl.time;
 			vid.recalc_refdef = true;	// go to full screen
-			if (cls.demoplayback)
-			{
-				// Fix camera view angles (better way to do it?)
-				entity_t *ent = &cl_entities[cl.viewentity];
-				VectorCopy (ent->msg_angles[0], ent->angles);
-			}
+			V_RestoreAngles ();
 			break;
 			
 		case svc_finale:
 			cl.intermission = 2;
 			cl.completed_time = cl.time;
 			vid.recalc_refdef = true;	// go to full screen
-			if (cls.demoplayback)
-			{
-				// Fix camera view angles (better way to do it?)
-				entity_t *ent = &cl_entities[cl.viewentity];
-				VectorCopy (ent->msg_angles[0], ent->angles);
-			}
+			V_RestoreAngles ();
 			SCR_CenterPrint (MSG_ReadString (net_message));
 			break;
 			
@@ -1331,12 +1321,7 @@ void CL_ParseServerMessage (void)
 			cl.intermission = 3;
 			cl.completed_time = cl.time;
 			vid.recalc_refdef = true;	// go to full screen
-			if (cls.demoplayback)
-			{
-				// Fix camera view angles (better way to do it?)
-				entity_t *ent = &cl_entities[cl.viewentity];
-				VectorCopy (ent->msg_angles[0], ent->angles);
-			}
+			V_RestoreAngles ();
 			SCR_CenterPrint (MSG_ReadString (net_message));
 			break;
 			
