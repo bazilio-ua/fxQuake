@@ -44,7 +44,7 @@ cvar_t	cl_bobup = {"cl_bobup","0.5", CVAR_NONE};
 cvar_t	v_kicktime = {"v_kicktime", "0.5", CVAR_NONE};
 cvar_t	v_kickroll = {"v_kickroll", "0.6", CVAR_NONE};
 cvar_t	v_kickpitch = {"v_kickpitch", "0.6", CVAR_NONE};
-cvar_t	v_gunkick = {"v_gunkick", "1", CVAR_NONE}; //johnfitz
+cvar_t	v_gunkick = {"v_gunkick", "1", CVAR_ARCHIVE}; //johnfitz
 
 cvar_t	v_iyaw_cycle = {"v_iyaw_cycle", "2", CVAR_NONE};
 cvar_t	v_iroll_cycle = {"v_iroll_cycle", "0.5", CVAR_NONE};
@@ -992,7 +992,9 @@ void V_CalcRefdef (void)
 	view->scale = ENTSCALE_DEFAULT;
 
 // set up the refresh position
-	if (v_gunkick.value) //johnfitz -- lerped kick
+	if (v_gunkick.value == 1) //original quake kick
+		VectorAdd (r_refdef.viewangles, cl.punchangle, r_refdef.viewangles);
+	if (v_gunkick.value == 2) //johnfitz -- lerped kick
 	{
 		for (i=0; i<3; i++)
 			if (punch[i] != v_punchangles[0][i])
@@ -1117,7 +1119,7 @@ void V_Init (void)
 	Cvar_RegisterVariable (&v_kicktime);
 	Cvar_RegisterVariable (&v_kickroll);
 	Cvar_RegisterVariable (&v_kickpitch);
-	Cvar_RegisterVariable (&v_gunkick);	
+	Cvar_RegisterVariable (&v_gunkick); //johnfitz
 	
 	Cvar_RegisterVariableCallback (&v_gamma, V_UpdateGamma);
 	Cvar_RegisterVariableCallback (&v_contrast, V_UpdateGamma);
