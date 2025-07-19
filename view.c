@@ -909,8 +909,8 @@ void V_CalcRefdef (void)
 	vec3_t		angles;
 	float		bob;
 	static float oldz = 0;
-	static vec3_t punch = {0,0,0}; // GL lerped v_gunkick
-	float delta; // GL lerped v_gunkick
+	static vec3_t punch = {0,0,0}; //johnfitz -- lerped kick
+	float delta; //johnfitz -- lerped kick
 
 	V_DriftPitch ();
 
@@ -992,7 +992,7 @@ void V_CalcRefdef (void)
 	view->scale = ENTSCALE_DEFAULT;
 
 // set up the refresh position
-	if (v_gunkick.value) // lerped kick for GL
+	if (v_gunkick.value) //johnfitz -- lerped kick
 	{
 		for (i=0; i<3; i++)
 			if (punch[i] != v_punchangles[0][i])
@@ -1010,7 +1010,7 @@ void V_CalcRefdef (void)
 	}
 
 // smooth out stair step ups
-	if (!cl.noclip_anglehack && cl.onground && ent->origin[2] - oldz > 0)
+	if (!cl.noclip_anglehack && cl.onground && ent->origin[2] - oldz > 0) //johnfitz -- added exception for noclip
 	//FIXME: noclip_anglehack is set on the server, so in a nonlocal game this won't work.
 	{
 		float steptime;
@@ -1020,7 +1020,7 @@ void V_CalcRefdef (void)
 			//FIXME I_Error ("steptime < 0");
 			steptime = 0;
 
-		oldz += steptime * 80; // orig was 80 (now 160)
+		oldz += steptime * 80;
 		if (oldz > ent->origin[2])
 			oldz = ent->origin[2];
 		if (ent->origin[2] - oldz > 12)

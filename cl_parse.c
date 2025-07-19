@@ -765,7 +765,7 @@ void CL_ParseClientdata (void)
 			cl.mvelocity[0][i] = 0;
 	}
 
-	// update v_punchangles
+	//johnfitz -- update v_punchangles
 	if (v_punchangles[0][0] != cl.punchangle[0] || v_punchangles[0][1] != cl.punchangle[1] || v_punchangles[0][2] != cl.punchangle[2])
 	{
 		VectorCopy (v_punchangles[0], v_punchangles[1]);
