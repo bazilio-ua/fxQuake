@@ -2056,6 +2056,9 @@ void COM_Game_f (void)
 		LOG_Init ();
 		History_Init ();
 
+		if (nehahra)
+			Host_AddExtCommands ();
+		
 		// clear out and reload appropriate data
 		Cache_Flush ();
 		Mod_ResetAll ();

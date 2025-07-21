@@ -609,8 +609,8 @@ void	Cmd_AddCommand (char *cmd_name, xcommand_t function)
 	cmd_function_t	*cmd;
 	cmd_function_t	*cursor,*prev; // sorted list insert
 	
-	if (host_initialized)	// because hunk allocation would get stomped
-		Sys_Error ("Cmd_AddCommand after host_initialized");
+//	if (host_initialized)	// because hunk allocation would get stomped
+//		Sys_Error ("Cmd_AddCommand after host_initialized");
 		
 // fail if the command is a variable name
 	if (Cvar_VariableString(cmd_name)[0])
@@ -629,7 +629,10 @@ void	Cmd_AddCommand (char *cmd_name, xcommand_t function)
 		}
 	}
 
-	cmd = Hunk_AllocName (sizeof(cmd_function_t), "addcmd");
+	if (host_initialized)
+		cmd = Z_Malloc (sizeof(cmd_function_t));
+	else
+		cmd = Hunk_AllocName (sizeof(cmd_function_t), "addcmd");
 	cmd->name = cmd_name;
 	cmd->function = function;
 

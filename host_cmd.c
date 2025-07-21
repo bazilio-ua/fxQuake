@@ -2280,6 +2280,27 @@ void Host_InitFileList (void)
 
 /*
 ==================
+Host_AddExtCommands
+
+extra command Nehahra
+==================
+*/
+void Host_AddExtCommands (void)
+{
+	if (!Cmd_Exists ("max"))
+		Cmd_AddCommand ("max", Host_God_f);
+	if (!Cmd_Exists ("monster"))
+		Cmd_AddCommand ("monster", Host_Notarget_f);
+	if (!Cmd_Exists ("scrag"))
+		Cmd_AddCommand ("scrag", Host_Fly_f);
+	if (!Cmd_Exists ("wraith"))
+		Cmd_AddCommand ("wraith", Host_Noclip_f);
+	if (!Cmd_Exists ("gimme"))
+		Cmd_AddCommand ("gimme", Host_Give_f);
+}
+
+/*
+==================
 Host_InitCommands
 ==================
 */
@@ -2295,9 +2316,9 @@ void Host_InitCommands (void)
 	Cmd_AddCommand ("mapname", Host_Mapname_f);
 	Cmd_AddCommand ("status", Host_Status_f);
 	Cmd_AddCommand ("quit", Host_Quit_f);
-	Cmd_AddCommand (nehahra ? "max" : "god", Host_God_f);
-	Cmd_AddCommand (nehahra ? "monster" : "notarget", Host_Notarget_f);
-	Cmd_AddCommand (nehahra ? "scrag" : "fly", Host_Fly_f);
+	Cmd_AddCommand ("god", Host_God_f);
+	Cmd_AddCommand ("notarget", Host_Notarget_f);
+	Cmd_AddCommand ("fly", Host_Fly_f);
 	Cmd_AddCommand ("map", Host_Map_f);
 	Cmd_AddCommand ("restart", Host_Restart_f);
 	Cmd_AddCommand ("changelevel", Host_Changelevel_f);
@@ -2307,7 +2328,7 @@ void Host_InitCommands (void)
 	Cmd_AddCommand ("disconnect", Host_Disconnect_f);
 	
 	Cmd_AddCommand ("name", Host_Name_f);
-	Cmd_AddCommand (nehahra ? "wraith" : "noclip", Host_Noclip_f);
+	Cmd_AddCommand ("noclip", Host_Noclip_f);
 	Cmd_AddCommand ("version", Host_Version_f);
 
 	Cmd_AddCommand ("say", Host_Say_f);
@@ -2323,7 +2344,7 @@ void Host_InitCommands (void)
 	Cmd_AddCommand ("ping", Host_Ping_f);
 	Cmd_AddCommand ("load", Host_Loadgame_f);
 	Cmd_AddCommand ("save", Host_Savegame_f);
-	Cmd_AddCommand (nehahra ? "gimme" : "give", Host_Give_f);
+	Cmd_AddCommand ("give", Host_Give_f);
 
 	Cmd_AddCommand ("startdemos", Host_Startdemos_f);
 	Cmd_AddCommand ("demos", Host_Demos_f);
@@ -2341,5 +2362,8 @@ void Host_InitCommands (void)
 
 	Cmd_AddCommand ("setpos", Host_SetPos_f); //QuakeSpasm
     
-    Cmd_AddCommand ("error", Host_Sys_Error_f); // error console command
+	Cmd_AddCommand ("error", Host_Sys_Error_f); // error console command
+	
+	if (nehahra)
+		Host_AddExtCommands ();
 }
