@@ -291,7 +291,7 @@ Returns a string describing *data in a type specific manner
 */
 char *PR_ValueString (etype_t type, eval_t *val)
 {
-	static char	line[MAX_VALUE];
+	static char	line[512];
 	ddef_t		*def;
 	dfunction_t	*f;
 
@@ -343,7 +343,7 @@ Easier to parse than PR_ValueString
 */
 char *PR_UglyValueString (etype_t type, eval_t *val)
 {
-	static char	line[MAX_VALUE];
+	static char	line[1024];
 	ddef_t		*def;
 	dfunction_t	*f;
 
@@ -396,7 +396,7 @@ char *PR_GlobalString (int ofs)
 	int	    i;
 	ddef_t	    *def;
 	void	    *val;
-	static char line[MAX_VALUE];
+	static char	line[512];
 
 	val = (void *)&pr_globals[ofs];
 	def = ED_GlobalAtOfs(ofs);
@@ -425,7 +425,7 @@ char *PR_GlobalStringNoContents (int ofs)
 {
 	int	    i;
 	ddef_t	    *def;
-	static char line[MAX_VALUE];
+	static char	line[512];
 
 	def = ED_GlobalAtOfs(ofs);
 	if (!def)
@@ -676,7 +676,7 @@ ED_ParseGlobals
 */
 void ED_ParseGlobals (char *data)
 {
-	char	keyname[MAX_KEY];
+	char	keyname[64];
 	ddef_t	*key;
 
 	while (1)
@@ -839,7 +839,7 @@ char *ED_ParseEdict (char *data, edict_t *ent)
 	ddef_t	    *key;
 	qboolean    anglehack;
 	qboolean    init;
-	char	    keyname[MAX_KEY];
+	char		keyname[256];
 	int	    n;
 
 	init = false;

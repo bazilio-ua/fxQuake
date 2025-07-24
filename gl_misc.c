@@ -298,8 +298,8 @@ called at map load
 */
 void R_ParseWorldspawn (void)
 {
-	char  key[MAX_KEY], value[MAX_VALUE];
-	char  *data;
+	char	key[128], value[4096];
+	char	*data;
 	int i;
 
 	// initially no skybox
