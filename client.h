@@ -329,6 +329,7 @@ extern	cvar_t	cl_run;
 extern	cvar_t	cl_upspeed;
 extern	cvar_t	cl_forwardspeed;
 extern	cvar_t	cl_sidespeed;
+extern	cvar_t	cl_backspeed; // keep for compatibility
 
 extern	cvar_t	cl_movespeedkey;
 

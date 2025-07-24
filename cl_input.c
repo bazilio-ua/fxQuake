@@ -245,6 +245,7 @@ cvar_t	cl_run = {"cl_run","0", CVAR_ARCHIVE}; // adapted from q2
 cvar_t	cl_upspeed = {"cl_upspeed","200", CVAR_NONE};
 cvar_t	cl_forwardspeed = {"cl_forwardspeed","200", CVAR_NONE};
 cvar_t	cl_sidespeed = {"cl_sidespeed","200", CVAR_NONE};
+cvar_t	cl_backspeed = {"cl_backspeed","200", CVAR_NONE}; // keep for compatibility
 
 cvar_t	cl_movespeedkey = {"cl_movespeedkey","2.0", CVAR_NONE};
 
