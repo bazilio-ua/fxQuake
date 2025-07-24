@@ -439,7 +439,6 @@ void Mod_LoadTextures (lump_t *l)
 	texture_t	*altanims[10];
 	dmiptexlump_t *m;
 	char		texturename[64];
-	char		texname[16 + 1];
 	int			nummiptex;
 	uintptr_t	offset; //johnfitz
 	int			mark;
@@ -477,27 +476,18 @@ void Mod_LoadTextures (lump_t *l)
 		mt->height = LittleLong (mt->height);
 		for (j=0 ; j<MIPLEVELS ; j++)
 			mt->offsets[j] = LittleLong (mt->offsets[j]);
-
-		// make sure texname is terminated
-		memset (texname, 0, sizeof(texname));
-		memcpy (texname, mt->name, sizeof(texname) - 1);
-		if (!texname[0]) // check if missing texname
-		{
-			sprintf (texname, "unnamed%d", i);
-			Con_Warning ("Mod_LoadTextures: unnamed texture in %s, renaming to %s\n", loadmodel->name, texname);
-		}
 		
 		if (mt->width == 0 || mt->height == 0)
-			Con_Warning ("Mod_LoadTextures: zero sized texture '%s' in %s\n", texname, loadmodel->name);
+			Con_Warning ("Mod_LoadTextures: zero sized texture '%s' in %s\n", mt->name, loadmodel->name);
 		
 		if ( (mt->width & 15) || (mt->height & 15) )
-			Con_Warning ("Mod_LoadTextures: texture '%s' is not 16 aligned (%dx%d) in %s\n", texname, mt->width, mt->height, loadmodel->name); // was Host_Error
+			Con_Warning ("Mod_LoadTextures: texture '%s' is not 16 aligned (%dx%d) in %s\n", mt->name, mt->width, mt->height, loadmodel->name); // was Host_Error
 
 		pixels = mt->width*mt->height/64*85;
 		tx = Hunk_AllocName (sizeof(texture_t) +pixels, loadname );
 		loadmodel->textures[i] = tx;
 
-		strcpy (tx->name, texname);
+		memcpy (tx->name, mt->name, sizeof(tx->name));
 		tx->width = mt->width;
 		tx->height = mt->height;
 		for (j=0 ; j<MIPLEVELS ; j++)
