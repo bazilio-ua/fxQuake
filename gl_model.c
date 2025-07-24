@@ -829,7 +829,7 @@ void Mod_LoadVisibility (lump_t *l)
 
 					Con_DPrintf ("Loaded external visibility file %s\n", visfilename);
 					vispatch.datalen = LittleLong(vispatch.datalen);
-					Con_DPrintf ("vispatch file data lenght %i bytes\n", vispatch.datalen);
+					Con_DPrintf ("vispatch file data length %i bytes\n", vispatch.datalen);
 
 					// get visibility data length
 					fread (&vispatch.vislen, 1, sizeof(int), f);
@@ -867,7 +867,7 @@ void Mod_LoadVisibility (lump_t *l)
 				else if (!match && hlen == VISPATCH_MAPNAME_IDLEN)
 					Con_DPrintf ("Not match .vis file header mapname (%s should be %s)\n", vispatch.mapname, loadmapname);
 				else
-					Con_DPrintf ("Wrong .vis file header lenght (%d should be %d)\n", hlen, VISPATCH_HEADER_LEN);
+					Con_DPrintf ("Wrong .vis file header length (%d should be %d)\n", hlen, VISPATCH_HEADER_LEN);
 			}
 			else
 				Con_DPrintf ("Ignoring invalid .vis file. Doing standard vis.\n");
