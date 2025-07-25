@@ -277,6 +277,7 @@ void R_BloomBlend (void);
 void R_StoreEfrags (efrag_t **efrags);
 
 // gl_fog.c
+void R_FogReset (void);
 void R_FogUpdate (float density, float red, float green, float blue, float time);
 void R_FogParseServerMessage (void);
 void R_FogParseServerMessage2 (void);

@@ -308,8 +308,8 @@ void R_ParseWorldspawn (void)
 	for (i=0; i<6; i++)
 		skyboxtextures[i] = NULL;
 
-	// initially no fog enabled
-	Cvar_SetValue ("gl_fogenable", 0);
+	// initially no fog
+	R_FogReset ();
 
 	// initially no wateralpha
 	globalwateralpha = 0.0;
