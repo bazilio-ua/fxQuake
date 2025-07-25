@@ -78,8 +78,12 @@ qboolean R_SetAlphaSurface(msurface_t *s, float alpha)
 {
     if (alpha < 1.0) {
         // do nothing
-    } else if (s->flags & SURF_DRAWALPHA) { // TODO: trans 33/66 values
+    } else if (s->flags & SURF_DRAWALPHA) {
         alpha = 0.5f;
+	} else if (s->flags & SURF_TRANS33) {
+		alpha = 0.33f;
+	} else if (s->flags & SURF_TRANS66) {
+		alpha = 0.66f;
     } else if (s->flags & SURF_DRAWTURB) {
         alpha = R_GetTurbAlpha(s);
     }
@@ -105,7 +109,7 @@ float R_GetTurbAlpha (msurface_t *s)
 		else if (s->flags & SURF_DRAWSLIME)
 			alpha = CLAMP(0.0, r_slimealpha.value, 1.0);
 		else if (s->flags & SURF_DRAWTELEPORT)
-			alpha = CLAMP(0.0, r_teleportalpha.value, 1.0);
+			alpha = CLAMP(0.0, r_telealpha.value, 1.0);
 	}
 	
 	if (s->flags & SURF_DRAWWATER)

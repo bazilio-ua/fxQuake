@@ -125,7 +125,7 @@ void R_Init (void)
 	Cvar_RegisterVariable (&r_lockalpha);
 	Cvar_RegisterVariable (&r_lavaalpha);
 	Cvar_RegisterVariable (&r_slimealpha);
-	Cvar_RegisterVariable (&r_teleportalpha);
+	Cvar_RegisterVariable (&r_telealpha);
 	Cvar_RegisterVariable (&r_litwater);
 	Cvar_RegisterVariable (&r_noalphasort);
 	Cvar_RegisterVariable (&r_dynamic);

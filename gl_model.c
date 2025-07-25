@@ -1360,6 +1360,7 @@ void Mod_SetDrawingFlags (msurface_t *out)
 			Mod_PolyForUnlitSurface (out);
 		}
 	}
+	// TODO: check textures (name?) for SURF_DRAWALPHA|SURF_TRANSLUCENT|SURF_TRANS33|SURF_TRANS66 flags
 }
 
 /*

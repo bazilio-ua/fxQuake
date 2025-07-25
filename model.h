@@ -116,7 +116,7 @@ typedef struct texture_s
 #define	SURF_PLANEBACK		2
 #define	SURF_DRAWSKY		4
 #define SURF_DRAWSPRITE		8
-#define SURF_DRAWTURB		0x10
+#define SURF_DRAWTURB		0x10 // turbulent water warp
 #define SURF_DRAWTILED		0x20
 #define SURF_DRAWBACKGROUND	0x40
 #define SURF_UNDERWATER		0x80
@@ -129,6 +129,8 @@ typedef struct texture_s
 #define SURF_DRAWTELEPORT	0x4000
 #define SURF_DRAWWATER		0x8000
 #define SURF_DRAWHOLEY		0x10000 // EER1 (fence)
+#define SURF_TRANS33		0x20000
+#define SURF_TRANS66		0x40000
 
 typedef struct
 {
