@@ -74,9 +74,9 @@ int				gl_alphalist_num = 0;
 R_SetAlphaSurface
 ===============
 */
-qboolean R_SetAlphaSurface(msurface_t *s, float alpha)
+qboolean R_SetAlphaSurface(msurface_t *s, float alpha, qboolean force)
 {
-    if (alpha < 1.0) {
+    if (force || alpha < 1.0) {
         // do nothing
     } else if (s->flags & SURF_TRANSLUCENT) {
         alpha = 0.5f;
@@ -913,6 +913,7 @@ void R_DrawBrushModel (entity_t *e)
 	model_t		*clmodel;
 	qboolean	rotated = false;
 	float		alpha;
+	qboolean	forcealpha;
     qboolean	hasalpha = false;
 	float		scalefactor;
 	
@@ -922,6 +923,7 @@ void R_DrawBrushModel (entity_t *e)
 	clmodel = e->model;
 	
 	alpha = ENTALPHA_DECODE(e->alpha);
+	forcealpha = (e->alpha != ENTALPHA_DEFAULT);
 	
 	VectorSubtract (r_refdef.vieworg, e->origin, modelorg);
 	if (e->angles[0] || e->angles[1] || e->angles[2])
@@ -992,7 +994,7 @@ void R_DrawBrushModel (entity_t *e)
             if (surf->texinfo->texture->warpbase)
                 surf->texinfo->texture->update_warp = true; // FIXME: one frame too late!
             
-            hasalpha = R_SetAlphaSurface(surf, alpha);
+            hasalpha = R_SetAlphaSurface(surf, alpha, forcealpha);
             
             R_ChainSurface (surf, chain_model);
 			
@@ -1120,7 +1122,7 @@ restart:
             if (surf->texinfo->texture->warpbase)
                 surf->texinfo->texture->update_warp = true;
             
-            R_SetAlphaSurface(surf, 1.0); // alpha
+            R_SetAlphaSurface(surf, 1.0, false); // alpha
             
             R_ChainSurface(surf, chain_world);
 
