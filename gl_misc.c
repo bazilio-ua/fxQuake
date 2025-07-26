@@ -179,7 +179,7 @@ void R_Init (void)
 	Cvar_RegisterVariableCallback (&r_fastsky, R_FastSkyColor);
 	Cvar_RegisterVariableCallback (&r_fastskycolor, R_FastSkyColor);
 	Cvar_RegisterVariable (&r_skyquality);
-	Cvar_RegisterVariable (&r_skyalpha);
+	Cvar_RegisterVariableCallback (&r_skyalpha, R_SkyAlpha);
 	Cvar_RegisterVariableCallback (&r_skyfog, R_Skyfog);
 	Cvar_RegisterVariable (&r_oldsky);
 	Cvar_RegisterVariable (&r_flatworld);
@@ -344,6 +344,7 @@ void R_ParseWorldspawn (void)
 
 	// initially no skybox
 	skyfog = r_skyfog.value;
+	skyalpha = r_skyalpha.value;
 	oldsky = true;
 	strcpy (skybox_name, "");
 	for (i=0; i<6; i++)
@@ -399,6 +400,8 @@ void R_ParseWorldspawn (void)
 			R_LoadSkyBox(value);
 		else if (!strcmp("qlsky", key) && value[0]) // quake lives
 			R_LoadSkyBox(value);
+		else if (!strcmp("skyalpha", key) && value[0])
+			skyalpha = atof(value);
 		else if (!strcmp("skyfog", key) && value[0])
 			skyfog = atof(value);
 		else if (!strcmp("fog", key) && value[0])

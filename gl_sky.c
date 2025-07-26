@@ -86,6 +86,7 @@ gltexture_t		*skyboxtextures[6];
 qboolean	oldsky;
 char	skybox_name[MAX_OSPATH] = ""; // name of current skybox, or "" if no skybox
 float	skyfog; // ericw
+float	skyalpha;
 // 3dstudio environment map names
 char	*suf[6] = {"rt", "bk", "lf", "ft", "up", "dn"}; // for skybox
 
@@ -348,6 +349,16 @@ void R_FastSkyColor (void)
 
 /*
 ====================
+R_SkyAlpha
+====================
+*/
+void R_SkyAlpha (void)
+{
+	skyalpha = CLAMP(0.0, r_skyalpha.value, 1.0);
+}
+
+/*
+====================
 R_Skyfog -- ericw
 ====================
 */
@@ -416,9 +427,7 @@ void R_SkyDrawFaceQuad (glpoly_t *p)
 	int			i;
 	float		*v;
 	float		s, t;
-	float		skyalpha;
 
-	skyalpha = CLAMP(0.0, r_skyalpha.value, 1.0);
 	if (skyalpha == 1.0)
 	{
 		GL_BindTexture (solidskytexture);
@@ -893,9 +902,7 @@ draws the old-style scrolling cloud layers
 void R_SkyDrawSkyLayers (void)
 {
 	int i;
-	float	skyalpha;
 
-	skyalpha = CLAMP(0.0, r_skyalpha.value, 1.0);
 	if (skyalpha < 1.0)
 		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
