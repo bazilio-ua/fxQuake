@@ -996,7 +996,7 @@ void R_DrawBrushModel (entity_t *e)
             
             hasalpha = R_SetAlphaSurface(surf, alpha, forcealpha);
             
-            R_ChainSurface (surf, chain_model);
+            R_AddSurfaceToChain (surf, chain_model);
 			
 			rs_c_brush_polys++; // r_speeds
 		}
@@ -1124,7 +1124,7 @@ restart:
             
             R_SetAlphaSurface(surf, 1.0, false); // alpha
             
-            R_ChainSurface(surf, chain_world);
+            R_AddSurfaceToChain(surf, chain_world);
 
 			rs_c_brush_polys++; // r_speeds (count wpolys here)
 		}
@@ -1203,10 +1203,10 @@ void R_BuildLightmapChains (model_t *model, texchain_t chain)
 
 /*
 ================
-R_DrawTextureChains_Alpha -- EER1
+R_BuildTextureChains_Alpha -- EER1
 ================
 */
-void R_DrawTextureChains_Alpha (model_t *model, entity_t *e, texchain_t chain)
+void R_BuildTextureChains_Alpha (model_t *model, entity_t *e, texchain_t chain)
 {
 	int			i;
 	msurface_t	*s;
@@ -1531,7 +1531,7 @@ void R_DrawTextureChains (model_t *model, entity_t *ent, texchain_t chain)
 	R_BuildLightmapChains (model, chain);
 	R_UploadLightmaps ();
     
-    R_DrawTextureChains_Alpha (model, ent, chain); // R_BuildTextureChains_Alpha
+    R_BuildTextureChains_Alpha (model, ent, chain);
 	
 	
 	GL_SelectTMU1 ();
@@ -1632,12 +1632,12 @@ void R_MarkLeaves (void)
 
 /*
 ================
-R_ChainSurface -- ericw
+R_AddSurfaceToChain -- ericw
 
 adds the given surface to its texture chain
 ================
 */
-void R_ChainSurface (msurface_t *surf, texchain_t chain)
+void R_AddSurfaceToChain (msurface_t *surf, texchain_t chain)
 {
     // sort by texture
 	surf->texturechain = surf->texinfo->texture->texturechains[chain];

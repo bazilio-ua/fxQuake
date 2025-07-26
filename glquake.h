@@ -337,7 +337,7 @@ void Sky_ClearAll (void);
 void R_MarkLeaves (void);
 void R_SetupSurfaces (void);
 void R_ClearTextureChains (model_t *model, texchain_t chain);
-void R_ChainSurface (msurface_t *surf, texchain_t chain);
+void R_AddSurfaceToChain (msurface_t *surf, texchain_t chain);
 void R_DrawTextureChains (model_t *model, entity_t *ent, texchain_t chain);
 void R_DrawBrushModel (entity_t *e);
 void R_DrawWorld (void);
