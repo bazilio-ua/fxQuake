@@ -446,7 +446,7 @@ void Mod_LoadTextures (lump_t *l)
 	//johnfitz -- don't return early if no textures; still need to create dummy texture
 	if (!l->filelen)
 	{
-		Con_Warning ("Mod_LoadTextures: no textures in bsp file %s\n", loadmodel->name);
+		Con_Warning ("Mod_LoadTextures: no textures in %s\n", loadmodel->name);
 
 		m = NULL; // keep compiler happy
 		nummiptex = 0;
