@@ -495,7 +495,7 @@ extern	gltexture_t	*skyboxtextures[6];
 
 extern	qboolean	oldsky;
 extern	char	skybox_name[MAX_OSPATH];
-extern	float	globalwateralpha;
+extern	float	map_wateralpha, map_lavaalpha, map_telealpha, map_slimealpha; //ericw
 
 #define	OVERBRIGHT_SCALE	2.0
 extern	int		d_overbright;

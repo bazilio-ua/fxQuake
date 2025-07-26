@@ -105,20 +105,15 @@ float R_GetTurbAlpha (msurface_t *s)
 	if (!r_lockalpha.value) // override water alpha for certain surface types
 	{
 		if (s->flags & SURF_DRAWLAVA)
-			alpha = CLAMP(0.0, r_lavaalpha.value, 1.0);
+			alpha = map_lavaalpha;
 		else if (s->flags & SURF_DRAWSLIME)
-			alpha = CLAMP(0.0, r_slimealpha.value, 1.0);
+			alpha = map_slimealpha;
 		else if (s->flags & SURF_DRAWTELEPORT)
-			alpha = CLAMP(0.0, r_telealpha.value, 1.0);
+			alpha = map_telealpha;
 	}
 	
 	if (s->flags & SURF_DRAWWATER)
-	{
-		if (globalwateralpha > 0)
-			alpha = globalwateralpha;
-		else
-			alpha = CLAMP(0.0, r_wateralpha.value, 1.0);
-	}
+		alpha = map_wateralpha;
 	
 	return alpha;
 }

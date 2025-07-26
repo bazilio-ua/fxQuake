@@ -100,6 +100,46 @@ void GL_Overbright (void)
 }
 
 /*
+====================
+R_WaterAlpha -- ericw
+====================
+*/
+void R_WaterAlpha (void)
+{
+	map_wateralpha = CLAMP(0.0, r_wateralpha.value, 1.0);
+}
+
+/*
+====================
+R_LavaAlpha -- ericw
+====================
+*/
+void R_LavaAlpha (void)
+{
+	map_lavaalpha = CLAMP(0.0, r_lavaalpha.value, 1.0);
+}
+
+/*
+====================
+R_TeleAlpha -- ericw
+====================
+*/
+void R_TeleAlpha (void)
+{
+	map_telealpha = CLAMP(0.0, r_telealpha.value, 1.0);
+}
+
+/*
+====================
+R_SlimeAlpha -- ericw
+====================
+*/
+void R_SlimeAlpha (void)
+{
+	map_slimealpha = CLAMP(0.0, r_slimealpha.value, 1.0);
+}
+
+/*
 ===============
 R_Init
 ===============
@@ -121,11 +161,11 @@ void R_Init (void)
 	Cvar_RegisterVariable (&r_drawviewmodel);
 	Cvar_RegisterVariable (&r_flatturb);
 	Cvar_RegisterVariable (&r_waterquality);
-	Cvar_RegisterVariable (&r_wateralpha);
+	Cvar_RegisterVariableCallback (&r_wateralpha, R_WaterAlpha);
 	Cvar_RegisterVariable (&r_lockalpha);
-	Cvar_RegisterVariable (&r_lavaalpha);
-	Cvar_RegisterVariable (&r_slimealpha);
-	Cvar_RegisterVariable (&r_telealpha);
+	Cvar_RegisterVariableCallback (&r_lavaalpha, R_LavaAlpha);
+	Cvar_RegisterVariableCallback (&r_slimealpha, R_SlimeAlpha);
+	Cvar_RegisterVariableCallback (&r_telealpha, R_TeleAlpha);
 	Cvar_RegisterVariable (&r_litwater);
 	Cvar_RegisterVariable (&r_noalphasort);
 	Cvar_RegisterVariable (&r_dynamic);
@@ -287,7 +327,7 @@ void R_InitSkyBoxTextures (void)
 		skyboxtextures[i] = NULL;
 }
 
-float globalwateralpha = 0.0;
+float	map_wateralpha, map_lavaalpha, map_telealpha, map_slimealpha;
 
 /*
 =================
@@ -312,7 +352,10 @@ void R_ParseWorldspawn (void)
 	R_FogReset ();
 
 	// initially no wateralpha
-	globalwateralpha = 0.0;
+	map_wateralpha = r_wateralpha.value;
+	map_lavaalpha = r_lavaalpha.value;
+	map_telealpha = r_telealpha.value;
+	map_slimealpha = r_slimealpha.value;
 
 	data = cl.worldmodel->entities;
 	if (!data)
@@ -364,13 +407,15 @@ void R_ParseWorldspawn (void)
 			R_FogUpdate (density, red, green, blue, 0.0);
 		}
 		else if (!strcmp("wateralpha", key) && value[0])
-		{
-			globalwateralpha = atof (value);
-		}
+			map_wateralpha = atof(value);
+		else if (!strcmp("lavaalpha", key) && value[0])
+			map_lavaalpha = atof(value);
+		else if (!strcmp("telealpha", key) && value[0])
+			map_telealpha = atof(value);
+		else if (!strcmp("slimealpha", key) && value[0])
+			map_slimealpha = atof(value);
 		else if (!strcmp("mapversion", key) && value[0])
-		{
 			Con_DPrintf("mapversion is %i\n", atoi(value));
-		}
 	}
 }
 
