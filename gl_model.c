@@ -467,7 +467,6 @@ void Mod_LoadTextures (lump_t *l)
 		m->dataofs[i] = LittleLong (m->dataofs[i]);
 		if (m->dataofs[i] == -1)
 		{
-			Con_Warning ("Mod_LoadTextures: missing texture '%s' in %s\n", mt->name, loadmodel->name);
 			++missingtex;
 			continue;
 		}
