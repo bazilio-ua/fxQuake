@@ -78,7 +78,7 @@ qboolean R_SetAlphaSurface(msurface_t *s, float alpha)
 {
     if (alpha < 1.0) {
         // do nothing
-    } else if (s->flags & SURF_DRAWALPHA) {
+    } else if (s->flags & SURF_TRANSLUCENT) {
         alpha = 0.5f;
 	} else if (s->flags & SURF_TRANS33) {
 		alpha = 0.33f;
