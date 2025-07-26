@@ -328,6 +328,7 @@ void SCR_TileClear (void);
 void R_DrawSky (void);
 void R_LoadSkyBox (char *skybox);
 void R_FastSkyColor (void);
+void R_Skyfog (void);
 void R_Sky_f (void);
 void Sky_ClearAll (void);
 
@@ -495,6 +496,7 @@ extern	gltexture_t	*skyboxtextures[6];
 
 extern	qboolean	oldsky;
 extern	char	skybox_name[MAX_OSPATH];
+extern	float	skyfog; // ericw
 extern	float	map_wateralpha, map_lavaalpha, map_telealpha, map_slimealpha; //ericw
 
 #define	OVERBRIGHT_SCALE	2.0

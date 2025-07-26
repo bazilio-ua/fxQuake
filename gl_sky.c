@@ -25,8 +25,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 cvar_t	r_fastsky = {"r_fastsky","0", CVAR_NONE};
 cvar_t	r_fastskycolor = {"r_fastskycolor", "", CVAR_ARCHIVE}; // woods #fastskycolor
 cvar_t	r_skyquality = {"r_skyquality","12", CVAR_NONE};
-cvar_t	r_skyalpha = {"r_skyalpha","1", CVAR_ARCHIVE};
-cvar_t	r_skyfog = {"r_skyfog","0.5", CVAR_ARCHIVE};
+cvar_t	r_skyalpha = {"r_skyalpha","1", CVAR_NONE};
+cvar_t	r_skyfog = {"r_skyfog","0.5", CVAR_NONE};
 cvar_t	r_oldsky = {"r_oldsky", "0", CVAR_NONE};
 
 /*
@@ -85,6 +85,7 @@ gltexture_t		*skyboxtextures[6];
 
 qboolean	oldsky;
 char	skybox_name[MAX_OSPATH] = ""; // name of current skybox, or "" if no skybox
+float	skyfog; // ericw
 // 3dstudio environment map names
 char	*suf[6] = {"rt", "bk", "lf", "ft", "up", "dn"}; // for skybox
 
@@ -259,13 +260,13 @@ void R_SkyDrawSkyBox (void)
 		rs_c_sky_polys++;
 		rs_c_sky_passes++;
 
-		if (R_FogGetDensity() > 0 && r_skyfog.value > 0)
+		if (R_FogGetDensity() > 0 && skyfog > 0)
 		{
 			float *c = R_FogGetColor();
 
 			glEnable (GL_BLEND);
 			glDisable (GL_TEXTURE_2D);
-			glColor4f (c[0],c[1],c[2], CLAMP(0.0,r_skyfog.value,1.0));
+			glColor4f (c[0],c[1],c[2], skyfog);
 
 			glBegin (GL_QUADS);
 			R_SkyEmitSkyBoxVertex (skymins[0][i], skymins[1][i], i);
@@ -343,6 +344,17 @@ void R_FastSkyColor (void)
 		skyflatcolor[1] = (float)g/(count*255);
 		skyflatcolor[2] = (float)b/(count*255);
 	}
+}
+
+/*
+====================
+R_Skyfog -- ericw
+====================
+*/
+void R_Skyfog (void)
+{
+// clear any skyfog setting from worldspawn
+	skyfog = CLAMP(0.0, r_skyfog.value, 1.0);
 }
 
 /*
@@ -469,13 +481,13 @@ void R_SkyDrawFaceQuad (glpoly_t *p)
 		rs_c_sky_passes += 2;
 	}
 
-	if (R_FogGetDensity() > 0 && r_skyfog.value > 0)
+	if (R_FogGetDensity() > 0 && skyfog > 0)
 	{
 		float *c = R_FogGetColor();
 
 		glEnable (GL_BLEND);
 		glDisable (GL_TEXTURE_2D);
-		glColor4f (c[0],c[1],c[2], CLAMP(0.0,r_skyfog.value,1.0));
+		glColor4f (c[0],c[1],c[2], skyfog);
 
 		glBegin (GL_QUADS);
 		for (i=0, v=p->verts[0] ; i<4 ; i++, v+=VERTEXSIZE)
@@ -935,7 +947,7 @@ void R_DrawSky (void)
 	//
 	// render slow sky: cloud layers or skybox
 	//
-	if (!r_fastsky.value && !(R_FogGetDensity() > 0 && r_skyfog.value >= 1))
+	if (!r_fastsky.value && !(R_FogGetDensity() > 0 && skyfog >= 1))
 	{
 		glDepthFunc(GL_GEQUAL);
 		glDepthMask (GL_FALSE); // don't bother writing Z
