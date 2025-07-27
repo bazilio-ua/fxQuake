@@ -64,18 +64,27 @@ void R_AnimateLight (void)
 				continue;
 			}
 	
-			// interpolate animating light
-			// frame just gone
-			k = flight % cl_lightstyle[j].length;
-			k = cl_lightstyle[j].map[k] - 'a';
-			l = (float)(k * 22) * backlerp;
-	
-			// upcoming frame
-			k = clight % cl_lightstyle[j].length;
-			k = cl_lightstyle[j].map[k] - 'a';
-			l += (float)(k * 22) * lerpfrac;
-	
-			d_lightstyle[j] = (int)l;
+			//johnfitz -- r_flatlightstyles
+			if (r_flatlightstyles.value == 2) {
+				k = cl_lightstyle[j].peak - 'a';
+				d_lightstyle[j] = k*22;
+			} else if (r_flatlightstyles.value == 1) {
+				k = cl_lightstyle[j].average - 'a';
+				d_lightstyle[j] = k*22;
+			} else {
+				// interpolate animating light
+				// frame just gone
+				k = flight % cl_lightstyle[j].length;
+				k = cl_lightstyle[j].map[k] - 'a';
+				l = (float)(k * 22) * backlerp;
+		
+				// upcoming frame
+				k = clight % cl_lightstyle[j].length;
+				k = cl_lightstyle[j].map[k] - 'a';
+				l += (float)(k * 22) * lerpfrac;
+		
+				d_lightstyle[j] = (int)l;
+			}
 		}
 	}
 }

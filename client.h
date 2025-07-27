@@ -72,6 +72,8 @@ typedef struct
 {
 	int		length;
 	char	map[MAX_STYLESTRING];
+	char	average; //johnfitz -- flatlightstyles
+	char	peak; //johnfitz -- flatlightstyles
 } lightstyle_t;
 
 typedef struct

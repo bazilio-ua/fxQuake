@@ -1038,6 +1038,7 @@ void CL_ParseServerMessage (void)
 	int cmd = -1;
 	int i, lastpos = 0, lastcmd;
 	char	*str; //johnfitz
+	int		total, j; //johnfitz
 
 //
 // if recording demos, copy the message out
@@ -1189,6 +1190,19 @@ void CL_ParseServerMessage (void)
 				Host_Error ("CL_ParseServerMessage: svc_lightstyle %d >= MAX_LIGHTSTYLES (%d)", i, MAX_LIGHTSTYLES);
 			strcpy (cl_lightstyle[i].map,  MSG_ReadString(net_message));
 			cl_lightstyle[i].length = strlen(cl_lightstyle[i].map);
+			if (cl_lightstyle[i].length)
+			{	//johnfitz -- save extra info (flatlightstyles)
+				total = 0;
+				cl_lightstyle[i].peak = 'a';
+				for (j=0; j<cl_lightstyle[i].length; j++)
+				{
+					total += cl_lightstyle[i].map[j] - 'a';
+					cl_lightstyle[i].peak = max(cl_lightstyle[i].peak, cl_lightstyle[i].map[j]);
+				}
+				cl_lightstyle[i].average = total / cl_lightstyle[i].length + 'a';
+			}
+			else
+				cl_lightstyle[i].average = cl_lightstyle[i].peak = 'm';
 			break;
 			
 		case svc_sound:

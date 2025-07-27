@@ -87,6 +87,7 @@ cvar_t	r_waterwarp = {"r_waterwarp", "1", CVAR_ARCHIVE};
 cvar_t	r_clearcolor = {"r_clearcolor", "2", CVAR_ARCHIVE}; // Closest to the original
 cvar_t	r_flatworld = {"r_flatworld", "0", CVAR_NONE};
 cvar_t	r_flatmodels = {"r_flatmodels", "0", CVAR_NONE};
+cvar_t	r_flatlightstyles = {"r_flatlightstyles", "0", CVAR_NONE};
 
 cvar_t	gl_finish = {"gl_finish","0", CVAR_NONE};
 cvar_t	gl_clear = {"gl_clear","0", CVAR_NONE};

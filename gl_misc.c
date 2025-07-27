@@ -184,6 +184,7 @@ void R_Init (void)
 	Cvar_RegisterVariable (&r_oldsky);
 	Cvar_RegisterVariable (&r_flatworld);
 	Cvar_RegisterVariable (&r_flatmodels);
+	Cvar_RegisterVariable (&r_flatlightstyles);
 
 	Cvar_RegisterVariable (&gl_finish);
 	Cvar_RegisterVariable (&gl_clear);

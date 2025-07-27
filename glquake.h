@@ -540,6 +540,7 @@ extern	cvar_t	r_skyfog;
 extern	cvar_t	r_oldsky;
 extern	cvar_t	r_flatworld;
 extern	cvar_t	r_flatmodels;
+extern	cvar_t	r_flatlightstyles;
 
 extern	cvar_t	gl_swapinterval;
 extern	cvar_t	gl_finish;
