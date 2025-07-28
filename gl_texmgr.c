@@ -52,9 +52,9 @@ glmode_t modes[MAXGLMODES] = {
 	{GL_LINEAR,  GL_LINEAR_MIPMAP_LINEAR,	"GL_LINEAR_MIPMAP_LINEAR"},
 };
 
-int		gl_texturemode = 3; // linear
-int		gl_filter_min = GL_LINEAR; // was GL_NEAREST
-int		gl_filter_mag = GL_LINEAR;
+int		gl_texturemode = 0; // nearest
+int		gl_filter_min = GL_NEAREST; // was GL_LINEAR
+int		gl_filter_mag = GL_NEAREST;
 
 float	gl_hardware_max_anisotropy = 1; // just in case
 float 	gl_texture_anisotropy = 1;
