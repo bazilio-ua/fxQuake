@@ -32,7 +32,8 @@ void SCR_SetTimeout (float timeout);
 void SCR_BeginLoadingPlaque (void);
 void SCR_EndLoadingPlaque (void);
 
-int SCR_ModalMessage (char *text, float timeout); //johnfitz -- added timeout
+int SCR_ModalMessage (char *text);
+int SCR_ModalMessageTimeout (char *text, float timeout); //johnfitz -- added timeout
 
 extern vrect_t		scr_vrect;
 

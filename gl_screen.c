@@ -935,7 +935,14 @@ Displays a text string in the center of the screen and waits for a Y or N
 keypress.  
 ==================
 */
-int SCR_ModalMessage (char *text, float timeout) //johnfitz -- timeout
+#define MODAL_TIMEOUT 0.0f
+
+int SCR_ModalMessage (char *text)
+{
+	return SCR_ModalMessageTimeout(text, MODAL_TIMEOUT);
+}
+
+int SCR_ModalMessageTimeout (char *text, float timeout) //johnfitz -- timeout
 {
 	double time1, time2; //johnfitz -- timeout
 
