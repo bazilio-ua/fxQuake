@@ -20,13 +20,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // client.h
 
 // R_RocketTrail types
-#define RT_ROCKET			0
-#define RT_GRENADE			1
-#define RT_GIB				2
-#define RT_WIZARD			3
-#define RT_ZOMGIB			4
-#define RT_KNIGHT			5
-#define RT_VORE				6
+enum {
+	RT_ROCKET	= 0,
+	RT_GRENADE	= 1,
+	RT_GIB		= 2,
+	RT_WIZARD	= 3,
+	RT_ZOMGIB	= 4,
+	RT_KNIGHT	= 5,
+	RT_VORE		= 6
+};
 
 
 // particles stuff
