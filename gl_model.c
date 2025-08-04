@@ -2523,7 +2523,7 @@ void Mod_FloodFillSkin( byte *skin, int skinwidth, int skinheight, char *name )
 	floodfill_t			fifo[FLOODFILL_FIFO_SIZE];
 	int					inpt = 0, outpt = 0;
 	int					filledcolor = -1;
-	int					i;
+	int					i, size = skinwidth * skinheight, notfill;
 
 	if (filledcolor == -1)
 	{
@@ -2545,6 +2545,19 @@ void Mod_FloodFillSkin( byte *skin, int skinwidth, int skinheight, char *name )
 		return;
 	}
 
+	for (i = notfill = 0; i < size && notfill < 2; ++i)
+	{
+		if (skin[i] != fillcolor)
+			++notfill;
+	}
+
+	// Don't fill almost mono-coloured texes
+	if (notfill < 2)
+	{
+		//if (developer.value > 4)
+		//	Con_DPrintf ("Mod_FloodFillSkin: not filling skin in '%s'\n", name);
+		return;
+	}
 
 	fifo[inpt].x = 0, fifo[inpt].y = 0;
 	inpt = (inpt + 1) & FLOODFILL_FIFO_MASK;
