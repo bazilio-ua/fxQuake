@@ -1330,7 +1330,7 @@ void Mod_SetDrawingFlags (msurface_t *out)
 		else if (!strncasecmp(out->texinfo->texture->name, "*tele", 5)
 		|| !strncasecmp(out->texinfo->texture->name, "*rift", 5)
 		|| !strncasecmp(out->texinfo->texture->name, "*gate", 5))
-			out->flags |= SURF_DRAWTELEPORT;
+			out->flags |= SURF_DRAWTELE;
 		else
 			out->flags |= SURF_DRAWWATER; 
 

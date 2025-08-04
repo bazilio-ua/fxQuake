@@ -108,7 +108,7 @@ float R_GetTurbAlpha (msurface_t *s)
 			alpha = map_lavaalpha;
 		else if (s->flags & SURF_DRAWSLIME)
 			alpha = map_slimealpha;
-		else if (s->flags & SURF_DRAWTELEPORT)
+		else if (s->flags & SURF_DRAWTELE)
 			alpha = map_telealpha;
 	}
 	
