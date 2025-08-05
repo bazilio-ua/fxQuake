@@ -401,7 +401,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-zmem 8"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-heapsize 65536"
