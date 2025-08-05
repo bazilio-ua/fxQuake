@@ -706,8 +706,6 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, model_t *model, entity_t 
 			glTexEnvf (GL_TEXTURE_ENV, GL_SOURCE0_RGB_ARB, GL_PREVIOUS_ARB);
 			glTexEnvf (GL_TEXTURE_ENV, GL_SOURCE1_RGB_ARB, GL_TEXTURE);
 			glTexEnvf (GL_TEXTURE_ENV, GL_RGB_SCALE_ARB, d_overbrightscale);
-			
-			R_RenderDynamicLightmaps (s);
 		}
 		
 		
@@ -845,8 +843,6 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, model_t *model, entity_t 
 		glTexEnvf (GL_TEXTURE_ENV, GL_RGB_SCALE_ARB, d_overbrightscale);
 		
 		
-		R_RenderDynamicLightmaps (s);
-		
 		glBegin (GL_POLYGON);
 		v = p->verts[0];
 		for (i=0 ; i<p->numverts ; i++, v+= VERTEXSIZE)
@@ -970,9 +966,6 @@ void R_DrawBrushModel (entity_t *e)
 	if (scalefactor != 1.0f)
 		glScalef(scalefactor, scalefactor, scalefactor);
 	
-    //
-	// set all chains to null
-    //
     R_ClearTextureChains(clmodel, chain_model);
     
 	//
@@ -997,6 +990,7 @@ void R_DrawBrushModel (entity_t *e)
             hasalpha = R_SetAlphaSurface(surf, alpha, forcealpha);
             
             R_ChainSurface (surf, chain_model);
+			R_RenderDynamicLightmaps (surf);
 			
 			rs_c_brush_polys++; // r_speeds
 		}
@@ -1125,6 +1119,7 @@ restart:
             R_SetAlphaSurface(surf, 1.0, false); // alpha
             
             R_ChainSurface(surf, chain_world);
+			R_RenderDynamicLightmaps (surf);
 
 			rs_c_brush_polys++; // r_speeds (count wpolys here)
 		}
@@ -1145,14 +1140,9 @@ setup surfaces based on PVS and rebuild texture chains
 */
 void R_SetupSurfaces (void)
 {
-    //
-	// set all chains to null
-    //
     R_ClearTextureChains(cl.worldmodel, chain_world);
     
-    //
 	// recursive rebuild chains
-    //
     VectorCopy (r_refdef.vieworg, modelorg); // copy modelorg for recursiveWorldNode
     
     recursivecount = 0;
@@ -1167,38 +1157,6 @@ void R_SetupSurfaces (void)
 
 =============================================================================
 */
-
-
-/*
-================
-R_BuildLightmapChains -- johnfitz
-
-ericw -- now always used at the start of R_DrawTextureChains for the 
-mh dynamic lighting speedup
-================
-*/
-void R_BuildLightmapChains (model_t *model, texchain_t chain)
-{
-	texture_t *t;
-	msurface_t *s;
-	int i;
-    
-	// clear lightmap chains
-	for (i=0 ; i<lightmap_count ; i++)
-		lightmaps[i].polys = NULL;
-    
-	// now rebuild them
-	for (i=0 ; i<model->numtextures ; i++)
-	{
-		t = model->textures[i];
-        
-		if (!t || !t->texturechains[chain])
-			continue;
-        
-		for (s = t->texturechains[chain]; s; s = s->texturechain)
-            R_RenderDynamicLightmaps (s);
-	}
-}
 
 
 /*
@@ -1524,11 +1482,7 @@ R_DrawTextureChains -- johnfitz
 */
 void R_DrawTextureChains (model_t *model, entity_t *ent, texchain_t chain)
 {
-    // ericw -- the mh dynamic lightmap speedup: make a first pass through all
-    // surfaces we are going to draw, and rebuild any lightmaps that need it.
-    // the previous implementation of the speedup uploaded lightmaps one frame
-    // late which was visible under some conditions, this method avoids that.
-	R_BuildLightmapChains (model, chain);
+	// mh dynamic lightmap speedup: upload all modified lightmaps in a single batch
 	R_UploadLightmaps ();
     
     R_BuildTextureChains_Alpha (model, ent, chain);
@@ -1657,9 +1611,13 @@ void R_ClearTextureChains (model_t *model, texchain_t chain)
     
 	// set all chains to null
 	for (i=0 ; i<model->numtextures ; i++)
-		if (model->textures[i]) {
+		if (model->textures[i])
 			model->textures[i]->texturechains[chain] = NULL;
-        }
+	
+	// clear lightmap chains
+	for (i=0 ; i<lightmap_count ; i++)
+		lightmaps[i].polys = NULL;
+
 }
 
 
