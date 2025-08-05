@@ -439,7 +439,7 @@ int main (int argc, char *argv[])
     
     Sys_Printf ("Starting Quake...\n");
     
-	parms.memsize = DEFAULT_MEMORY_SIZE * 1024 * 1024;
+	parms.memsize = DEFAULT_MEMORY_SIZE;
     
 	if ((t = COM_CheckParm("-heapsize")))
 	{

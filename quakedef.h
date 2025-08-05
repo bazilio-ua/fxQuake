@@ -70,7 +70,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define	MINIMUM_MEMORY			0x1800000 // 24 Mb, was 0x550000 (5.6 Mb)
 #define	MINIMUM_MEMORY_LEVELPAK	(MINIMUM_MEMORY + 0x400000) // +4 Mb, was 0x100000 (+1 Mb) 
 
-#define DEFAULT_MEMORY_SIZE		64	// default memory size in Mb
+//#define DEFAULT_MEMORY_SIZE		0x4000000	// 64 Mb, default memory size in Mb
+#define DEFAULT_MEMORY_SIZE		(256 * 1024 * 1024) // ericw -- was 72MB (64-bit) / 64MB (32-bit)
 
 #define MAX_NUM_ARGVS	50
 
