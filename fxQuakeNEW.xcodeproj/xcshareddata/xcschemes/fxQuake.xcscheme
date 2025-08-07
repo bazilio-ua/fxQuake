@@ -156,6 +156,10 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
+            argument = "-game rogue -rogue"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
             argument = "-game warp -quoth"
             isEnabled = "NO">
          </CommandLineArgument>

@@ -2193,7 +2193,7 @@ void COM_InitFilesystem (void)
 		com_modified = true;
 		
 		// don't load mission packs twice
-		if (COM_CheckParm ("-rogue") && !strcasecmp(p, "rogue")) p = NULL;
+		if (p && COM_CheckParm ("-rogue") && !strcasecmp(p, "rogue")) p = NULL;
 		if (p && COM_CheckParm ("-hipnotic") && !strcasecmp(p, "hipnotic")) p = NULL;
 		if (p && COM_CheckParm ("-quoth") && !strcasecmp(p, "quoth")) p = NULL;
 		if (p && COM_CheckParm ("-nehahra") && !strcasecmp(p, "nehahra")) p = NULL;
@@ -2238,7 +2238,7 @@ void COM_InitFilesystem (void)
 		com_modified = true;
 		
 		// don't load mission packs twice
-		if (COM_CheckParm ("-rogue") && !strcasecmp(p, "rogue")) p = NULL;
+		if (p && COM_CheckParm ("-rogue") && !strcasecmp(p, "rogue")) p = NULL;
 		if (p && COM_CheckParm ("-hipnotic") && !strcasecmp(p, "hipnotic")) p = NULL;
 		if (p && COM_CheckParm ("-quoth") && !strcasecmp(p, "quoth")) p = NULL;
 		if (p && COM_CheckParm ("-nehahra") && !strcasecmp(p, "nehahra")) p = NULL;
