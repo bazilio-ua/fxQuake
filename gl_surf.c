@@ -1441,41 +1441,6 @@ void R_DrawTextureChains_Multitexture (model_t *model, entity_t *ent, texchain_t
 
 
 /*
-================
-R_DrawLightmapChains -- johnfitz
- 
-R_BlendLightmaps stripped down to almost nothing
-================
-*/
-void R_DrawLightmapChains (void)
-{
-	int			i, j;
-	glpoly_t	*p;
-	float		*v;
-    
-	for (i=0 ; i<lightmap_count ; i++)
-	{
-		if (!lightmaps[i].polys)
-			continue;
-        
-		GL_BindTexture (lightmaps[i].texture);
-		for (p = lightmaps[i].polys; p; p=p->chain)
-		{
-			glBegin (GL_POLYGON);
-			v = p->verts[0];
-			for (j=0 ; j<p->numverts ; j++, v+= VERTEXSIZE)
-			{
-				glTexCoord2f (v[5], v[6]);
-				glVertex3fv (v);
-			}
-			glEnd ();
-			rs_c_brush_passes++;
-		}
-	}
-}
-
-
-/*
 =============
 R_DrawTextureChains -- johnfitz
 =============
