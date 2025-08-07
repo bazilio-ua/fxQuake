@@ -1864,7 +1864,7 @@ void COM_Game_f (void)
 		
 		if (*p2)
 		{
-			if (strcmp(p2,"-hipnotic") && strcmp(p2,"-rogue") && strcmp(p2,"-quoth") && strcmp(p2,"-nehahra")) {
+			if (strcmp(p2,"-id1") && strcmp(p2,"-hipnotic") && strcmp(p2,"-rogue") && strcmp(p2,"-quoth") && strcmp(p2,"-nehahra")) {
 				Con_Printf ("Invalid mission pack argument to \"game\"\n");
 				return;
 			}
@@ -1961,8 +1961,10 @@ void COM_Game_f (void)
 		{
 			if (*p2)
 			{
-				COM_AddGameDirectory (com_basedir, &p2[1]);
-				COM_AddUserDirectory (homedir, &p2[1]);
+				if (strcmp(p2,"-id1")) {
+					COM_AddGameDirectory (com_basedir, &p2[1]);
+					COM_AddUserDirectory (homedir, &p2[1]);
+				}
 				
 				if (!strcmp(p2,"-hipnotic") || !strcmp(p2,"-quoth"))
 				{
