@@ -61,7 +61,7 @@ void Chase_Update (void)
 	vec3_t	chase_dest;
 
 	// if can't see player, reset
-	AngleVectors (cl.viewangles, forward, right, up);
+	AngleVectors (cl.lerpangles, forward, right, up); // JPG - viewangles -> lerpangles
 
 	// calc exact destination
 	for (i=0 ; i<3 ; i++)
@@ -94,7 +94,7 @@ void Chase_Update (void)
 			// update the camera destination to where we hit the wall
 			VectorCopy (stop, chase_dest);
 
-			// this prevents the camera from poking into the wall by rounding off the traceline...
+			//R00k, this prevents the camera from poking into the wall by rounding off the traceline...
 			LerpVector (r_refdef.vieworg, chase_dest, 0.8f, chase_dest);
 		}
 	}

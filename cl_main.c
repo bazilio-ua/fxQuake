@@ -652,7 +652,7 @@ void CL_RelinkEntities (void)
 				d += 360;
 
 			// JPG - I can't set cl.viewangles anymore since that messes up the demorecording.
-			// So instead, I'll set lerpangles (new variable), and view.c will use that instead.
+			// So instead, I'll set lerpangles (new variable), and view.c/chase.c will use that instead.
 			cl.lerpangles[j] = cl.mviewangles[1][j] + frac*d;
 		}
 	}
