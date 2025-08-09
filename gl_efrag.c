@@ -52,7 +52,7 @@ typedef struct r_efragdef_s
 #define EXTRA_EFRAGS	128
 
 // based on RMQEngine
-static efrag_t *R_GetEfrag (void)
+efrag_t *R_GetEfrag (void)
 {
 	// we could just Hunk_Alloc a single efrag_t and return it, but since
 	// the struct is so small (2 pointers) allocate groups of them
