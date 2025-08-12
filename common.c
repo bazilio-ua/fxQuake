@@ -851,6 +851,8 @@ void COM_CheckRegistered (void)
 	unsigned short  check[128];
 	int                     i;
 
+	Cvar_SetROM ("cmdline", com_cmdline+1); // johnfitz: eliminate leading space
+
 	COM_OpenFile("gfx/pop.lmp", &h, NULL);
 
 	if (h == -1)
@@ -869,8 +871,7 @@ void COM_CheckRegistered (void)
 	for (i=0 ; i<128 ; i++)
 		if (pop[i] != (unsigned short)BigShort (check[i]))
 			Sys_Error ("Corrupted data file.");
-	
-	Cvar_SetROM ("cmdline", com_cmdline+1); // johnfitz: eliminate leading space
+
 	Cvar_SetROM ("registered", "1");
 
 	Con_Printf ("Playing registered version.\n");
@@ -2284,7 +2285,8 @@ void COM_InitFilesystem (void)
 		{
 			if (!com_argv[i] || com_argv[i][0] == '+' || com_argv[i][0] == '-')
 				break;
-//			search = Hunk_AllocName (sizeof(searchpath_t), "searchpath");
+			//johnfitz -- dynamic gamedir loading
+			//johnfitz -- modified to use zone alloc
 			search = (searchpath_t *) Z_Malloc (sizeof(searchpath_t));
 			if ( !strcasecmp(COM_FileExtension(com_argv[i]), "pak") )
 			{
