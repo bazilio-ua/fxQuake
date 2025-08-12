@@ -862,8 +862,8 @@ void COM_CheckRegistered (void)
 	if (h == -1)
 	{
 		Cvar_SetROM ("registered", "0");
-		
 		Con_Printf ("Playing shareware version.\n");
+
 		if (com_modified)
 			Sys_Error ("You must have the registered version to use modified games");
 		return;
@@ -877,7 +877,6 @@ void COM_CheckRegistered (void)
 			Sys_Error ("Corrupted data file.");
 
 	Cvar_SetROM ("registered", "1");
-
 	Con_Printf ("Playing registered version.\n");
 }
 
