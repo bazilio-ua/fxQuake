@@ -851,7 +851,11 @@ void COM_CheckRegistered (void)
 	unsigned short  check[128];
 	int                     i;
 
-	Cvar_SetROM ("cmdline", com_cmdline+1); // johnfitz: eliminate leading space
+	for (i=0 ; com_cmdline[i] ; i++)
+		if (com_cmdline[i] != ' ')
+			break;
+
+	Cvar_SetROM ("cmdline", &com_cmdline[i]);
 
 	COM_OpenFile("gfx/pop.lmp", &h, NULL);
 
