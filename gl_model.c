@@ -689,7 +689,7 @@ void Mod_LoadLighting (lump_t *l)
 	int mark;
 	byte *in, *out, *data;
 	byte d;
-	char litfilename[MAX_QPATH];
+	char filename[MAX_QPATH];
 	unsigned int path_id;
 
 	loadmodel->lightdata = NULL;
@@ -697,28 +697,28 @@ void Mod_LoadLighting (lump_t *l)
 	if (loadmodel->isworldmodel && external_lit.value)
 	{
 		// LordHavoc: check for a .lit file
-		strcpy(litfilename, loadmodel->name);
-		COM_StripExtension(litfilename, litfilename);
-		strcat(litfilename, ".lit");
-		Con_DPrintf("trying to load %s\n", litfilename);
+		strcpy(filename, loadmodel->name);
+		COM_StripExtension(filename, filename);
+		strcat(filename, ".lit");
+		Con_DPrintf("trying to load %s\n", filename);
 
 		mark = Hunk_LowMark ();
 		
-		data = (byte *) COM_LoadHunkFile (litfilename, &path_id);
+		data = (byte *) COM_LoadHunkFile (filename, &path_id);
 		if (data)
 		{
 			// use .lit file only from the same gamedir as the map
 			// itself or from a searchpath with higher priority.
 			if (path_id < loadmodel->path_id)
 			{
-				Con_DPrintf("Ignored %s from a gamedir with lower priority\n", litfilename);
+				Con_DPrintf("Ignored %s from a gamedir with lower priority\n", filename);
 			}
 			else if (data[0] == 'Q' && data[1] == 'L' && data[2] == 'I' && data[3] == 'T')
 			{
 				i = LittleLong(((int *)data)[1]);
 				if (i == 1)
 				{
-					Con_DPrintf("%s loaded\n", litfilename);
+					Con_DPrintf("%s loaded\n", filename);
 					loadmodel->lightdata = data + 8;
 					return;
 				}
@@ -766,7 +766,7 @@ void Mod_LoadVisibility (lump_t *l)
 	// EER1: .vis support
 	FILE	*f;
 	int		filelen;
-	char	visfilename[MAX_QPATH];
+	char	filename[MAX_QPATH];
 	char	loadmapname[MAX_QPATH];
 	vispatch_t	vispatch;
 	unsigned int path_id;
@@ -780,19 +780,19 @@ void Mod_LoadVisibility (lump_t *l)
 	if (loadmodel->isworldmodel && external_vis.value)
 	{
 		// EER1: check for a .vis file
-		strcpy(visfilename, loadmodel->name);
-		COM_StripExtension(visfilename, visfilename);
-		strcat(visfilename, ".vis");
-		Con_DPrintf("trying to load %s\n", visfilename);
+		strcpy(filename, loadmodel->name);
+		COM_StripExtension(filename, filename);
+		strcat(filename, ".vis");
+		Con_DPrintf("trying to load %s\n", filename);
 
-		filelen = COM_FOpenFile (visfilename, &f, &path_id);
+		filelen = COM_FOpenFile (filename, &f, &path_id);
 		if (f)
 		{
 			// use .vis file only from the same gamedir as the map
 			// itself or from a searchpath with higher priority.
 			if (path_id < loadmodel->path_id)
 			{
-				Con_DPrintf("Ignored %s from a gamedir with lower priority\n", visfilename);
+				Con_DPrintf("Ignored %s from a gamedir with lower priority\n", filename);
 			}
 			else if (filelen)
 			{
@@ -816,7 +816,7 @@ void Mod_LoadVisibility (lump_t *l)
 				{
 					char	load[32];
 
-					Con_DPrintf ("Loaded external visibility file %s\n", visfilename);
+					Con_DPrintf ("Loaded external visibility file %s\n", filename);
 					vispatch.datalen = LittleLong(vispatch.datalen);
 					Con_DPrintf ("vispatch file data length %i bytes\n", vispatch.datalen);
 
@@ -885,7 +885,7 @@ void Mod_LoadEntities (lump_t *l)
 {
 	// QS: .ent support
 	int		mark;
-	char	entfilename[MAX_QPATH];
+	char	filename[MAX_QPATH];
 	char	*ents;
 	unsigned int	path_id;
 
@@ -894,26 +894,26 @@ void Mod_LoadEntities (lump_t *l)
 	if (loadmodel->isworldmodel && external_ent.value)
 	{
 		// QS: check for a .ent file
-		strcpy(entfilename, loadmodel->name);
-		COM_StripExtension(entfilename, entfilename);
-		strcat(entfilename, ".ent");
-		Con_DPrintf("trying to load %s\n", entfilename);
+		strcpy(filename, loadmodel->name);
+		COM_StripExtension(filename, filename);
+		strcat(filename, ".ent");
+		Con_DPrintf("trying to load %s\n", filename);
 
 		mark = Hunk_LowMark ();
 		
-		ents = (char *) COM_LoadHunkFile (entfilename, &path_id);
+		ents = (char *) COM_LoadHunkFile (filename, &path_id);
 		if (ents)
 		{
 			// use .ent file only from the same gamedir as the map
 			// itself or from a searchpath with higher priority.
 			if (path_id < loadmodel->path_id)
 			{
-				Con_DPrintf("Ignored %s from a gamedir with lower priority\n", entfilename);
+				Con_DPrintf("Ignored %s from a gamedir with lower priority\n", filename);
 			}
 			else
 			{
 				loadmodel->entities = ents;
-				Con_DPrintf("Loaded external entity file %s\n", entfilename);
+				Con_DPrintf("Loaded external entity file %s\n", filename);
 				return;
 			}
 			
