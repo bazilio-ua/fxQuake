@@ -603,7 +603,7 @@ void V_ShiftPalette (byte *palette)
 	R_FastSkyColor ();
 }
 
-static void SetPaletteColor (unsigned int *dst, byte r, byte g, byte b, byte a)
+void SetPaletteColor (unsigned int *dst, byte r, byte g, byte b, byte a)
 {
 	((byte *)dst)[0] = r;
 	((byte *)dst)[1] = g;
