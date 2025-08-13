@@ -1648,7 +1648,7 @@ Loads the header and directory, adding the files at the beginning
 of the list so they override previous pack files.
 =================
 */
-pack_t *COM_LoadPackFile (char *packfilename)
+pack_t *COM_LoadPackFile (char *filename)
 {
 	dpackheader_t   header;
 	int             i;
@@ -1659,33 +1659,33 @@ pack_t *COM_LoadPackFile (char *packfilename)
 	dpackfile_t             info[MAX_FILES_IN_PACK];
 	unsigned short          crc;
 
-	if (Sys_FileOpenRead (packfilename, &packhandle) == -1)
+	if (Sys_FileOpenRead (filename, &packhandle) == -1)
 	{
-//		Con_SafePrintf ("COM_LoadPackFile: couldn't open %s\n", packfilename);
+//		Con_SafePrintf ("COM_LoadPackFile: couldn't open %s\n", filename);
 		return NULL;
 	}
 	if (Sys_FileRead (packhandle, (void *)&header, sizeof(header)) != sizeof(header) ||
 	    header.ident[0] != 'P' || header.ident[1] != 'A' || header.ident[2] != 'C' || header.ident[3] != 'K')
-		Sys_Error ("COM_LoadPackFile: %s is not a packfile, can't read header PACK id", packfilename);
+		Sys_Error ("COM_LoadPackFile: %s is not a packfile, can't read header PACK id", filename);
 
 	header.dirofs = LittleLong (header.dirofs);
 	header.dirlen = LittleLong (header.dirlen);
 
 	if (header.dirlen < 0 || header.dirofs < 0)
-		Sys_Error ("COM_LoadPackFile: invalid packfile %s (dirlen: %i, dirofs: %i)", packfilename, header.dirlen, header.dirofs);
+		Sys_Error ("COM_LoadPackFile: invalid packfile %s (dirlen: %i, dirofs: %i)", filename, header.dirlen, header.dirofs);
 	
 	numpackfiles = header.dirlen / sizeof(dpackfile_t);
 
 	if (!numpackfiles)
 	{
-		Sys_Printf ("WARNING: %s has no files\n", packfilename);
-//		Sys_Printf ("WARNING: %s has no files, ignored\n", packfilename);
+		Sys_Printf ("WARNING: %s has no files\n", filename);
+//		Sys_Printf ("WARNING: %s has no files, ignored\n", filename);
 //		Sys_FileClose (packhandle);
 //		return NULL;
 	}
 
 	if (numpackfiles > MAX_FILES_IN_PACK)
-		Sys_Error ("COM_LoadPackFile: packfile %s has too many files (%i, max = %i)", packfilename, numpackfiles, MAX_FILES_IN_PACK);
+		Sys_Error ("COM_LoadPackFile: packfile %s has too many files (%i, max = %i)", filename, numpackfiles, MAX_FILES_IN_PACK);
 
 	//johnfitz -- dynamic gamedir loading
 	//johnfitz -- modified to use zone alloc
@@ -1693,7 +1693,7 @@ pack_t *COM_LoadPackFile (char *packfilename)
 
 	Sys_FileSeek (packhandle, header.dirofs);
 	if (Sys_FileRead (packhandle, (void *)info, header.dirlen) != header.dirlen)
-		Sys_Error ("COM_LoadPackFile: can't read directory in packfile %s", packfilename);
+		Sys_Error ("COM_LoadPackFile: can't read directory in packfile %s", filename);
 
 // crc the directory to check for modifications
 	CRC_Init (&crc);
@@ -1715,12 +1715,12 @@ pack_t *COM_LoadPackFile (char *packfilename)
 	//johnfitz -- modified to use zone alloc
 	pack = (pack_t *) Z_Malloc (sizeof (pack_t));
 
-	strcpy (pack->filename, packfilename);
+	strcpy (pack->filename, filename);
 	pack->handle = packhandle;
 	pack->numfiles = numpackfiles;
 	pack->files = newfiles;
 
-	Con_Printf ("Added packfile %s (%i files)\n", packfilename, numpackfiles);
+	Con_Printf ("Added packfile %s (%i files)\n", filename, numpackfiles);
 	return pack;
 }
 

@@ -71,24 +71,24 @@ void W_LoadWadFile (void)
 	wadinfo_t		*header;
 	int				i;
 	int				infotableofs;
-	char			*wadfilename = WADFILE;
+	char			*filename = WADFILE;
 
 	//johnfitz -- dynamic gamedir loading
 	//johnfitz -- modified to use malloc
 	//TODO: use cache_alloc
-	wad_base = COM_LoadMallocFile (wadfilename, wad_base, NULL);
+	wad_base = COM_LoadMallocFile (filename, wad_base, NULL);
 	if (!wad_base)
 		Sys_Error ("W_LoadWadFile: couldn't load %s\n\n"
 				   "Basedir is: %s\n\n"
 				   "Check that this has an " GAMENAME " subdirectory containing pak0.pak and pak1.pak, "
 				   "or use the -basedir command-line option to specify another directory.",
-				   wadfilename, com_basedir);
+				   filename, com_basedir);
 
 
 	header = (wadinfo_t *)wad_base;
 	
 	if (header->ident[0] != 'W' || header->ident[1] != 'A' || header->ident[2] != 'D' || header->ident[3] != '2')
-		Sys_Error ("W_LoadWadFile: %s is not a wadfile, can't read header WAD2 id", wadfilename);
+		Sys_Error ("W_LoadWadFile: %s is not a wadfile, can't read header WAD2 id", filename);
 	
 	wad_numlumps = LittleLong(header->numlumps);
 	infotableofs = LittleLong(header->infotableofs);
