@@ -314,13 +314,11 @@ restart:
 
 		// clamp center of light to corner and check brightness
 		l = DotProduct (impact, surf->texinfo->vecs[0]) + surf->texinfo->vecs[0][3] - surf->texturemins[0];
-		s = l + 0.5;
-		s = CLAMP (0, s, surf->extents[0]);
+		s = l + 0.5;if (s < 0) s = 0;else if (s > surf->extents[0]) s = surf->extents[0];
 		s = l - s;
 
 		l = DotProduct (impact, surf->texinfo->vecs[1]) + surf->texinfo->vecs[1][3] - surf->texturemins[1];
-		t = l + 0.5;
-		t = CLAMP (0, t, surf->extents[1]);
+		t = l + 0.5;if (t < 0) t = 0;else if (t > surf->extents[1]) t = surf->extents[1];
 		t = l - t;
 
 		// compare to minimum light
