@@ -910,7 +910,7 @@ void R_DrawBrushModel (entity_t *e)
 	qboolean	rotated = false;
 	float		alpha;
 	qboolean	forcealpha;
-    qboolean	hasalpha = false;
+	qboolean	hasalpha = false;
 	float		scalefactor;
 	
 	if (R_CullModelForEntity(e))
@@ -935,8 +935,8 @@ void R_DrawBrushModel (entity_t *e)
 		modelorg[2] = DotProduct (temp, up);
 	}
 
-    e->rotated = rotated;
-    
+	e->rotated = rotated;
+	
 	// calculate dynamic lighting for bmodel if it's not an instanced model
 	if (clmodel->firstmodelsurface != 0) // EER1
 	{
@@ -966,8 +966,8 @@ void R_DrawBrushModel (entity_t *e)
 	if (scalefactor != 1.0f)
 		glScalef(scalefactor, scalefactor, scalefactor);
 	
-    R_ClearTextureChains(clmodel, chain_model);
-    
+	R_ClearTextureChains(clmodel, chain_model);
+	
 	//
 	// draw it
 	//
@@ -983,24 +983,24 @@ void R_DrawBrushModel (entity_t *e)
 		if (((surf->flags & SURF_PLANEBACK) && (dot < -BACKFACE_EPSILON)) ||
 			(!(surf->flags & SURF_PLANEBACK) && (dot > BACKFACE_EPSILON)))
 		{
-            
-            if (surf->texinfo->texture->warpbase)
-                surf->texinfo->texture->update_warp = true; // FIXME: one frame too late!
-            
-            hasalpha = R_SetAlphaSurface(surf, alpha, forcealpha);
-            
-            R_ChainSurface (surf, chain_model);
+			
+			if (surf->texinfo->texture->warpbase)
+				surf->texinfo->texture->update_warp = true; // FIXME: one frame too late!
+			
+			hasalpha = R_SetAlphaSurface(surf, alpha, forcealpha);
+			
+			R_ChainSurface (surf, chain_model);
 			R_RenderDynamicLightmaps (surf);
 			
 			rs_c_brush_polys++; // r_speeds
 		}
 	}
 	
-    if (hasalpha)
-        glGetFloatv (GL_MODELVIEW_MATRIX, e->matrix); // save entity matrix
-    
-    R_DrawTextureChains (clmodel, e, chain_model);
-    
+	if (hasalpha)
+		glGetFloatv (GL_MODELVIEW_MATRIX, e->matrix); // save entity matrix
+	
+	R_DrawTextureChains (clmodel, e, chain_model);
+	
 	glPopMatrix ();
 }
 
