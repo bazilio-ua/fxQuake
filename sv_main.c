@@ -49,20 +49,20 @@ void SV_Protocol_f (void)
 	case 1:
 		switch (sv_protocol)
 		{
-			case PROTOCOL_NETQUAKE:
-				p = "NetQuake";
-				break;
-			case PROTOCOL_FITZQUAKE:
-				p = "FitzQuake";
-				break;
-			case PROTOCOL_MARKV:
-				p = "MarkV";
-				break;
-			case PROTOCOL_RMQ:
-				p = "RMQ";
-				break;
-			default:
-				return;
+		case PROTOCOL_NETQUAKE:
+			p = "NetQuake";
+			break;
+		case PROTOCOL_FITZQUAKE:
+			p = "FitzQuake";
+			break;
+		case PROTOCOL_MARKV:
+			p = "MarkV";
+			break;
+		case PROTOCOL_RMQ:
+			p = "RMQ";
+			break;
+		default:
+			return;
 		}
 		Con_Printf ("sv_protocol is %d (%s)\n", sv_protocol, p);
 		break;
@@ -129,22 +129,22 @@ void SV_Init (void)
 		sv_protocol = atoi (com_argv[i + 1]);
 	switch (sv_protocol)
 	{
-        case PROTOCOL_NETQUAKE:
-            p = "NetQuake";
-            break;
-        case PROTOCOL_FITZQUAKE:
-            p = "FitzQuake";
-            break;
-        case PROTOCOL_MARKV:
-            p = "MarkV";
-            break;
-        case PROTOCOL_RMQ:
-            p = "RMQ";
-            break;
-        default:
-            Sys_Error ("Bad protocol version request %i. Accepted values: %i, %i, %i or %i",
-                       sv_protocol, PROTOCOL_NETQUAKE, PROTOCOL_FITZQUAKE, PROTOCOL_MARKV, PROTOCOL_RMQ);
-            return; /* silence compiler */
+	case PROTOCOL_NETQUAKE:
+		p = "NetQuake";
+		break;
+	case PROTOCOL_FITZQUAKE:
+		p = "FitzQuake";
+		break;
+	case PROTOCOL_MARKV:
+		p = "MarkV";
+		break;
+	case PROTOCOL_RMQ:
+		p = "RMQ";
+		break;
+	default:
+		Sys_Error ("Bad protocol version request %i. Accepted values: %i, %i, %i or %i",
+				   sv_protocol, PROTOCOL_NETQUAKE, PROTOCOL_FITZQUAKE, PROTOCOL_MARKV, PROTOCOL_RMQ);
+		return; /* silence compiler */
 	}
 	Sys_Printf ("Server using protocol %i (%s)\n", sv_protocol, p);
 }

@@ -606,12 +606,12 @@ float S_UnderwaterIntensityForContents (int contents)
 {
 	switch (contents)
 	{
-		case CONTENTS_WATER:
-		case CONTENTS_SLIME:
-		case CONTENTS_LAVA:
-			return 1.f;
-		default:
-			return 0.f;
+	case CONTENTS_WATER:
+	case CONTENTS_SLIME:
+	case CONTENTS_LAVA:
+		return 1.f;
+	default:
+		return 0.f;
 	}
 }
 

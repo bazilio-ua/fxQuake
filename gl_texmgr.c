@@ -1473,17 +1473,18 @@ int TexMgr_GetMipMemorySize (int width, int height, GLint format)
 	
 	blocksize = 1;
 	blockbytes = 4;
-	switch (format) {
-		case GL_COMPRESSED_RGB_S3TC_DXT1_EXT:
-		case GL_COMPRESSED_RGBA_S3TC_DXT1_EXT:
-			blocksize = 4;
-			blockbytes = 8;
-			break;
-		case GL_COMPRESSED_RGBA_S3TC_DXT3_EXT:
-		case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT:
-			blocksize = 4;
-			blockbytes = 16;
-			break;
+	switch (format)
+	{
+	case GL_COMPRESSED_RGB_S3TC_DXT1_EXT:
+	case GL_COMPRESSED_RGBA_S3TC_DXT1_EXT:
+		blocksize = 4;
+		blockbytes = 8;
+		break;
+	case GL_COMPRESSED_RGBA_S3TC_DXT3_EXT:
+	case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT:
+		blocksize = 4;
+		blockbytes = 16;
+		break;
 	}
 	
 	blockwidth  = (width  + blocksize - 1) / blocksize;
@@ -1494,15 +1495,16 @@ int TexMgr_GetMipMemorySize (int width, int height, GLint format)
 
 void TexMgr_CompressMip (unsigned *in, int inwidth, int inheight, GLint format, byte *dst)
 {
-	switch (format) {
-		case GL_COMPRESSED_RGB_S3TC_DXT1_EXT:
-			TexMgr_CompressDXT1(in, inwidth, inheight, dst);
-			break;
-		case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT:
-			TexMgr_CompressDXT5(in, inwidth, inheight, dst);
-			break;
-		default:
-			Sys_Error("Unsupported compressed format");
+	switch (format)
+	{
+	case GL_COMPRESSED_RGB_S3TC_DXT1_EXT:
+		TexMgr_CompressDXT1(in, inwidth, inheight, dst);
+		break;
+	case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT:
+		TexMgr_CompressDXT5(in, inwidth, inheight, dst);
+		break;
+	default:
+		Sys_Error("Unsupported compressed format");
 	}
 }
 
@@ -1511,12 +1513,13 @@ int TexMgr_GetMaxMipLevel (int width, int height, GLint format)
 	int blocksize, max_level;
 	
 	blocksize = 1;
-	switch (format) {
-		case GL_COMPRESSED_RGB_S3TC_DXT1_EXT:
-		case GL_COMPRESSED_RGBA_S3TC_DXT1_EXT:
-		case GL_COMPRESSED_RGBA_S3TC_DXT3_EXT:
-		case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT:
-			blocksize = 4;
+	switch (format)
+	{
+	case GL_COMPRESSED_RGB_S3TC_DXT1_EXT:
+	case GL_COMPRESSED_RGBA_S3TC_DXT1_EXT:
+	case GL_COMPRESSED_RGBA_S3TC_DXT3_EXT:
+	case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT:
+		blocksize = 4;
 	}
 	
 	max_level = 0;
@@ -1581,11 +1584,12 @@ void TexMgr_Upload32 (gltexture_t *glt, unsigned *data)
 	if (gl_texture_compression && gl_compression.value && !(glt->flags & TEXPREF_NOPICMIP)) {
 		internalformat = (glt->flags & TEXPREF_ALPHA) ? GL_COMPRESSED_RGBA_S3TC_DXT5_EXT : GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
 		mip_memory_size = TexMgr_GetMipMemorySize(glt->width, glt->height, internalformat);
-		switch (internalformat) {
-			case GL_COMPRESSED_RGB_S3TC_DXT1_EXT:
-			case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT:
-				compressed = Hunk_Alloc(mip_memory_size);
-				break;
+		switch (internalformat)
+		{
+		case GL_COMPRESSED_RGB_S3TC_DXT1_EXT:
+		case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT:
+			compressed = Hunk_Alloc(mip_memory_size);
+			break;
 		}
 	}
 	

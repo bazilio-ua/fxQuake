@@ -180,11 +180,11 @@ qboolean VID_CheckMode (int width, int height, int refreshrate, int bpp, qboolea
 	
 	switch (bpp)
 	{
-		case 32:
-		case 16:
-			break;
-		default:
-			return false;
+	case 32:
+	case 16:
+		break;
+	default:
+		return false;
 	}
 	
 	if (fullscreen && !VID_GetMatchingDisplayMode (width, height, refreshrate, bpp))
