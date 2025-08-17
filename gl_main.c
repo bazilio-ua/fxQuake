@@ -630,7 +630,7 @@ void R_DrawAliasModel (entity_t *e)
 	aliasalpha = ENTALPHA_DECODE(e->alpha);
 //	aliasalpha = 0.5f; // test
 	
-    alphatest = !!(e->model->flags & MF_HOLEY);
+	alphatest = !!(e->model->flags & MF_HOLEY);
 
 	if (aliasalpha == 0)
 		goto cleanup;
@@ -1169,7 +1169,7 @@ void R_RenderView (void)
 	R_SetupFrame ();
 	R_MarkLeaves ();	// done here so we know if we're in water
     
-    R_SetupSurfaces (); // create texture chains from PVS and cull it
+	R_SetupSurfaces (); // create texture chains from PVS and cull it
 	R_UpdateWarpTextures ();	// do this before R_Clear
 	R_Clear ();
 	R_SetupGL ();
