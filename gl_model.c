@@ -2904,7 +2904,6 @@ void Mod_LoadAliasModel (model_t *mod, void *buffer)
 
 	pheader->numposes = posenum;
 
-//	mod->type = mod_alias;
 	
     // set up extra flags that aren't in the mdl
     mod->flags &= (0xFF | MF_HOLEY); // only preserve first byte, plus MF_HOLEY
@@ -3120,7 +3119,6 @@ void Mod_LoadSpriteModel (model_t *mod, void *buffer)
 		}
 	}
 
-//	mod->type = mod_sprite;
 }
 
 //=============================================================================
