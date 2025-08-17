@@ -1426,11 +1426,11 @@ void R_SetupAliasFrame (entity_t *e, aliashdr_t *paliashdr, lerpdata_t *lerpdata
 			e->lerpflags -= LERP_RESETANIM2;
 		}
 		else
-        {
-            e->lerpstart = cl.time;
-            e->previouspose = e->currentpose;
-            e->currentpose = posenum;
-        }
+		{
+			e->lerpstart = cl.time;
+			e->previouspose = e->currentpose;
+			e->currentpose = posenum;
+		}
 	}
 
 	// set up values
