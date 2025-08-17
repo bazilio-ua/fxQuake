@@ -227,6 +227,9 @@ void Draw_LoadPics (void)
 	uintptr_t	offset; // johnfitz
 	char		texturename[64]; //johnfitz
 
+	//
+	// load console charset
+	//
 	// load the console background and the charset
 	// by hand, because we need to write the version
 	// string into the background before turning
