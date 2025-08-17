@@ -323,7 +323,7 @@ void R_MakeAliasModelDisplayLists (model_t *m, aliashdr_t *hdr)
 	int		count; //johnfitz -- precompute texcoords for padded skins
 	int		*loadcmds; //johnfitz
 
-    //johnfitz -- padded skins
+	//johnfitz -- padded skins
 	hscale = (float)hdr->skinwidth/(float)TexMgr_PadConditional(hdr->skinwidth);
 	vscale = (float)hdr->skinheight/(float)TexMgr_PadConditional(hdr->skinheight);
 	//johnfitz
@@ -342,9 +342,8 @@ void R_MakeAliasModelDisplayLists (model_t *m, aliashdr_t *hdr)
 
 	cmds = Hunk_AllocName (numcommands * 4, "cmds");
 	paliashdr->commands = (byte *)cmds - (byte *)paliashdr;
-    
 
-    //johnfitz -- precompute texcoords for padded skins
+	//johnfitz -- precompute texcoords for padded skins
 	loadcmds = commands;
 	while(1)
 	{
