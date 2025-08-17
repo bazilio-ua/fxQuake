@@ -24,10 +24,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 texture_t	*notexture_mip; // moved here from gl_main.c 
 texture_t	*notexture_mip2; // used for non-lightmapped surfs with a missing texture
 
-gltexture_t *particletexture;	// particle texture
-gltexture_t *particletexture1;	// circle
-gltexture_t *particletexture2;	// square
-
 /*
 ==================
 R_InitTextures
@@ -54,7 +50,7 @@ R_FullBright
 void R_FullBright (void)
 {
 	// Refresh lightmaps
-    R_RebuildAllLightmaps ();
+	R_RebuildAllLightmaps ();
 }
 
 /*

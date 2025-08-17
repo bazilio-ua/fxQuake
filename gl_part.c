@@ -36,6 +36,10 @@ float			texturescalefactor; // compensate for apparent size of different particl
 cvar_t	r_particles = {"r_particles","1", CVAR_ARCHIVE};
 cvar_t	r_particlescale = {"r_particlescale","1", CVAR_ARCHIVE};
 
+gltexture_t *particletexture;	// particle texture
+gltexture_t *particletexture1;	// circle
+gltexture_t *particletexture2;	// square
+
 /*
 ===============
 R_ParticleTextureLookup
