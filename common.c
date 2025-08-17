@@ -852,7 +852,7 @@ void COM_CheckRegistered (void)
 	int                     i;
 
 	for (i=0 ; com_cmdline[i] ; i++)
-		if (com_cmdline[i] != ' ')
+		if (com_cmdline[i] != ' ') // johnfitz: eliminate leading space
 			break;
 
 	Cvar_SetROM ("cmdline", &com_cmdline[i]);
