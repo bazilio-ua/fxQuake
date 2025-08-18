@@ -96,9 +96,6 @@ qpic_t		*scr_ram;
 qpic_t		*scr_net;
 qpic_t		*scr_turtle;
 
-extern	qpic_t	*sb_colon;
-extern	qpic_t	*sb_slash;
-extern	qpic_t	*sb_nums[2][11];
 
 int			clearconsole;
 
