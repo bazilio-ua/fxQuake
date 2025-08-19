@@ -1913,7 +1913,6 @@ void Mod_LoadLeafs (lump_t *l, int bsp2)
 		Mod_LoadLeafs_S (l);
 }
 
-
 /*
 =================
 Mod_MakeHulls
