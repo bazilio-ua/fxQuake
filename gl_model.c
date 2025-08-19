@@ -1913,30 +1913,15 @@ void Mod_LoadLeafs (lump_t *l, int bsp2)
 		Mod_LoadLeafs_S (l);
 }
 
+
 /*
 =================
-Mod_LoadClipnodes_S
-
-short version
+Mod_MakeHulls
 =================
 */
-void Mod_LoadClipnodes_S (lump_t *l)
+void Mod_MakeHulls (mclipnode_t *out, int count)
 {
-	dclipnode_s_t *in;
-	mclipnode_t *out; //johnfitz -- was dclipnode_t
-	int			i, count;
 	hull_t		*hull;
-
-	in = (dclipnode_s_t *)(mod_base + l->fileofs);
-	if (l->filelen % sizeof(*in))
-		Host_Error ("Mod_LoadClipnodes_S: funny lump size in %s",loadmodel->name);
-	count = l->filelen / sizeof(*in);
-	if (count > 32767) // old limit warning
-		Con_DWarning ("Mod_LoadClipnodes_S: clipnodes exceeds standard limit (%d, normal max = %d) in %s\n", count, 32767, loadmodel->name);
-	out = Hunk_AllocName ( count*sizeof(*out), loadname);
-
-	loadmodel->clipnodes = out;
-	loadmodel->numclipnodes = count;
 
 	// Player Hull
 	hull = &loadmodel->hulls[1];
@@ -1959,6 +1944,33 @@ void Mod_LoadClipnodes_S (lump_t *l)
 	VectorSet (hull->clip_mins, -32, -32, -24);
 	VectorSet (hull->clip_maxs,  32,  32,  64);
 	hull->available = true;
+}
+
+/*
+=================
+Mod_LoadClipnodes_S
+
+short version
+=================
+*/
+void Mod_LoadClipnodes_S (lump_t *l)
+{
+	dclipnode_s_t *in;
+	mclipnode_t *out; //johnfitz -- was dclipnode_t
+	int			i, count;
+
+	in = (dclipnode_s_t *)(mod_base + l->fileofs);
+	if (l->filelen % sizeof(*in))
+		Host_Error ("Mod_LoadClipnodes_S: funny lump size in %s",loadmodel->name);
+	count = l->filelen / sizeof(*in);
+	if (count > 32767) // old limit warning
+		Con_DWarning ("Mod_LoadClipnodes_S: clipnodes exceeds standard limit (%d, normal max = %d) in %s\n", count, 32767, loadmodel->name);
+	out = Hunk_AllocName ( count*sizeof(*out), loadname);
+
+	loadmodel->clipnodes = out;
+	loadmodel->numclipnodes = count;
+
+	Mod_MakeHulls (out, count);
 
 	for (i=0 ; i<count ; i++, out++, in++)
 	{
@@ -1992,7 +2004,6 @@ void Mod_LoadClipnodes_L (lump_t *l)
 	dclipnode_l_t *in;
 	mclipnode_t *out; //johnfitz -- was dclipnode_t
 	int			i, count;
-	hull_t		*hull;
 
 	in = (dclipnode_l_t *)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
@@ -2005,27 +2016,7 @@ void Mod_LoadClipnodes_L (lump_t *l)
 	loadmodel->clipnodes = out;
 	loadmodel->numclipnodes = count;
 
-	// Player Hull
-	hull = &loadmodel->hulls[1];
-	hull->clipnodes = out;
-	hull->firstclipnode = 0;
-	hull->lastclipnode = count-1;
-	hull->planes = loadmodel->planes;
-
-	VectorSet (hull->clip_mins, -16, -16, -24);
-	VectorSet (hull->clip_maxs,  16,  16,  32);
-	hull->available = true;
-
-	// Monster hull
-	hull = &loadmodel->hulls[2];
-	hull->clipnodes = out;
-	hull->firstclipnode = 0;
-	hull->lastclipnode = count-1;
-	hull->planes = loadmodel->planes;
-
-	VectorSet (hull->clip_mins, -32, -32, -24);
-	VectorSet (hull->clip_maxs,  32,  32,  64);
-	hull->available = true;
+	Mod_MakeHulls (out, count);
 
 	for (i=0 ; i<count ; i++, out++, in++)
 	{
