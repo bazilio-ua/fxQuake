@@ -2261,7 +2261,6 @@ void Mod_LoadBrushModel (model_t *mod, void *buffer)
 	float		radius;
 	qboolean	servermatch, clientmatch;
 	
-//	loadmodel->type = mod_brush;
 	mod->type = mod_brush;
 
 // isworldmodel check
