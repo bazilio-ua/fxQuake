@@ -190,7 +190,7 @@ Mod_LeafPVS
 byte *Mod_LeafPVS (mleaf_t *leaf, model_t *model)
 {
 	if (leaf == model->leafs)
-        return Mod_NoVisPVS (model);
+		return Mod_NoVisPVS (model);
 	return Mod_DecompressVis (leaf->compressed_vis, model);
 }
 
