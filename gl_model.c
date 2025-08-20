@@ -2595,7 +2595,7 @@ void *Mod_LoadAllSkins (int numskins, daliasskintype_t *pskintype)
 
 	size = pheader->skinwidth * pheader->skinheight;
 
-    if (loadmodel->flags & MF_HOLEY)
+	if (loadmodel->flags & MF_HOLEY)
 		texflags |= TEXPREF_ALPHA;
 
 	for (i=0 ; i<numskins ; i++)
@@ -2901,7 +2901,7 @@ void Mod_LoadAliasModel (model_t *mod, void *buffer)
 
 	
     // set up extra flags that aren't in the mdl
-    mod->flags &= (0xFF | MF_HOLEY); // only preserve first byte, plus MF_HOLEY
+	mod->flags &= (0xFF | MF_HOLEY); // only preserve first byte, plus MF_HOLEY
 
 	Mod_CalcAliasBounds (pheader); // calc correct bounds
 
