@@ -2873,8 +2873,7 @@ void Mod_LoadAliasModel (model_t *mod, void *buffer)
 
 		for (j=0 ; j<3 ; j++)
 		{
-			triangles[i].vertindex[j] =
-					LittleLong (pintriangles[i].vertindex[j]);
+			triangles[i].vertindex[j] = LittleLong (pintriangles[i].vertindex[j]);
 
 			if (triangles[i].vertindex[j] < 0 || triangles[i].vertindex[j] >= MAXALIASVERTS)
 				Host_Error ("Mod_LoadAliasModel: invalid triangles[%d].vertindex[%d] (%d, max = %d) in %s", i, j, triangles[i].vertindex[j], MAXALIASVERTS, mod->name);
@@ -2900,7 +2899,7 @@ void Mod_LoadAliasModel (model_t *mod, void *buffer)
 	pheader->numposes = posenum;
 
 	
-    // set up extra flags that aren't in the mdl
+	// set up extra flags that aren't in the mdl
 	mod->flags &= (0xFF | MF_HOLEY); // only preserve first byte, plus MF_HOLEY
 
 	Mod_CalcAliasBounds (pheader); // calc correct bounds
