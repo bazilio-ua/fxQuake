@@ -2963,7 +2963,7 @@ void *Mod_LoadSpriteFrame (void *pin, mspriteframe_t **ppframe, int framenum, in
 	pspriteframe->left = origin[0];
 	pspriteframe->right = width + origin[0];
 
-    //johnfitz -- image might be padded
+	//johnfitz -- image might be padded
 	pspriteframe->smax = (float)width/(float)TexMgr_PadConditional(width);
 	pspriteframe->tmax = (float)height/(float)TexMgr_PadConditional(height);
 	//johnfitz
