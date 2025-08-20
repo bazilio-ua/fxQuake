@@ -2270,7 +2270,6 @@ void Mod_LoadBrushModel (model_t *mod, void *buffer)
 		Con_DPrintf ("sv.modelname: %s\n", sv.modelname);
 	if (clientmatch)
 		Con_DPrintf ("cl.modelname: %s\n", cl.worldname);
-//	loadmodel->isworldmodel = servermatch || clientmatch;
 	mod->isworldmodel = servermatch || clientmatch;
 
 	header = (dheader_t *)buffer;
