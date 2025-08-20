@@ -118,7 +118,6 @@ void SV_Init (void)
 	Cvar_RegisterVariable (&sv_cullentities);
 
 	Cmd_AddCommand ("freezeall", &SV_Freezeall_f);
-
 	Cmd_AddCommand ("sv_protocol", &SV_Protocol_f);
 
 	for (i=0 ; i<MAX_MODELS ; i++)
