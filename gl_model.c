@@ -1310,7 +1310,7 @@ void Mod_SetDrawingFlags (msurface_t *out)
 		Mod_PolyForUnlitSurface (out);
 		// no more subdivision 
 	}
-	else if (out->texinfo->texture->name[0] == '*') // warp surface
+	else if (out->texinfo->texture->name[0] == '*') // warp surface (turbulent)
 	{
 		out->flags |= SURF_DRAWTURB;
 		if (out->texinfo->flags & TEX_SPECIAL)
