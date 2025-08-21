@@ -535,7 +535,7 @@ void Mod_LoadTextures (lump_t *l)
 				}
 				
 				//now create the warpimage, using dummy data from the hunk to create the initial image
-				Hunk_Alloc (warpimage_size*warpimage_size*4 * (tx->glow ? 2 : 1)); //make sure hunk is big enough so we don't reach an illegal address
+				Hunk_Alloc (warpimage_size*warpimage_size*4); //make sure hunk is big enough so we don't reach an illegal address
 				
 				Hunk_FreeToLowMark (mark);
 				
