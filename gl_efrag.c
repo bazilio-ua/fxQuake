@@ -137,7 +137,7 @@ void R_AddEfrags (entity_t *ent)
 {
     r_efragdef_t ed;
 	model_t		*entmodel;
-	vec_t		scalefactor;
+	vec_t		scale;
 
 	// entities with no model won't get drawn
 	if (!ent->model)
@@ -152,11 +152,11 @@ void R_AddEfrags (entity_t *ent)
 			
 	entmodel = ent->model;
 	
-	scalefactor = ENTSCALE_DECODE(ent->scale);
-	if (scalefactor != 1.0f)
+	scale = ENTSCALE_DECODE(ent->scale);
+	if (scale != 1.0f)
 	{
-		VectorMA (ent->origin, scalefactor, entmodel->mins, ed.mins);
-		VectorMA (ent->origin, scalefactor, entmodel->maxs, ed.maxs);
+		VectorMA (ent->origin, scale, entmodel->mins, ed.mins);
+		VectorMA (ent->origin, scale, entmodel->maxs, ed.maxs);
 	}
 	else
 	{

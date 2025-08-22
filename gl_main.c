@@ -267,7 +267,7 @@ uses correct bounds based on rotation
 qboolean R_CullModelForEntity (entity_t *e)
 {
 	vec3_t mins, maxs;
-	vec_t scalefactor, *minbounds, *maxbounds;
+	vec_t scale, *minbounds, *maxbounds;
 
 	if (e->angles[0] || e->angles[2]) // pitch or roll
 	{
@@ -285,11 +285,11 @@ qboolean R_CullModelForEntity (entity_t *e)
 		maxbounds = e->model->maxs;
 	}
 	
-	scalefactor = ENTSCALE_DECODE(e->scale);
-	if (scalefactor != 1.0f)
+	scale = ENTSCALE_DECODE(e->scale);
+	if (scale != 1.0f)
 	{
-		VectorMA (e->origin, scalefactor, minbounds, mins);
-		VectorMA (e->origin, scalefactor, maxbounds, maxs);
+		VectorMA (e->origin, scale, minbounds, mins);
+		VectorMA (e->origin, scale, maxbounds, maxs);
 	}
 	else
 	{
@@ -1227,15 +1227,15 @@ R_RotateForEntity renamed and modified to take lerpdata instead of pointer to en
 */
 void GL_EntityTransform (lerpdata_t lerpdata, entity_t *e)
 {
-	float scalefactor = ENTSCALE_DECODE(e->scale);
+	float scale = ENTSCALE_DECODE(e->scale);
 	
 	glTranslatef (lerpdata.origin[0], lerpdata.origin[1], lerpdata.origin[2]);
 	glRotatef (lerpdata.angles[1],  0, 0, 1);
 	glRotatef (stupidquakebugfix ? lerpdata.angles[0] : -lerpdata.angles[0],  0, 1, 0);
 	glRotatef (lerpdata.angles[2],  1, 0, 0);
 	
-	if (scalefactor != 1.0f)
-		glScalef(scalefactor, scalefactor, scalefactor);
+	if (scale != 1.0f)
+		glScalef(scale, scale, scale);
 }
 
 /*

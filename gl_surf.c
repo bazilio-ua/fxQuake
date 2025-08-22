@@ -911,7 +911,7 @@ void R_DrawBrushModel (entity_t *e)
 	float		alpha;
 	qboolean	forcealpha;
 	qboolean	hasalpha = false;
-	float		scalefactor;
+	float		scale;
 	
 	if (R_CullModelForEntity(e))
 		return;
@@ -962,9 +962,9 @@ void R_DrawBrushModel (entity_t *e)
 		glRotatef (e->angles[2],  1, 0, 0);
 	}
 	
-	scalefactor = ENTSCALE_DECODE(e->scale);
-	if (scalefactor != 1.0f)
-		glScalef(scalefactor, scalefactor, scalefactor);
+	scale = ENTSCALE_DECODE(e->scale);
+	if (scale != 1.0f)
+		glScalef(scale, scale, scale);
 	
 	R_ClearTextureChains(clmodel, chain_model);
 	
