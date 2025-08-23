@@ -39,7 +39,7 @@ typedef struct edict_s
 	link_t		area;				// linked to a division node or leaf
 
 	int		num_leafs;
-	int		leafnums[MAX_ENT_LEAFS];
+	int		leafnums[MAX_ENT_LEAFS]; // ericw -- leafnums array in edict_t needs to be int, not short
 
 	entity_state_t	baseline;
 	byte		alpha;				// johnfitz -- hack to support alpha since it's not part of entvars_t
