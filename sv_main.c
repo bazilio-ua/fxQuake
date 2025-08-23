@@ -1585,6 +1585,7 @@ void SV_SpawnServer (char *server)
 {
 	edict_t		*ent;
 	int			i;
+	static char	dummy[8] = { 0,0,0,0,0,0,0,0 };
 
 	// let's not have any servers with no name
 	if (hostname.string[0] == 0)
@@ -1696,9 +1697,8 @@ void SV_SpawnServer (char *server)
 //
 	SV_ClearWorld ();
 
-	sv.sound_precache[0] = pr_strings;
-
-	sv.model_precache[0] = pr_strings;
+	sv.sound_precache[0] = dummy;
+	sv.model_precache[0] = dummy;
 	sv.model_precache[1] = sv.modelname;
 	for (i=1 ; i<sv.worldmodel->numsubmodels ; i++)
 	{
