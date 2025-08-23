@@ -1075,10 +1075,10 @@ void PR_LoadProgs (void)
 
 	pr_functions = (dfunction_t *)((byte *)progs + progs->ofs_functions);
 	pr_strings = (char *)progs + progs->ofs_strings;
-    pr_strings_size = progs->numstrings;
+	pr_strings_size = progs->numstrings;
 
 // initialize the strings
-    PR_InitStringTable();
+	PR_InitStringTable();
 
 	pr_globaldefs = (ddef_t *)((byte *)progs + progs->ofs_globaldefs);
 	pr_fielddefs = (ddef_t *)((byte *)progs + progs->ofs_fielddefs);
