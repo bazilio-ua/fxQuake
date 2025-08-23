@@ -824,7 +824,7 @@ void PF_checkclient (void)
 	}
 
 // might be able to see it
-    c_invis++;
+	c_invis++;
 	RETURN_EDICT(ent);
 }
 
