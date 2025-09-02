@@ -368,6 +368,8 @@ void CL_SendMove (usercmd_t *cmd)
 	sizebuf_t	buf;
 	byte	data[128];
 	
+	memset (&buf, 0, sizeof(buf));
+	
 	buf.maxsize = 128;
 	buf.cursize = 0;
 	buf.data = data;
