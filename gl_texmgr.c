@@ -719,7 +719,6 @@ void GL_BindTexture (gltexture_t *texture)
 	{
 		currenttexture[currenttarget - GL_TEXTURE0_ARB] = texture->texnum;
 		glBindTexture (GL_TEXTURE_2D, texture->texnum);
-		glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, texture->max_miplevel);
 	}
 }
 
@@ -1641,7 +1640,9 @@ void TexMgr_Upload32 (gltexture_t *glt, unsigned *data)
 			miplevel++;
 		}
 	}
-    
+	
+	glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, glt->max_miplevel);
+	
 	// set filter modes
 	GL_SetFilterModes (glt);
 }
