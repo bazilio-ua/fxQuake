@@ -1559,7 +1559,7 @@ void TexMgr_Upload32 (gltexture_t *glt, unsigned *data)
     }
     
 	// mipmap down
-	picmip = (glt->flags & TEXPREF_NOPICMIP) ? 0 : max ((int)gl_picmip.value, 0);
+	picmip = (glt->flags & TEXPREF_NOPICMIP || ((glt->flags & TEXPREF_FULLBRIGHT) && gl_picmip.value < 0)) ? 0 : max (abs((int)gl_picmip.value), 0);
 	mipwidth = TexMgr_SafeTextureSize (glt->width >> picmip);
 	mipheight = TexMgr_SafeTextureSize (glt->height >> picmip);
 	while (glt->width > mipwidth)
