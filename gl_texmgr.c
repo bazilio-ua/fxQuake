@@ -222,7 +222,7 @@ void GL_CheckExtension_TextureCompression (void)
 	qboolean ARBcompression, EXTcompression;
 	
 	//
-	// Texture add environment mode
+	// Texture compression mode
 	//
 	ARBcompression = strstr (gl_extensions, "GL_ARB_texture_compression") != NULL;
 	EXTcompression = strstr (gl_extensions, "GL_EXT_texture_compression_s3tc") != NULL;
