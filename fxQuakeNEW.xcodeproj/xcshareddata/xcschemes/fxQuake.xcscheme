@@ -68,8 +68,8 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-mem 64"
-            isEnabled = "NO">
+            argument = "-mem 72"
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-nehahra +map neh1m1"
