@@ -68,6 +68,7 @@ cvar_t	r_norefresh = {"r_norefresh","0", CVAR_NONE};
 cvar_t	r_drawentities = {"r_drawentities","1", CVAR_NONE};
 cvar_t	r_drawworld = {"r_drawworld","1", CVAR_NONE};
 cvar_t	r_drawviewmodel = {"r_drawviewmodel","1", CVAR_NONE};
+cvar_t	r_pos = {"r_pos","0", CVAR_NONE};
 cvar_t	r_speeds = {"r_speeds","0", CVAR_NONE};
 cvar_t	r_fullbright = {"r_fullbright","0", CVAR_NONE};
 cvar_t	r_ambient = { "r_ambient","0", CVAR_NONE};
@@ -1216,6 +1217,15 @@ void R_RenderView (void)
 
 		Con_Printf (str);
 	}
+	
+	if (r_pos.value)
+		Con_Printf ("x %i y %i z %i (pitch %i yaw %i roll %i)\n",
+					(int)cl_entities[cl.viewentity].origin[0],
+					(int)cl_entities[cl.viewentity].origin[1],
+					(int)cl_entities[cl.viewentity].origin[2],
+					(int)cl.viewangles[PITCH],
+					(int)cl.viewangles[YAW],
+					(int)cl.viewangles[ROLL]);
 }
 
 /*

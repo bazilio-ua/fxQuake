@@ -169,6 +169,7 @@ void R_Init (void)
 	Cvar_RegisterVariable (&r_novis);
 	Cvar_RegisterVariable (&r_lockfrustum);
 	Cvar_RegisterVariable (&r_lockpvs);
+	Cvar_RegisterVariable (&r_pos);
 	Cvar_RegisterVariable (&r_speeds);
 	Cvar_RegisterVariable (&r_waterwarp);
 	Cvar_RegisterVariableCallback (&r_clearcolor, R_ClearColor);
