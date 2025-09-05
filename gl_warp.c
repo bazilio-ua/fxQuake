@@ -78,7 +78,7 @@ void R_UpdateWarpTextures (void)
 		glLoadIdentity ();
 
 		glDisable (GL_ALPHA_TEST); //FX new
-		glEnable (GL_BLEND); //FX
+//		glEnable (GL_BLEND); //FX
 		GL_BindTexture (tx->base);
 		for (x=0.0; x<128.0; x=x2)
 		{
@@ -111,7 +111,7 @@ void R_UpdateWarpTextures (void)
 			}
 		}
 		glEnable (GL_ALPHA_TEST); //FX new
-		glDisable (GL_BLEND); //FX
+//		glDisable (GL_BLEND); //FX
 
 		// copy to texture
 		GL_BindTexture (tx->warpbase);
