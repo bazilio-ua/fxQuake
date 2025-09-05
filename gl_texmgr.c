@@ -281,6 +281,41 @@ void GL_CheckExtension_TextureCompression (void)
 	}
 }
 
+void GL_CheckExtension_FramebufferObject (void)
+{
+	qboolean ARBobject, EXTobject;
+	
+	//
+	// Texture framebuffer object (generate mipmap)
+	//
+	ARBobject = strstr (gl_extensions, "GL_ARB_framebuffer_object") != NULL;
+	EXTobject = strstr (gl_extensions, "GL_EXT_framebuffer_object") != NULL;
+
+	if (COM_CheckParm("-nogenmipmap"))
+	{
+		Con_Warning ("Texture generate mipmap disabled at command line\n");
+	}
+	else if (ARBobject || EXTobject)
+	{
+		if (ARBobject)
+			qglGenerateMipmap = (void *) qglGetProcAddress ("glGenerateMipmap");
+		else if (EXTobject)
+			qglGenerateMipmap = (void *) qglGetProcAddress ("glGenerateMipmapEXT");
+		
+		if (qglGenerateMipmap)
+		{
+			Con_Printf ("Found GL_%s_framebuffer_object\n", ARBobject ? "ARB" : "EXT");
+			Con_Printf ("Found glGenerateMipmap%s\n", ARBobject ? "" : "EXT");
+		}
+		else
+			Con_Warning ("Texture generate mipmap not supported (qglGetProcAddress failed)\n");
+	}
+	else
+	{
+		Con_Warning ("Texture generate mipmap not supported (extension not found)\n");
+	}
+}
+
 void GL_CheckExtension_Anisotropy (void)
 {
 	qboolean anisotropy;
@@ -467,6 +502,7 @@ void GL_CheckExtensions (void)
 	
 	GL_CheckExtension_NPoT ();
 	GL_CheckExtension_TextureCompression ();
+	GL_CheckExtension_FramebufferObject ();
 	GL_CheckExtension_Anisotropy ();
 	GL_CheckExtension_VSync ();
 }
@@ -1602,7 +1638,7 @@ void TexMgr_Upload32 (gltexture_t *glt, unsigned *data)
 	glt->max_miplevel = 0;
 	
 	// upload mipmaps
-	if (glt->flags & TEXPREF_MIPMAP)
+	if (glt->flags & TEXPREF_MIPMAP && !(glt->flags & TEXPREF_WARPIMAGE)) // warp image mipmaps are generated later
 	{
 		mipwidth = glt->width;
 		mipheight = glt->height;
@@ -1639,9 +1675,8 @@ void TexMgr_Upload32 (gltexture_t *glt, unsigned *data)
 			
 			miplevel++;
 		}
+		glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, glt->max_miplevel);
 	}
-	
-	glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, glt->max_miplevel);
 	
 	// set filter modes
 	GL_SetFilterModes (glt);

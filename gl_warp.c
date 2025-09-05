@@ -116,10 +116,14 @@ void R_UpdateWarpTextures (void)
 		// copy to texture
 		GL_BindTexture (tx->warpbase);
 		glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, glx, gly + glheight - warpimage_size, warpimage_size, warpimage_size);
+		if (qglGenerateMipmap)
+			qglGenerateMipmap (GL_TEXTURE_2D);
 		if (tx->glow)
 		{
 			GL_BindTexture (tx->warpglow);
 			glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, glx + warpimage_size, gly + glheight - warpimage_size, warpimage_size, warpimage_size);
+			if (qglGenerateMipmap)
+				qglGenerateMipmap (GL_TEXTURE_2D);
 		}
 		
 		tx->update_warp = false;

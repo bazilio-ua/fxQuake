@@ -518,6 +518,8 @@ void Mod_LoadTextures (lump_t *l)
 			}
 			else if (tx->name[0] == '*') // warping texture
 			{
+				unsigned int extraflags = TEXPREF_NONE;
+				
 				mark = Hunk_LowMark ();
 
 				offset = (uintptr_t)(mt+1) - (uintptr_t)mod_base;
@@ -539,19 +541,22 @@ void Mod_LoadTextures (lump_t *l)
 				
 				Hunk_FreeToLowMark (mark);
 				
+				if (qglGenerateMipmap)
+					extraflags |= TEXPREF_MIPMAP;
+				
 				sprintf (texturename, "%s_warp", texturename);
-				tx->warpbase = TexMgr_LoadTexture (loadmodel, texturename, warpimage_size, warpimage_size, SRC_RGBA, hunk_base, "", (uintptr_t)hunk_base, TEXPREF_NOPICMIP | TEXPREF_WARPIMAGE);
+				tx->warpbase = TexMgr_LoadTexture (loadmodel, texturename, warpimage_size, warpimage_size, SRC_RGBA, hunk_base, "", (uintptr_t)hunk_base, TEXPREF_NOPICMIP | TEXPREF_WARPIMAGE | extraflags);
 				if (tx->glow)
 				{
 					sprintf (texturename, "%s_warp_glow", texturename);
-					tx->warpglow = TexMgr_LoadTexture (loadmodel, texturename, warpimage_size, warpimage_size, SRC_RGBA, hunk_base, "", (uintptr_t)hunk_base, TEXPREF_NOPICMIP | TEXPREF_WARPIMAGE);
+					tx->warpglow = TexMgr_LoadTexture (loadmodel, texturename, warpimage_size, warpimage_size, SRC_RGBA, hunk_base, "", (uintptr_t)hunk_base, TEXPREF_NOPICMIP | TEXPREF_WARPIMAGE | extraflags);
 				}
 				
 				tx->update_warp = true;
 			}
 			else // regular texture
 			{
-				int	extraflags = TEXPREF_NONE;
+				unsigned int extraflags = TEXPREF_NONE;
 				
 				mark = Hunk_LowMark ();
 				
