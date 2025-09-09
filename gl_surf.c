@@ -659,12 +659,9 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, model_t *model, entity_t 
 	//
 	if (s->flags & SURF_DRAWTURB)
 	{
-		qboolean	flatcolor = r_flatturb.value;
 		qboolean	litwater = model->haslitwater && r_litwater.value;
 		qboolean	special;
 
-		if (flatcolor)
-			glDisable (GL_TEXTURE_2D);
 		
 		if (alpha < 1.0)
 		{
@@ -682,11 +679,6 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, model_t *model, entity_t 
 		GL_BindTexture (s->texinfo->texture->warpbase);
 		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		
-		if (flatcolor) {
-			glColor4f (s->texinfo->texture->base->colors.flatcolor[0],
-					   s->texinfo->texture->base->colors.flatcolor[1],
-					   s->texinfo->texture->base->colors.flatcolor[2], alpha);
-		}
 		
 		if (s->texinfo->texture->warpglow)
 		{
@@ -751,10 +743,6 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, model_t *model, entity_t 
 			glColor3f(1, 1, 1);
 		}
 		
-		if (flatcolor) {
-			glColor3f (1, 1, 1);
-			glEnable (GL_TEXTURE_2D);
-		}
 		
 		return;
 	}
@@ -794,10 +782,7 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, model_t *model, entity_t 
 	//
 	if ( !(s->flags & SURF_DRAWTILED) )
 	{
-		qboolean	flatcolor = r_flatworld.value;
 		
-		if (flatcolor)
-			glDisable (GL_TEXTURE_2D);
 		
 		if (alpha < 1.0)
 		{
@@ -818,11 +803,6 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, model_t *model, entity_t 
 		GL_BindTexture (t->base);
 		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		
-		if (flatcolor) {
-			glColor4f (t->base->colors.basecolor[0],
-					   t->base->colors.basecolor[1],
-					   t->base->colors.basecolor[2], alpha);
-		}
 		
 		if (t->glow)
 		{
@@ -885,10 +865,6 @@ void R_DrawSequentialPoly (msurface_t *s, float alpha, model_t *model, entity_t 
 		if (s->flags & SURF_DRAWHOLEY)
 			glDisable (GL_ALPHA_TEST); // Flip alpha test back off
 		
-		if (flatcolor) {
-			glColor3f (1, 1, 1);
-			glEnable (GL_TEXTURE_2D);
-		}
 		
 	}
 }
@@ -1233,12 +1209,9 @@ void R_DrawTextureChains_Water (model_t *model, entity_t *ent, texchain_t chain)
 	texture_t	*t;
 	float		*v;
 	qboolean	bound;
-	qboolean	flatcolor = r_flatturb.value;
 	qboolean	litwater = model->haslitwater && r_litwater.value;
 	qboolean	special;
 	
-	if (flatcolor)
-		glDisable (GL_TEXTURE_2D);
 	
 	for (i=0 ; i<model->numtextures ; i++)
 	{
@@ -1257,8 +1230,6 @@ void R_DrawTextureChains_Water (model_t *model, entity_t *ent, texchain_t chain)
 				GL_SelectTMU0 ();
 				GL_BindTexture (t->warpbase);
 				
-				if (flatcolor)
-					glColor3fv (t->base->colors.flatcolor);
 				
 				if (t->warpglow)
 				{
@@ -1304,10 +1275,6 @@ void R_DrawTextureChains_Water (model_t *model, entity_t *ent, texchain_t chain)
 		GL_SelectTMU0 ();
 	}
 	
-	if (flatcolor) {
-		glColor3f (1, 1, 1);
-		glEnable (GL_TEXTURE_2D);
-	}
 }
 
 /*
@@ -1359,10 +1326,7 @@ void R_DrawTextureChains_Multitexture (model_t *model, entity_t *ent, texchain_t
 	float		*v;
 	qboolean	bound;
 	gltexture_t	*base, *glow;
-	qboolean	flatcolor = r_flatworld.value;
 	
-	if (flatcolor)
-		glDisable (GL_TEXTURE_2D);
 	
 	for (i=0 ; i<model->numtextures ; i++)
 	{
@@ -1383,8 +1347,6 @@ void R_DrawTextureChains_Multitexture (model_t *model, entity_t *ent, texchain_t
 				GL_SelectTMU0 ();
 				GL_BindTexture (base);
 				
-				if (flatcolor)
-					glColor3fv (base->colors.basecolor);
 				
                 if (t->texturechains[chain]->flags & SURF_DRAWHOLEY)
                     glEnable (GL_ALPHA_TEST); // Flip alpha test back on
@@ -1433,10 +1395,6 @@ void R_DrawTextureChains_Multitexture (model_t *model, entity_t *ent, texchain_t
 			glDisable (GL_ALPHA_TEST); // Flip alpha test back off
 	}
 	
-	if (flatcolor) {
-		glColor3f (1, 1, 1);
-		glEnable (GL_TEXTURE_2D);
-	}
 }
 
 

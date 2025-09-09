@@ -600,7 +600,6 @@ void V_ShiftPalette (byte *palette)
 {
 	V_SetPalette (palette);
 	TexMgr_ReloadTextures ();
-	R_FastSkyColor ();
 }
 
 void SetPaletteColor (unsigned int *dst, byte r, byte g, byte b, byte a)

@@ -224,12 +224,6 @@ void (GLAPIENTRY *qglGenerateMipmap) (GLenum type);
 
 enum srcformat {SRC_INDEXED, SRC_LIGHTMAP, SRC_RGBA, SRC_BLOOM};
 
-typedef struct
-{
-	vec3_t		basecolor;
-	vec3_t		glowcolor;
-	vec3_t		flatcolor;
-} flatcolors_t;
 
 typedef struct gltexture_s {
 //managed by texture manager
@@ -252,7 +246,6 @@ typedef struct gltexture_s {
 	signed char			top_color;					// 0-13 top color, or -1 if never colormapped
 	signed char			bottom_color;				// 0-13 bottom color, or -1 if never colormapped
 	
-	flatcolors_t		colors;
 } gltexture_t;
 
 typedef struct
@@ -330,7 +323,6 @@ void SCR_TileClear (void);
 // gl_sky.c
 void R_DrawSky (void);
 void R_LoadSkyBox (char *skybox);
-void R_FastSkyColor (void);
 void R_SkyAlpha (void);
 void R_Skyfog (void);
 void R_Sky_f (void);
@@ -521,7 +513,6 @@ extern	cvar_t	r_speeds;
 extern	cvar_t	r_waterwarp;
 extern	cvar_t	r_fullbright;
 extern	cvar_t	r_ambient;
-extern	cvar_t	r_flatturb;
 extern	cvar_t	r_waterquality;
 extern	cvar_t	r_wateralpha;
 extern	cvar_t	r_lockalpha;
@@ -536,14 +527,10 @@ extern	cvar_t	r_novis;
 extern	cvar_t	r_lockfrustum;
 extern	cvar_t	r_lockpvs;
 extern	cvar_t	r_clearcolor;
-extern	cvar_t	r_fastsky;
-extern	cvar_t	r_fastskycolor;
 extern	cvar_t	r_skyquality;
 extern	cvar_t	r_skyalpha;
 extern	cvar_t	r_skyfog;
 extern	cvar_t	r_oldsky;
-extern	cvar_t	r_flatworld;
-extern	cvar_t	r_flatmodels;
 extern	cvar_t	r_flatlightstyles;
 
 extern	cvar_t	gl_swapinterval;

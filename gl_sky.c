@@ -22,8 +22,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "quakedef.h"
 
 
-cvar_t	r_fastsky = {"r_fastsky","0", CVAR_NONE};
-cvar_t	r_fastskycolor = {"r_fastskycolor", "", CVAR_ARCHIVE}; // woods #fastskycolor
 cvar_t	r_skyquality = {"r_skyquality","12", CVAR_NONE};
 cvar_t	r_skyalpha = {"r_skyalpha","1", CVAR_NONE};
 cvar_t	r_skyfog = {"r_skyfog","0.5", CVAR_NONE};
@@ -298,54 +296,6 @@ gltexture_t		*solidskytexture, *alphaskytexture;
 
 #define	MAX_CLIP_VERTS 256 // was 64
 
-float	skyflatcolor[3];
-byte	*skydata;
-
-/*
-====================
-R_FastSkyColor
-====================
-*/
-void R_FastSkyColor (void)
-{
-	int			i, j, p, r, g, b, count;
-	unsigned	*rgba;
-	byte *rgb;
-	
-	if (r_fastskycolor.string[0] != 0)
-	{
-	// update skycolor
-		rgb = (byte *)(d_8to24table + ((int)r_fastskycolor.value & 0xFF));
-		skyflatcolor[0] = (float)rgb[0]/255.0;
-		skyflatcolor[1] = (float)rgb[1]/255.0;
-		skyflatcolor[2] = (float)rgb[2]/255.0;
-	}
-	else
-	if (skydata)
-	{
-	// calculate r_fastsky color based on average of all opaque foreground colors
-		r = g = b = count = 0;
-		for (i=0 ; i<128 ; i++)
-		{
-			for (j=0 ; j<128 ; j++)
-			{
-				p = skydata[i*256 + j];
-				if (p != 0)
-				{
-					rgba = &d_8to24table[p];
-					r += ((byte *)rgba)[0];
-					g += ((byte *)rgba)[1];
-					b += ((byte *)rgba)[2];
-					count++;
-				}
-			}
-		}
-		
-		skyflatcolor[0] = (float)r/(count*255);
-		skyflatcolor[1] = (float)g/(count*255);
-		skyflatcolor[2] = (float)b/(count*255);
-	}
-}
 
 /*
 ====================
@@ -766,12 +716,9 @@ void R_SkyProcessPoly (glpoly_t *p)
 	rs_c_brush_passes++; // r_speeds
 
 	// update sky bounds
-	if (!r_fastsky.value)
-	{
-		for (i=0 ; i<p->numverts ; i++)
-			VectorSubtract (p->verts[i], r_origin, verts[i]);
-		R_SkyClipPoly (p->numverts, verts[0], 0);
-	}
+	for (i=0 ; i<p->numverts ; i++)
+		VectorSubtract (p->verts[i], r_origin, verts[i]);
+	R_SkyClipPoly (p->numverts, verts[0], 0);
 }
 
 /*
@@ -942,19 +889,18 @@ void R_DrawSky (void)
 	glDisable (GL_TEXTURE_2D);
 	if (R_FogGetDensity() > 0)
 		glColor3fv (R_FogGetColor());
-	else
-		glColor3fv (skyflatcolor);
 
 	R_SkyProcessTextureChains ();
 	R_SkyProcessEntities ();
 
-	glColor3f (1, 1, 1);
+	if (R_FogGetDensity() > 0)
+		glColor3f (1, 1, 1);
 	glEnable (GL_TEXTURE_2D);
 
 	//
 	// render slow sky: cloud layers or skybox
 	//
-	if (!r_fastsky.value && !(R_FogGetDensity() > 0 && skyfog >= 1))
+	if (!(R_FogGetDensity() > 0 && skyfog >= 1))
 	{
 		glDepthFunc(GL_GEQUAL);
 		glDepthMask (GL_FALSE); // don't bother writing Z
@@ -1055,8 +1001,5 @@ void R_InitSky (texture_t *mt)
 	sprintf (texturename, "%s:%s_front", loadmodel->name, mt->name);
 	alphaskytexture = TexMgr_LoadTexture (loadmodel, texturename, 128, 128, SRC_INDEXED, front_data, "", (uintptr_t)front_data, TEXPREF_SKY | TEXPREF_ALPHA);
 
-	skydata = src;
-	
-	R_FastSkyColor ();
 }
 

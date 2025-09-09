@@ -86,8 +86,6 @@ cvar_t	r_lockfrustum =	{"r_lockfrustum","0", CVAR_NONE};
 cvar_t	r_lockpvs = {"r_lockpvs","0", CVAR_NONE};
 cvar_t	r_waterwarp = {"r_waterwarp", "1", CVAR_ARCHIVE};
 cvar_t	r_clearcolor = {"r_clearcolor", "2", CVAR_ARCHIVE}; // Closest to the original
-cvar_t	r_flatworld = {"r_flatworld", "0", CVAR_NONE};
-cvar_t	r_flatmodels = {"r_flatmodels", "0", CVAR_NONE};
 cvar_t	r_flatlightstyles = {"r_flatlightstyles", "0", CVAR_NONE};
 
 cvar_t	gl_finish = {"gl_finish","0", CVAR_NONE};
@@ -536,8 +534,6 @@ qboolean shading = true; // if false, disable vertex shading for various reasons
 
 float	aliasalpha;
 qboolean	aliasglow;
-vec3_t	aliascolor;
-qboolean	aliasflat;
 
 /*
 =================
@@ -562,7 +558,6 @@ void R_DrawAliasModel (entity_t *e)
 	float		fovscale = 1.0f;
 	qboolean	alphatest;
 	qboolean	alphablend;
-	qboolean	flatcolor = r_flatmodels.value;
 	
 	//
 	// locate the proper data
@@ -636,8 +631,6 @@ void R_DrawAliasModel (entity_t *e)
 	if (aliasalpha == 0)
 		goto cleanup;
 	
-	if (flatcolor)
-		glDisable (GL_TEXTURE_2D);
 	
 	alphablend = (aliasalpha < 1.0);
 	if (alphablend)
@@ -730,7 +723,6 @@ void R_DrawAliasModel (entity_t *e)
 	// draw it
 	//
 	
-	aliasflat = flatcolor;
 	
 	GL_SelectTMU0 ();
 	GL_BindTexture (base);
@@ -740,8 +732,6 @@ void R_DrawAliasModel (entity_t *e)
 	glTexEnvf (GL_TEXTURE_ENV, GL_SOURCE1_RGB_ARB, GL_PRIMARY_COLOR_ARB);
 	glTexEnvf (GL_TEXTURE_ENV, GL_RGB_SCALE_ARB, d_overbrightscale);
 	
-	if (flatcolor)
-		VectorCopy (base->colors.basecolor, aliascolor);
 	
 	if (aliasglow)
 	{
@@ -778,11 +768,6 @@ cleanup:
 	else
 	if (alphatest)
 		glDisable (GL_ALPHA_TEST);
-	
-	if (flatcolor) {
-		glColor4f (1, 1, 1, 1);
-		glEnable (GL_TEXTURE_2D);
-	}
 	
 	
 	glPopMatrix ();
@@ -1340,12 +1325,6 @@ void GL_DrawAliasFrame (aliashdr_t *paliashdr, lerpdata_t lerpdata)
 					vertcolor[2] = shadedots[verts1->lightnormalindex] * lightcolor[2];
 				}
 				
-				if (aliasflat)
-				{
-					vertcolor[0] = vertcolor[0] * aliascolor[0] * d_overbrightscale;
-					vertcolor[1] = vertcolor[1] * aliascolor[1] * d_overbrightscale;
-					vertcolor[2] = vertcolor[2] * aliascolor[2] * d_overbrightscale;
-				}
 				
 				glColor4fv (vertcolor);
 			}
