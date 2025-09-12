@@ -908,9 +908,9 @@ void Host_Init (void)
 	Con_Printf ("Host initialized\n");
 
 	if (cls.state == ca_dedicated)
-		Con_Printf ("\n****** fxQuake initialized ******\n\n");
+		Con_Printf ("\n****** Quake initialized ******\n\n");
 	else
-		Con_Printf ("\n\35\36\36\36\36\37 fxQuake initialized \35\36\36\36\36\37\n\n");
+		Con_Printf ("\n\35\36\36\36\36\37 Quake initialized \35\36\36\36\36\37\n\n");
 
 	if (cls.state != ca_dedicated)
 	{
