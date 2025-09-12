@@ -909,13 +909,14 @@ void CL_NewTranslation (int slot)
 	
 	if (slot > cl.maxclients)
 		Host_Error ("CL_NewTranslation: invalid slot (%d, max = %d)", slot, cl.maxclients);
+	
+	R_TranslatePlayerSkin (slot);
+	
 	dest = cl.scores[slot].translations;
 	source = vid.colormap;
 	memcpy (dest, vid.colormap, sizeof(cl.scores[slot].translations));
 	top = cl.scores[slot].colors & 0xf0;
 	bottom = (cl.scores[slot].colors &15)<<4;
-	
-	R_TranslatePlayerSkin (slot);
 	
 	for (i=0 ; i<VID_GRADES ; i++, dest += 256, source+=256)
 	{
