@@ -228,7 +228,7 @@ void Draw_LoadPics (void)
 	char		texturename[64]; //johnfitz
 
 	//
-	// load the console charset
+	// load console charset
 	//
 	draw_chars = W_GetLumpName ("conchars");
 
