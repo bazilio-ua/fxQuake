@@ -636,6 +636,7 @@ void CL_ParseUpdate (int bits)
 	if (model != ent->model)
 	{
 		ent->model = model;
+		
 		// automatic animation (torches, etc) can be either all together
 		// or randomized
 		if (model)
