@@ -1225,9 +1225,10 @@ void GL_EntityTransform (lerpdata_t lerpdata, entity_t *e)
 	float scale = ENTSCALE_DECODE(e->scale);
 	
 	glTranslatef (lerpdata.origin[0], lerpdata.origin[1], lerpdata.origin[2]);
-	glRotatef (lerpdata.angles[1],  0, 0, 1);
+	
+	glRotatef (lerpdata.angles[1],  										  0, 0, 1);
 	glRotatef (stupidquakebugfix ? lerpdata.angles[0] : -lerpdata.angles[0],  0, 1, 0);
-	glRotatef (lerpdata.angles[2],  1, 0, 0);
+	glRotatef (lerpdata.angles[2],  										  1, 0, 0);
 	
 	if (scale != 1.0f)
 		glScalef(scale, scale, scale);
