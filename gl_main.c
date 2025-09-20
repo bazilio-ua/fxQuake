@@ -61,7 +61,7 @@ float r_fovx, r_fovy;
 void R_SetupAliasFrame (entity_t *e, aliashdr_t *paliashdr, lerpdata_t *lerpdata);
 void R_SetupEntityTransform (entity_t *e, lerpdata_t *lerpdata);
 void GL_DrawAliasFrame (aliashdr_t *paliashdr, lerpdata_t lerpdata);
-void GL_EntityTransform (lerpdata_t lerpdata, entity_t *e);
+void GL_EntityTransform (lerpdata_t lerpdata);
 
 
 cvar_t	r_norefresh = {"r_norefresh","0", CVAR_NONE};
@@ -555,9 +555,10 @@ void R_DrawAliasModel (entity_t *e)
 	gltexture_t	*base, *glow;
 	static float	lastmsg = 0;
 	lerpdata_t	lerpdata;
-	float		fovscale = 1.0f;
+	float		fovscale;
 	qboolean	alphatest;
 	qboolean	alphablend;
+	float		scale;
 	
 	//
 	// locate the proper data
@@ -601,15 +602,26 @@ void R_DrawAliasModel (entity_t *e)
 	//
 	glPushMatrix ();
 
-	GL_EntityTransform (lerpdata, e); // FX
+	GL_EntityTransform (lerpdata); // FX
 
 	// special handling of view model to keep FOV from altering look.
 	if (e == &cl.viewent)
+	{
 		fovscale = 1.0f / tan( DEG2RAD (r_fovx / 2.0f) ) * r_refdef.weaponfov_x / 90.0f; // reverse out fov and do fov we want
+		
+		glTranslatef (paliashdr->scale_origin[0] * fovscale, paliashdr->scale_origin[1], paliashdr->scale_origin[2]);
+		glScalef (paliashdr->scale[0] * fovscale, paliashdr->scale[1], paliashdr->scale[2]);
+	}
+	else
+	{
+		scale = ENTSCALE_DECODE(e->scale);
+		if (scale != 1.0f)
+			glScalef (scale, scale, scale);
 
-	glTranslatef (paliashdr->scale_origin[0] * fovscale, paliashdr->scale_origin[1], paliashdr->scale_origin[2]);
-	glScalef (paliashdr->scale[0] * fovscale, paliashdr->scale[1], paliashdr->scale[2]);
-
+		glTranslatef (paliashdr->scale_origin[0], paliashdr->scale_origin[1], paliashdr->scale_origin[2]);
+		glScalef (paliashdr->scale[0], paliashdr->scale[1], paliashdr->scale[2]);
+	}
+	
 	//
 	// model rendering stuff
 	//
@@ -1220,18 +1232,13 @@ GL_EntityTransform -- model transform interpolation
 R_RotateForEntity renamed and modified to take lerpdata instead of pointer to entity
 ===============
 */
-void GL_EntityTransform (lerpdata_t lerpdata, entity_t *e)
+void GL_EntityTransform (lerpdata_t lerpdata)
 {
-	float scale = ENTSCALE_DECODE(e->scale);
-	
 	glTranslatef (lerpdata.origin[0], lerpdata.origin[1], lerpdata.origin[2]);
 	
-	glRotatef (lerpdata.angles[1],  										  0, 0, 1);
+	glRotatef (lerpdata.angles[1],                                            0, 0, 1);
 	glRotatef (stupidquakebugfix ? lerpdata.angles[0] : -lerpdata.angles[0],  0, 1, 0);
-	glRotatef (lerpdata.angles[2],  										  1, 0, 0);
-	
-	if (scale != 1.0f)
-		glScalef(scale, scale, scale);
+	glRotatef (lerpdata.angles[2],                                            1, 0, 0);
 }
 
 /*
