@@ -821,7 +821,7 @@ void R_DrawEntities (void)
 		case mod_alias:
 			if (ENTALPHA_DECODE(e->alpha) < 1)
 				R_AddToAlpha (ALPHA_ALIAS, R_GetAlphaDist(e->origin), e, NULL, NULL, 0);
-			else	
+			else
 				R_DrawAliasModel (e);
 			break;
 			
