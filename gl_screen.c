@@ -129,8 +129,8 @@ char		scr_centerstring[1024];
 float		scr_centertime_start;	// for slow victory printing
 float		scr_centertime_off;
 int			scr_center_lines;
-int			scr_erase_lines;
-int			scr_erase_center;
+//int			scr_erase_lines;
+//int			scr_erase_center;
 
 /*
 ==============
@@ -183,7 +183,7 @@ void SCR_DrawCenterString (void)
 	else
 		remaining = 9999;
 
-	scr_erase_center = 0;
+//	scr_erase_center = 0;
 	start = scr_centerstring;
 
 	if (scr_center_lines <= 4)
@@ -221,8 +221,8 @@ void SCR_DrawCenterString (void)
 
 void SCR_CheckDrawCenterString (void)
 {
-	if (scr_center_lines > scr_erase_lines)
-		scr_erase_lines = scr_center_lines;
+//	if (scr_center_lines > scr_erase_lines)
+//		scr_erase_lines = scr_center_lines;
 
 	scr_centertime_off -= host_frametime;
 	
