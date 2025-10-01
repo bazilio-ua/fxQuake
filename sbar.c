@@ -517,7 +517,7 @@ void Sbar_SoloScoreboard (void)
 	seconds = cl.time - 60*minutes;
 	tens = seconds / 10;
 	units = seconds - 10*tens;
-	sprintf (str,"%i:%i%i", minutes, tens, units);
+	sprintf (str,"Time: %i:%i%i", minutes, tens, units);
 	Sbar_DrawString (320 - strlen(str)*8, (scr_overdrawsbar.value ? -32 : scr_sbar.value ? -32 : -8), str); // alt.
 
 	// draw skill
