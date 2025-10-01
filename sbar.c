@@ -1386,10 +1386,10 @@ void Sbar_MiniDeathmatchOverlay (void)
 	if (vid.width < 512 || !sb_lines)
 		return;
 
-	// scores
+// scores
 	Sbar_SortFrags ();
 
-	// draw the text
+// draw the text
 	y = vid.height - sb_lines;
 	numlines = sb_lines/8;
 	if (numlines < 3)
@@ -1418,7 +1418,7 @@ void Sbar_MiniDeathmatchOverlay (void)
 		if (!s->name[0])
 			continue;
 
-		// draw background
+	// draw background
 		top = s->colors & 0xf0;
 		bottom = (s->colors & 15)<<4;
 		top = Sbar_ColorForMap (top);
@@ -1427,7 +1427,7 @@ void Sbar_MiniDeathmatchOverlay (void)
 		Draw_Fill ( x, y+1, 40, 3, top);
 		Draw_Fill ( x, y+4, 40, 4, bottom);
 
-		// draw number
+	// draw number
 		f = s->frags;
 		sprintf (num, "%3i",f);
 
@@ -1441,7 +1441,7 @@ void Sbar_MiniDeathmatchOverlay (void)
 			Draw_Character ( x + 32, y, 17);
 		}
 
-		// draw name
+	// draw name
 		Draw_String (x+48, y, s->name);
 
 		y += 8;
