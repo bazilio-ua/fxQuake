@@ -2801,6 +2801,8 @@ void Mod_LoadAliasModel (model_t *mod, void *buffer)
 	
 	mod->flags = LittleLong (pinmodel->flags);
 
+	Mod_SetExtraFlags (mod); //johnfitz -- set up extra mdl flags
+
 //
 // endian-adjust and copy the data, starting with the alias model header
 //
@@ -2913,8 +2915,6 @@ void Mod_LoadAliasModel (model_t *mod, void *buffer)
 	}
 
 	pheader->numposes = posenum;
-
-	Mod_SetExtraFlags (mod); //johnfitz -- set up extra mdl flags
 
 	Mod_CalcAliasBounds (pheader); //johnfitz -- calc correct bounds
 
