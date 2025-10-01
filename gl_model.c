@@ -2697,7 +2697,7 @@ void *Mod_LoadAllSkins (int numskins, daliasskintype_t *pskintype)
 
 /*
 =================
-Mod_CalcAliasBounds
+Mod_CalcAliasBounds -- johnfitz
 
 calculate bounds of alias model for nonrotated, yawrotated, and fullrotated cases
 =================
@@ -2749,6 +2749,17 @@ void Mod_CalcAliasBounds (aliashdr_t *a)
 	loadmodel->ymaxs[2] = loadmodel->maxs[2];
 }
 
+/*
+=================
+Mod_SetExtraFlags -- johnfitz
+
+set up extra flags that aren't in the mdl
+=================
+*/
+void Mod_SetExtraFlags (model_t *mod)
+{
+	mod->flags &= (0xFF | MF_HOLEY); // only preserve first byte, plus MF_HOLEY
+}
 
 /*
 =================
@@ -2903,11 +2914,9 @@ void Mod_LoadAliasModel (model_t *mod, void *buffer)
 
 	pheader->numposes = posenum;
 
-	
-	// set up extra flags that aren't in the mdl
-	mod->flags &= (0xFF | MF_HOLEY); // only preserve first byte, plus MF_HOLEY
+	Mod_SetExtraFlags (mod); //johnfitz -- set up extra mdl flags
 
-	Mod_CalcAliasBounds (pheader); // calc correct bounds
+	Mod_CalcAliasBounds (pheader); //johnfitz -- calc correct bounds
 
 //
 // build the draw lists
