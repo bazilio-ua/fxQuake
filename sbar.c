@@ -1338,7 +1338,7 @@ void Sbar_DeathmatchOverlay (void)
 		if (!s->name[0])
 			continue;
 
-	// draw background
+	// draw background (colors)
 		top = s->colors & 0xf0;
 		bottom = (s->colors & 15)<<4;
 		top = Sbar_ColorForMap (top);
@@ -1355,6 +1355,7 @@ void Sbar_DeathmatchOverlay (void)
 		Draw_Character ( x+16 , y, num[1]);
 		Draw_Character ( x+24 , y, num[2]);
 
+	// draw brackets
 		if (k == cl.viewentity - 1)
 		{
 			Draw_Character(x, y, 16); // draw [ ] around our score in the scoreboard overlay
@@ -1418,7 +1419,7 @@ void Sbar_MiniDeathmatchOverlay (void)
 		if (!s->name[0])
 			continue;
 
-	// draw background
+	// draw background (colors)
 		top = s->colors & 0xf0;
 		bottom = (s->colors & 15)<<4;
 		top = Sbar_ColorForMap (top);
@@ -1435,7 +1436,8 @@ void Sbar_MiniDeathmatchOverlay (void)
 		Draw_Character ( x+16 , y, num[1]);
 		Draw_Character ( x+24 , y, num[2]);
 
-		if (k == cl.viewentity - 1) 
+	// draw brackets
+		if (k == cl.viewentity - 1)
 		{
 			Draw_Character ( x, y, 16);
 			Draw_Character ( x + 32, y, 17);
