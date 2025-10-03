@@ -2745,8 +2745,8 @@ void Mod_CalcAliasBounds (aliashdr_t *a)
 	yawradius = sqrt(yawradius);
 	loadmodel->ymins[0] = loadmodel->ymins[1] = -yawradius;
 	loadmodel->ymaxs[0] = loadmodel->ymaxs[1] = yawradius;
-	loadmodel->ymins[2] = loadmodel->mins[2];
-	loadmodel->ymaxs[2] = loadmodel->maxs[2];
+	loadmodel->ymins[2] = min (loadmodel->mins[2], -yawradius);
+	loadmodel->ymaxs[2] = max (loadmodel->maxs[2], yawradius);
 }
 
 /*

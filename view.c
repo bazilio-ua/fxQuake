@@ -726,7 +726,7 @@ void V_FindFullbrightColors (void)
 		}
 	}
 	
-	Con_DPrintf ("Colormap has %d fullbright colors\n", numfb);
+	Con_Printf ("Colormap has %d fullbright color%s\n", numfb, numfb > 1 ? "s" : "");
 }
 
 /*
