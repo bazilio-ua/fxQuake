@@ -458,8 +458,8 @@ void R_DrawSpriteModel (entity_t *e)
 			glDepthMask (GL_FALSE); // don't bother writing Z
 		glEnable (GL_BLEND);
 //		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // (fixme: already set?)
-		glEnable (GL_ALPHA_TEST);
-		glAlphaFunc (GL_GEQUAL, 0.5);
+//		glEnable (GL_ALPHA_TEST);
+//		glAlphaFunc (GL_GEQUAL, 0.5);
 	}
 
 	glBegin (GL_QUADS);
@@ -493,8 +493,8 @@ void R_DrawSpriteModel (entity_t *e)
 		if (psprite->type == SPR_ORIENTED)
 			glDepthMask (GL_TRUE); // back to normal Z buffering
 		glDisable (GL_BLEND);
-		glDisable (GL_ALPHA_TEST);
-		glAlphaFunc (GL_GREATER, 0.666);
+//		glDisable (GL_ALPHA_TEST);
+//		glAlphaFunc (GL_GREATER, 0.666);
 	}
 
 	// offset decals
