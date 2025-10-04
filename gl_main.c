@@ -457,7 +457,7 @@ void R_DrawSpriteModel (entity_t *e)
 		if (psprite->type == SPR_ORIENTED)
 			glDepthMask (GL_FALSE); // don't bother writing Z
 		glEnable (GL_BLEND);
-		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // (fixme: already set?)
 		glEnable (GL_ALPHA_TEST);
 		glAlphaFunc (GL_GEQUAL, 0.5);
 	}
