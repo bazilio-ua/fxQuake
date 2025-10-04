@@ -648,7 +648,7 @@ void R_DrawAliasModel (entity_t *e)
 	if (alphablend)
 	{
 		if (e != &cl.viewent)
-			glDepthMask (GL_FALSE);
+			glDepthMask (GL_FALSE); // don't bother writing Z
 		glEnable (GL_BLEND);
 	}
 	else
@@ -775,7 +775,7 @@ cleanup:
 	if (alphablend)
 	{
 		if (e != &cl.viewent)
-			glDepthMask (GL_TRUE);
+			glDepthMask (GL_TRUE); // back to normal Z buffering
 		glDisable (GL_BLEND);
 		glColor4f (1, 1, 1, 1);
 	}
