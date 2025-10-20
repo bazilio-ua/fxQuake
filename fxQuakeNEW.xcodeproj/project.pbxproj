@@ -74,6 +74,7 @@
 		42B718761EA2C19600BD51E1 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 428D9ED31DFF275C000ACF30 /* IOKit.framework */; };
 		42B718771EA2C19900BD51E1 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 428D9EDA1DFF2782000ACF30 /* OpenGL.framework */; };
 		42B718781EA2C19D00BD51E1 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 428D9ED81DFF2778000ACF30 /* CoreAudio.framework */; };
+		42B9764C2EA6829E00DD201F /* quake.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4273FB421DFF2F2B005DC9A7 /* quake.icns */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -432,6 +433,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				42B7186D1EA2C13200BD51E1 /* fxQuake.xib in Resources */,
+				42B9764C2EA6829E00DD201F /* quake.icns in Resources */,
 				42B718721EA2C15900BD51E1 /* Credits.rtf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
