@@ -457,6 +457,7 @@ void R_DrawSpriteModel (entity_t *e)
 		if (psprite->type == SPR_ORIENTED)
 			glDepthMask (GL_FALSE); // don't bother writing Z
 		glEnable (GL_BLEND);
+		glEnable (GL_ALPHA_TEST);
 	}
 
 	glBegin (GL_QUADS);
@@ -490,6 +491,7 @@ void R_DrawSpriteModel (entity_t *e)
 		if (psprite->type == SPR_ORIENTED)
 			glDepthMask (GL_TRUE); // back to normal Z buffering
 		glDisable (GL_BLEND);
+		glDisable (GL_ALPHA_TEST);
 	}
 
 	// offset decals
