@@ -387,6 +387,7 @@ dlight_t *CL_AllocDlight (int key);
 void	CL_ColorDlight (dlight_t *dl, float r, float g, float b);
 void	CL_ColorDlightPalette (dlight_t *dl, int i);
 void	CL_ColorDlightPaletteLength (dlight_t *dl, int start, int length);
+void	CL_ColorDlightPaletteIndices (dlight_t *dl, int *indices, int count);
 void	CL_DecayLights (void);
 
 void CL_Init (void);
