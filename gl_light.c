@@ -474,20 +474,29 @@ restart:
 				// LordHavoc: enhanced to interpolate lighting
 				byte *lightmap;
 				int maps, line3, dsfrac = ds & 15, dtfrac = dt & 15, r00 = 0, g00 = 0, b00 = 0, r01 = 0, g01 = 0, b01 = 0, r10 = 0, g10 = 0, b10 = 0, r11 = 0, g11 = 0, b11 = 0;
-				float scale;
+				unsigned	scale;
+				int			shift;
+
 				line3 = ((surf->extents[0]>>4)+1)*3;
 
 				lightmap = surf->samples + ((dt>>4) * ((surf->extents[0]>>4)+1) + (ds>>4))*3; // LordHavoc: *3 for color
 
 				for (maps = 0 ; maps < MAXLIGHTMAPS && surf->styles[maps] != 255 ; maps++)
 				{
-					scale = (float) d_lightstyle[surf->styles[maps]] * 1.0 / 256.0;
-					r00 += (float) lightmap[      0] * scale;g00 += (float) lightmap[      1] * scale;b00 += (float) lightmap[2] * scale;
-					r01 += (float) lightmap[      3] * scale;g01 += (float) lightmap[      4] * scale;b01 += (float) lightmap[5] * scale;
-					r10 += (float) lightmap[line3+0] * scale;g10 += (float) lightmap[line3+1] * scale;b10 += (float) lightmap[line3+2] * scale;
-					r11 += (float) lightmap[line3+3] * scale;g11 += (float) lightmap[line3+4] * scale;b11 += (float) lightmap[line3+5] * scale;
+					scale = d_lightstyle[surf->styles[maps]];
+					r00 += lightmap[      0] * scale;g00 += lightmap[      1] * scale;b00 += lightmap[2] * scale;
+					r01 += lightmap[      3] * scale;g01 += lightmap[      4] * scale;b01 += lightmap[5] * scale;
+					r10 += lightmap[line3+0] * scale;g10 += lightmap[line3+1] * scale;b10 += lightmap[line3+2] * scale;
+					r11 += lightmap[line3+3] * scale;g11 += lightmap[line3+4] * scale;b11 += lightmap[line3+5] * scale;
 					lightmap += ((surf->extents[0]>>4)+1) * ((surf->extents[1]>>4)+1)*3; // LordHavoc: *3 for colored lighting
 				}
+
+				shift = 7 + d_overbright;
+
+				r00 >>= shift; g00 >>= shift; b00 >>= shift;
+				r01 >>= shift; g01 >>= shift; b01 >>= shift;
+				r10 >>= shift; g10 >>= shift; b10 >>= shift;
+				r11 >>= shift; g11 >>= shift; b11 >>= shift;
 
 				color[0] += (float) ((int) ((((((((r11-r10) * dsfrac) >> 4) + r10)-((((r01-r00) * dsfrac) >> 4) + r00)) * dtfrac) >> 4) + ((((r01-r00) * dsfrac) >> 4) + r00)));
 				color[1] += (float) ((int) ((((((((g11-g10) * dsfrac) >> 4) + g10)-((((g01-g00) * dsfrac) >> 4) + g00)) * dtfrac) >> 4) + ((((g01-g00) * dsfrac) >> 4) + g00)));
