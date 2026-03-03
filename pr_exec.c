@@ -328,7 +328,7 @@ int PR_EnterFunction (dfunction_t *f)
 	}
 
 	pr_xfunction = f;
-	return f->first_statement - 1;	// offset the s++
+	return f->first_statement - 1;	// -1 to offset the st++
 }
 
 /*
