@@ -633,16 +633,16 @@ while (1)
 			PR_RunError ("PR_ExecuteProgram: NULL function");
 
 		newf = &pr_functions[a->function];
-
+		// negative statements are built in functions
 		if (newf->first_statement < 0)
-		{	// negative statements are built in functions
+		{ // Built-in function
 			i = -newf->first_statement;
 			if (i >= pr_numbuiltins)
 				PR_RunError ("PR_ExecuteProgram: bad builtin call number (%d, max = %d)", i, pr_numbuiltins);
 			pr_builtins[i] ();
 			break;
 		}
-
+		// Normal function
 		st = &pr_statements[PR_EnterFunction (newf)];
 		break;
 
@@ -657,7 +657,7 @@ while (1)
 
 		st = &pr_statements[PR_LeaveFunction ()];
 		if (pr_depth == exitdepth)
-		{
+		{ // Done
 			// Check old limit
 			if (pr_peakdepth >= 32)
 				Con_DWarning ("PR_ExecuteProgram: stack depth exceeds standard limit (%d, normal max = %d)\n", pr_peakdepth, 32 - 1);
