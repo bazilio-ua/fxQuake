@@ -1430,7 +1430,7 @@ void R_SetupAliasFrame (entity_t *e, aliashdr_t *paliashdr, lerpdata_t *lerpdata
 	}
 
 	// set up values
-	// always lerp
+	if (!(e->model->flags & MOD_NOLERP)) // always lerp
 	{
 		if (e->lerpflags & LERP_FINISH && numposes == 1)
 			lerpdata->blend = CLAMP (0.f, (float)(cl.time - e->lerpstart) / (e->lerpfinish - e->lerpstart), 1.f);
@@ -1439,12 +1439,12 @@ void R_SetupAliasFrame (entity_t *e, aliashdr_t *paliashdr, lerpdata_t *lerpdata
 		lerpdata->pose1 = e->previouspose;
 		lerpdata->pose2 = e->currentpose;
 	}
-	// don't lerp
-/*	{
+	else // don't lerp
+	{
 		lerpdata->blend = 1;
 		lerpdata->pose1 = posenum;
 		lerpdata->pose2 = posenum;
-	}	*/
+	}
 }
 
 /*
@@ -1478,10 +1478,10 @@ void R_SetupEntityTransform (entity_t *e, lerpdata_t *lerpdata)
 		VectorCopy (e->angles,  e->currentangles);
 	}
 
-	// set up values
 	if (stupidquakebugfix && e == &cl.viewent)
 		e->angles[0] = -e->angles[0]; // stupid quake bug
 
+	// set up values
 	if (e != &cl.viewent && e->lerpflags & LERP_MOVESTEP)
 	{
 		if (e->lerpflags & LERP_FINISH)

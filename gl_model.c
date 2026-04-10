@@ -2759,6 +2759,24 @@ set up extra flags that aren't in the mdl
 void Mod_SetExtraFlags (model_t *mod)
 {
 	mod->flags &= (0xFF | MF_HOLEY); // only preserve first byte, plus MF_HOLEY
+	
+/*
+"progs/flame.mdl,
+ progs/flame2.mdl,
+ progs/braztall.mdl,
+ progs/brazshrt.mdl,
+ progs/longtrch.mdl,
+ progs/flame_pyre.mdl,
+ progs/v_saw.mdl,
+ progs/v_xfist.mdl,
+ progs/h2stuff/newfire.mdl"
+*/
+	// nolerp flag
+//	if (!strcmp (mod->name, "progs/flame.mdl") ||
+//		!strcmp (mod->name, "progs/flame2.mdl"))
+//	{
+//		mod->flags |= MOD_NOLERP;
+//	}
 }
 
 /*

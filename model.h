@@ -409,6 +409,10 @@ typedef enum {mod_brush, mod_sprite, mod_alias} modtype_t;
 
 #define	MF_HOLEY	(1u<<14)		// MarkV/QSS -- make index 255 transparent on mdl's
 
+//johnfitz -- extra flags for rendering
+#define	MOD_NOLERP		256		// don't lerp when animating
+//johnfitz
+
 typedef struct model_s
 {
 	char		name[MAX_QPATH];
