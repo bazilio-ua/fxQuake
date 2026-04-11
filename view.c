@@ -995,6 +995,14 @@ void V_CalcRefdef (void)
 	else if (scr_weaponsize.value == 60) // scr_viewsize
 		view->origin[2] += 0;
 
+	if (ent->lerpflags & LERP_FINISH)
+	{
+		view->lerpflags |= LERP_FINISH;
+		view->lerpfinish = ent->lerpfinish;
+	}
+	else
+		view->lerpflags &= ~LERP_FINISH;
+
 	view->model = cl.model_precache[cl.stats[STAT_WEAPON]];
 	view->frame = cl.stats[STAT_WEAPONFRAME];
 	view->colormap = vid.colormap;

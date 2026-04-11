@@ -46,6 +46,9 @@ typedef struct edict_s
 	byte		scale;				// Quakespasm: added for model scale support
 	float		fullbright;
 	qboolean	sendinterval;		// johnfitz -- send time until nextthink to client for better lerp timing
+	float		oldframe;
+	float		oldthinktime;
+
 	float		freetime;			// sv.time when the object was freed
 	entvars_t	v;					// C exported fields from progs
 // other fields from progs come immediately after
