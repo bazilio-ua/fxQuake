@@ -177,6 +177,8 @@ void R_Init (void)
 	Cvar_RegisterVariableCallback (&r_skyfog, R_Skyfog);
 	Cvar_RegisterVariable (&r_oldsky);
 	Cvar_RegisterVariable (&r_flatlightstyles);
+	Cvar_RegisterVariable (&r_lerpmodels);
+	Cvar_RegisterVariable (&r_lerpmove);
 
 	Cvar_RegisterVariable (&gl_finish);
 	Cvar_RegisterVariable (&gl_clear);

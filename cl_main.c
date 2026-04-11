@@ -706,7 +706,7 @@ void CL_RelinkEntities (void)
 			}
 
 			//johnfitz -- don't cl_lerp entities that will be r_lerped
-			if (ent->lerpflags & LERP_MOVESTEP)
+			if (r_lerpmove.value && (ent->lerpflags & LERP_MOVESTEP))
 				f = 1;
 
 		// interpolate the origin and angles
