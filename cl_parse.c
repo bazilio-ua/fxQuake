@@ -1051,6 +1051,7 @@ void CL_ParseServerMessage (void)
 		Con_Printf ("------------------\n");
 	
 //	cl.onground = false;	// unless the server says otherwise	
+
 //
 // parse the message
 //
