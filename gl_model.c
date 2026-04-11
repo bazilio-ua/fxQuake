@@ -2760,23 +2760,19 @@ void Mod_SetExtraFlags (model_t *mod)
 {
 	mod->flags &= (0xFF | MF_HOLEY); // only preserve first byte, plus MF_HOLEY
 	
-/*
-"progs/flame.mdl,
- progs/flame2.mdl,
- progs/braztall.mdl,
- progs/brazshrt.mdl,
- progs/longtrch.mdl,
- progs/flame_pyre.mdl,
- progs/v_saw.mdl,
- progs/v_xfist.mdl,
- progs/h2stuff/newfire.mdl"
-*/
-	// nolerp flag
-//	if (!strcmp (mod->name, "progs/flame.mdl") ||
-//		!strcmp (mod->name, "progs/flame2.mdl"))
-//	{
-//		mod->flags |= MOD_NOLERP;
-//	}
+	// This should include all torches in id1, quoth, and bastion, which look bad when lerped, and the zerstorer chainsaw and xmen fist, which also look bad lerped.
+	if (!strcmp (mod->name, "progs/flame.mdl") || // id1
+		!strcmp (mod->name, "progs/flame2.mdl") ||
+		!strcmp (mod->name, "progs/braztall.mdl") || // quoth
+		!strcmp (mod->name, "progs/brazshrt.mdl") ||
+		!strcmp (mod->name, "progs/longtrch.mdl") ||
+		!strcmp (mod->name, "progs/flame_pyre.mdl") ||
+		!strcmp (mod->name, "progs/v_saw.mdl") || // zerstorer chainsaw
+		!strcmp (mod->name, "progs/v_xfist.mdl") || // xmen fist
+		!strcmp (mod->name, "progs/h2stuff/newfire.mdl")) // bastion
+	{
+		mod->flags |= MOD_NOLERP; // nolerp flag
+	}
 }
 
 /*
