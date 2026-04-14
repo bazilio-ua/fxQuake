@@ -254,7 +254,7 @@ void SV_StartSound (edict_t *entity, int channel, char *sample, int volume, floa
 		if (IsTimeout (&lastmsg, 2))
 		{
 			// let's not upset and annoy the user
-			Con_DPrintf ("SV_StartSound: %s not precacheed\n", sample);
+			Con_DPrintf ("SV_StartSound: %s not precached\n", sample);
 		}
 		return;
 	}
