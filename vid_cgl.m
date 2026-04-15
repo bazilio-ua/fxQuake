@@ -943,6 +943,7 @@ void VID_Shutdown (void)
         }
         
         if (window) {
+			[window setLevel:NSNormalWindowLevel];
             [window release];
             window = nil;
         }
