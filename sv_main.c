@@ -26,8 +26,6 @@ server_static_t	svs;
 
 char	localmodels[MAX_MODELS][6]; // "*1023" //5 "*255"		// inline model names for precache
 
-cvar_t sv_cullentities = {"sv_cullentities", "0", CVAR_SERVER}; // OFF
-
 
 //============================================================================
 
@@ -113,9 +111,7 @@ void SV_Init (void)
 	Cvar_RegisterVariable (&sv_touchnoclip);
 	Cvar_RegisterVariableCallback (&sv_stupidquakebugfix, SV_StupidQuakeBugFix);
 
-	Cvar_RegisterVariable (&sv_novis);
 	Cvar_RegisterVariable (&sv_bouncedownslopes);
-	Cvar_RegisterVariable (&sv_cullentities);
 
 	Cmd_AddCommand ("freezeall", &SV_Freezeall_f);
 
@@ -577,90 +573,6 @@ byte *SV_FatPVS (vec3_t org, model_t *worldmodel) //johnfitz -- added worldmodel
 	return fatpvs;
 }
 
-/*
-=============
-SV_Trace
-
-renamed from Q1BSP_Trace
-=============
-*/
-qboolean SV_Trace (model_t *model, int forcehullnum, int frame, vec3_t start, vec3_t end, vec3_t mins, vec3_t maxs, trace_t *trace)
-{
-	hull_t *hull;
-	vec3_t size;
-	vec3_t start_l, end_l;
-	vec3_t offset;
-
-	memset (trace, 0, sizeof(trace_t));
-	trace->fraction = 1;
-	trace->allsolid = true;
-
-	VectorSubtract (maxs, mins, size);
-	if (forcehullnum >= 1 && forcehullnum <= MAX_MAP_HULLS && model->hulls[forcehullnum-1].available)
-		hull = &model->hulls[forcehullnum-1];
-	else
-	{
-		if (size[0] < 3 || !model->hulls[1].available)
-			hull = &model->hulls[0];
-		else if (size[0] <= 32)
-		{
-			hull = &model->hulls[1];
-		}
-		else
-			hull = &model->hulls[2];
-	}
-
-// calculate an offset value to center the origin
-	VectorSubtract (hull->clip_mins, mins, offset);
-	VectorSubtract(start, offset, start_l);
-	VectorSubtract(end, offset, end_l);
-	SV_RecursiveHullCheck(hull, hull->firstclipnode, 0, 1, start_l, end_l, trace);
-	if (trace->fraction == 1)
-	{
-		VectorCopy (end, trace->endpos);
-	}
-	else
-	{
-		VectorAdd (trace->endpos, offset, trace->endpos);
-	}
-
-	return trace->fraction != 1;
-}
-
-/*
-=============
-SV_InvisibleToClient
-=============
-*/
-qboolean SV_InvisibleToClient (edict_t *viewer, edict_t *seen)
-{
-	int i;
-	trace_t tr;
-	vec3_t start;
-	vec3_t end;
-
-	//stage 1: check against their origin
-	VectorAdd(viewer->v.origin, viewer->v.view_ofs, start);
-	tr.fraction = 1;
-
-	if (!SV_Trace (sv.worldmodel, 1, 0, start, seen->v.origin, vec3_origin, vec3_origin, &tr))
-		return false;	//wasn't blocked
-
-	//stage 2: check against their bbox
-	for (i = 0; i < 8; i++)
-	{
-		end[0] = seen->v.origin[0] + ((i&1)? seen->v.mins[0]: seen->v.maxs[0]);
-		end[1] = seen->v.origin[1] + ((i&2)? seen->v.mins[1]: seen->v.maxs[1]);
-		end[2] = seen->v.origin[2] + ((i&4)? seen->v.mins[2]+0.1: seen->v.maxs[2]);
-
-		tr.fraction = 1;
-		if (!SV_Trace (sv.worldmodel, 1, 0, start, end, vec3_origin, vec3_origin, &tr))
-			return false;	//this trace went through, so don't cull
-	}
-
-	return true;
-}
-
 
 //=============================================================================
 
@@ -701,29 +613,19 @@ void SV_WriteEntitiesToClient (edict_t	*clent, sizebuf_t *msg)
 			if (sv.protocol == PROTOCOL_NETQUAKE && (int)ent->v.modelindex & 0xFF00)
 				continue;
 
-			if (!sv_novis.value)
-			{
-				// ignore if not touching a PV leaf
-				for (i=0 ; i < ent->num_leafs ; i++)
-					if (pvs[ent->leafnums[i] >> 3] & (1 << (ent->leafnums[i]&7) ))
-						break;
+			// ignore if not touching a PV leaf
+			for (i=0 ; i < ent->num_leafs ; i++)
+				if (pvs[ent->leafnums[i] >> 3] & (1 << (ent->leafnums[i]&7) ))
+					break;
 
-				// ericw -- added ent->num_leafs < MAX_ENT_LEAFS condition.
-				//
-				// if ent->num_leafs == MAX_ENT_LEAFS, the ent is visible from too many leafs
-				// for us to say whether it's in the PVS, so don't try to vis cull it.
-				// this commonly happens with rotators, because they often have huge bboxes
-				// spanning the entire map, or really tall lifts, etc.
-				if (i == ent->num_leafs && ent->num_leafs < MAX_ENT_LEAFS)
-					continue;	// not visible
-
-			}
-
-			if (sv_cullentities.value) // 1 = players.  2 = everything.
-				if (e <= svs.maxclients || sv_cullentities.value > 1 ) // A player or we are checking everything
-					if (SV_InvisibleToClient(clent, ent))
-						continue; // Entity cannot be seen, don't send it
-
+			// ericw -- added ent->num_leafs < MAX_ENT_LEAFS condition.
+			//
+			// if ent->num_leafs == MAX_ENT_LEAFS, the ent is visible from too many leafs
+			// for us to say whether it's in the PVS, so don't try to vis cull it.
+			// this commonly happens with rotators, because they often have huge bboxes
+			// spanning the entire map, or really tall lifts, etc.
+			if (i == ent->num_leafs && ent->num_leafs < MAX_ENT_LEAFS)
+				continue;	// not visible
 		}
 
 // send an update

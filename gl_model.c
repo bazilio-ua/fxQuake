@@ -1928,10 +1928,8 @@ void Mod_MakeHulls (mclipnode_t *out, int count)
 	hull->firstclipnode = 0;
 	hull->lastclipnode = count-1;
 	hull->planes = loadmodel->planes;
-
 	VectorSet (hull->clip_mins, -16, -16, -24);
 	VectorSet (hull->clip_maxs,  16,  16,  32);
-	hull->available = true;
 
 	// Monster hull
 	hull = &loadmodel->hulls[2];
@@ -1939,10 +1937,8 @@ void Mod_MakeHulls (mclipnode_t *out, int count)
 	hull->firstclipnode = 0;
 	hull->lastclipnode = count-1;
 	hull->planes = loadmodel->planes;
-
 	VectorSet (hull->clip_mins, -32, -32, -24);
 	VectorSet (hull->clip_maxs,  32,  32,  64);
-	hull->available = true;
 }
 
 /*

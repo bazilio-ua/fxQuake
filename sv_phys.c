@@ -46,7 +46,6 @@ cvar_t	sv_gravity = {"sv_gravity","800", CVAR_SERVER};
 cvar_t	sv_maxvelocity = {"sv_maxvelocity","2000", CVAR_NONE};
 cvar_t	sv_nostep = {"sv_nostep","0", CVAR_NONE};
 
-cvar_t	sv_novis = {"sv_novis","0", CVAR_SERVER};
 cvar_t	sv_bouncedownslopes = {"sv_bouncedownslopes","0", CVAR_SERVER};
 
 #define	MOVE_EPSILON	0.01
