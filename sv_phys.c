@@ -1387,7 +1387,7 @@ SV_Physics
 void SV_Physics (void)
 {
 	int	i;
-	int		entity_cap; // For sv_freezenonclients
+	int		entity_cap; // For sv.frozen (sv_freezenonclients)
 	edict_t	*ent;
 
 // let the progs know that a new frame has started
