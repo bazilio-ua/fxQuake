@@ -1541,14 +1541,14 @@ void SV_SpawnServer (char *server)
 
 	sv.protocol = sv_protocol;
 
-    if (sv.protocol == PROTOCOL_RMQ)
+	if (sv.protocol == PROTOCOL_RMQ)
 	{
 		// set up the protocol flags used by this server
 		// (note - these could be cvar-ised so that server admins could choose the protocol features used by their servers)
 		sv.protocolflags = PRFL_INT32COORD | PRFL_SHORTANGLE;
 	}
 	else 
-        sv.protocolflags = 0;
+		sv.protocolflags = 0;
 
 // load progs to get entity field count
 	PR_LoadProgs ();
