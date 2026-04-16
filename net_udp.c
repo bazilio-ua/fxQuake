@@ -564,5 +564,5 @@ int UDP_SetSocketPort (struct qsockaddr *addr, int port)
 
 int UDP_GetDefaultMTU (void)
 {
-    return (sv.protocol == PROTOCOL_NETQUAKE) ? DATAGRAM_MTU_NQ : DATAGRAM_MTU;
+	return (sv.protocol == PROTOCOL_NETQUAKE) ? DATAGRAM_MTU_NQ : DATAGRAM_MTU;
 }
