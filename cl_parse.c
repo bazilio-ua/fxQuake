@@ -296,7 +296,7 @@ void CL_ParseServerInfo (void)
 	cl.protocol = i;
 	Con_DPrintf ("Server protocol is %i", i);
 
-    if (cl.protocol == PROTOCOL_RMQ)
+	if (cl.protocol == PROTOCOL_RMQ)
 	{
 		unsigned int supportedflags = (PRFL_SHORTANGLE | PRFL_FLOATANGLE | PRFL_24BITCOORD | PRFL_FLOATCOORD | PRFL_EDICTSCALE | PRFL_INT32COORD);
 		
@@ -309,7 +309,7 @@ void CL_ParseServerInfo (void)
 		}
 	}
 	else 
-        cl.protocolflags = 0;
+		cl.protocolflags = 0;
 
 // parse maxclients
 	cl.maxclients = MSG_ReadByte (net_message);
