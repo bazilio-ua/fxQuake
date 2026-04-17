@@ -135,7 +135,6 @@ typedef struct texture_s
 typedef struct
 {
 	unsigned int	v[2]; // bsp2 support. was (short)
-	unsigned int	cachededgeoffset;
 } medge_t;
 
 typedef struct
