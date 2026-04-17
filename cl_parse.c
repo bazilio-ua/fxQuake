@@ -1298,7 +1298,7 @@ void CL_ParseServerMessage (void)
 			i = MSG_ReadByte (net_message);
 			if (i < 0 || i >= MAX_CL_STATS)
 				Host_Error ("CL_ParseServerMessage: invalid svc_updatestat (%d, max = %d)", i, MAX_CL_STATS);
-			cl.stats[i] = MSG_ReadLong (net_message);;
+			cl.stats[i] = MSG_ReadLong (net_message);
 			break;
 			
 		case svc_spawnstaticsound:
