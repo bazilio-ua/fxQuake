@@ -308,7 +308,7 @@ void CL_ParseServerInfo (void)
 			Con_Warning("PROTOCOL_RMQ protocolflags %i contains unsupported flags\n", cl.protocolflags);
 		}
 	}
-	else 
+	else
 		cl.protocolflags = 0;
 
 // parse maxclients
@@ -1106,7 +1106,7 @@ void CL_ParseServerMessage (void)
 			break;
 			
 		case svc_clientdata:
-			CL_ParseClientdata (); // removed bits parameter, we will read this inside CL_ParseClientdata()
+			CL_ParseClientdata (); //johnfitz -- removed bits parameter, we will read this inside CL_ParseClientdata()
 			break;
 			
 		case svc_version:
