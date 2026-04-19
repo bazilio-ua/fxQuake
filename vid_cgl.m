@@ -931,37 +931,37 @@ void VID_Shutdown (void)
 {
 	CGError err;
 	
-    if (display) {
-        
-        if (glcontext) {
-            [NSOpenGLContext clearCurrentContext];
-            
-            [glcontext clearDrawable];
-            
-            [glcontext release];
-            glcontext = nil;
-        }
-        
-        if (window) {
+	if (display) {
+		
+		if (glcontext) {
+			[NSOpenGLContext clearCurrentContext];
+			
+			[glcontext clearDrawable];
+			
+			[glcontext release];
+			glcontext = nil;
+		}
+		
+		if (window) {
 			[window setLevel:NSNormalWindowLevel];
-            [window release];
-            window = nil;
-        }
-        
-        if (screen) {
-            [screen release];
-            screen = nil;
-        }
-        
-        // Switch back to the original screen resolution
-        if (vid.fullscreen) {
-            if (desktopMode) {
+			[window release];
+			window = nil;
+		}
+		
+		if (screen) {
+			[screen release];
+			screen = nil;
+		}
+		
+		// Switch back to the original screen resolution
+		if (vid.fullscreen) {
+			if (desktopMode) {
 				err = CGDisplaySetDisplayMode(display, desktopMode, NULL); // Restoring desktop mode
 				if (err != kCGErrorSuccess)
 					Con_Printf("Unable to restore display mode\n");
-            }
-        }
-        
+			}
+		}
+		
 		// Release the main display
 		if (vid.fullscreen) {
 			if (CGDisplayIsMain(display)) {
@@ -984,9 +984,9 @@ void VID_Shutdown (void)
 		}
 		
 		display = 0;
-    }
-    
-    vid.fullscreen = false;
+	}
+	
+	vid.fullscreen = false;
 }
 
 //==========================================================================
