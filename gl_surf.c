@@ -390,10 +390,10 @@ void R_BuildLightMap (msurface_t *surf, byte *dest, int stride)
 
 	if (!r_fullbright.value && cl.worldmodel->lightdata)
 	{
-		// clear to no light
+// clear to no light
 		memset (&blocklights[0], 0, size * 3 * sizeof (unsigned int)); // lit support via lordhavoc
 		
-		// clear to ambient
+// clear to ambient
 		bl = blocklights;
 		ambient_light = (unsigned int)(max(0, r_ambient.value)) << 8;
 		for (i = 0; i < size; i++)
@@ -403,7 +403,7 @@ void R_BuildLightMap (msurface_t *surf, byte *dest, int stride)
 			*bl++ = ambient_light;
 		}
 		
-		// add all the lightmaps
+// add all the lightmaps
 		if (lightmap)
 			for (maps = 0 ; maps < MAXLIGHTMAPS && surf->styles[maps] != 255 ; maps++)
 			{
@@ -419,17 +419,17 @@ void R_BuildLightMap (msurface_t *surf, byte *dest, int stride)
 				}
 			}
 
-		// add all the dynamic lights
+// add all the dynamic lights
 		if (surf->dlightframe == r_framecount)
 			R_AddDynamicLights (surf);
 	}
 	else
 	{
-		// set to full bright if no light data
+// set to full bright if no light data
 		memset (&blocklights[0], 255, size * 3 * sizeof (unsigned int)); // lit support via lordhavoc
 	}
 
-	// bound, invert, and shift
+// bound, invert, and shift
 	stride -= smax * 4;
 	shift = 7 + d_overbright;
 	bl = blocklights;
