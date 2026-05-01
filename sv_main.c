@@ -1265,7 +1265,6 @@ SV_ModelIndex
 int SV_ModelIndex (char *name)
 {
 	int		i;
-	static float lastmsg = 0;
 	
 	if (!name || !name[0])
 		return 0;
@@ -1275,12 +1274,7 @@ int SV_ModelIndex (char *name)
 			return i;
 
 	if (i == MAX_MODELS || !sv.model_precache[i])
-	{
-		if (IsTimeout (&lastmsg, 2))
-			Con_Printf ("SV_ModelIndex: model %s not precached\n", name);
-		return 0;
-//		Host_Error ("SV_ModelIndex: model %s not precached", name);
-	}
+		Host_Error ("SV_ModelIndex: model %s not precached", name);
 
 	return i;
 }
