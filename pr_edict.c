@@ -913,7 +913,7 @@ char *ED_ParseEdict (char *data, edict_t *ent)
 				strcmp(keyname, "fullbright") && 
 				strcmp(keyname, "wateralpha") && 
 				strcmp(keyname, "mapversion")) // Now supported in worldspawn
-				Con_DPrintf ("\"%s\" is not a field\n", keyname); //johnfitz -- was Con_Printf
+				Con_DPrintf ("'%s' is not a field\n", keyname); //johnfitz -- was Con_Printf
 			continue;
 		}
 
