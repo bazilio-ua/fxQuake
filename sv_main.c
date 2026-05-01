@@ -746,7 +746,7 @@ void SV_WriteEntitiesToClient (edict_t	*clent, sizebuf_t *msg)
 				return;
 			}
 		}
-		else
+		else // PROTOCOL_NETQUAKE
 		{
 			packetsize = 16 + 2; // Original + missing for worst case
 
@@ -770,15 +770,15 @@ void SV_WriteEntitiesToClient (edict_t	*clent, sizebuf_t *msg)
 		if (bits & U_MOREBITS)
 			MSG_WriteByte (msg, bits>>8);
 
+		//johnfitz -- PROTOCOL_FITZQUAKE
 		if (sv.protocol == PROTOCOL_FITZQUAKE || sv.protocol == PROTOCOL_MARKV || sv.protocol == PROTOCOL_RMQ)
 		{
-			//johnfitz -- PROTOCOL_FITZQUAKE
 			if (bits & U_EXTEND1)
 				MSG_WriteByte (msg, bits>>16);
 			if (bits & U_EXTEND2)
 				MSG_WriteByte (msg, bits>>24);
-			//johnfitz
 		}
+		//johnfitz
 
 		if (bits & U_LONGENTITY)
 			MSG_WriteShort (msg,e);
@@ -823,9 +823,9 @@ void SV_WriteEntitiesToClient (edict_t	*clent, sizebuf_t *msg)
 				MSG_WriteAngle(msg, ent->v.angles[2], sv.protocolflags);
 		}
 
+		//johnfitz -- PROTOCOL_FITZQUAKE
 		if (sv.protocol == PROTOCOL_FITZQUAKE || sv.protocol == PROTOCOL_MARKV || sv.protocol == PROTOCOL_RMQ)
 		{
-			//johnfitz -- PROTOCOL_FITZQUAKE
 			if (bits & U_ALPHA)
 				MSG_WriteByte(msg, ent->alpha);
 			if (bits & U_SCALE)
@@ -836,9 +836,8 @@ void SV_WriteEntitiesToClient (edict_t	*clent, sizebuf_t *msg)
 				MSG_WriteByte(msg, (int)ent->v.modelindex >> 8);
 			if (bits & U_LERPFINISH)
 				MSG_WriteByte(msg, (byte)(Q_rint((ent->v.nextthink-sv.time)*255)));
-			//johnfitz
 		}
-		else
+		else // PROTOCOL_NETQUAKE
 		{
 			if (bits & U_TRANS) // Nehahra
 			{ 
@@ -847,6 +846,7 @@ void SV_WriteEntitiesToClient (edict_t	*clent, sizebuf_t *msg)
 				MSG_WriteFloat(msg, ent->fullbright);
 			}
 		}
+		//johnfitz
 	}
 }
 
