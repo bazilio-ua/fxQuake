@@ -803,7 +803,7 @@ qboolean ED_ParseEpair (void *base, ddef_t *key, char *s)
 				strcmp(s, "fullbright") && 
 				strcmp(s, "wateralpha") && 
 				strcmp(s, "mapversion"))
-				Con_DPrintf ("Can't find field %s\n", s);
+				Con_DPrintf ("Can't find field '%s'\n", s);
 			return false;
 		}
 		*(int *)d = G_INT(def->ofs);
