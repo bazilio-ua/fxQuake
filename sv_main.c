@@ -704,10 +704,6 @@ void SV_WriteEntitiesToClient (edict_t	*clent, sizebuf_t *msg)
 				bits |= U_MODEL2;
 			if (ent->sendinterval)
 				bits |= U_LERPFINISH;
-			if (bits >= 65536)
-				bits |= U_EXTEND1;
-			if (bits >= 16777216)
-				bits |= U_EXTEND2;
 		}
 		//johnfitz
 
@@ -723,6 +719,15 @@ void SV_WriteEntitiesToClient (edict_t	*clent, sizebuf_t *msg)
 
 		if (bits >= 256)
 			bits |= U_MOREBITS;
+
+		//johnfitz -- PROTOCOL_FITZQUAKE
+		if (sv.protocol == PROTOCOL_FITZQUAKE || sv.protocol == PROTOCOL_MARKV || sv.protocol == PROTOCOL_RMQ)
+		{
+			if (bits >= 65536)
+				bits |= U_EXTEND1;
+			if (bits >= 16777216)
+				bits |= U_EXTEND2;
+		}
 
 		// PROTOCOL_FITZQUAKE
 		if (sv.protocol == PROTOCOL_FITZQUAKE || sv.protocol == PROTOCOL_MARKV || sv.protocol == PROTOCOL_RMQ)
@@ -971,6 +976,7 @@ void SV_WriteClientdataToMessage (edict_t *ent, sizebuf_t *msg)
 			bits |= SU_WEAPONFRAME2;
 		if (bits & SU_WEAPON && ent->alpha != ENTALPHA_DEFAULT)
 			bits |= SU_WEAPONALPHA; //for now, weaponalpha = client entity alpha
+		
 		if (bits >= 65536)
 			bits |= SU_EXTEND1;
 		if (bits >= 16777216)
