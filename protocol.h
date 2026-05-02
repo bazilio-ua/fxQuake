@@ -265,10 +265,10 @@ typedef struct
 {
 	vec3_t		origin;
 	vec3_t		angles;
-	unsigned short		modelindex;	// was int
-	unsigned short		frame;		// was int
-	byte		colormap;	// was int
-	byte		skin;		// was int
+	unsigned short		modelindex;	//johnfitz -- was int
+	unsigned short		frame;		//johnfitz -- was int
+	byte		colormap;	//johnfitz -- was int
+	byte		skin;		//johnfitz -- was int
 	byte		alpha;		//johnfitz -- added
 	byte		scale;		//Quakespasm: for model scale support
 	int			effects;
