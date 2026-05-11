@@ -25,9 +25,6 @@ edict_t	*sv_player;
 
 static	vec3_t		forward, right, up;
 
-vec3_t	wishdir;
-float	wishspeed;
-
 // world
 float	*angles;
 float	*origin;
@@ -168,7 +165,7 @@ void SV_UserFriction (void)
 SV_Accelerate
 ==============
 */
-void SV_Accelerate (void)
+void SV_Accelerate (float wishspeed, vec3_t wishdir)
 {
 	int			i;
 	float		addspeed, accelspeed, currentspeed;
@@ -185,7 +182,7 @@ void SV_Accelerate (void)
 		velocity[i] += accelspeed*wishdir[i];	
 }
 
-void SV_AirAccelerate (vec3_t wishveloc)
+void SV_AirAccelerate (float wishspeed, vec3_t wishveloc)
 {
 	int			i;
 	float		addspeed, wishspd, accelspeed, currentspeed;
@@ -197,7 +194,7 @@ void SV_AirAccelerate (vec3_t wishveloc)
 	addspeed = wishspd - currentspeed;
 	if (addspeed <= 0)
 		return;
-//	accelspeed = sv_airaccelerate.value*wishspeed * host_frametime; // separate different types of acceleration, was sv_accelerate
+//	accelspeed = sv_accelerate.value * host_frametime;
 	accelspeed = sv_airaccelerate.value * (sv_q2airaccelerate.value ? wishspd : wishspeed) * host_frametime; // separate different types of acceleration, was sv_accelerate
 	if (accelspeed > addspeed)
 		accelspeed = addspeed;
@@ -229,7 +226,7 @@ void SV_WaterMove (void)
 {
 	int		i;
 	vec3_t	wishvel;
-	float	speed, newspeed, addspeed, accelspeed;
+	float	speed, newspeed, wishspeed, addspeed, accelspeed;
 
 //
 // user intentions
@@ -299,7 +296,7 @@ void SV_WaterJump (void)
 
 /*
 ===================
-SV_NoclipMove
+SV_NoclipMove -- johnfitz
 
 new, alternate noclip. old noclip is still handled in SV_AirMove
 ===================
@@ -329,7 +326,8 @@ SV_AirMove
 void SV_AirMove (void)
 {
 	int			i;
-	vec3_t		wishvel;
+	vec3_t		wishvel, wishdir;
+	float		wishspeed;
 	float		fmove, smove;
 
 	AngleVectors (sv_player->v.angles, forward, right, up);
@@ -364,12 +362,12 @@ void SV_AirMove (void)
 	else if ( onground )
 	{
 		SV_UserFriction ();
-		SV_Accelerate ();
+		SV_Accelerate (wishspeed, wishdir);
 	}
 	else
 	{	// not on ground, so little effect on velocity
-		SV_AirAccelerate (wishvel);
-	}		
+		SV_AirAccelerate (wishspeed, wishvel);
+	}
 }
 
 /*
@@ -422,7 +420,7 @@ void SV_ClientThink (void)
 //
 // walk
 //
-	// Alternate noclip
+	//johnfitz -- Alternate noclip
 	if (sv_altnoclip.value && sv_player->v.movetype == MOVETYPE_NOCLIP)
 		SV_NoclipMove ();
 	else if (sv_player->v.waterlevel >= 2 && sv_player->v.movetype != MOVETYPE_NOCLIP)
