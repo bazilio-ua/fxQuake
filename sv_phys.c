@@ -510,7 +510,7 @@ void SV_PushMove (edict_t *pusher, float movetime)
 		moved_edict[num_moved] = check;
 		num_moved++;
 
-		// only check for types that can block
+	// only check for types that can block
 		if (pusher->v.solid == SOLID_BSP // everything that blocks: bsp models, map brushes, doors, plats etc.
 		|| pusher->v.solid == SOLID_BBOX // normally boxes
 		|| pusher->v.solid == SOLID_SLIDEBOX) // normally monsters
@@ -523,7 +523,7 @@ void SV_PushMove (edict_t *pusher, float movetime)
 			// restore from the stored solid
 			pusher->v.solid = savepushervsolid;
 
-			// if it is still inside the pusher, block
+		// if it is still inside the pusher, block
 			block = SV_TestEntityPosition (check);
 		}
 		else
@@ -654,7 +654,7 @@ void SV_PushRotate (edict_t *pusher, float movetime)
 		org2[2] = DotProduct (org, up);
 		VectorSubtract (org2, org, move);
 
-		// only check for types that can block
+	// only check for types that can block
 		if (pusher->v.solid == SOLID_BSP // everything that blocks: bsp models, map brushes, doors, plats etc.
 		|| pusher->v.solid == SOLID_BBOX // normally boxes
 		|| pusher->v.solid == SOLID_SLIDEBOX) // normally monsters
@@ -667,7 +667,7 @@ void SV_PushRotate (edict_t *pusher, float movetime)
 			// restore from the stored solid
 			pusher->v.solid = savepushervsolid;
 
-			// if it is still inside the pusher, block
+		// if it is still inside the pusher, block
 			block = SV_TestEntityPosition (check);
 		}
 		else
