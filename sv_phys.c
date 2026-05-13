@@ -108,7 +108,7 @@ void SV_CheckVelocity (edict_t *ent)
 	
 	wishspeed = VectorLength(ent->v.velocity);
 	if (wishspeed > sv_maxvelocity.value)
-	{	// sv_maxvelocity fix by Maddes
+	{	// SV_MAXVELOCITY fix by Maddes
 		VectorScale (ent->v.velocity, sv_maxvelocity.value/wishspeed, ent->v.velocity);
 		wishspeed = sv_maxvelocity.value;
 	}
@@ -510,7 +510,7 @@ void SV_PushMove (edict_t *pusher, float movetime)
 		moved_edict[num_moved] = check;
 		num_moved++;
 
-	// only check for types that can block
+	// only check for types that can block -- MOVETYPE_PUSH fix by LordHavoc/Maddes
 		if (pusher->v.solid == SOLID_BSP // everything that blocks: bsp models, map brushes, doors, plats etc.
 		|| pusher->v.solid == SOLID_BBOX // normally boxes
 		|| pusher->v.solid == SOLID_SLIDEBOX) // normally monsters
@@ -654,7 +654,7 @@ void SV_PushRotate (edict_t *pusher, float movetime)
 		org2[2] = DotProduct (org, up);
 		VectorSubtract (org2, org, move);
 
-	// only check for types that can block
+	// only check for types that can block -- MOVETYPE_PUSH fix by LordHavoc/Maddes
 		if (pusher->v.solid == SOLID_BSP // everything that blocks: bsp models, map brushes, doors, plats etc.
 		|| pusher->v.solid == SOLID_BBOX // normally boxes
 		|| pusher->v.solid == SOLID_SLIDEBOX) // normally monsters
