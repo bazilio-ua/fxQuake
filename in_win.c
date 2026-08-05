@@ -30,7 +30,7 @@ HRESULT (WINAPI *pDirectInputCreate)(HINSTANCE hinst, DWORD dwVersion,
 	LPDIRECTINPUT * lplpDirectInput, LPUNKNOWN punkOuter);
 
 // mouse variables
-cvar_t	m_filter = {"m_filter","0"};
+cvar_t	m_filter = {"m_filter","0",CVAR_ARCHIVE}; //none?
 
 #define	NUM_MOUSEBUTTONS		10 // was 8
 
@@ -81,25 +81,25 @@ PDWORD	pdwRawValue[JOY_MAX_AXES];
 // each time.  this avoids any problems with getting back to a default usage
 // or when changing from one controller to another.  this way at least something
 // works.
-cvar_t	in_joystick = {"joystick","0", true};
-cvar_t	joy_name = {"joyname", "joystick"};
-cvar_t	joy_advanced = {"joyadvanced", "0"};
-cvar_t	joy_advaxisx = {"joyadvaxisx", "0"};
-cvar_t	joy_advaxisy = {"joyadvaxisy", "0"};
-cvar_t	joy_advaxisz = {"joyadvaxisz", "0"};
-cvar_t	joy_advaxisr = {"joyadvaxisr", "0"};
-cvar_t	joy_advaxisu = {"joyadvaxisu", "0"};
-cvar_t	joy_advaxisv = {"joyadvaxisv", "0"};
-cvar_t	joy_forwardthreshold = {"joyforwardthreshold", "0.15"};
-cvar_t	joy_sidethreshold = {"joysidethreshold", "0.15"};
-cvar_t	joy_pitchthreshold = {"joypitchthreshold", "0.15"};
-cvar_t	joy_yawthreshold = {"joyyawthreshold", "0.15"};
-cvar_t	joy_forwardsensitivity = {"joyforwardsensitivity", "-1.0"};
-cvar_t	joy_sidesensitivity = {"joysidesensitivity", "-1.0"};
-cvar_t	joy_pitchsensitivity = {"joypitchsensitivity", "1.0"};
-cvar_t	joy_yawsensitivity = {"joyyawsensitivity", "-1.0"};
-cvar_t	joy_wwhack1 = {"joywwhack1", "0.0"};
-cvar_t	joy_wwhack2 = {"joywwhack2", "0.0"};
+cvar_t	in_joystick = {"joystick","0", CVAR_ARCHIVE};
+cvar_t	joy_name = {"joyname", "joystick", CVAR_NONE};
+cvar_t	joy_advanced = {"joyadvanced", "0", CVAR_NONE};
+cvar_t	joy_advaxisx = {"joyadvaxisx", "0", CVAR_NONE};
+cvar_t	joy_advaxisy = {"joyadvaxisy", "0", CVAR_NONE};
+cvar_t	joy_advaxisz = {"joyadvaxisz", "0", CVAR_NONE};
+cvar_t	joy_advaxisr = {"joyadvaxisr", "0", CVAR_NONE};
+cvar_t	joy_advaxisu = {"joyadvaxisu", "0", CVAR_NONE};
+cvar_t	joy_advaxisv = {"joyadvaxisv", "0", CVAR_NONE};
+cvar_t	joy_forwardthreshold = {"joyforwardthreshold", "0.15", CVAR_NONE};
+cvar_t	joy_sidethreshold = {"joysidethreshold", "0.15", CVAR_NONE};
+cvar_t	joy_pitchthreshold = {"joypitchthreshold", "0.15", CVAR_NONE};
+cvar_t	joy_yawthreshold = {"joyyawthreshold", "0.15", CVAR_NONE};
+cvar_t	joy_forwardsensitivity = {"joyforwardsensitivity", "-1.0", CVAR_NONE};
+cvar_t	joy_sidesensitivity = {"joysidesensitivity", "-1.0", CVAR_NONE};
+cvar_t	joy_pitchsensitivity = {"joypitchsensitivity", "1.0", CVAR_NONE};
+cvar_t	joy_yawsensitivity = {"joyyawsensitivity", "-1.0", CVAR_NONE};
+cvar_t	joy_wwhack1 = {"joywwhack1", "0.0", CVAR_NONE};
+cvar_t	joy_wwhack2 = {"joywwhack2", "0.0", CVAR_NONE};
 
 qboolean	joy_avail, joy_advancedinit, joy_haspov;
 DWORD		joy_oldbuttonstate, joy_oldpovstate;
@@ -417,28 +417,28 @@ IN_Init
 void IN_Init (void)
 {
 	// mouse variables
-	Cvar_RegisterVariable (&m_filter, NULL);
+	Cvar_RegisterVariable (&m_filter);
 
 	// joystick variables
-	Cvar_RegisterVariable (&in_joystick, NULL);
-	Cvar_RegisterVariable (&joy_name, NULL);
-	Cvar_RegisterVariable (&joy_advanced, NULL);
-	Cvar_RegisterVariable (&joy_advaxisx, NULL);
-	Cvar_RegisterVariable (&joy_advaxisy, NULL);
-	Cvar_RegisterVariable (&joy_advaxisz, NULL);
-	Cvar_RegisterVariable (&joy_advaxisr, NULL);
-	Cvar_RegisterVariable (&joy_advaxisu, NULL);
-	Cvar_RegisterVariable (&joy_advaxisv, NULL);
-	Cvar_RegisterVariable (&joy_forwardthreshold, NULL);
-	Cvar_RegisterVariable (&joy_sidethreshold, NULL);
-	Cvar_RegisterVariable (&joy_pitchthreshold, NULL);
-	Cvar_RegisterVariable (&joy_yawthreshold, NULL);
-	Cvar_RegisterVariable (&joy_forwardsensitivity, NULL);
-	Cvar_RegisterVariable (&joy_sidesensitivity, NULL);
-	Cvar_RegisterVariable (&joy_pitchsensitivity, NULL);
-	Cvar_RegisterVariable (&joy_yawsensitivity, NULL);
-	Cvar_RegisterVariable (&joy_wwhack1, NULL);
-	Cvar_RegisterVariable (&joy_wwhack2, NULL);
+	Cvar_RegisterVariable (&in_joystick);
+	Cvar_RegisterVariable (&joy_name);
+	Cvar_RegisterVariable (&joy_advanced);
+	Cvar_RegisterVariable (&joy_advaxisx);
+	Cvar_RegisterVariable (&joy_advaxisy);
+	Cvar_RegisterVariable (&joy_advaxisz);
+	Cvar_RegisterVariable (&joy_advaxisr);
+	Cvar_RegisterVariable (&joy_advaxisu);
+	Cvar_RegisterVariable (&joy_advaxisv);
+	Cvar_RegisterVariable (&joy_forwardthreshold);
+	Cvar_RegisterVariable (&joy_sidethreshold);
+	Cvar_RegisterVariable (&joy_pitchthreshold);
+	Cvar_RegisterVariable (&joy_yawthreshold);
+	Cvar_RegisterVariable (&joy_forwardsensitivity);
+	Cvar_RegisterVariable (&joy_sidesensitivity);
+	Cvar_RegisterVariable (&joy_pitchsensitivity);
+	Cvar_RegisterVariable (&joy_yawsensitivity);
+	Cvar_RegisterVariable (&joy_wwhack1);
+	Cvar_RegisterVariable (&joy_wwhack2);
 
 	Cmd_AddCommand ("force_centerview", Force_CenterView_f);
 	Cmd_AddCommand ("joyadvancedupdate", Joy_AdvancedUpdate_f);

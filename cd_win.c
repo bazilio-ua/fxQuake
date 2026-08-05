@@ -30,8 +30,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #undef	USE_AUX_API
 //#define	USE_AUX_API
 
-cvar_t bgmvolume = {"bgmvolume", "1", true};
-cvar_t bgmtype = {"bgmtype", "cd", true};   // cd or none
+//cvar_t bgmvolume = {"bgmvolume", "1", true};
+//cvar_t bgmtype = {"bgmtype", "cd", true};   // cd or none
 
 static qboolean cdValid = false;
 static qboolean	playing = false;
@@ -492,8 +492,8 @@ int CDAudio_Init(void)
 
     Cmd_AddCommand ("cd", CD_f);
 
-    Cvar_RegisterVariable(&bgmvolume, NULL);
-	Cvar_RegisterVariable(&bgmtype, NULL);
+	//Cvar_RegisterVariable(&bgmvolume);
+	//Cvar_RegisterVariable(&bgmtype);
 
 	mciOpenParms.lpstrDeviceType = "cdaudio";
 	dwReturn = mciSendCommand(0, MCI_OPEN, MCI_OPEN_TYPE | MCI_OPEN_SHAREABLE, (DWORD_PTR) (LPVOID) &mciOpenParms);

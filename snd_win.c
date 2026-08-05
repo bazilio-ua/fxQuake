@@ -191,25 +191,25 @@ sndinitstat SNDDMA_InitDirect (void)
 	HRESULT			hresult;
 	int				i;
 
-	memset ((void *)&sn, 0, sizeof (sn));
+	//memset ((void *)&sn, 0, sizeof (sn));
 
-	shm = &sn;
+	//shm = &sn;
 
-	shm->channels = 2;
-	shm->samplebits = 16;
+	dma.channels = 2;
+	dma.samplebits = 16;
 //	shm->speed = 11025;
 
 	// sound speed
 	if ((i = COM_CheckParm("-sndspeed")) != 0 && i < com_argc - 1)
-		shm->speed = atoi(com_argv[i + 1]);
+		dma.speed = atoi(com_argv[i + 1]);
 	else
-		shm->speed = 44100; // was 11025
+		dma.speed = 44100; // was 11025
 
 	memset (&format, 0, sizeof(format));
 	format.wFormatTag = WAVE_FORMAT_PCM;
-	format.nChannels = shm->channels;
-	format.wBitsPerSample = shm->samplebits;
-	format.nSamplesPerSec = shm->speed;
+	format.nChannels = dma.channels;
+	format.wBitsPerSample = dma.samplebits;
+	format.nSamplesPerSec = dma.speed;
 	format.nBlockAlign = format.nChannels
 		*format.wBitsPerSample / 8;
 	format.cbSize = 0;
@@ -328,9 +328,9 @@ sndinitstat SNDDMA_InitDirect (void)
 			return SIS_FAILURE;
 		}
 
-		shm->channels = format.nChannels;
-		shm->samplebits = format.wBitsPerSample;
-		shm->speed = format.nSamplesPerSec;
+		dma.channels = format.nChannels;
+		dma.samplebits = format.wBitsPerSample;
+		dma.speed = format.nSamplesPerSec;
 
 		if (DS_OK != pDSBuf->lpVtbl->GetCaps (pDSBuf, &dsbcaps))
 		{
@@ -373,11 +373,11 @@ sndinitstat SNDDMA_InitDirect (void)
 	pDSBuf->lpVtbl->GetCurrentPosition(pDSBuf, &mmstarttime.u.sample, &dwWrite);
 	pDSBuf->lpVtbl->Play(pDSBuf, 0, 0, DSBPLAY_LOOPING);
 
-	shm->samples = gSndBufSize/(shm->samplebits/8);
-	shm->samplepos = 0;
-	shm->submission_chunk = 1;
-	shm->buffer = (byte *) lpData;
-	sample16 = (shm->samplebits/8) - 1;
+	dma.samples = gSndBufSize/(dma.samplebits/8);
+	dma.samplepos = 0;
+	dma.submission_chunk = 1;
+	dma.buffer = (byte *) lpData;
+	sample16 = (dma.samplebits/8) - 1;
 
 	dsound_init = true;
 
@@ -401,23 +401,23 @@ qboolean SNDDMA_InitWav (void)
 	snd_sent = 0;
 	snd_completed = 0;
 
-	shm = &sn;
+	//shm = &sn;
 
-	shm->channels = 2;
-	shm->samplebits = 16;
+	dma.channels = 2;
+	dma.samplebits = 16;
 //	shm->speed = 11025;
 
 	// sound speed
 	if ((i = COM_CheckParm("-sndspeed")) != 0 && i < com_argc - 1)
-		shm->speed = atoi(com_argv[i + 1]);
+		dma.speed = atoi(com_argv[i + 1]);
 	else
-		shm->speed = 44100; // was 11025
+		dma.speed = 44100; // was 11025
 
 	memset (&format, 0, sizeof(format));
 	format.wFormatTag = WAVE_FORMAT_PCM;
-	format.nChannels = shm->channels;
-	format.wBitsPerSample = shm->samplebits;
-	format.nSamplesPerSec = shm->speed;
+	format.nChannels = dma.channels;
+	format.wBitsPerSample = dma.samplebits;
+	format.nSamplesPerSec = dma.speed;
 	format.nBlockAlign = format.nChannels
 		*format.wBitsPerSample / 8;
 	format.cbSize = 0;
@@ -510,11 +510,11 @@ qboolean SNDDMA_InitWav (void)
 		}
 	}
 
-	shm->samples = gSndBufSize/(shm->samplebits/8);
-	shm->samplepos = 0;
-	shm->submission_chunk = 1;
-	shm->buffer = (byte *) lpData;
-	sample16 = (shm->samplebits/8) - 1;
+	dma.samples = gSndBufSize/(dma.samplebits/8);
+	dma.samplepos = 0;
+	dma.submission_chunk = 1;
+	dma.buffer = (byte *) lpData;
+	sample16 = (dma.samplebits/8) - 1;
 
 	wav_init = true;
 
@@ -633,7 +633,7 @@ int SNDDMA_GetDMAPos(void)
 
 	s >>= sample16;
 
-	s &= (shm->samples-1);
+	s &= (dma.samples-1);
 
 	return s;
 }
@@ -667,7 +667,7 @@ void SNDDMA_BeginPainting(void)
 		pDSBuf->lpVtbl->Play (pDSBuf, 0, 0, DSBPLAY_LOOPING);
 
 	reps = 0;
-	shm->buffer = NULL;
+	dma.buffer = NULL;
 	// lock the dsound buffer
 	while ((hresult = pDSBuf->lpVtbl->Lock (pDSBuf, 0, gSndBufSize, (void *)&pData, &dwLockSize, NULL, NULL, 0)) != DS_OK)
 	{
@@ -686,7 +686,7 @@ void SNDDMA_BeginPainting(void)
 		if (++reps > 2)
 			return;
 	}
-	shm->buffer = (byte *)pData;
+	dma.buffer = (byte *)pData;
 }
 
 /*
@@ -701,12 +701,12 @@ void SNDDMA_Submit(void)
 	LPWAVEHDR	h;
 	int			wResult;
 
-	if (!shm->buffer)
+	if (!dma.buffer)
 		return;
 
 	// unlock the dsound buffer
 	if (pDSBuf)
-		pDSBuf->lpVtbl->Unlock (pDSBuf, shm->buffer, dwLockSize, NULL, 0);
+		pDSBuf->lpVtbl->Unlock (pDSBuf, dma.buffer, dwLockSize, NULL, 0);
 
 	if (!wav_init)
 		return;
