@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="GL Debug|Win32">
+      <Configuration>GL Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="GL Release|Win32">
+      <Configuration>GL Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <SccProjectName />
+    <SccLocalPath />
+    <ProjectGuid>{FC317F25-CC2A-4CCD-86C4-6F0928D050AF}</ProjectGuid>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='GL Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v142</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='GL Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v142</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='GL Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.Cpp.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='GL Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.Cpp.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='GL Release|Win32'">
+    <OutDir>.\Release\</OutDir>
+    <IntDir>.\Release\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='GL Debug|Win32'">
+    <OutDir>.\Debug\</OutDir>
+    <IntDir>.\Debug\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='GL Release|Win32'">
+    <ClCompile>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <StringPooling>true</StringPooling>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <Optimization>MaxSpeed</Optimization>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AssemblerListingLocation>.\Release\</AssemblerListingLocation>
+      <PrecompiledHeaderOutputFile>.\Release\winquake.pch</PrecompiledHeaderOutputFile>
+      <ObjectFileName>.\Release\</ObjectFileName>
+      <ProgramDataBaseFileName>.\Release\</ProgramDataBaseFileName>
+    </ClCompile>
+    <Midl>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <TypeLibraryName>.\Release\winquake.tlb</TypeLibraryName>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <TargetEnvironment>Win32</TargetEnvironment>
+    </Midl>
+    <ResourceCompile>
+      <Culture>0x0409</Culture>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\Release\winquake.bsc</OutputFile>
+    </Bscmake>
+    <Link>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OutputFile>C:\quake\fxquake.exe</OutputFile>
+      <AdditionalDependencies>dxguid.lib;dinput.lib;dsound.lib;winmm.lib;wsock32.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='GL Debug|Win32'">
+    <ClCompile>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <Optimization>Disabled</Optimization>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <PreprocessorDefinitions>DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AssemblerListingLocation>.\Debug\</AssemblerListingLocation>
+      <BrowseInformation>true</BrowseInformation>
+      <PrecompiledHeaderOutputFile>.\Debug\winquake.pch</PrecompiledHeaderOutputFile>
+      <ObjectFileName>.\Debug\</ObjectFileName>
+      <ProgramDataBaseFileName>.\Debug\</ProgramDataBaseFileName>
+    </ClCompile>
+    <Midl>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <PreprocessorDefinitions>DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <TypeLibraryName>.\Debug\winquake.tlb</TypeLibraryName>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <TargetEnvironment>Win32</TargetEnvironment>
+    </Midl>
+    <ResourceCompile>
+      <Culture>0x0409</Culture>
+      <PreprocessorDefinitions>DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\Debug\winquake.bsc</OutputFile>
+    </Bscmake>
+    <Link>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <OutputFile>C:\quake\fxquake.exe</OutputFile>
+      <AdditionalDependencies>dxguid.lib;dinput.lib;dsound.lib;winmm.lib;wsock32.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="cd_win.c" />
+    <ClCompile Include="chase.c" />
+    <ClCompile Include="cl_demo.c" />
+    <ClCompile Include="cl_input.c" />
+    <ClCompile Include="cl_main.c" />
+    <ClCompile Include="cl_parse.c" />
+    <ClCompile Include="cl_tent.c" />
+    <ClCompile Include="cmd.c" />
+    <ClCompile Include="common.c" />
+    <ClCompile Include="conproc.c" />
+    <ClCompile Include="console.c" />
+    <ClCompile Include="crc.c" />
+    <ClCompile Include="cvar.c" />
+    <ClCompile Include="gl_anim.c" />
+    <ClCompile Include="gl_draw.c" />
+    <ClCompile Include="gl_efrag.c" />
+    <ClCompile Include="gl_light.c" />
+    <ClCompile Include="gl_main.c" />
+    <ClCompile Include="gl_mesh.c" />
+    <ClCompile Include="gl_misc.c" />
+    <ClCompile Include="gl_model.c" />
+    <ClCompile Include="gl_part.c" />
+    <ClCompile Include="gl_screen.c" />
+    <ClCompile Include="gl_surf.c" />
+    <ClCompile Include="host.c" />
+    <ClCompile Include="host_cmd.c" />
+    <ClCompile Include="in_win.c" />
+    <ClCompile Include="keys.c" />
+    <ClCompile Include="mathlib.c" />
+    <ClCompile Include="menu.c" />
+    <ClCompile Include="net_dgrm.c" />
+    <ClCompile Include="net_loop.c" />
+    <ClCompile Include="net_main.c" />
+    <ClCompile Include="net_win.c" />
+    <ClCompile Include="net_wins.c" />
+    <ClCompile Include="pr_cmds.c" />
+    <ClCompile Include="pr_edict.c" />
+    <ClCompile Include="pr_exec.c" />
+    <ClCompile Include="sbar.c" />
+    <ClCompile Include="snd_dma.c" />
+    <ClCompile Include="snd_mem.c" />
+    <ClCompile Include="snd_mix.c" />
+    <ClCompile Include="snd_win.c" />
+    <ClCompile Include="sv_main.c" />
+    <ClCompile Include="sv_move.c" />
+    <ClCompile Include="sv_phys.c" />
+    <ClCompile Include="sv_user.c" />
+    <ClCompile Include="sys_win.c" />
+    <ClCompile Include="vid_wgl.c" />
+    <ClCompile Include="view.c" />
+    <ClCompile Include="wad.c" />
+    <ClCompile Include="world.c" />
+    <ClCompile Include="zone.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="anorms.h" />
+    <ClInclude Include="anorm_dots.h" />
+    <ClInclude Include="bspfile.h" />
+    <ClInclude Include="cdaudio.h" />
+    <ClInclude Include="client.h" />
+    <ClInclude Include="cmd.h" />
+    <ClInclude Include="common.h" />
+    <ClInclude Include="conproc.h" />
+    <ClInclude Include="console.h" />
+    <ClInclude Include="crc.h" />
+    <ClInclude Include="cvar.h" />
+    <ClInclude Include="draw.h" />
+    <ClInclude Include="glquake.h" />
+    <ClInclude Include="gl_warp_sin.h" />
+    <ClInclude Include="input.h" />
+    <ClInclude Include="keys.h" />
+    <ClInclude Include="mathlib.h" />
+    <ClInclude Include="menu.h" />
+    <ClInclude Include="model.h" />
+    <ClInclude Include="modelgen.h" />
+    <ClInclude Include="net.h" />
+    <ClInclude Include="net_dgrm.h" />
+    <ClInclude Include="net_loop.h" />
+    <ClInclude Include="net_wins.h" />
+    <ClInclude Include="progdefs.h" />
+    <ClInclude Include="progs.h" />
+    <ClInclude Include="protocol.h" />
+    <ClInclude Include="pr_comp.h" />
+    <ClInclude Include="quakedef.h" />
+    <ClInclude Include="render.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="sbar.h" />
+    <ClInclude Include="screen.h" />
+    <ClInclude Include="server.h" />
+    <ClInclude Include="sound.h" />
+    <ClInclude Include="spritegn.h" />
+    <ClInclude Include="sys.h" />
+    <ClInclude Include="vid.h" />
+    <ClInclude Include="view.h" />
+    <ClInclude Include="wad.h" />
+    <ClInclude Include="winquake.h" />
+    <ClInclude Include="world.h" />
+    <ClInclude Include="zone.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="quake.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="winquake.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="progdefs.q1" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

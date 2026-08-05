@@ -32,6 +32,9 @@ DerivedData/
 !*.xcworkspace/contents.xcworkspacedata
 **/xcshareddata/WorkspaceSettings.xcsettings
 
+# Visual Studio 2015/2017 cache/options directory
+.vs/
+
 ## Quake specific
 *.obj
 *.sbr
