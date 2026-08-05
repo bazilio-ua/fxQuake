@@ -139,9 +139,10 @@
     <ClCompile Include="console.c" />
     <ClCompile Include="crc.c" />
     <ClCompile Include="cvar.c" />
-    <ClCompile Include="gl_anim.c" />
+    <ClCompile Include="gl_bloom.c" />
     <ClCompile Include="gl_draw.c" />
     <ClCompile Include="gl_efrag.c" />
+    <ClCompile Include="gl_fog.c" />
     <ClCompile Include="gl_light.c" />
     <ClCompile Include="gl_main.c" />
     <ClCompile Include="gl_mesh.c" />
@@ -149,7 +150,10 @@
     <ClCompile Include="gl_model.c" />
     <ClCompile Include="gl_part.c" />
     <ClCompile Include="gl_screen.c" />
+    <ClCompile Include="gl_sky.c" />
     <ClCompile Include="gl_surf.c" />
+    <ClCompile Include="gl_texmgr.c" />
+    <ClCompile Include="gl_warp.c" />
     <ClCompile Include="host.c" />
     <ClCompile Include="host_cmd.c" />
     <ClCompile Include="in_win.c" />

@@ -191,6 +191,18 @@ void (GLAPIENTRY *qglCompressedTexImage2D) (GLenum target, GLint level, GLenum i
 #define GL_COMPRESSED_RGBA_S3TC_DXT5_EXT                     0x83F3
 #endif
 
+#ifndef GL_NUM_COMPRESSED_TEXTURE_FORMATS
+#define GL_NUM_COMPRESSED_TEXTURE_FORMATS                    0x86A2
+#endif
+
+#ifndef GL_COMPRESSED_TEXTURE_FORMATS
+#define GL_COMPRESSED_TEXTURE_FORMATS					     0x86A3
+#endif
+
+#ifndef GL_TEXTURE_MAX_LEVEL
+#define GL_TEXTURE_MAX_LEVEL					             0x813D
+#endif
+
 // Texture generate mipmap
 void (GLAPIENTRY *qglGenerateMipmap) (GLenum type);
 

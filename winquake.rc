@@ -7,7 +7,12 @@
 //
 // Generated from the TEXTINCLUDE 2 resource.
 //
+#if defined(_MSC_VER) && (_MSC_VER < 1600)
 #include "afxres.h"
+#else
+#include "winres.h"
+#endif
+
 
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS

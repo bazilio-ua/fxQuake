@@ -54,9 +54,6 @@
     <ClCompile Include="cvar.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="gl_anim.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="gl_draw.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -172,6 +169,21 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="zone.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gl_bloom.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gl_fog.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gl_sky.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gl_texmgr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gl_warp.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
