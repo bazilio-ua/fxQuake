@@ -23,6 +23,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #error "You shouldn't be including this file for non Win32 stuff!"
 #endif
 
+#ifndef DIRECTINPUT_VERSION
+#define DIRECTINPUT_VERSION 0x0800
+#endif
+
 #include <windows.h>
 #include <dsound.h>
 #include <dinput.h>

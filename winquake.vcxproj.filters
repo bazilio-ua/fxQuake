@@ -186,6 +186,9 @@
     <ClCompile Include="gl_warp.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="image.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="anorm_dots.h">

@@ -622,7 +622,7 @@ void VID_Shutdown (void)
 		if (hRC)
 			wglDeleteContext(hRC);
 
-		VID_Gamma_Shutdown ();
+		//VID_Gamma_Shutdown ();
 
 		if (hDC && mainwindow)
 			ReleaseDC(mainwindow, hDC);
@@ -855,7 +855,7 @@ LONG WINAPI MainWndProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             CDAudio_Resume ();
 			S_UnblockSound ();
 			S_ClearBuffer ();
-			VID_Gamma_Set ();
+			//VID_Gamma_Set ();
 			active = true;
             }
 		}
@@ -881,7 +881,7 @@ LONG WINAPI MainWndProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             CDAudio_Pause ();
 			S_BlockSound ();
 			S_ClearBuffer ();
-			VID_Gamma_Restore ();
+			//VID_Gamma_Restore ();
 			active = false;
             }
 		}
@@ -1244,6 +1244,34 @@ void VID_InitFullScreen (HINSTANCE hInstance)
 
 	if (nummodes == originalnummodes)
 		Con_SafePrintf ("No fullscreen modes found\n");
+}
+
+/*
+================
+VID_Toggle -- new proc by S.A., called by alt-return key binding.
+
+EER1 -- rewritten
+================
+*/
+void	VID_Toggle(void)
+{
+	//qboolean do_toggle;
+	//qboolean fullscreen;
+
+	//S_ClearBuffer();
+
+	//fullscreen = !(qboolean)vid_fullscreen.value;
+	//do_toggle = VID_CheckMode((int)vid_width.value,
+	//	(int)vid_height.value,
+	//	(int)vid_refreshrate.value,
+	//	(int)vid_bpp.value,
+	//	fullscreen);
+
+	//if (do_toggle)
+	//{
+	//	Cvar_Set("vid_fullscreen", (fullscreen) ? "1" : "0");
+	//	Cbuf_AddText("vid_restart\n");
+	//}
 }
 
 /*
