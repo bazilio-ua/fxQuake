@@ -249,7 +249,7 @@ void GL_CheckExtension_TextureCompression (void)
 				if (num)
 				{
 					//GLint formats[num];
-					GLint *formats = malloc (num);
+					GLint *formats = malloc (num * sizeof(GLint));
 					glGetIntegerv(GL_COMPRESSED_TEXTURE_FORMATS, formats);
 					
 					qboolean DXT1ext = false;
