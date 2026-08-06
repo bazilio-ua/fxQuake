@@ -137,6 +137,7 @@
     <ClCompile Include="cl_tent.c" />
     <ClCompile Include="cmd.c" />
     <ClCompile Include="common.c" />
+    <ClCompile Include="config.c" />
     <ClCompile Include="conproc.c" />
     <ClCompile Include="console.c" />
     <ClCompile Include="crc.c" />
@@ -195,6 +196,7 @@
     <ClInclude Include="client.h" />
     <ClInclude Include="cmd.h" />
     <ClInclude Include="common.h" />
+    <ClInclude Include="config.h" />
     <ClInclude Include="conproc.h" />
     <ClInclude Include="console.h" />
     <ClInclude Include="crc.h" />
