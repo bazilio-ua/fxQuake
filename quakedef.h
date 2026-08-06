@@ -28,8 +28,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifdef _MSC_VER
 #pragma warning(disable : 4244)	// double|int to float truncation
 #pragma warning(disable : 4305)	// const double to float truncation
-//#pragma warning(disable : 4018)	// signed/unsigned mismatch
-//#pragma warning(disable : 4996)	// deprecated
+#pragma warning(disable : 4018)	// signed/unsigned mismatch
+#pragma warning(disable : 4996)	// deprecated
 #endif 
 
 
