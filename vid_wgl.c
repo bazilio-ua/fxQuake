@@ -1500,7 +1500,11 @@ void VID_Init (void)
 	if (!wglMakeCurrent( maindc, baseRC ))
 		Sys_Error ("wglMakeCurrent failed");
 
+	GL_GetPixelFormatInfo();
 	GL_Init ();
+	GL_SetupState();
+
+	GL_SwapInterval();
 
 	//VID_Gamma_Init ();
 
