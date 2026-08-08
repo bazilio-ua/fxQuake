@@ -4,4 +4,8 @@
     <LocalDebuggerCommandArguments>-basedir C:\Quake -window</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='GL Release|Win32'">
+    <LocalDebuggerCommandArguments>-basedir C:\Quake -window</LocalDebuggerCommandArguments>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+  </PropertyGroup>
 </Project>
