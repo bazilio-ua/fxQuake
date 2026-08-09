@@ -76,34 +76,32 @@ Sys_ScanDirList
 */
 void Sys_ScanDirList(char* path, filelist_t** list)
 {
-	//DIR* dir_p, * t_dir_p;
-	//struct dirent* dir_t;
-	//char		dirstring[MAX_OSPATH], t_dirstring[MAX_OSPATH];
+	WIN32_FIND_DATA	data;
+	HANDLE		handle;
+	DWORD		attribs;
+	char		dirstring[MAX_OSPATH], t_dirstring[MAX_OSPATH];
 
-	//snprintf(dirstring, sizeof(dirstring), "%s/", path);
-	//dir_p = opendir(dirstring);
-	//if (dir_p == NULL)
-	//	return;
+	snprintf (dirstring, sizeof(dirstring), "%s/*", path);
+	handle = FindFirstFile(dirstring, &data);
+	if (handle == INVALID_HANDLE_VALUE)
+		return;
 
-	//while ((dir_t = readdir(dir_p)) != NULL)
-	//{
-	//	if (!strcmp(dir_t->d_name, ".") || !strcmp(dir_t->d_name, ".."))
-	//		continue;
-	//	if (!strcasecmp(COM_FileExtension(dir_t->d_name), "app")) // skip .app bundles on macOS
-	//		continue;
+	do
+	{
+		if (!strcmp(data.cFileName, ".") || !strcmp(data.cFileName, ".."))
+			continue;
 
-	//	snprintf(t_dirstring, sizeof(t_dirstring), "%s%s/", dirstring, dir_t->d_name);
-	//	t_dir_p = opendir(t_dirstring);
-	//	if (t_dir_p == NULL)
-	//		continue;
-
-	//	// don't bother testing for pak files / progs.dat
-	//	COM_FileListAdd(dir_t->d_name, list);
-
-	//	closedir(t_dir_p);
-	//}
-
-	//closedir(dir_p);
+		snprintf (t_dirstring, sizeof(t_dirstring), "%s/%s", path, data.cFileName);
+		attribs = GetFileAttributes(t_dirstring);
+		if (attribs != INVALID_FILE_ATTRIBUTES && (attribs & FILE_ATTRIBUTE_DIRECTORY)) 
+		{
+			/* don't bother testing for pak files / progs.dat */
+			COM_FileListAdd (data.cFileName, list);
+		}
+	}
+	while (FindNextFile(handle, &data));
+	
+	FindClose(handle);
 }
 
 /*
