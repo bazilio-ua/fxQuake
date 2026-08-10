@@ -1890,14 +1890,14 @@ void COM_Game_f (void)
 				Con_Printf ("mod directory should be a single directory name, not a path\n");
 				return;
 			}
-			if (Sys_FileTime(va("%s/%s", com_basedir, p4)) == -1)
+			if (Sys_FileType(va("%s/%s", com_basedir, p4)) != TYPE_DIRECTORY)
 			{
 				Con_Printf ("No such mod directory \"%s\"\n", p4);
 				return;
 			}
 		}
 		
-		if (Sys_FileTime(va("%s/%s", com_basedir, p)) == -1)
+		if (Sys_FileType(va("%s/%s", com_basedir, p)) != TYPE_DIRECTORY)
 		{
 			Con_Printf ("No such game directory \"%s\"\n", p);
 			return;
