@@ -24,7 +24,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 void Sys_mkdir (char *path);
 void Sys_ScanDirList (char *path, filelist_t **list);
-void Sys_ScanDirFileList(char *path, char *subdir, char *ext, qboolean stripext, filelist_t **list);
+void Sys_ScanDirFileList (char *path, char *subdir, char *ext, qboolean stripext, filelist_t **list);
+
+#define	TYPE_NONE		(0)
+#define	TYPE_FILE		(1 << 0)
+#define	TYPE_DIRECTORY	(1 << 1)
+
+int Sys_FileType (char *path);
+// returns an file type, i.e. TYPE_FILE or TYPE_DIRECTORY.
+// returns TYPE_NONE (0) if no such file or directory is present.
 
 //
 // system IO

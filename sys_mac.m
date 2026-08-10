@@ -126,6 +126,24 @@ void Sys_ScanDirFileList (char *path, char *subdir, char *ext, qboolean stripext
 	closedir(dir_p);
 }
 
+int Sys_FileType (char *path)
+{
+	/*
+	if (access(path, R_OK) == -1)
+		return 0;
+	*/
+	struct stat	st;
+
+	if (stat(path, &st) != 0)
+		return TYPE_NONE;
+	if (S_ISDIR(st.st_mode))
+		return TYPE_DIRECTORY;
+	if (S_ISREG(st.st_mode))
+		return TYPE_FILE;
+
+	return TYPE_NONE;
+}
+
 /*
 ================
 Sys_EditFile

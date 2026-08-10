@@ -74,7 +74,7 @@ void Sys_mkdir (char *path)
 Sys_ScanDirList
 ================
 */
-void Sys_ScanDirList(char* path, filelist_t** list)
+void Sys_ScanDirList (char* path, filelist_t** list)
 {
 	WIN32_FIND_DATA	data;
 	HANDLE		handle;
@@ -109,7 +109,7 @@ void Sys_ScanDirList(char* path, filelist_t** list)
 Sys_ScanDirFileList
 ================
 */
-void Sys_ScanDirFileList(char *path, char *subdir, char *ext, qboolean stripext, filelist_t **list)
+void Sys_ScanDirFileList (char *path, char *subdir, char *ext, qboolean stripext, filelist_t **list)
 {
 	WIN32_FIND_DATA	data;
 	HANDLE		handle;
@@ -133,6 +133,23 @@ void Sys_ScanDirFileList(char *path, char *subdir, char *ext, qboolean stripext,
 	while (FindNextFile(handle, &data));
 	
 	FindClose(handle);
+}
+
+/*
+================
+Sys_FileType
+================
+*/
+int Sys_FileType (char *path)
+{
+	DWORD result = GetFileAttributes(path);
+
+	if (result == INVALID_FILE_ATTRIBUTES)
+		return TYPE_NONE;
+	if (result & FILE_ATTRIBUTE_DIRECTORY)
+		return TYPE_DIRECTORY;
+
+	return TYPE_FILE;
 }
 
 /*
