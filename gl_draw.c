@@ -263,6 +263,8 @@ void Draw_NewGame (void)
 	memset(&scrap_texels, 255, sizeof(scrap_texels));
 	Scrap_Upload (); // creates 2 empty gltextures
 
+	draw_disc = NULL;
+
 	// reload wad pics
 	W_LoadWadFile (); //johnfitz -- filename is now hard-coded for honesty
 	Draw_LoadPics ();
