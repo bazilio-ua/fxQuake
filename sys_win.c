@@ -74,7 +74,7 @@ void Sys_mkdir (char *path)
 Sys_ScanDirList
 ================
 */
-void Sys_ScanDirList (char* path, filelist_t** list)
+void Sys_ScanDirList (char *path, filelist_t **list)
 {
 	WIN32_FIND_DATA	data;
 	HANDLE		handle;
@@ -168,7 +168,7 @@ Sys_Init
 void Sys_Init (void)
 {
 	OSVERSIONINFO	vinfo;
-    int numcpus;
+	int numcpus;
 
 	Sys_InitDoubleTime ();
 
@@ -184,25 +184,25 @@ void Sys_Init (void)
 	}
 
 	if (vinfo.dwPlatformId == VER_PLATFORM_WIN32_NT)
-    {
-        SYSTEM_INFO info;
+	{
+		SYSTEM_INFO info;
 
-        GetSystemInfo(&info);
+		GetSystemInfo(&info);
 		numcpus = info.dwNumberOfProcessors;
-        numcpus = (numcpus < 1) ? 1 : numcpus;
+		numcpus = (numcpus < 1) ? 1 : numcpus;
 
 		WinNT = true;
-    }
+	}
 	else
-    {
-        numcpus = 1;
+	{
+		numcpus = 1;
 
 		WinNT = false;
-    }
+	}
 
-    host_parms->numcpus = numcpus;
-    has_smp = (numcpus > 1) ? true : false;
-    Sys_Printf("System has %d CPU%s.\n", numcpus, has_smp ? "s" : "");
+	host_parms->numcpus = numcpus;
+	has_smp = (numcpus > 1) ? true : false;
+	Sys_Printf("System has %d CPU%s.\n", numcpus, has_smp ? "s" : "");
 }
 
 void Sys_Printf (char *fmt, ...)

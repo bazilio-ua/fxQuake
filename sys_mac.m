@@ -126,6 +126,11 @@ void Sys_ScanDirFileList (char *path, char *subdir, char *ext, qboolean stripext
 	closedir(dir_p);
 }
 
+/*
+================
+Sys_FileType
+================
+*/
 int Sys_FileType (char *path)
 {
 	/*
