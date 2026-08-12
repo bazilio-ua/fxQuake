@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "winquake.h"
 #include "resource.h"
 
-#define MAX_MODE_LIST		600 // was 30
+#define MAX_MODE_LIST		600 //johnfitz -- was 30
 
 #define MAXWIDTH		8192 // was 10000
 #define MAXHEIGHT		8192 // was 10000
@@ -40,7 +40,7 @@ typedef struct {
 	int			dib;
 	int			fullscreen;
 	int			bpp;
-	int			refreshrate;
+	int			refreshrate; //johnfitz
 	int			halfscreen;
 	char		modedesc[17];
 } vmode_t;
@@ -138,115 +138,6 @@ void VID_UpdateWindowStatus (void);
 int			window_center_x, window_center_y, window_x, window_y, window_width, window_height;
 RECT		window_rect;
 
-//==========================================================================
-//
-//  HARDWARE GAMMA
-//
-//==========================================================================
-
-//cvar_t		vid_gamma = {"gamma", "1", true}; // moved here from view.c
-//cvar_t		vid_contrast = {"contrast", "1", true}; // QuakeSpasm, MarkV
-
-//unsigned short vid_gammaramp[768];
-//unsigned short vid_systemgammaramp[768]; // to restore gamma on exit
-//qboolean vid_gammaworks = false;
-
-/*
-================
-VID_Gamma_Set
-
-apply gamma correction
-================
-*/
-//void VID_Gamma_Set (void)
-//{
-//	if (!vid_gammaworks)
-//		return;
-//
-//	if (!SetDeviceGammaRamp (maindc, vid_gammaramp))
-//		Con_Printf ("VID_Gamma_Set: failed on SetDeviceGammaRamp\n");
-///*
-//	FIXME: for some reason, this always returns false.
-//
-//	which is supposed to return true or false depending on if the call succeeds,
-//	but I've found on my machine that the function call always returns false,
-//	regardless of the function working or not.
-//*/
-//}
-
-/*
-================
-VID_Gamma_Restore
-
-restore system gamma
-================
-*/
-//void VID_Gamma_Restore (void)
-//{
-//	if (!vid_gammaworks)
-//		return;
-//
-//	if (!SetDeviceGammaRamp (maindc, vid_systemgammaramp))
-//		Con_Printf ("VID_Gamma_Restore: failed on SetDeviceGammaRamp\n");
-//}
-
-/*
-================
-VID_Gamma_Shutdown
-
-called on exit
-================
-*/
-//void VID_Gamma_Shutdown (void)
-//{
-//	VID_Gamma_Restore ();
-//}
-
-/*
-================
-VID_Gamma
-
-callback when the cvar changes
-================
-*/
-//void VID_Gamma (void)
-//{
-//	int i;
-//	static float oldgamma;
-//	static float oldcontrast;
-//
-//	if (vid_gamma.value == oldgamma && vid_contrast.value == oldcontrast)
-//		return;
-//
-//	oldgamma = vid_gamma.value;
-//    oldcontrast = vid_contrast.value;
-//
-//	// Refresh gamma
-//	for (i=0; i<256; i++)
-//		vid_gammaramp[i] = vid_gammaramp[i+256] = vid_gammaramp[i+512] =
-//			CLAMP(0, (int)((255 * pow ((i+0.5)/255.5, vid_gamma.value) + 0.5) * vid_contrast.value), 255) << 8;
-//
-//	VID_Gamma_Set ();
-//}
-
-/*
-================
-VID_Gamma_Init
-
-call on init
-================
-*/
-//void VID_Gamma_Init (void)
-//{
-//    qboolean success = GetDeviceGammaRamp (maindc, vid_systemgammaramp);
-//    if (!success)
-//        Con_Printf ("VID_Gamma_Init: failed on GetDeviceGammaRamp\n");
-//    else
-//        vid_gammaworks = true;
-//
-//	if (!vid_gammaworks)
-//		Con_Printf ("Hardware gamma unavailable\n");
-//}
 
 //==============================================================================
 //
@@ -622,7 +513,6 @@ void VID_Shutdown (void)
 		if (hRC)
 			wglDeleteContext(hRC);
 
-		//VID_Gamma_Shutdown ();
 
 		if (hDC && mainwindow)
 			ReleaseDC(mainwindow, hDC);
@@ -855,7 +745,7 @@ LONG WINAPI MainWndProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             CDAudio_Resume ();
 			S_UnblockSound ();
 			S_ClearBuffer ();
-			//VID_Gamma_Set ();
+
 			active = true;
             }
 		}
@@ -881,7 +771,7 @@ LONG WINAPI MainWndProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             CDAudio_Pause ();
 			S_BlockSound ();
 			S_ClearBuffer ();
-			//VID_Gamma_Restore ();
+
 			active = false;
             }
 		}
@@ -1506,10 +1396,6 @@ void VID_Init (void)
 
 	GL_SwapInterval();
 
-	//VID_Gamma_Init ();
-
-	//Cvar_RegisterVariable (&vid_gamma, VID_Gamma);
-	//Cvar_RegisterVariable (&vid_contrast, VID_Gamma);
 
 	vid_realmode = vid_modenum;
 
