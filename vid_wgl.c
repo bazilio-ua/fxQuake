@@ -130,10 +130,33 @@ viddef_t vid; // global video state
 
 modestate_t modestate = MS_UNINIT;
 
+void VID_Menu_Init (void); //johnfitz
+void VID_Menu_f (void); //johnfitz
+void VID_MenuDraw (void);
+void VID_MenuKey (int key);
+
 LONG WINAPI MainWndProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 LONG CDAudio_MessageHandler (HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 char *VID_GetExtModeDescription (int mode);
+char *VID_GetModeDescription (int mode);
 void VID_UpdateWindowStatus (void);
+
+qboolean vid_locked = false; //johnfitz
+qboolean vid_changed = false;
+
+//qboolean	vid_initialized = false;
+
+//====================================
+
+//johnfitz -- new cvars
+cvar_t		vid_fullscreen = {"vid_fullscreen", "1", true};
+cvar_t		vid_width = {"vid_width", "640", true};
+cvar_t		vid_height = {"vid_height", "480", true};
+cvar_t		vid_bpp = {"vid_bpp", "16", true};
+cvar_t		vid_refreshrate = {"vid_refreshrate", "60", true};
+cvar_t		vid_vsync = {"vid_vsync", "0", true};
+//johnfitz
+
 
 int			window_center_x, window_center_y, window_x, window_y, window_width, window_height;
 RECT		window_rect;
@@ -188,7 +211,7 @@ qboolean VID_SetWindowedMode (int modenum)
 	window_width = modelist[modenum].width;
 	window_height = modelist[modenum].height;
 
-	// if width and height match desktop size, make the window without titlebar/borders
+	//johnfitz --  if width and height match desktop size, do aguirRe's trick of making the window have no titlebar/borders
 	if (window_width == GetSystemMetrics(SM_CXSCREEN) && window_height == GetSystemMetrics(SM_CYSCREEN))
 		WindowStyle = WS_POPUP; // Window covers entire screen: no caption, borders etc
 	else
@@ -264,11 +287,11 @@ qboolean VID_SetFullScreenMode (int modenum)
 		gdevmode.dmFields = DM_BITSPERPEL | 
 							DM_PELSWIDTH |
 							DM_PELSHEIGHT |
-							DM_DISPLAYFREQUENCY; // refreshrate
+							DM_DISPLAYFREQUENCY; //johnfitz -- refreshrate
 		gdevmode.dmBitsPerPel = modelist[modenum].bpp;
 		gdevmode.dmPelsWidth = modelist[modenum].width << modelist[modenum].halfscreen;
 		gdevmode.dmPelsHeight = modelist[modenum].height;
-		gdevmode.dmDisplayFrequency = modelist[modenum].refreshrate; // refreshrate
+		gdevmode.dmDisplayFrequency = modelist[modenum].refreshrate; //johnfitz -- refreshrate
 		gdevmode.dmSize = sizeof (gdevmode);
 
 		if (ChangeDisplaySettings (&gdevmode, CDS_FULLSCREEN) != DISP_CHANGE_SUCCESSFUL)
@@ -432,11 +455,292 @@ int VID_SetMode (int modenum)
 
 	Con_SafePrintf ("Video mode %s initialized\n", VID_GetExtModeDescription (vid_modenum));
 
+	vid.conwidth = vid.width;
+	vid.conheight = vid.height;
+
+	vid.colormap = host_colormap;
+
 	vid.recalc_refdef = true;
 
 	return true;
 }
 
+
+/*
+===================
+VID_Restart -- johnfitz -- change video modes on the fly
+===================
+*/
+void VID_Restart (void)
+{
+	HDC			hdc;
+	HGLRC		hrc;
+	int			i;
+	qboolean	mode_changed = false;
+	vmode_t		oldmode;
+
+	if (vid_locked)
+		return;
+
+//
+// check cvars against current mode
+//
+	if (vid_fullscreen.value)
+	{
+		if (modelist[vid_default].type == MS_WINDOWED)
+			mode_changed = true;
+		else if (modelist[vid_default].bpp != (int)vid_bpp.value)
+			mode_changed = true;
+		else if (modelist[vid_default].refreshrate != (int)vid_refreshrate.value)
+			mode_changed = true;
+	}
+	else
+		if (modelist[vid_default].type != MS_WINDOWED)
+			mode_changed = true;
+
+	if (modelist[vid_default].width != (int)vid_width.value ||
+		modelist[vid_default].height != (int)vid_height.value)
+		mode_changed = true;
+
+	if (mode_changed)
+	{
+//
+// decide which mode to set
+//
+		oldmode = modelist[vid_default];
+
+		if (vid_fullscreen.value)
+		{
+			for (i=1; i<nummodes; i++)
+			{
+				if (modelist[i].width == (int)vid_width.value &&
+					modelist[i].height == (int)vid_height.value &&
+					modelist[i].bpp == (int)vid_bpp.value &&
+					modelist[i].refreshrate == (int)vid_refreshrate.value)
+				{
+					break;
+				}
+			}
+
+			if (i == nummodes)
+			{
+				Con_Printf ("%dx%dx%d %dHz is not a valid fullscreen mode\n",
+							(int)vid_width.value,
+							(int)vid_height.value,
+							(int)vid_bpp.value,
+							(int)vid_refreshrate.value);
+				return;
+			}
+
+			windowed = false;
+			vid_default = i;
+		}
+		else //not fullscreen
+		{
+			hdc = GetDC (NULL);
+			if (GetDeviceCaps(hdc, RASTERCAPS) & RC_PALETTE)
+			{
+				Con_Printf ("Can't run windowed on non-RGB desktop\n");
+				ReleaseDC (NULL, hdc);
+				return;
+			}
+			ReleaseDC (NULL, hdc);
+
+			if (vid_width.value < 320)
+			{
+				Con_Printf ("Window width can't be less than 320\n");
+				return;
+			}
+
+			if (vid_height.value < 200)
+			{
+				Con_Printf ("Window height can't be less than 200\n");
+				return;
+			}
+
+			modelist[0].width = (int)vid_width.value;
+			modelist[0].height = (int)vid_height.value;
+			sprintf (modelist[0].modedesc, "%dx%dx%d %dHz",
+					 modelist[0].width,
+					 modelist[0].height,
+					 modelist[0].bpp,
+					 modelist[0].refreshrate);
+
+			windowed = true;
+			vid_default = 0;
+		}
+//
+// destroy current window
+//
+		hrc = wglGetCurrentContext();
+		hdc = wglGetCurrentDC();
+		wglMakeCurrent(NULL, NULL);
+
+		vid_canalttab = false;
+
+		if (hdc && mainwindow)
+			ReleaseDC (mainwindow, hdc);
+		if (modestate == MS_FULLSCREEN)
+			ChangeDisplaySettings (NULL, 0);
+		if (maindc && mainwindow)
+			ReleaseDC (mainwindow, maindc);
+		maindc = NULL;
+		if (mainwindow)
+			DestroyWindow (mainwindow);
+
+		// textures are invalid after mode change,
+		// we destroy and re-create GL context,
+		// so we delete all GL textures now.
+		TexMgr_DeleteTextures();
+
+		vid_activewindow = false;
+		vid_hiddenwindow = true;
+		vid_notifywindow = false;
+
+//
+// set new mode
+//
+		VID_SetMode (vid_default);
+		maindc = GetDC(mainwindow);
+		bSetupPixelFormat(maindc);
+
+		// try to reuse existing render context, and if that fails create a new one
+		if (!wglMakeCurrent (maindc, hrc))
+		{
+			wglDeleteContext (hrc);
+			hrc = wglCreateContext (maindc);
+			if (!wglMakeCurrent (maindc, hrc))
+			{
+				char szBuf[80];
+				LPVOID lpMsgBuf;
+				DWORD dw = GetLastError();
+				FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM, NULL, dw, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR) &lpMsgBuf, 0, NULL );
+				sprintf(szBuf, "VID_Restart: wglMakeCurrent failed with error %d: %s", dw, (char*)lpMsgBuf);
+ 				Sys_Error (szBuf);
+			}
+			//TexMgr_ReloadImages ();
+			//GL_SetupState ();
+		}
+
+		vid_activewindow = true;
+		vid_hiddenwindow = false;
+		vid_notifywindow = true;
+
+		GL_GetPixelFormatInfo();
+		GL_GetGLInfo();
+
+		// re-create and reload all GL textures with new context.
+		TexMgr_GenerateTextures();
+
+//		GL_Init();
+		GL_SetupState();
+//		GL_SwapInterval();
+
+		GL_SetupState();
+		GL_CheckSwapInterval();
+		GL_CheckMultithreadedGL();
+
+
+		vid_canalttab = true;
+
+		//swapcontrol settings were lost when previous window was destroyed
+//		VID_Vsync_f ();
+
+		// re-create and reload all GL textures with new context.
+//		TexMgr_GenerateTextures();
+
+		//warpimages needs to be recalculated
+		TexMgr_UploadWarpImage();
+
+		//conwidth and conheight need to be recalculated
+		//vid.conwidth = (scr_conwidth.value > 0) ? (int)scr_conwidth.value : (scr_conscale.value > 0) ? (int)(vid.width/scr_conscale.value) : vid.width;
+		//vid.conwidth = CLAMP (320, vid.conwidth, vid.width);
+		//vid.conwidth &= 0xFFFFFFF8;
+		//vid.conheight = vid.conwidth * vid.height / vid.width;
+
+		//vid.conwidth = vid.width;
+		//vid.conheight = vid.height;
+	}
+//
+// keep cvars in line with actual mode
+//
+	Cvar_Set ("vid_width", va("%i", modelist[vid_default].width));
+	Cvar_Set ("vid_height", va("%i", modelist[vid_default].height));
+	Cvar_Set ("vid_bpp", va("%i", modelist[vid_default].bpp));
+	Cvar_Set ("vid_refreshrate", va("%i", modelist[vid_default].refreshrate));
+	Cvar_Set ("vid_fullscreen", (windowed) ? "0" : "1");
+}
+
+/*
+================
+VID_Test -- johnfitz -- like vid_restart, but asks for confirmation after switching modes
+================
+*/
+void VID_Test (void)
+{
+	vmode_t oldmode;
+	qboolean	mode_changed = false;
+
+	if (vid_locked)
+		return;
+//
+// check cvars against current mode
+//
+	if (vid_fullscreen.value)
+	{
+		if (modelist[vid_default].type == MS_WINDOWED)
+			mode_changed = true;
+		else if (modelist[vid_default].bpp != (int)vid_bpp.value)
+			mode_changed = true;
+		else if (modelist[vid_default].refreshrate != (int)vid_refreshrate.value)
+			mode_changed = true;
+	}
+	else
+		if (modelist[vid_default].type != MS_WINDOWED)
+			mode_changed = true;
+
+	if (modelist[vid_default].width != (int)vid_width.value ||
+		modelist[vid_default].height != (int)vid_height.value)
+		mode_changed = true;
+
+	if (!mode_changed)
+		return;
+//
+// now try the switch
+//
+	oldmode = modelist[vid_default];
+
+	VID_Restart ();
+
+	//pop up confirmation dialoge
+	if (!SCR_ModalMessageTimeout("Would you like to keep this\nvideo mode? (y/n)\n", 5.0f))
+	{
+		//revert cvars and mode
+		Cvar_Set ("vid_width", va("%i", oldmode.width));
+		Cvar_Set ("vid_height", va("%i", oldmode.height));
+		Cvar_Set ("vid_bpp", va("%i", oldmode.bpp));
+		Cvar_Set ("vid_refreshrate", va("%i", oldmode.refreshrate));
+		Cvar_Set ("vid_fullscreen", (oldmode.type == MS_WINDOWED) ? "0" : "1");
+		VID_Restart ();
+	}
+}
+
+/*
+================
+VID_Unlock -- johnfitz
+================
+*/
+void VID_Unlock (void)
+{
+	vid_locked = false;
+
+	//sync up cvars in case they were changed during the lock
+	Cvar_Set ("vid_width", va("%i", modelist[vid_default].width));
+	Cvar_Set ("vid_height", va("%i", modelist[vid_default].height));
+	Cvar_Set ("vid_bpp", va("%i", modelist[vid_default].bpp));
+	Cvar_Set ("vid_refreshrate", va("%i", modelist[vid_default].refreshrate));
+	Cvar_Set ("vid_fullscreen", (windowed) ? "0" : "1");
+}
 
 /*
 ================
@@ -672,7 +976,7 @@ LONG WINAPI MainWndProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		IN_MouseEvent (button);
 		break;
 
-	// JACK: This is the mouse wheel support
+	// JACK: This is the mouse wheel support (Intellimouse)
 	// Its delta is either positive or negative, and we generate the proper event
 	case WM_MOUSEWHEEL: 
 		if ((short) HIWORD(wParam) > 0) 
@@ -824,6 +1128,37 @@ vmode_t *VID_GetModePtr (int modenum)
 
 /*
 =================
+VID_GetModeDescription
+=================
+*/
+char *VID_GetModeDescription (int mode)
+{
+	char		*pinfo;
+	vmode_t		*pv;
+	static char	temp[100];
+
+	if ((mode < 0) || (mode >= nummodes))
+		return NULL;
+
+	if (!leavecurrentmode)
+	{
+		pv = VID_GetModePtr (mode);
+		pinfo = pv->modedesc;
+	}
+	else
+	{
+		sprintf (temp, "Desktop resolution (%ix%ix%i)", //johnfitz -- added bpp
+				 modelist[MODE_FULLSCREEN_DEFAULT].width,
+				 modelist[MODE_FULLSCREEN_DEFAULT].height,
+				 modelist[MODE_FULLSCREEN_DEFAULT].bpp); //johnfitz -- added bpp
+		pinfo = temp;
+	}
+
+	return pinfo;
+}
+
+/*
+=================
 VID_GetExtModeDescription
 
 KJB: Added this to return the mode driver name in description for console
@@ -918,7 +1253,7 @@ VID_InitWindow
 */
 void VID_InitWindow (HINSTANCE hInstance)
 {
-	DEVMODE			devmode;
+	DEVMODE			devmode; //johnfitz
 	WNDCLASS		wc;
 
 	/* Register the frame class */
@@ -951,8 +1286,8 @@ void VID_InitWindow (HINSTANCE hInstance)
 	else
 		modelist[0].height = modelist[0].width * 240/320;
 
-	if (modelist[0].height < 200) // was 240
-		modelist[0].height = 200; // was 240
+	if (modelist[0].height < 200) //johnfitz -- was 240
+		modelist[0].height = 200; //johnfitz -- was 240
 
 	// get desktop bit depth and refresh rate
 	if (EnumDisplaySettings (NULL, ENUM_CURRENT_SETTINGS, &devmode))
@@ -961,11 +1296,11 @@ void VID_InitWindow (HINSTANCE hInstance)
 		modelist[0].refreshrate = desktop_refreshrate = devmode.dmDisplayFrequency;
 	}
 
-	sprintf (modelist[0].modedesc, "%dx%dx%d %dHz", // added bpp, refreshrate
+	sprintf (modelist[0].modedesc, "%dx%dx%d %dHz", //johnfitz -- added bpp, refreshrate
 			 modelist[0].width,
 			 modelist[0].height,
-			 modelist[0].bpp, // added bpp
-			 modelist[0].refreshrate); // added refreshrate
+			 modelist[0].bpp, //johnfitz -- added bpp
+			 modelist[0].refreshrate); //johnfitz -- added refreshrate
 
 	modelist[0].modenum = MODE_WINDOWED;
 	modelist[0].dib = 1;
@@ -1005,7 +1340,7 @@ void VID_InitFullScreen (HINSTANCE hInstance)
 			devmode.dmFields = DM_BITSPERPEL |
 							   DM_PELSWIDTH |
 							   DM_PELSHEIGHT |
-							   DM_DISPLAYFREQUENCY; // refreshrate
+							   DM_DISPLAYFREQUENCY; //johnfitz -- refreshrate
 
 			if (ChangeDisplaySettings (&devmode, CDS_TEST | CDS_FULLSCREEN) ==
 					DISP_CHANGE_SUCCESSFUL)
@@ -1018,12 +1353,12 @@ void VID_InitFullScreen (HINSTANCE hInstance)
 				modelist[nummodes].dib = 1;
 				modelist[nummodes].fullscreen = 1;
 				modelist[nummodes].bpp = devmode.dmBitsPerPel;
-				modelist[nummodes].refreshrate = devmode.dmDisplayFrequency; // refreshrate
-				sprintf (modelist[nummodes].modedesc, "%dx%dx%d %dHz", // refreshrate
+				modelist[nummodes].refreshrate = devmode.dmDisplayFrequency; //johnfitz -- refreshrate
+				sprintf (modelist[nummodes].modedesc, "%dx%dx%d %dHz", //johnfitz -- refreshrate
 						 (int)devmode.dmPelsWidth,
 						 (int)devmode.dmPelsHeight,
 						 (int)devmode.dmBitsPerPel,
-						 (int)devmode.dmDisplayFrequency); // refreshrate
+						 (int)devmode.dmDisplayFrequency); //johnfitz -- refreshrate
 
 			// if the width is more than twice the height, reduce it by half because this
 			// is probably a dual-screen monitor
@@ -1033,11 +1368,11 @@ void VID_InitFullScreen (HINSTANCE hInstance)
 					{
 						modelist[nummodes].width >>= 1;
 						modelist[nummodes].halfscreen = 1;
-						sprintf (modelist[nummodes].modedesc, "%dx%dx%d %dHz", // refreshrate
+						sprintf (modelist[nummodes].modedesc, "%dx%dx%d %dHz", //johnfitz -- refreshrate
 								 modelist[nummodes].width,
 								 modelist[nummodes].height,
 								 modelist[nummodes].bpp,
-								 modelist[nummodes].refreshrate); // refreshrate
+								 modelist[nummodes].refreshrate); //johnfitz -- refreshrate
 					}
 				}
 
@@ -1046,7 +1381,7 @@ void VID_InitFullScreen (HINSTANCE hInstance)
 					if ((modelist[nummodes].width == modelist[i].width)   &&
 						(modelist[nummodes].height == modelist[i].height) &&
 						(modelist[nummodes].bpp == modelist[i].bpp) &&
-						(modelist[nummodes].refreshrate == modelist[i].refreshrate)) // refreshrate
+						(modelist[nummodes].refreshrate == modelist[i].refreshrate)) //johnfitz -- refreshrate
 					{
 						existingmode = 1;
 						break;
@@ -1078,7 +1413,7 @@ void VID_InitFullScreen (HINSTANCE hInstance)
 			devmode.dmFields = DM_BITSPERPEL |
 							   DM_PELSWIDTH |
 							   DM_PELSHEIGHT |
-							   DM_DISPLAYFREQUENCY; // refreshrate;
+							   DM_DISPLAYFREQUENCY; //johnfitz -- refreshrate;
 
 			if (ChangeDisplaySettings (&devmode, CDS_TEST | CDS_FULLSCREEN) ==
 					DISP_CHANGE_SUCCESSFUL)
@@ -1091,19 +1426,19 @@ void VID_InitFullScreen (HINSTANCE hInstance)
 				modelist[nummodes].dib = 1;
 				modelist[nummodes].fullscreen = 1;
 				modelist[nummodes].bpp = devmode.dmBitsPerPel;
-				modelist[nummodes].refreshrate = devmode.dmDisplayFrequency; // refreshrate
-				sprintf (modelist[nummodes].modedesc, "%dx%dx%d %dHz", // refreshrate
+				modelist[nummodes].refreshrate = devmode.dmDisplayFrequency; //johnfitz -- refreshrate
+				sprintf (modelist[nummodes].modedesc, "%dx%dx%d %dHz", //johnfitz -- refreshrate
 						 (int)devmode.dmPelsWidth,
 						 (int)devmode.dmPelsHeight,
 						 (int)devmode.dmBitsPerPel,
-						 (int)devmode.dmDisplayFrequency); // refreshrate
+						 (int)devmode.dmDisplayFrequency); //johnfitz -- refreshrate
 
 				for (i=originalnummodes, existingmode = 0 ; i<nummodes ; i++)
 				{
 					if ((modelist[nummodes].width == modelist[i].width)   &&
 						(modelist[nummodes].height == modelist[i].height) &&
 						(modelist[nummodes].bpp == modelist[i].bpp) &&
-						(modelist[nummodes].refreshrate == modelist[i].refreshrate)) // refreshrate
+						(modelist[nummodes].refreshrate == modelist[i].refreshrate)) //johnfitz -- refreshrate
 					{
 						existingmode = 1;
 						break;
@@ -1179,6 +1514,15 @@ void VID_Init (void)
 
 	memset(&devmode, 0, sizeof(devmode));
 
+	Cvar_RegisterVariable (&vid_fullscreen); //johnfitz
+	Cvar_RegisterVariable (&vid_width); //johnfitz
+	Cvar_RegisterVariable (&vid_height); //johnfitz
+	Cvar_RegisterVariable (&vid_bpp); //johnfitz
+	Cvar_RegisterVariable (&vid_refreshrate); //johnfitz
+
+	Cmd_AddCommand ("vid_unlock", VID_Unlock); //johnfitz
+	Cmd_AddCommand ("vid_restart", VID_Restart); //johnfitz
+	Cmd_AddCommand ("vid_test", VID_Test); //johnfitz
 	Cmd_AddCommand ("vid_describecurrentmode", VID_DescribeCurrentMode_f);
 	Cmd_AddCommand ("vid_describemodes", VID_DescribeModes_f);
 
@@ -1375,7 +1719,7 @@ void VID_Init (void)
 
 	vid_initialized = true;
 
-    vid.colormap = host_colormap;
+//    vid.colormap = host_colormap;
 
 	DestroyWindow (hwnd_dialog);
 
@@ -1399,6 +1743,10 @@ void VID_Init (void)
 
 	vid_realmode = vid_modenum;
 
+	vid_menucmdfn = VID_Menu_f; //johnfitz
+	vid_menudrawfn = VID_MenuDraw;
+	vid_menukeyfn = VID_MenuKey;
+
 	strcpy (badmode.modedesc, "Bad mode");
 	vid_canalttab = true;
 
@@ -1406,3 +1754,522 @@ void VID_Init (void)
 		fullsbardraw = true;
 }
 
+/*
+================
+VID_SyncCvars -- johnfitz -- set vid cvars to match current video mode
+================
+*/
+void VID_SyncCvars (void)
+{
+	Cvar_Set ("vid_width", va("%i", modelist[vid_default].width));
+	Cvar_Set ("vid_height", va("%i", modelist[vid_default].height));
+	Cvar_Set ("vid_bpp", va("%i", modelist[vid_default].bpp));
+	Cvar_Set ("vid_refreshrate", va("%i", modelist[vid_default].refreshrate));
+	Cvar_Set ("vid_fullscreen", (windowed) ? "0" : "1");
+}
+
+//==========================================================================
+//
+//  NEW VIDEO MENU -- johnfitz
+//
+//==========================================================================
+
+extern void M_Menu_Options_f (void);
+extern void M_Print (int cx, int cy, char *str);
+extern void M_PrintWhite (int cx, int cy, char *str);
+extern void M_DrawCharacter (int cx, int line, int num);
+extern void M_DrawTransPic (int x, int y, qpic_t *pic);
+extern void M_DrawPic (int x, int y, qpic_t *pic);
+extern void M_DrawCheckbox (int x, int y, int on);
+
+extern qboolean	m_entersound;
+
+//enum {
+//	m_none,
+//	m_main,
+//	m_singleplayer,
+//	m_load,
+//	m_save,
+//	m_multiplayer,
+//	m_setup,
+//	m_net,
+//	m_options,
+//	m_video,
+//	m_keys,
+//	m_help,
+//	m_quit,
+//	m_serialconfig,
+//	m_modemconfig,
+//	m_lanconfig,
+//	m_gameoptions,
+//	m_search,
+//	m_slist
+//} m_state;
+
+#define VIDEO_OPTIONS_ITEMS 6
+int		video_cursor_table[] = {48, 56, 64, 72, 88, 96};
+int		video_options_cursor = 0;
+
+typedef struct {int width,height;} vid_menu_mode;
+
+int vid_menu_rwidth;
+int vid_menu_rheight;
+
+//TODO: replace these fixed-length arrays with hunk_allocated buffers
+
+vid_menu_mode vid_menu_modes[MAX_MODE_LIST];
+int vid_menu_nummodes=0;
+
+int vid_menu_bpps[4];
+int vid_menu_numbpps=0;
+
+int vid_menu_rates[20];
+int vid_menu_numrates=0;
+
+/*
+================
+VID_Menu_Init
+================
+*/
+void VID_Menu_Init (void)
+{
+	int i,j,h,w;
+
+	for (i=1;i<nummodes;i++) //start i at mode 1 because 0 is windowed mode
+	{
+		w = modelist[i].width;
+		h = modelist[i].height;
+
+		for (j=0;j<vid_menu_nummodes;j++)
+		{
+			if (vid_menu_modes[j].width == w &&
+				vid_menu_modes[j].height == h)
+				break;
+		}
+
+		if (j==vid_menu_nummodes)
+		{
+			vid_menu_modes[j].width = w;
+			vid_menu_modes[j].height = h;
+			vid_menu_nummodes++;
+		}
+	}
+}
+
+/*
+================
+VID_Menu_RebuildBppList
+
+regenerates bpp list based on current vid_width and vid_height
+================
+*/
+void VID_Menu_RebuildBppList (void)
+{
+	int i,j,b;
+
+	vid_menu_numbpps=0;
+
+	for (i=1;i<nummodes;i++) //start i at mode 1 because 0 is windowed mode
+	{
+		//bpp list is limited to bpps available with current width/height
+		if (modelist[i].width != vid_width.value ||
+			modelist[i].height != vid_height.value)
+			continue;
+
+		b = modelist[i].bpp;
+
+		for (j=0;j<vid_menu_numbpps;j++)
+		{
+			if (vid_menu_bpps[j] == b)
+				break;
+		}
+
+		if (j==vid_menu_numbpps)
+		{
+			vid_menu_bpps[j] = b;
+			vid_menu_numbpps++;
+		}
+	}
+
+	//if there are no valid fullscreen bpps for this width/height, just pick one
+	if (vid_menu_numbpps == 0)
+	{
+		Cvar_SetValue ("vid_bpp",(float)modelist[0].bpp);
+		return;
+	}
+
+	//if vid_bpp is not in the new list, change vid_bpp
+	for (i=0;i<vid_menu_numbpps;i++)
+		if (vid_menu_bpps[i] == (int)(vid_bpp.value))
+			break;
+
+	if (i==vid_menu_numbpps)
+		Cvar_SetValue ("vid_bpp",(float)vid_menu_bpps[0]);
+}
+
+/*
+================
+VID_Menu_RebuildRateList
+
+regenerates rate list based on current vid_width, vid_height and vid_bpp
+================
+*/
+void VID_Menu_RebuildRateList (void)
+{
+	int i,j,r;
+
+	vid_menu_numrates=0;
+
+	for (i=1;i<nummodes;i++) //start i at mode 1 because 0 is windowed mode
+	{
+		//rate list is limited to rates available with current width/height/bpp
+		if (modelist[i].width != vid_width.value ||
+			modelist[i].height != vid_height.value ||
+			modelist[i].bpp != vid_bpp.value)
+			continue;
+
+		r = modelist[i].refreshrate;
+
+		for (j=0;j<vid_menu_numrates;j++)
+		{
+			if (vid_menu_rates[j] == r)
+				break;
+		}
+
+		if (j==vid_menu_numrates)
+		{
+			vid_menu_rates[j] = r;
+			vid_menu_numrates++;
+		}
+	}
+
+	//if there are no valid fullscreen refreshrates for this width/height, just pick one
+	if (vid_menu_numrates == 0)
+	{
+		Cvar_SetValue ("vid_refreshrate",(float)modelist[0].refreshrate);
+		return;
+	}
+
+	//if vid_refreshrate is not in the new list, change vid_refreshrate
+	for (i=0;i<vid_menu_numrates;i++)
+		if (vid_menu_rates[i] == (int)(vid_refreshrate.value))
+			break;
+
+	if (i==vid_menu_numrates)
+		Cvar_SetValue ("vid_refreshrate",(float)vid_menu_rates[0]);
+}
+
+/*
+================
+VID_Menu_CalcAspectRatio
+
+calculates aspect ratio for current vid_width/vid_height
+================
+*/
+void VID_Menu_CalcAspectRatio (void)
+{
+	int w,h,f;
+	w = vid_width.value;
+	h = vid_height.value;
+	f = 2;
+	while (f < w && f < h)
+	{
+		if ((w/f)*f == w && (h/f)*f == h)
+		{
+			w/=f;
+			h/=f;
+			f=2;
+		}
+		else
+			f++;
+	}
+	vid_menu_rwidth = w;
+	vid_menu_rheight = h;
+}
+
+/*
+================
+VID_Menu_ChooseNextMode
+
+chooses next resolution in order, then updates vid_width and
+vid_height cvars, then updates bpp and refreshrate lists
+================
+*/
+void VID_Menu_ChooseNextMode (int dir)
+{
+	int i;
+
+	for (i=0;i<vid_menu_nummodes;i++)
+	{
+		if (vid_menu_modes[i].width == vid_width.value &&
+			vid_menu_modes[i].height == vid_height.value)
+			break;
+	}
+
+	if (i==vid_menu_nummodes) //can't find it in list, so it must be a custom windowed res
+	{
+		i = 0;
+	}
+	else
+	{
+		i+=dir;
+		if (i>=vid_menu_nummodes)
+			i = 0;
+		else if (i<0)
+			i = vid_menu_nummodes-1;
+	}
+
+	Cvar_SetValue ("vid_width",(float)vid_menu_modes[i].width);
+	Cvar_SetValue ("vid_height",(float)vid_menu_modes[i].height);
+	VID_Menu_RebuildBppList ();
+	VID_Menu_RebuildRateList ();
+	VID_Menu_CalcAspectRatio ();
+}
+
+/*
+================
+VID_Menu_ChooseNextBpp
+
+chooses next bpp in order, then updates vid_bpp cvar, then updates refreshrate list
+================
+*/
+void VID_Menu_ChooseNextBpp (int dir)
+{
+	int i;
+
+	for (i=0;i<vid_menu_numbpps;i++)
+	{
+		if (vid_menu_bpps[i] == vid_bpp.value)
+			break;
+	}
+
+	if (i==vid_menu_numbpps) //can't find it in list
+	{
+		i = 0;
+	}
+	else
+	{
+		i+=dir;
+		if (i>=vid_menu_numbpps)
+			i = 0;
+		else if (i<0)
+			i = vid_menu_numbpps-1;
+	}
+
+	Cvar_SetValue ("vid_bpp",(float)vid_menu_bpps[i]);
+	VID_Menu_RebuildRateList ();
+}
+
+/*
+================
+VID_Menu_ChooseNextRate
+
+chooses next refresh rate in order, then updates vid_refreshrate cvar
+================
+*/
+void VID_Menu_ChooseNextRate (int dir)
+{
+	int i;
+
+	for (i=0;i<vid_menu_numrates;i++)
+	{
+		if (vid_menu_rates[i] == vid_refreshrate.value)
+			break;
+	}
+
+	if (i==vid_menu_numrates) //can't find it in list
+	{
+		i = 0;
+	}
+	else
+	{
+		i+=dir;
+		if (i>=vid_menu_numrates)
+			i = 0;
+		else if (i<0)
+			i = vid_menu_numrates-1;
+	}
+
+	Cvar_SetValue ("vid_refreshrate",(float)vid_menu_rates[i]);
+}
+
+/*
+================
+VID_MenuKey
+================
+*/
+void VID_MenuKey (int key)
+{
+	switch (key)
+	{
+	case K_ESCAPE:
+		VID_SyncCvars (); //sync cvars before leaving menu. FIXME: there are other ways to leave menu
+		S_LocalSound ("misc/menu1.wav");
+		M_Menu_Options_f ();
+		break;
+
+	case K_UPARROW:
+		S_LocalSound ("misc/menu1.wav");
+		video_options_cursor--;
+		if (video_options_cursor < 0)
+			video_options_cursor = VIDEO_OPTIONS_ITEMS-1;
+		break;
+
+	case K_DOWNARROW:
+		S_LocalSound ("misc/menu1.wav");
+		video_options_cursor++;
+		if (video_options_cursor >= VIDEO_OPTIONS_ITEMS)
+			video_options_cursor = 0;
+		break;
+
+	case K_LEFTARROW:
+		S_LocalSound ("misc/menu3.wav");
+		switch (video_options_cursor)
+		{
+		case 0:
+			VID_Menu_ChooseNextMode (-1);
+			break;
+		case 1:
+			VID_Menu_ChooseNextBpp (-1);
+			break;
+		case 2:
+			VID_Menu_ChooseNextRate (-1);
+			break;
+		case 3:
+			Cbuf_AddText ("toggle vid_fullscreen\n");
+			break;
+		case 4:
+		case 5:
+		default:
+			break;
+		}
+		break;
+
+	case K_RIGHTARROW:
+		S_LocalSound ("misc/menu3.wav");
+		switch (video_options_cursor)
+		{
+		case 0:
+			VID_Menu_ChooseNextMode (1);
+			break;
+		case 1:
+			VID_Menu_ChooseNextBpp (1);
+			break;
+		case 2:
+			VID_Menu_ChooseNextRate (1);
+			break;
+		case 3:
+			Cbuf_AddText ("toggle vid_fullscreen\n");
+			break;
+		case 4:
+		case 5:
+		default:
+			break;
+		}
+		break;
+
+	case K_ENTER:
+		m_entersound = true;
+		switch (video_options_cursor)
+		{
+		case 0:
+			VID_Menu_ChooseNextMode (1);
+			break;
+		case 1:
+			VID_Menu_ChooseNextBpp (1);
+			break;
+		case 2:
+			VID_Menu_ChooseNextRate (1);
+			break;
+		case 3:
+			Cbuf_AddText ("toggle vid_fullscreen\n");
+			break;
+		case 4:
+			Cbuf_AddText ("vid_test\n");
+			break;
+		case 5:
+			Cbuf_AddText ("vid_restart\n");
+			break;
+		default:
+			break;
+		}
+		break;
+
+	default:
+		break;
+	}
+}
+
+/*
+================
+VID_MenuDraw
+================
+*/
+void VID_MenuDraw (void)
+{
+	int i = 0;
+	qpic_t *p;
+	char *title;
+
+	M_DrawTransPic (16, 4, Draw_CachePic ("gfx/qplaque.lmp"));
+
+	//p = Draw_CachePic ("gfx/vidmodes.lmp");
+	p = Draw_CachePic ("gfx/p_option.lmp");
+	M_DrawPic ( (320-p->width)/2, 4, p);
+
+	// title
+	title = "Video Options";
+	M_PrintWhite ((320-8*strlen(title))/2, 32, title);
+
+	// options
+	M_Print (16, video_cursor_table[i], "        Video mode");
+	M_Print (184, video_cursor_table[i], va("%ix%i (%i:%i)", (int)vid_width.value, (int)vid_height.value, vid_menu_rwidth, vid_menu_rheight));
+	i++;
+
+	M_Print (16, video_cursor_table[i], "       Color depth");
+	M_Print (184, video_cursor_table[i], va("%i", (int)vid_bpp.value));
+	i++;
+
+	M_Print (16, video_cursor_table[i], "      Refresh rate");
+	M_Print (184, video_cursor_table[i], va("%i Hz", (int)vid_refreshrate.value));
+	i++;
+
+	M_Print (16, video_cursor_table[i], "        Fullscreen");
+	M_DrawCheckbox (184, video_cursor_table[i], (int)vid_fullscreen.value);
+	i++;
+
+	M_Print (16, video_cursor_table[i], "      Test changes");
+	i++;
+
+	M_Print (16, video_cursor_table[i], "     Apply changes");
+
+	// cursor
+	M_DrawCharacter (168, video_cursor_table[video_options_cursor], 12+((int)(realtime*4)&1));
+
+	// notes          "345678901234567890123456789012345678"
+//	M_Print (16, 172, "Windowed modes always use the desk- ");
+//	M_Print (16, 180, "top color depth, and can never be   ");
+//	M_Print (16, 188, "larger than the desktop resolution. ");
+}
+
+/*
+================
+VID_Menu_f
+================
+*/
+void VID_Menu_f (void)
+{
+	key_dest = key_menu;
+	m_state = m_video;
+	m_entersound = true;
+
+	//set all the cvars to match the current mode when entering the menu
+	VID_SyncCvars ();
+
+	//set up bpp and rate lists based on current cvars
+	VID_Menu_RebuildBppList ();
+	VID_Menu_RebuildRateList ();
+
+	//aspect ratio
+	VID_Menu_CalcAspectRatio ();
+}

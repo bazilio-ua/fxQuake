@@ -30,6 +30,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 int			starttime;
 qboolean	vid_activewindow;
 qboolean	vid_hiddenwindow;
+qboolean	vid_notifywindow;
 qboolean	WinNT;
 qboolean	has_smp = false;
 
