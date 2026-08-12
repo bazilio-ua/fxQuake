@@ -31,7 +31,7 @@ qboolean do_warp;
 float mouse_x=0, mouse_y=0;
 static float old_mouse_x, old_mouse_y;
 
-cvar_t m_filter = {"m_filter", "0", CVAR_ARCHIVE};
+cvar_t m_filter = {"m_filter", "0", CVAR_NONE};
 
 
 // if window is not the active window, don't hog as much CPU time,

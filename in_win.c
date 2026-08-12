@@ -30,7 +30,7 @@ HRESULT (WINAPI *pDirectInputCreate)(HINSTANCE hinst, DWORD dwVersion,
 	LPDIRECTINPUT * lplpDirectInput, LPUNKNOWN punkOuter);
 
 // mouse variables
-cvar_t	m_filter = {"m_filter","0",CVAR_ARCHIVE}; //none?
+cvar_t	m_filter = {"m_filter","0",CVAR_NONE};
 
 #define	NUM_MOUSEBUTTONS		10 // was 8
 
