@@ -1747,6 +1747,8 @@ void VID_Init (void)
 	vid_menudrawfn = VID_MenuDraw;
 	vid_menukeyfn = VID_MenuKey;
 
+	VID_Menu_Init(); //johnfitz
+
 	strcpy (badmode.modedesc, "Bad mode");
 	vid_canalttab = true;
 
